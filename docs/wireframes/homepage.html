@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+        
+        /* Wireframe styles */
+        .wireframe-box {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+        
+        /* Top Bar */
+        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; }
+        
+        /* Navigation */
+        .nav { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-link { color: #666; }
+        .nav-logo { font-size: 24px; font-weight: bold; }
+        .nav-icons { display: flex; gap: 16px; }
+        
+        /* Hero */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+        .hero-content { padding: 48px; display: flex; flex-direction: column; justify-content: center; }
+        .hero-image { min-height: 400px; }
+        
+        /* Category Strip */
+        .category-strip { padding: 32px; border-bottom: 1px solid #ddd; }
+        .category-items { display: flex; justify-content: center; gap: 32px; }
+        .category-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .category-circle { width: 80px; height: 80px; border-radius: 50%; }
+        
+        /* Products */
+        .products { padding: 48px 16px; }
+        .products-header { text-align: center; margin-bottom: 32px; }
+        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .product-card { }
+        .product-image { aspect-ratio: 3/4; margin-bottom: 8px; }
+        .product-title { font-weight: 500; }
+        .product-price { color: #666; }
+        .product-colors { display: flex; gap: 4px; margin-top: 8px; }
+        .color-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; border: 1px solid #999; }
+        
+        /* Split Banner */
+        .split-banner { display: grid; grid-template-columns: 1fr 1fr; }
+        .split-panel { min-height: 400px; position: relative; }
+        .split-content { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            padding: 32px;
+            color: #333;
+        }
+        
+        /* Social/Community */
+        .community { padding: 48px 16px; }
+        .community-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+        .community-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .community-image { aspect-ratio: 1/1; }
+        
+        /* Value Props */
+        .value-props { background: #f5f5f5; padding: 48px 16px; }
+        .value-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+        .value-icon { width: 48px; height: 48px; margin: 0 auto 8px; }
+        
+        /* Footer */
+        .footer { border-top: 1px solid #ddd; padding: 48px 16px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 8px; }
+        .footer-links a { color: #666; text-decoration: none; }
+        .footer-bottom { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding-top: 24px;
+            border-top: 1px solid #ddd;
+        }
+        .social-icons { display: flex; gap: 16px; }
+        
+        /* Buttons */
+        .btn { 
+            display: inline-block; 
+            padding: 12px 24px; 
+            border: 1px solid #999; 
+            text-decoration: none; 
+            color: #333;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .btn-primary { background: #333; color: #fff; }
+        
+        /* Form */
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #999;
+            margin-bottom: 8px;
+        }
+        
+        /* Badges */
+        .badge { 
+            display: inline-block; 
+            padding: 4px 8px; 
+            font-size: 10px; 
+            text-transform: uppercase; 
+            font-weight: bold;
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        <span>Gratis Ongkir untuk pembelian di atas Rp 500.000</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav container">
+        <div class="nav-links">
+            <a href="homepage.html" class="nav-link">Baru</a>
+            <a href="plp.html" class="nav-link">Freediving</a>
+            <a href="plp.html" class="nav-link">Scuba</a>
+            <a href="plp.html" class="nav-link">Aksesoris</a>
+            <a href="plp.html" class="nav-link">Sale</a>
+        </div>
+        <a href="homepage.html" class="nav-logo" style="text-decoration: none;">ARNES DIVE</a>
+        <div class="nav-icons">
+            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
+            <a href="#" style="color: #666; text-decoration: none;">[Wishlist]</a>
+            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span style="text-transform: uppercase; font-size: 11px; letter-spacing: 2px; color: #666;">Koleksi Terbaru</span>
+            <h1 style="font-size: 48px; margin: 16px 0;">Peralatan Freediving Premium</h1>
+            <p style="color: #666; max-width: 400px; margin-bottom: 24px;">Temukan masker, fin, dan aksesoris freediving berkualitas tinggi untuk pengalaman diving terbaik Anda.</p>
+            <div style="display: flex; gap: 16px;">
+                <a href="plp.html" class="btn btn-primary">Lihat Koleksi</a>
+                <a href="plp.html" class="btn">Sale</a>
+            </div>
+        </div>
+        <div class="hero-image wireframe-box">Hero Image (650x500)</div>
+    </section>
+
+    <!-- Category Strip -->
+    <section class="category-strip">
+        <div class="category-items">
+            <div class="category-item">
+                <a href="plp.html" style="text-decoration: none; color: inherit;">
+                    <div class="category-circle wireframe-box">Img</div>
+                    <span>Masker</span>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="plp.html" style="text-decoration: none; color: inherit;">
+                    <div class="category-circle wireframe-box">Img</div>
+                    <span>Fin</span>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="plp.html" style="text-decoration: none; color: inherit;">
+                    <div class="category-circle wireframe-box">Img</div>
+                    <span>Wetsuit</span>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="plp.html" style="text-decoration: none; color: inherit;">
+                    <div class="category-circle wireframe-box">Img</div>
+                    <span>Sabuk Pemberat</span>
+                </a>
+            </div>
+            <div class="category-item">
+                <a href="plp.html" style="text-decoration: none; color: inherit;">
+                    <div class="category-circle wireframe-box">Img</div>
+                    <span>Aksesoris</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products container">
+        <div class="products-header">
+            <h2>Produk Unggulan</h2>
+            <p style="color: #666;">Pilihan terbaik untuk freediving dan scuba diving</p>
+        </div>
+        
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-image wireframe-box" style="position: relative;">
+                    Product Image
+                    <span class="badge" style="position: absolute; top: 8px; left: 8px;">Badge</span>
+                </div>
+                <div class="product-title">Product Name</div>
+                <div class="product-price">$XX.XX</div>
+                <div class="product-colors">
+                    <div class="color-dot"></div>
+                    <div class="color-dot"></div>
+                    <div class="color-dot"></div>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-image wireframe-box" style="position: relative;">
+                    Product Image
+                    <span class="badge" style="position: absolute; top: 8px; left: 8px;">Badge</span>
+                </div>
+                <div class="product-title">Product Name</div>
+                <div class="product-price">$XX.XX</div>
+                <div class="product-colors">
+                    <div class="color-dot"></div>
+                    <div class="color-dot"></div>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-image wireframe-box">Product Image</div>
+                <div class="product-title">Product Name</div>
+                <div class="product-price">$XX.XX</div>
+                <div class="product-colors">
+                    <div class="color-dot"></div>
+                    <div class="color-dot"></div>
+                </div>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-image wireframe-box" style="position: relative;">
+                    Product Image
+                    <span class="badge" style="position: absolute; top: 8px; left: 8px;">Sale</span>
+                </div>
+                <div class="product-title">Product Name</div>
+                <div class="product-price"><span style="color: red;">$XX.XX</span> <s>$XX.XX</s></div>
+                <div class="product-colors">
+                    <div class="color-dot"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 32px;">
+            <a href="plp.html" style="text-decoration: none; border-bottom: 1px solid #333; font-size: 12px; text-transform: uppercase;">Lihat Semua →</a>
+        </div>
+    </section>
+
+    <!-- Split Banner -->
+    <section class="split-banner">
+        <div class="split-panel wireframe-box">
+            <div class="split-content">
+                <span style="text-transform: uppercase; font-size: 11px; letter-spacing: 2px;">Freediving</span>
+                <h3 style="font-size: 32px; margin: 8px 0 16px;">Koleksi Freediving</h3>
+                <a href="plp.html" class="btn">Lihat Koleksi</a>
+            </div>
+        </div>
+        <div class="split-panel wireframe-box">
+            <div class="split-content">
+                <span style="text-transform: uppercase; font-size: 11px; letter-spacing: 2px;">Scuba</span>
+                <h3 style="font-size: 32px; margin: 8px 0 16px;">Koleksi Scuba</h3>
+                <a href="plp.html" class="btn">Lihat Koleksi</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community / Social Proof -->
+    <section class="community container">
+        <div class="community-header">
+            <div>
+                <h2>#ArnesDive</h2>
+                <p style="color: #666;">Bagikan petualangan diving Anda</p>
+            </div>
+            <span>@arnesdive</span>
+        </div>
+        
+        <div class="community-grid">
+            <div class="community-image wireframe-box">UGC 1</div>
+            <div class="community-image wireframe-box">UGC 2</div>
+            <div class="community-image wireframe-box">UGC 3</div>
+            <div class="community-image wireframe-box">UGC 4</div>
+            <div class="community-image wireframe-box">UGC 5</div>
+        </div>
+    </section>
+
+    <!-- Value Props -->
+    <section class="value-props">
+        <div class="container">
+            <div class="value-grid">
+                <div>
+                    <div class="value-icon wireframe-box">🚚</div>
+                    <h4>Gratis Ongkir</h4>
+                    <p style="font-size: 12px; color: #666;">Untuk pembelian di atas Rp 500.000</p>
+                </div>
+                <div>
+                    <div class="value-icon wireframe-box">✓</div>
+                    <h4>Produk Original</h4>
+                    <p style="font-size: 12px; color: #666;">100% produk berkualitas</p>
+                </div>
+                <div>
+                    <div class="value-icon wireframe-box">↩️</div>
+                    <h4>Easy Return</h4>
+                    <p style="font-size: 12px; color: #666;">14 hari pengembalian</p>
+                </div>
+                <div>
+                    <div class="value-icon wireframe-box">💬</div>
+                    <h4>Support 24/7</h4>
+                    <p style="font-size: 12px; color: #666;">Siap membantu kapan saja</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer container">
+        <div class="footer-grid">
+            <div>
+                <h5>Newsletter</h5>
+                <p style="font-size: 12px; color: #666; margin: 8px 0;">Dapatkan info produk terbaru</p>
+                <input type="email" placeholder="Email Anda">
+                <a href="#" class="btn btn-primary" style="display: block; text-align: center;">Langganan</a>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
+                <ul class="footer-links">
+                    <li><a href="plp.html">Freediving</a></li>
+                    <li><a href="plp.html">Scuba</a></li>
+                    <li><a href="plp.html">Aksesoris</a></li>
+                    <li><a href="plp.html">Sale</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
+                <ul class="footer-links">
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="faq.html">Pengiriman</a></li>
+                    <li><a href="faq.html">Pengembalian</a></li>
+                    <li><a href="contact.html">Hubungi Kami</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Karir</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="social-icons">
+                <span>[FB]</span>
+                <span>[IG]</span>
+                <span>[TikTok]</span>
+                <span>[YouTube]</span>
+            </div>
+            <div style="font-size: 12px; color: #666;">
+                <a href="faq.html" style="color: #666;">Privasi</a> | 
+                <a href="faq.html" style="color: #666;">Syarat</a> | 
+                © 2024 Arnes Dive
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

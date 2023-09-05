@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Arnes Dive Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; background: #f9f9f9; }
+        
+        /* Wireframe styles */
+        .wireframe-box {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+        
+        /* Top Bar */
+        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
+        
+        /* Navigation - Simplified for Checkout */
+        .nav { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
+        
+        /* Progress Indicator */
+        .progress-bar { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            padding: 32px 16px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+        .progress-step { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            font-size: 13px;
+            color: #999;
+        }
+        .progress-step.active { color: #333; font-weight: 600; }
+        .progress-step.completed { color: #50c878; }
+        .progress-step .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .progress-step.active .step-number { border-color: #333; background: #333; color: white; }
+        .progress-step.completed .step-number { border-color: #50c878; background: #50c878; color: white; }
+        .progress-divider { 
+            width: 100px; 
+            height: 2px; 
+            background: #ddd; 
+            margin: 0 16px; 
+        }
+        
+        /* Checkout Layout */
+        .checkout-main { display: flex; gap: 48px; padding: 32px 16px 48px; max-width: 1200px; margin: 0 auto; }
+        
+        /* Checkout Form */
+        .checkout-form { flex: 1; }
+        
+        .form-section { 
+            background: white; 
+            padding: 24px; 
+            border: 1px solid #ddd; 
+            margin-bottom: 24px;
+        }
+        .form-section-title { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
+        .form-group { flex: 1; margin-bottom: 16px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label { 
+            display: block; 
+            font-size: 12px; 
+            color: #666; 
+            margin-bottom: 6px;
+        }
+        .form-label.required::after { content: " *"; color: #ff4444; }
+        .form-input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            font-size: 14px;
+        }
+        .form-input:focus { outline: none; border-color: #333; }
+        
+        /* Shipping Methods */
+        .shipping-methods { margin-top: 16px; }
+        .shipping-option { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .shipping-option:hover { border-color: #333; }
+        .shipping-option.selected { border-color: #333; background: #f9f9f9; }
+        .shipping-option-left { display: flex; align-items: center; gap: 12px; }
+        .shipping-option input { margin: 0; }
+        .shipping-option-name { font-weight: 500; }
+        .shipping-option-time { font-size: 12px; color: #666; }
+        .shipping-option-price { font-weight: 600; }
+        
+        /* Buttons */
+        .btn-primary { 
+            display: block;
+            width: 100%;
+            padding: 16px; 
+            background: #333; 
+            color: white; 
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-primary:hover { background: #444; }
+        .btn-back { 
+            display: inline-block;
+            margin-top: 16px;
+            color: #666; 
+            text-decoration: none; 
+            font-size: 13px;
+        }
+        
+        /* Payment Methods */
+        .payment-methods { display: flex; flex-direction: column; gap: 8px; }
+        .payment-option { 
+            display: flex; 
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .payment-option:hover { border-color: #333; }
+        .payment-option.selected { border-color: #333; }
+        .payment-option input { margin-right: 12px; }
+        .payment-option-label { font-weight: 500; flex: 1; }
+        .payment-option-icons { display: flex; gap: 8px; }
+        .payment-icon { 
+            width: 40px; 
+            height: 24px; 
+            background: #f0f0f0; 
+            border: 1px solid #ddd;
+            font-size: 10px;
+        }
+        
+        /* Card Form */
+        .card-form { padding-top: 16px; border-top: 1px solid #eee; margin-top: 16px; }
+        
+        /* Order Summary Sidebar */
+        .order-summary { 
+            width: 380px; 
+            flex-shrink: 0;
+            background: white;
+            padding: 24px;
+            border: 1px solid #ddd;
+            height: fit-content;
+        }
+        .summary-title { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-items { margin-bottom: 20px; }
+        .summary-item { display: flex; gap: 12px; margin-bottom: 12px; }
+        .summary-item-image { width: 60px; height: 75px; flex-shrink: 0; }
+        .summary-item-details { flex: 1; }
+        .summary-item-title { font-weight: 500; font-size: 13px; }
+        .summary-item-variant { font-size: 12px; color: #666; }
+        .summary-item-qty { font-size: 12px; color: #666; }
+        .summary-item-price { font-weight: 500; font-size: 13px; text-align: right; }
+        
+        .summary-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 10px; 
+            font-size: 13px;
+        }
+        .summary-row.total { 
+            font-weight: 600; 
+            font-size: 16px; 
+            margin-top: 12px; 
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+        
+        .secure-badge { 
+            text-align: center; 
+            margin-top: 16px; 
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Footer */
+        .footer { 
+            background: white;
+            border-top: 1px solid #ddd; 
+            padding: 24px 16px; 
+            text-align: center;
+            font-size: 12px; 
+            color: #666;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 12px; }
+        .footer-links a { color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        Gratis Ongkir untuk pembelian di atas Rp 500.000
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="homepage.html" class="nav-logo">ARNES DIVE</a>
+    </nav>
+
+    <!-- Progress Indicator -->
+    <div class="progress-bar">
+        <div class="progress-step active">
+            <div class="step-number">1</div>
+            <span>Informasi</span>
+        </div>
+        <div class="progress-divider"></div>
+        <div class="progress-step">
+            <div class="step-number">2</div>
+            <span>Pembayaran</span>
+        </div>
+    </div>
+
+    <!-- STEP 1: Information -->
+    <div class="checkout-main">
+        <div class="checkout-form">
+            <!-- Contact Information -->
+            <div class="form-section">
+                <div class="form-section-title">Informasi Kontak</div>
+                <div class="form-group">
+                    <label class="form-label required">Email</label>
+                    <input type="email" class="form-input" placeholder="email@contoh.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Nomor Telepon</label>
+                    <input type="tel" class="form-input" placeholder="08xxxxxxxxxx">
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="form-section">
+                <div class="form-section-title">Alamat Pengiriman</div>
+                <div class="form-group">
+                    <label class="form-label required">Nama Lengkap</label>
+                    <input type="text" class="form-input" placeholder="Nama penerima">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Alamat</label>
+                    <input type="text" class="form-input" placeholder="Nama jalan, nomor rumah">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alamat Lengkap (opsional)</label>
+                    <input type="text" class="form-input" placeholder="RT/RW, nama gedung, patokan">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">Kota</label>
+                        <input type="text" class="form-input" placeholder="Nama kota">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Kode Pos</label>
+                        <input type="text" class="form-input" placeholder="12345">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Provinsi</label>
+                    <select class="form-input">
+                        <option value="">Pilih provinsi</option>
+                        <option>DKI Jakarta</option>
+                        <option>Jawa Barat</option>
+                        <option>Jawa Tengah</option>
+                        <option>Jawa Timur</option>
+                        <option>Bali</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Catatan (opsional)</label>
+                    <input type="text" class="form-input" placeholder="Instruksi pengiriman khusus">
+                </div>
+            </div>
+
+            <!-- Shipping Method -->
+            <div class="form-section">
+                <div class="form-section-title">Metode Pengiriman</div>
+                <div class="shipping-methods">
+                    <label class="shipping-option selected">
+                        <div class="shipping-option-left">
+                            <input type="radio" name="shipping" checked>
+                            <div>
+                                <div class="shipping-option-name">JNE Reguler</div>
+                                <div class="shipping-option-time">3-5 hari kerja</div>
+                            </div>
+                        </div>
+                        <div class="shipping-option-price">Rp 25.000</div>
+                    </label>
+                    <label class="shipping-option">
+                        <div class="shipping-option-left">
+                            <input type="radio" name="shipping">
+                            <div>
+                                <div class="shipping-option-name">JNE YES</div>
+                                <div class="shipping-option-time">1-2 hari kerja</div>
+                            </div>
+                        </div>
+                        <div class="shipping-option-price">Rp 45.000</div>
+                    </label>
+                    <label class="shipping-option">
+                        <div class="shipping-option-left">
+                            <input type="radio" name="shipping">
+                            <div>
+                                <div class="shipping-option-name">SiCepat REG</div>
+                                <div class="shipping-option-time">2-3 hari kerja</div>
+                            </div>
+                        </div>
+                        <div class="shipping-option-price">Rp 20.000</div>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-primary">Lanjut ke Pembayaran</button>
+            <a href="cart.html" class="btn-back">← Kembali ke Keranjang</a>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="summary-title">Ringkasan Pesanan</div>
+            
+            <div class="summary-items">
+                <div class="summary-item">
+                    <div class="summary-item-image wireframe-box">Img</div>
+                    <div class="summary-item-details">
+                        <div class="summary-item-title">Masker Freediving Pro</div>
+                        <div class="summary-item-variant">Hitam</div>
+                        <div class="summary-item-qty">Qty: 1</div>
+                    </div>
+                    <div class="summary-item-price">Rp 850.000</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-item-image wireframe-box">Img</div>
+                    <div class="summary-item-details">
+                        <div class="summary-item-title">Fin Carbón Pro</div>
+                        <div class="summary-item-variant">42-43 / Hitam</div>
+                        <div class="summary-item-qty">Qty: 1</div>
+                    </div>
+                    <div class="summary-item-price">Rp 2.500.000</div>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>Rp 3.350.000</span>
+            </div>
+            <div class="summary-row">
+                <span>Ongkos Kirim</span>
+                <span>Rp 25.000</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>Rp 3.375.000</span>
+            </div>
+
+            <div class="secure-badge">
+                🔒 Transaksi Anda dilindungi
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+    =====================================================
+    STEP 2: Payment (shown after "Lanjut ke Pembayaran")
+    =====================================================
+    
+    <div class="progress-bar">
+        <div class="progress-step completed">
+            <div class="step-number">✓</div>
+            <span>Informasi</span>
+        </div>
+        <div class="progress-divider" style="background: #50c878;"></div>
+        <div class="progress-step active">
+            <div class="step-number">2</div>
+            <span>Pembayaran</span>
+        </div>
+    </div>
+
+    <div class="checkout-main">
+        <div class="checkout-form">
+            <div class="form-section">
+                <div class="form-section-title">Metode Pembayaran</div>
+                <div class="payment-methods">
+                    <label class="payment-option selected">
+                        <input type="radio" name="payment" checked>
+                        <span class="payment-option-label">Transfer Bank (Virtual Account)</span>
+                        <div class="payment-option-icons">
+                            <div class="payment-icon wireframe-box">BCA</div>
+                            <div class="payment-icon wireframe-box">BNI</div>
+                            <div class="payment-icon wireframe-box">BRI</div>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment">
+                        <span class="payment-option-label">Kartu Kredit / Debit</span>
+                        <div class="payment-option-icons">
+                            <div class="payment-icon wireframe-box">VISA</div>
+                            <div class="payment-icon wireframe-box">MC</div>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment">
+                        <span class="payment-option-label">E-Wallet</span>
+                        <div class="payment-option-icons">
+                            <div class="payment-icon wireframe-box">GoPay</div>
+                            <div class="payment-icon wireframe-box">OVO</div>
+                            <div class="payment-icon wireframe-box">DANA</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-primary">Bayar Sekarang — Rp 3.375.000</button>
+            <a href="#" class="btn-back">← Kembali ke Informasi</a>
+        </div>
+
+        <div class="order-summary">
+            [Same order summary as Step 1]
+        </div>
+    </div>
+    -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="faq.html">Kebijakan Privasi</a>
+            <a href="faq.html">Syarat & Ketentuan</a>
+            <a href="contact.html">Hubungi Kami</a>
+        </div>
+        <div>© 2024 Arnes Dive Shop. All rights reserved.</div>
+    </footer>
+
+</body>
+</html>

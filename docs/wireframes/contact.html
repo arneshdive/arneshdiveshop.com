@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hubungi Kami - Arnes Dive Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+        
+        /* Wireframe styles */
+        .wireframe-box {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+        
+        /* Top Bar */
+        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
+        
+        /* Navigation */
+        .nav { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
+        .nav-logo { font-size: 24px; font-weight: bold; color: #333; }
+        .nav-icons { display: flex; gap: 16px; color: #666; }
+        
+        /* Page Title */
+        .page-title { text-align: center; padding: 48px 16px 32px; }
+        .page-title h1 { font-size: 32px; font-weight: 600; margin-bottom: 8px; }
+        .page-title p { color: #666; }
+        
+        /* Contact Layout */
+        .contact-main { display: flex; gap: 64px; padding: 0 16px 64px; max-width: 1200px; margin: 0 auto; }
+        
+        /* Contact Form */
+        .contact-form { flex: 1; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { 
+            display: block; 
+            font-size: 12px; 
+            color: #666; 
+            margin-bottom: 6px;
+        }
+        .form-label.required::after { content: " *"; color: #ff4444; }
+        .form-input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            font-size: 14px;
+        }
+        .form-input:focus { outline: none; border-color: #333; }
+        .form-textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            font-size: 14px;
+            min-height: 150px;
+            resize: vertical;
+        }
+        .form-select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            font-size: 14px;
+            background: white;
+        }
+        
+        .btn-primary { 
+            display: block;
+            width: 100%;
+            padding: 16px; 
+            background: #333; 
+            color: white; 
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-primary:hover { background: #444; }
+        
+        /* Contact Info Sidebar */
+        .contact-info { width: 380px; flex-shrink: 0; }
+        
+        .info-card { 
+            background: #f9f9f9; 
+            padding: 32px; 
+            margin-bottom: 24px;
+            border: 1px solid #eee;
+        }
+        .info-card-title { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin-bottom: 16px;
+        }
+        .info-item { margin-bottom: 16px; }
+        .info-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-value { font-size: 15px; font-weight: 500; }
+        
+        .whatsapp-btn { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px; 
+            background: #25D366; 
+            color: white; 
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .whatsapp-btn:hover { background: #20bd5a; }
+        
+        .response-time { 
+            font-size: 13px; 
+            color: #666; 
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        
+        .faq-link { 
+            display: block;
+            text-align: center;
+            padding: 16px;
+            background: white;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+            font-size: 13px;
+        }
+        .faq-link:hover { background: #f9f9f9; }
+        
+        /* Footer */
+        .footer { border-top: 1px solid #ddd; padding: 48px 16px; background: #f9f9f9; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 8px; }
+        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        Gratis Ongkir untuk pembelian di atas Rp 500.000
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav container">
+        <div class="nav-links">
+            <a href="homepage.html" class="nav-link">Baru</a>
+            <a href="plp.html" class="nav-link">Freediving</a>
+            <a href="plp.html" class="nav-link">Scuba</a>
+            <a href="plp.html" class="nav-link">Aksesoris</a>
+            <a href="plp.html" class="nav-link">Sale</a>
+        </div>
+        <a href="homepage.html" class="nav-logo" style="text-decoration: none;">ARNES DIVE</a>
+        <div class="nav-icons">
+            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
+            <a href="#" style="color: #666; text-decoration: none;">[Wishlist]</a>
+            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
+        </div>
+    </nav>
+
+    <!-- Page Title -->
+    <div class="page-title">
+        <h1>Hubungi Kami</h1>
+        <p>Ada pertanyaan? Kami siap membantu Anda.</p>
+    </div>
+
+    <!-- Contact Content -->
+    <div class="contact-main">
+        
+        <!-- Contact Form -->
+        <div class="contact-form">
+            <div class="form-group">
+                <label class="form-label required">Nama Lengkap</label>
+                <input type="text" class="form-input" placeholder="Nama Anda">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label required">Email</label>
+                <input type="email" class="form-input" placeholder="email@contoh.com">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label required">Subjek</label>
+                <select class="form-select">
+                    <option value="">Pilih subjek</option>
+                    <option>Pesanan</option>
+                    <option>Pengiriman</option>
+                    <option>Pengembalian</option>
+                    <option>Pertanyaan Produk</option>
+                    <option>Lainnya</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label required">Pesan</label>
+                <textarea class="form-textarea" placeholder="Tuliskan pesan Anda di sini..."></textarea>
+            </div>
+            
+            <button class="btn-primary">Kirim Pesan</button>
+        </div>
+
+        <!-- Contact Info Sidebar -->
+        <div class="contact-info">
+            <div class="info-card">
+                <div class="info-card-title">Informasi Kontak</div>
+                
+                <div class="info-item">
+                    <div class="info-label">Jam Operasional</div>
+                    <div class="info-value">Senin - Jumat: 09:00 - 17:00 WIB</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">WhatsApp</div>
+                    <div class="info-value">+62 812-3456-7890</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">support@arnesdive.com</div>
+                </div>
+                
+                <a href="#" class="whatsapp-btn">
+                    💬 Chat via WhatsApp
+                </a>
+                
+                <p class="response-time">
+                    Kami akan membalas pesan Anda dalam waktu 1x24 jam kerja.
+                </p>
+            </div>
+            
+            <a href="faq.html" class="faq-link">
+                📖 Pertanyaan umum? Lihat FAQ kami →
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
+                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
+                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
+                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Freediving</a></li>
+                    <li><a href="#">Scuba</a></li>
+                    <li><a href="#">Aksesoris</a></li>
+                    <li><a href="#">Sale</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
+                <ul class="footer-links">
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="faq.html">Pengiriman</a></li>
+                    <li><a href="faq.html">Pengembalian</a></li>
+                    <li><a href="contact.html">Hubungi Kami</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Karir</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
+            © 2024 Arnes Dive Shop. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

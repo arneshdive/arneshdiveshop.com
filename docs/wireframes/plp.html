@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Listing - Arnes Dive Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+        
+        /* Wireframe styles */
+        .wireframe-box {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+        
+        /* Top Bar */
+        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
+        
+        /* Navigation */
+        .nav { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 16px;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
+        .nav-logo { font-size: 24px; font-weight: bold; color: #333; }
+        .nav-icons { display: flex; gap: 16px; color: #666; }
+        
+        /* Breadcrumb */
+        .breadcrumb { padding: 16px 0; font-size: 12px; color: #666; }
+        .breadcrumb a { color: #666; text-decoration: none; }
+        .breadcrumb span { margin: 0 8px; }
+        
+        /* Main Layout */
+        .main-content { display: flex; gap: 32px; padding: 0 16px 48px; max-width: 1400px; margin: 0 auto; }
+        
+        /* Sidebar */
+        .sidebar { width: 250px; flex-shrink: 0; }
+        .filter-section { margin-bottom: 24px; }
+        .filter-title { 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .filter-option { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; color: #666; }
+        .filter-option input { margin: 0; }
+        .clear-filters { font-size: 12px; color: #999; text-decoration: none; }
+        
+        /* Color Swatches */
+        .color-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+        .color-swatch { width: 24px; height: 24px; border-radius: 50%; background: #ccc; border: 1px solid #999; cursor: pointer; }
+        
+        /* Product Grid */
+        .products-area { flex: 1; }
+        .products-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .products-title { font-size: 24px; font-weight: 600; }
+        .sort-select { padding: 8px 12px; border: 1px solid #ddd; font-size: 13px; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        
+        .product-card { }
+        .product-image { aspect-ratio: 3/4; margin-bottom: 12px; position: relative; }
+        .product-title { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+        .product-price { color: #666; font-size: 13px; }
+        .product-colors { display: flex; gap: 4px; margin-top: 8px; }
+        .color-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; border: 1px solid #999; }
+        
+        /* Badges */
+        .badge { 
+            display: inline-block; 
+            padding: 4px 8px; 
+            font-size: 10px; 
+            text-transform: uppercase; 
+            font-weight: bold;
+            background: #e0e0e0;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+        .badge-sale { background: #ff4444; color: white; }
+        
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 48px; }
+        .pagination button { 
+            width: 40px; 
+            height: 40px; 
+            border: 1px solid #ddd; 
+            background: white; 
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination button.active { background: #333; color: white; border-color: #333; }
+        
+        /* Footer */
+        .footer { border-top: 1px solid #ddd; padding: 48px 16px; margin-top: 48px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 8px; }
+        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        Gratis Ongkir untuk pembelian di atas Rp 500.000
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav container">
+        <div class="nav-links">
+            <a href="#" class="nav-link">Baru</a>
+            <a href="#" class="nav-link">Freediving</a>
+            <a href="#" class="nav-link">Scuba</a>
+            <a href="#" class="nav-link">Aksesoris</a>
+            <a href="#" class="nav-link">Sale</a>
+        </div>
+        <div class="nav-logo">ARNES DIVE</div>
+        <div class="nav-icons">
+            <span>[Cari]</span>
+            <span>[Wishlist]</span>
+            <span>[Keranjang (2)]</span>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="#">Beranda</a>
+            <span>/</span>
+            <a href="#">Freediving</a>
+            <span>/</span>
+            Masker
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="filter-section">
+                <div class="filter-title">Tipe Selam</div>
+                <label class="filter-option">
+                    <input type="checkbox"> Freediving
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Scuba
+                </label>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-title">Kategori</div>
+                <label class="filter-option">
+                    <input type="checkbox"> Masker
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Fin
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Wetsuit
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Sabuk Pemberat
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Aksesoris
+                </label>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-title">Harga</div>
+                <div class="wireframe-box" style="height: 40px;">Slider Harga</div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-title">Ukuran</div>
+                <label class="filter-option">
+                    <input type="checkbox"> S
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> M
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> L
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> XL
+                </label>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-title">Warna</div>
+                <div class="color-swatches">
+                    <div class="color-swatch" style="background: #000;"></div>
+                    <div class="color-swatch" style="background: #1e3a5f;"></div>
+                    <div class="color-swatch" style="background: #4a90a4;"></div>
+                    <div class="color-swatch" style="background: #fff; border-color: #999;"></div>
+                    <div class="color-swatch" style="background: #ff6b35;"></div>
+                    <div class="color-swatch" style="background: #50c878;"></div>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-title">Merek</div>
+                <label class="filter-option">
+                    <input type="checkbox"> Mares
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Cressi
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Beuchat
+                </label>
+                <label class="filter-option">
+                    <input type="checkbox"> Salvimar
+                </label>
+            </div>
+            
+            <a href="#" class="clear-filters">Hapus Semua Filter</a>
+        </aside>
+
+        <!-- Products Area -->
+        <main class="products-area">
+            <div class="products-header">
+                <h1 class="products-title">Masker Freediving</h1>
+                <select class="sort-select">
+                    <option>Urutkan: Terbaru</option>
+                    <option>Harga: Rendah ke Tinggi</option>
+                    <option>Harga: Tinggi ke Rendah</option>
+                    <option>Paling Populer</option>
+                </select>
+            </div>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image wireframe-box">
+                        <span class="badge">Baru</span>
+                        Gambar Produk
+                    </div>
+                    <div class="product-title">Masker Freediving Pro</div>
+                    <div class="product-price">Rp 850.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #000;"></div>
+                        <div class="color-dot" style="background: #1e3a5f;"></div>
+                        <div class="color-dot" style="background: #fff; border-color: #999;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">Gambar Produk</div>
+                    <div class="product-title">Masker Low Volume</div>
+                    <div class="product-price">Rp 650.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #000;"></div>
+                        <div class="color-dot" style="background: #4a90a4;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">
+                        <span class="badge badge-sale">Sale</span>
+                        Gambar Produk
+                    </div>
+                    <div class="product-title">Masker Competition</div>
+                    <div class="product-price"><span style="color: #ff4444;">Rp 520.000</span> <s>Rp 750.000</s></div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #000;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">Gambar Produk</div>
+                    <div class="product-title">Masker Tempered Glass</div>
+                    <div class="product-price">Rp 450.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #1e3a5f;"></div>
+                        <div class="color-dot" style="background: #50c878;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">Gambar Produk</div>
+                    <div class="product-title">Masker Junior</div>
+                    <div class="product-price">Rp 350.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #ff6b35;"></div>
+                        <div class="color-dot" style="background: #4a90a4;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">Gambar Produk</div>
+                    <div class="product-title">Masker Single Lens</div>
+                    <div class="product-price">Rp 780.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #000;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">
+                        <span class="badge">Baru</span>
+                        Gambar Produk
+                    </div>
+                    <div class="product-title">Masker Silicone Premium</div>
+                    <div class="product-price">Rp 1.200.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #000;"></div>
+                        <div class="color-dot" style="background: #fff; border-color: #999;"></div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image wireframe-box">Gambar Produk</div>
+                    <div class="product-title">Masker Frameless</div>
+                    <div class="product-price">Rp 950.000</div>
+                    <div class="product-colors">
+                        <div class="color-dot" style="background: #000;"></div>
+                        <div class="color-dot" style="background: #1e3a5f;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button>&lt;</button>
+                <button class="active">1</button>
+                <button>2</button>
+                <button>3</button>
+                <button>&gt;</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
+                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
+                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
+                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Freediving</a></li>
+                    <li><a href="#">Scuba</a></li>
+                    <li><a href="#">Aksesoris</a></li>
+                    <li><a href="#">Sale</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
+                <ul class="footer-links">
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Pengiriman</a></li>
+                    <li><a href="#">Pengembalian</a></li>
+                    <li><a href="#">Hubungi Kami</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Karir</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
+            © 2024 Arnes Dive Shop. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

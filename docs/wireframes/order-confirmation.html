@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pesanan - Arnes Dive Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; background: #f9f9f9; }
+        
+        .wireframe-box {
+            background: #f0f0f0;
+            border: 2px dashed #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
+        
+        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
+        
+        .nav { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
+        
+        .confirmation-container { 
+            max-width: 800px; 
+            margin: 48px auto; 
+            background: white;
+            border: 1px solid #ddd;
+        }
+        
+        .confirmation-header { 
+            text-align: center; 
+            padding: 40px 32px;
+            border-bottom: 1px solid #eee;
+        }
+        .success-icon { 
+            width: 64px; 
+            height: 64px; 
+            background: #d4edda; 
+            border-radius: 50%; 
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #50c878;
+        }
+        .confirmation-title { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+        .confirmation-subtitle { color: #666; }
+        
+        .confirmation-body { padding: 32px; }
+        
+        .order-number { 
+            text-align: center; 
+            padding: 16px;
+            background: #f9f9f9;
+            margin-bottom: 32px;
+        }
+        .order-number-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        .order-number-value { font-size: 20px; font-weight: 600; margin-top: 4px; }
+        
+        .info-section { margin-bottom: 32px; }
+        .info-section-title { 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .info-item { }
+        .info-label { font-size: 12px; color: #666; margin-bottom: 4px; }
+        .info-value { font-size: 14px; }
+        
+        .order-items { margin-bottom: 32px; }
+        .order-item { 
+            display: flex; 
+            gap: 16px; 
+            padding: 16px 0; 
+            border-bottom: 1px solid #eee;
+        }
+        .order-item:last-child { border-bottom: none; }
+        .order-item-image { width: 60px; height: 75px; flex-shrink: 0; }
+        .order-item-details { flex: 1; }
+        .order-item-title { font-weight: 500; font-size: 13px; }
+        .order-item-variant { font-size: 12px; color: #666; }
+        .order-item-qty { font-size: 12px; color: #666; }
+        .order-item-price { font-weight: 500; text-align: right; }
+        
+        .order-summary { 
+            background: #f9f9f9; 
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; }
+        .summary-row.total { 
+            font-weight: 600; 
+            font-size: 18px; 
+            margin-top: 12px; 
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .payment-info { 
+            background: #fff3cd; 
+            padding: 20px; 
+            border: 1px solid #ffc107;
+            margin-bottom: 32px;
+        }
+        .payment-info-title { font-weight: 600; margin-bottom: 8px; }
+        .payment-info-text { font-size: 13px; color: #856404; }
+        .payment-info-code { 
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 12px;
+            letter-spacing: 4px;
+        }
+        
+        .action-buttons { display: flex; gap: 16px; }
+        .btn-primary { 
+            flex: 1;
+            padding: 14px; 
+            background: #333; 
+            color: white; 
+            border: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-secondary { 
+            flex: 1;
+            padding: 14px; 
+            background: white; 
+            color: #333; 
+            border: 1px solid #333;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .confirmation-footer { 
+            text-align: center; 
+            padding: 24px 32px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .footer { 
+            text-align: center; 
+            padding: 24px 16px; 
+            font-size: 12px; 
+            color: #666;
+        }
+        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 8px; }
+        .footer-links a { color: #666; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        Gratis Ongkir untuk pembelian di atas Rp 500.000
+    </div>
+
+    <nav class="nav">
+        <a href="homepage.html" class="nav-logo">ARNES DIVE</a>
+    </nav>
+
+    <div class="confirmation-container">
+        <div class="confirmation-header">
+            <div class="success-icon">✓</div>
+            <h1 class="confirmation-title">Terima Kasih!</h1>
+            <p class="confirmation-subtitle">Pesanan Anda telah berhasil dibuat</p>
+        </div>
+        
+        <div class="confirmation-body">
+            <div class="order-number">
+                <div class="order-number-label">Nomor Pesanan</div>
+                <div class="order-number-value">#ARD-2024-0042</div>
+            </div>
+            
+            <div class="info-section">
+                <h3 class="info-section-title">Informasi Pengiriman</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Nama</div>
+                        <div class="info-value">Ahmad Diver</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Metode Pengiriman</div>
+                        <div class="info-value">JNE Reguler (3-5 hari)</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Alamat</div>
+                        <div class="info-value">Jl. Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12345</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">ahmad@email.com</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3 class="info-section-title">Detail Pesanan</h3>
+                <div class="order-items">
+                    <div class="order-item">
+                        <div class="order-item-image wireframe-box">Img</div>
+                        <div class="order-item-details">
+                            <div class="order-item-title">Masker Freediving Pro</div>
+                            <div class="order-item-variant">Warna: Hitam</div>
+                            <div class="order-item-qty">Qty: 1</div>
+                        </div>
+                        <div class="order-item-price">Rp 850.000</div>
+                    </div>
+                    <div class="order-item">
+                        <div class="order-item-image wireframe-box">Img</div>
+                        <div class="order-item-details">
+                            <div class="order-item-title">Fin Carbón Pro</div>
+                            <div class="order-item-variant">Ukuran: 42-43 | Warna: Hitam</div>
+                            <div class="order-item-qty">Qty: 1</div>
+                        </div>
+                        <div class="order-item-price">Rp 2.500.000</div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>Rp 3.350.000</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Ongkos Kirim</span>
+                        <span>Rp 25.000</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>Rp 3.375.000</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-info">
+                <div class="payment-info-title">Instruksi Pembayaran</div>
+                <div class="payment-info-text">
+                    Silakan transfer ke nomor Virtual Account berikut dalam 24 jam:
+                </div>
+                <div class="payment-info-code">8810 0812 3456 7890</div>
+                <div class="payment-info-text" style="margin-top: 8px; font-size: 12px;">
+                    Bank BCA a.n. Arnes Dive Shop
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="account.html" class="btn-primary">Lihat Pesanan</a>
+                <a href="homepage.html" class="btn-secondary">Lanjut Belanja</a>
+            </div>
+        </div>
+        
+        <div class="confirmation-footer">
+            Konfirmasi pembayaran telah dikirim ke email Anda. <br>
+            Pertanyaan? <a href="contact.html" style="color: #333;">Hubungi kami</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="faq.html">Bantuan</a>
+            <a href="faq.html">Privasi</a>
+            <a href="faq.html">Syarat</a>
+        </div>
+        <div>© 2024 Arnes Dive Shop. All rights reserved.</div>
+    </footer>
+
+</body>
+</html>

@@ -6,89 +6,71 @@
     <title>Masuk - Arnes Dive Shop</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; background: #f9f9f9; }
+        body { 
+            font-family: system-ui, sans-serif; 
+            font-size: 14px; 
+            line-height: 1.5; 
+            background: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
         
-        /* Wireframe styles */
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
+        .auth-container {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #666;
-            font-size: 12px;
+            padding: 32px 16px;
         }
         
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        /* Top Bar */
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        /* Navigation */
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 16px;
-            background: white;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
-        
-        /* Auth Container */
-        .auth-container { 
-            max-width: 480px; 
-            margin: 48px auto; 
-            background: white; 
-            padding: 40px;
-            border: 1px solid #ddd;
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
         }
         
-        .auth-title { font-size: 28px; font-weight: 600; text-align: center; margin-bottom: 8px; }
-        .auth-subtitle { text-align: center; color: #666; margin-bottom: 32px; }
-        
-        /* Tabs */
-        .auth-tabs { display: flex; margin-bottom: 32px; border-bottom: 1px solid #ddd; }
-        .auth-tab { 
-            flex: 1; 
-            padding: 12px; 
-            text-align: center; 
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
             text-decoration: none;
-            color: #666;
-            font-size: 13px;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-        }
-        .auth-tab.active { 
-            color: #333; 
-            font-weight: 600;
-            border-bottom-color: #333;
+            display: block;
+            text-align: center;
+            margin-bottom: 48px;
         }
         
-        /* Form */
-        .form-group { margin-bottom: 20px; }
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .auth-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 13px;
+        }
+        
+        .form-group { margin-bottom: 16px; }
+        
         .form-label { 
             display: block; 
             font-size: 12px; 
             color: #666; 
             margin-bottom: 6px;
         }
-        .form-label.required::after { content: " *"; color: #ff4444; }
+        
         .form-input { 
             width: 100%; 
-            padding: 12px; 
+            padding: 14px; 
             border: 1px solid #ddd; 
             font-size: 14px;
+            background: white;
         }
         .form-input:focus { outline: none; border-color: #333; }
         
-        .form-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .form-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-        .form-checkbox input { margin: 0; }
-        .form-link { color: #333; text-decoration: none; font-size: 13px; }
-        .form-link:hover { text-decoration: underline; }
-        
-        /* Buttons */
         .btn-primary { 
             display: block;
             width: 100%;
@@ -97,29 +79,9 @@
             color: white; 
             border: none;
             font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            margin-bottom: 16px;
         }
         .btn-primary:hover { background: #444; }
-        
-        .btn-google { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px; 
-            background: white; 
-            color: #333; 
-            border: 1px solid #ddd;
-            font-size: 13px;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
         
         .divider { 
             display: flex; 
@@ -136,86 +98,136 @@
         }
         .divider span { padding: 0 16px; }
         
-        .auth-footer { text-align: center; font-size: 13px; color: #666; margin-top: 24px; }
+        .btn-google { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px; 
+            background: white; 
+            color: #333; 
+            border: 1px solid #ddd;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .auth-footer { 
+            text-align: center; 
+            font-size: 13px; 
+            color: #666; 
+            margin-top: 24px; 
+        }
         .auth-footer a { color: #333; text-decoration: none; font-weight: 500; }
         
-        /* Footer */
-        .footer { 
-            text-align: center; 
-            padding: 24px 16px; 
-            font-size: 12px; 
-            color: #666;
-            margin-top: 48px;
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 32px;
+            font-size: 12px;
+            color: #999;
+            text-decoration: none;
         }
-        .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; }
+        
+        /* Step 2: OTP Input */
+        .otp-title {
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .otp-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 13px;
+        }
+        .otp-subtitle span { color: #333; font-weight: 500; }
+        
+        .otp-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .otp-input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .otp-input:focus { outline: none; border-color: #333; }
+        
+        .resend-link {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
+        .resend-link a { color: #333; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
-
-    <!-- Navigation -->
-    <nav class="nav">
-        <a href="homepage.html" class="nav-logo">ARNES DIVE</a>
-    </nav>
-
-    <!-- Auth Container -->
     <div class="auth-container">
-        <h1 class="auth-title">Selamat Datang</h1>
-        <p class="auth-subtitle">Masuk ke akun Anda atau buat akun baru</p>
-        
-        <!-- Tabs -->
-        <div class="auth-tabs">
-            <a href="#" class="auth-tab active">Masuk</a>
-            <a href="register.html" class="auth-tab">Daftar</a>
+        <div class="auth-card">
+            <a href="homepage.html" class="logo">ARNES DIVE</a>
+            
+            <!-- STEP 1: Enter Email -->
+            <div>
+                <h1 class="auth-title">Masuk</h1>
+                <p class="auth-subtitle">Masukkan email untuk menerima kode login</p>
+                
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="email@contoh.com">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Kirim Kode Login</button>
+                </form>
+                
+                <div class="divider"><span>atau</span></div>
+                
+                <a href="#" class="btn-google">
+                    <span>G</span> Lanjutkan dengan Google
+                </a>
+                
+                <p class="auth-footer">
+                    Belum punya akun? <a href="register.html">Daftar</a>
+                </p>
+            </div>
+            
+            <!-- 
+            STEP 2: Enter OTP (shown after email submitted)
+            
+            <div>
+                <h1 class="otp-title">Masukkan Kode</h1>
+                <p class="otp-subtitle">Kode 6 digit telah dikirim ke <span>ahmad@email.com</span></p>
+                
+                <div class="otp-inputs">
+                    <input type="text" class="otp-input" maxlength="1" value="4">
+                    <input type="text" class="otp-input" maxlength="1" value="2">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                </div>
+                
+                <button class="btn-primary">Verifikasi</button>
+                
+                <p class="resend-link">
+                    Tidak menerima kode? <a href="#">Kirim ulang</a>
+                </p>
+            </div>
+            -->
+            
+            <a href="homepage.html" class="back-link">← Kembali ke beranda</a>
         </div>
-
-        <!-- Login Form -->
-        <form>
-            <div class="form-group">
-                <label class="form-label required">Email</label>
-                <input type="email" class="form-input" placeholder="email@contoh.com">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label required">Kata Sandi</label>
-                <input type="password" class="form-input" placeholder="••••••••">
-            </div>
-            
-            <div class="form-row">
-                <label class="form-checkbox">
-                    <input type="checkbox"> Ingat saya
-                </label>
-                <a href="#" class="form-link">Lupa kata sandi?</a>
-            </div>
-            
-            <button type="submit" class="btn-primary">Masuk</button>
-            
-            <button type="button" class="btn-google">
-                <span>G</span> Lanjutkan dengan Google
-            </button>
-        </form>
-        
-        <div class="divider"><span>atau</span></div>
-        
-        <p class="auth-footer">
-            Belum punya akun? <a href="register.html">Daftar sekarang</a>
-        </p>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-links">
-            <a href="faq.html">Bantuan</a>
-            <a href="faq.html">Privasi</a>
-            <a href="faq.html">Syarat</a>
-        </div>
-        <div>© 2024 Arnes Dive Shop. All rights reserved.</div>
-    </footer>
 
 </body>
 </html>

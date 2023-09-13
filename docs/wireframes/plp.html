@@ -4,389 +4,304 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Listing - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        /* Wireframe styles */
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#333333',
+                    }
+                }
+            }
         }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        /* Top Bar */
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        /* Navigation */
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        /* Breadcrumb */
-        .breadcrumb { padding: 16px 0; font-size: 12px; color: #666; }
-        .breadcrumb a { color: #666; text-decoration: none; }
-        .breadcrumb span { margin: 0 8px; }
-        
-        /* Main Layout */
-        .main-content { display: flex; gap: 32px; padding: 0 16px 48px; max-width: 1400px; margin: 0 auto; }
-        
-        /* Sidebar */
-        .sidebar { width: 250px; flex-shrink: 0; }
-        .filter-section { margin-bottom: 24px; }
-        .filter-title { 
-            font-size: 11px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            font-weight: 600;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        .filter-option { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; color: #666; }
-        .filter-option input { margin: 0; }
-        .clear-filters { font-size: 12px; color: #999; text-decoration: none; }
-        
-        /* Color Swatches */
-        .color-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
-        .color-swatch { width: 24px; height: 24px; border-radius: 50%; background: #ccc; border: 1px solid #999; cursor: pointer; }
-        
-        /* Product Grid */
-        .products-area { flex: 1; }
-        .products-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .products-title { font-size: 24px; font-weight: 600; }
-        .sort-select { padding: 8px 12px; border: 1px solid #ddd; font-size: 13px; }
-        
-        .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-        
-        .product-card { }
-        .product-image { aspect-ratio: 3/4; margin-bottom: 12px; position: relative; }
-        .product-title { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
-        .product-price { color: #666; font-size: 13px; }
-        .product-colors { display: flex; gap: 4px; margin-top: 8px; }
-        .color-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; border: 1px solid #999; }
-        
-        /* Badges */
-        .badge { 
-            display: inline-block; 
-            padding: 4px 8px; 
-            font-size: 10px; 
-            text-transform: uppercase; 
-            font-weight: bold;
-            background: #e0e0e0;
-            position: absolute;
-            top: 8px;
-            left: 8px;
-        }
-        .badge-sale { background: #ff4444; color: white; }
-        
-        /* Pagination */
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 48px; }
-        .pagination button { 
-            width: 40px; 
-            height: 40px; 
-            border: 1px solid #ddd; 
-            background: white; 
-            cursor: pointer;
-            font-size: 13px;
-        }
-        .pagination button.active { background: #333; color: white; border-color: #333; }
-        
-        /* Footer */
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; margin-top: 48px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    </script>
 </head>
-<body>
+<body class="font-sans text-sm">
 
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
+    <!-- Top Bar -->
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
 
     <!-- Navigation -->
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 max-w-7xl mx-auto">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Sale</a>
         </div>
-        <a href="homepage.html" class="nav-logo" style="text-decoration: none;">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
-            <a href="account.html" style="color: #666; text-decoration: none;">[Akun]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="search.html" class="hidden sm:block hover:text-brand">[Cari]</a>
+            <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
-    <!-- Breadcrumb -->
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="#">Beranda</a>
-            <span>/</span>
-            <a href="#">Freediving</a>
-            <span>/</span>
-            Masker
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-b px-4 py-4">
+        <div class="flex flex-col gap-3">
+            <a href="homepage.html" class="text-gray-600 py-2">Baru</a>
+            <a href="plp.html" class="text-gray-600 py-2">Freediving</a>
+            <a href="plp.html" class="text-gray-600 py-2">Scuba</a>
+            <a href="plp.html" class="text-gray-600 py-2">Aksesoris</a>
+            <a href="plp.html" class="text-gray-600 py-2">Sale</a>
         </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="max-w-7xl mx-auto px-4 py-4 text-xs text-gray-600">
+        <a href="homepage.html" class="hover:text-brand">Beranda</a> / <a href="plp.html" class="hover:text-brand">Freediving</a> / Masker
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-        
-        <!-- Sidebar Filters -->
-        <aside class="sidebar">
-            <div class="filter-section">
-                <div class="filter-title">Tipe Selam</div>
-                <label class="filter-option">
-                    <input type="checkbox"> Freediving
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Scuba
-                </label>
-            </div>
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="flex flex-col lg:flex-row gap-8">
             
-            <div class="filter-section">
-                <div class="filter-title">Kategori</div>
-                <label class="filter-option">
-                    <input type="checkbox"> Masker
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Fin
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Wetsuit
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Sabuk Pemberat
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Aksesoris
-                </label>
-            </div>
-            
-            <div class="filter-section">
-                <div class="filter-title">Harga</div>
-                <div class="wireframe-box" style="height: 40px;">Slider Harga</div>
-            </div>
-            
-            <div class="filter-section">
-                <div class="filter-title">Ukuran</div>
-                <label class="filter-option">
-                    <input type="checkbox"> S
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> M
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> L
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> XL
-                </label>
-            </div>
-            
-            <div class="filter-section">
-                <div class="filter-title">Warna</div>
-                <div class="color-swatches">
-                    <div class="color-swatch" style="background: #000;"></div>
-                    <div class="color-swatch" style="background: #1e3a5f;"></div>
-                    <div class="color-swatch" style="background: #4a90a4;"></div>
-                    <div class="color-swatch" style="background: #fff; border-color: #999;"></div>
-                    <div class="color-swatch" style="background: #ff6b35;"></div>
-                    <div class="color-swatch" style="background: #50c878;"></div>
-                </div>
-            </div>
-            
-            <div class="filter-section">
-                <div class="filter-title">Merek</div>
-                <label class="filter-option">
-                    <input type="checkbox"> Mares
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Cressi
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Beuchat
-                </label>
-                <label class="filter-option">
-                    <input type="checkbox"> Salvimar
-                </label>
-            </div>
-            
-            <a href="#" class="clear-filters">Hapus Semua Filter</a>
-        </aside>
+            <!-- Mobile Filter Toggle -->
+            <button class="lg:hidden border border-gray-300 py-3 px-4 text-sm" onclick="document.getElementById('filters').classList.toggle('hidden')">
+                Filter & Sort
+            </button>
 
-        <!-- Products Area -->
-        <main class="products-area">
-            <div class="products-header">
-                <h1 class="products-title">Masker Freediving</h1>
-                <select class="sort-select">
-                    <option>Urutkan: Terbaru</option>
-                    <option>Harga: Rendah ke Tinggi</option>
-                    <option>Harga: Tinggi ke Rendah</option>
-                    <option>Paling Populer</option>
-                </select>
-            </div>
-            
-            <div class="products-grid">
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">
-                        <span class="badge">Baru</span>
-                        Gambar Produk
+            <!-- Sidebar Filters -->
+            <aside id="filters" class="hidden lg:block w-full lg:w-64 flex-shrink-0">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Tipe Selam</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Freediving
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Scuba
+                        </label>
                     </div>
-                    <div class="product-title">Masker Freediving Pro</div>
-                    <div class="product-price">Rp 850.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #000;"></div>
-                        <div class="color-dot" style="background: #1e3a5f;"></div>
-                        <div class="color-dot" style="background: #fff; border-color: #999;"></div>
+
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Kategori</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Masker
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Fin
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Wetsuit
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Sabuk Pemberat
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Aksesoris
+                        </label>
                     </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">Gambar Produk</div>
-                    <div class="product-title">Masker Low Volume</div>
-                    <div class="product-price">Rp 650.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #000;"></div>
-                        <div class="color-dot" style="background: #4a90a4;"></div>
+
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Harga</h3>
+                        <div class="bg-gray-100 border border-dashed border-gray-300 h-10 flex items-center justify-center text-gray-400 text-xs">Slider Harga</div>
                     </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">
-                        <span class="badge badge-sale">Sale</span>
-                        Gambar Produk
+
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Ukuran</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> S
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> M
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> L
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> XL
+                        </label>
                     </div>
-                    <div class="product-title">Masker Competition</div>
-                    <div class="product-price"><span style="color: #ff4444;">Rp 520.000</span> <s>Rp 750.000</s></div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #000;"></div>
+
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Warna</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="w-6 h-6 rounded-full bg-black border border-gray-300 cursor-pointer"></div>
+                            <div class="w-6 h-6 rounded-full bg-blue-900 border border-gray-300 cursor-pointer"></div>
+                            <div class="w-6 h-6 rounded-full bg-cyan-600 border border-gray-300 cursor-pointer"></div>
+                            <div class="w-6 h-6 rounded-full bg-white border border-gray-300 cursor-pointer"></div>
+                            <div class="w-6 h-6 rounded-full bg-orange-500 border border-gray-300 cursor-pointer"></div>
+                            <div class="w-6 h-6 rounded-full bg-green-500 border border-gray-300 cursor-pointer"></div>
+                        </div>
                     </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">Gambar Produk</div>
-                    <div class="product-title">Masker Tempered Glass</div>
-                    <div class="product-price">Rp 450.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #1e3a5f;"></div>
-                        <div class="color-dot" style="background: #50c878;"></div>
+
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Merek</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Mares
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Cressi
+                        </label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Beuchat
+                        </label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                            <input type="checkbox" class="accent-brand"> Salvimar
+                        </label>
                     </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">Gambar Produk</div>
-                    <div class="product-title">Masker Junior</div>
-                    <div class="product-price">Rp 350.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #ff6b35;"></div>
-                        <div class="color-dot" style="background: #4a90a4;"></div>
-                    </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">Gambar Produk</div>
-                    <div class="product-title">Masker Single Lens</div>
-                    <div class="product-price">Rp 780.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #000;"></div>
-                    </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">
-                        <span class="badge">Baru</span>
-                        Gambar Produk
-                    </div>
-                    <div class="product-title">Masker Silicone Premium</div>
-                    <div class="product-price">Rp 1.200.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #000;"></div>
-                        <div class="color-dot" style="background: #fff; border-color: #999;"></div>
-                    </div>
-                </a>
-                
-                <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                    <div class="product-image wireframe-box">Gambar Produk</div>
-                    <div class="product-title">Masker Frameless</div>
-                    <div class="product-price">Rp 950.000</div>
-                    <div class="product-colors">
-                        <div class="color-dot" style="background: #000;"></div>
-                        <div class="color-dot" style="background: #1e3a5f;"></div>
-                    </div>
-                </a>
-            </div>
-            
-            <!-- Pagination -->
-            <div class="pagination">
-                <button>&lt;</button>
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>&gt;</button>
-            </div>
-        </main>
+
+                    <a href="#" class="text-xs text-gray-400 hover:text-brand">Hapus Semua Filter</a>
+                </div>
+            </aside>
+
+            <!-- Products Area -->
+            <main class="flex-1">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-xl lg:text-2xl font-semibold">Masker Freediving</h1>
+                    <select class="border border-gray-300 px-3 py-2 text-sm">
+                        <option>Urutkan: Terbaru</option>
+                        <option>Harga: Rendah ke Tinggi</option>
+                        <option>Harga: Tinggi ke Rendah</option>
+                        <option>Paling Populer</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-brand text-white text-[10px] uppercase px-2 py-1">Baru</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Masker Freediving Pro</h3>
+                        <p class="text-gray-600 text-sm">Rp 850.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-black border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-blue-900 border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-white border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar Produk</div>
+                        <h3 class="font-medium text-sm mb-1">Masker Low Volume</h3>
+                        <p class="text-gray-600 text-sm">Rp 650.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-black border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-cyan-600 border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] uppercase px-2 py-1">Sale</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Masker Competition</h3>
+                        <p class="text-sm"><span class="text-red-500">Rp 520.000</span> <s class="text-gray-400">Rp 750.000</s></p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-black border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar Produk</div>
+                        <h3 class="font-medium text-sm mb-1">Masker Tempered Glass</h3>
+                        <p class="text-gray-600 text-sm">Rp 450.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-blue-900 border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500 border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar Produk</div>
+                        <h3 class="font-medium text-sm mb-1">Masker Junior</h3>
+                        <p class="text-gray-600 text-sm">Rp 350.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-orange-500 border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-cyan-600 border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar Produk</div>
+                        <h3 class="font-medium text-sm mb-1">Masker Single Lens</h3>
+                        <p class="text-gray-600 text-sm">Rp 780.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-black border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-brand text-white text-[10px] uppercase px-2 py-1">Baru</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Masker Silicone Premium</h3>
+                        <p class="text-gray-600 text-sm">Rp 1.200.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-black border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-white border border-gray-300"></div>
+                        </div>
+                    </a>
+
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar Produk</div>
+                        <h3 class="font-medium text-sm mb-1">Masker Frameless</h3>
+                        <p class="text-gray-600 text-sm">Rp 950.000</p>
+                        <div class="flex gap-1 mt-2">
+                            <div class="w-3 h-3 rounded-full bg-black border border-gray-300"></div>
+                            <div class="w-3 h-3 rounded-full bg-blue-900 border border-gray-300"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center gap-2 mt-12">
+                    <button class="w-10 h-10 border border-gray-300 text-sm hover:border-brand">&lt;</button>
+                    <button class="w-10 h-10 bg-brand text-white border border-brand text-sm">1</button>
+                    <button class="w-10 h-10 border border-gray-300 text-sm hover:border-brand">2</button>
+                    <button class="w-10 h-10 border border-gray-300 text-sm hover:border-brand">3</button>
+                    <button class="w-10 h-10 border border-gray-300 text-sm hover:border-brand">&gt;</button>
+                </div>
+            </main>
+        </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-grid">
+    <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Newsletter</h5>
+                <p class="text-xs text-gray-600 mb-3">Dapatkan info produk terbaru</p>
+                <input type="email" placeholder="Email Anda" class="w-full px-3 py-2 border border-gray-300 mb-2 text-sm">
+                <button class="w-full bg-brand text-white px-3 py-2 text-xs uppercase">Langganan</button>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Freediving</a></li>
-                    <li><a href="#">Scuba</a></li>
-                    <li><a href="#">Aksesoris</a></li>
-                    <li><a href="#">Sale</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Belanja</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Freediving</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Scuba</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Aksesoris</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Sale</a></li>
                 </ul>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Bantuan</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="faq.html" class="text-gray-600 hover:text-brand">FAQ</a></li>
+                    <li><a href="contact.html" class="text-gray-600 hover:text-brand">Hubungi Kami</a></li>
                 </ul>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Tentang Kami</a></li>
-                    <li><a href="#">Karir</a></li>
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                    <li><a href="#">Syarat & Ketentuan</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Tentang</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="about.html" class="text-gray-600 hover:text-brand">Tentang Kami</a></li>
+                    <li><a href="privacy.html" class="text-gray-600 hover:text-brand">Kebijakan Privasi</a></li>
+                    <li><a href="terms.html" class="text-gray-600 hover:text-brand">Syarat & Ketentuan</a></li>
                 </ul>
             </div>
         </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
+        <div class="text-center pt-8 mt-8 border-t border-gray-200 text-xs text-gray-600">
             © 2024 Arnes Dive Shop. All rights reserved.
         </div>
     </footer>

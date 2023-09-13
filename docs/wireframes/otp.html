@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi - Arnes Dive Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }
+    </script>
+</head>
+<body class="font-sans text-sm bg-gray-100 min-h-screen flex flex-col">
+
+    <div class="flex-1 flex items-center justify-center p-6">
+        <div class="w-full max-w-sm">
+            <a href="homepage.html" class="block text-3xl font-bold text-brand text-center mb-12">ARNES DIVE</a>
+            
+            <h1 class="text-2xl font-semibold text-center mb-2">Masukkan Kode</h1>
+            <p class="text-center text-gray-600 text-sm mb-8">Kode 6 digit telah dikirim ke <span class="font-medium text-brand">ahmad@email.com</span></p>
+
+            <div class="flex justify-center gap-3 mb-6">
+                <input type="text" maxlength="1" value="4" class="w-12 h-14 text-center text-2xl font-semibold border border-gray-300 focus:border-brand focus:outline-none bg-white">
+                <input type="text" maxlength="1" value="2" class="w-12 h-14 text-center text-2xl font-semibold border border-gray-300 focus:border-brand focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-semibold border border-gray-300 focus:border-brand focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-semibold border border-gray-300 focus:border-brand focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-semibold border border-gray-300 focus:border-brand focus:outline-none bg-white">
+                <input type="text" maxlength="1" class="w-12 h-14 text-center text-2xl font-semibold border border-gray-300 focus:border-brand focus:outline-none bg-white">
+            </div>
+
+            <a href="account.html" class="block w-full bg-brand text-white py-3 text-center text-sm hover:bg-gray-700">Verifikasi</a>
+
+            <div class="text-center mt-6">
+                <p class="text-sm text-gray-600 mb-1">Tidak menerima kode?</p>
+                <span class="text-sm text-gray-400">Kirim ulang dalam <strong>45</strong> detik</span>
+                <!-- After timer: <a href="#" class="text-sm text-brand hover:underline">Kirim ulang kode</a> -->
+            </div>
+
+            <a href="login.html" class="block text-center text-xs text-gray-400 mt-8 hover:text-brand">← Kembali ke login</a>
+        </div>
+    </div>
+
+</body>
+</html>

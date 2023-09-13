@@ -4,290 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Detail - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        /* Wireframe styles */
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: '#333333' }
+                }
+            }
         }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        /* Top Bar */
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        /* Navigation */
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        /* Breadcrumb */
-        .breadcrumb { padding: 16px 0; font-size: 12px; color: #666; }
-        .breadcrumb a { color: #666; text-decoration: none; }
-        .breadcrumb span { margin: 0 8px; }
-        
-        /* Main Product Layout */
-        .product-main { display: flex; gap: 48px; padding: 0 16px 48px; max-width: 1400px; margin: 0 auto; }
-        
-        /* Gallery */
-        .gallery { width: 58%; }
-        .gallery-main { aspect-ratio: 4/3; margin-bottom: 16px; }
-        .gallery-thumbs { display: flex; gap: 12px; }
-        .gallery-thumb { width: 80px; height: 80px; cursor: pointer; }
-        .gallery-thumb.active { border-color: #333; }
-        
-        /* Product Info */
-        .product-info { width: 42%; }
-        .product-breadcrumb { font-size: 12px; color: #666; margin-bottom: 16px; }
-        .product-breadcrumb a { color: #666; text-decoration: none; }
-        .product-breadcrumb span { margin: 0 8px; }
-        
-        .product-title { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
-        .product-price { font-size: 24px; color: #333; margin-bottom: 12px; }
-        .product-price .sale { color: #ff4444; }
-        .product-price .original { text-decoration: line-through; color: #999; font-size: 18px; margin-left: 8px; }
-        
-        .product-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-        .stars { color: #ffc107; }
-        .review-count { font-size: 13px; color: #666; }
-        
-        .badge { 
-            display: inline-block; 
-            padding: 4px 12px; 
-            font-size: 10px; 
-            text-transform: uppercase; 
-            font-weight: bold;
-            background: #1e3a5f;
-            color: white;
-            margin-bottom: 16px;
-        }
-        
-        /* Variants */
-        .variant-section { margin-bottom: 24px; }
-        .variant-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; }
-        
-        .size-options { display: flex; gap: 8px; }
-        .size-btn { 
-            padding: 10px 20px; 
-            border: 1px solid #ddd; 
-            background: white; 
-            cursor: pointer;
-            font-size: 13px;
-        }
-        .size-btn.active { border-color: #333; background: #f5f5f5; }
-        .size-btn:hover { border-color: #333; }
-        
-        .color-options { display: flex; gap: 12px; }
-        .color-btn { 
-            width: 36px; 
-            height: 36px; 
-            border-radius: 50%; 
-            border: 2px solid #ddd;
-            cursor: pointer;
-        }
-        .color-btn.active { border-color: #333; box-shadow: 0 0 0 2px white, 0 0 0 4px #333; }
-        
-        /* Quantity */
-        .quantity-section { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-        .qty-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .qty-selector { display: flex; align-items: center; border: 1px solid #ddd; }
-        .qty-btn { padding: 10px 16px; background: white; border: none; cursor: pointer; font-size: 16px; }
-        .qty-value { padding: 10px 20px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; min-width: 50px; text-align: center; }
-        
-        /* Buttons */
-        .btn-primary { 
-            display: block;
-            width: 100%;
-            padding: 16px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin-bottom: 12px;
-            text-align: center;
-            text-decoration: none;
-        }
-        .btn-secondary { 
-            display: block;
-            width: 100%;
-            padding: 16px; 
-            background: white; 
-            color: #333; 
-            border: 1px solid #333;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin-bottom: 24px;
-            text-align: center;
-            text-decoration: none;
-        }
-        
-        /* Links */
-        .product-links { display: flex; gap: 24px; font-size: 13px; margin-bottom: 24px; }
-        .product-links a { color: #666; text-decoration: none; border-bottom: 1px solid #ddd; }
-        
-        /* Accordion */
-        .accordion { border-top: 1px solid #ddd; }
-        .accordion-item { border-bottom: 1px solid #ddd; }
-        .accordion-header { 
-            padding: 16px 0; 
-            display: flex; 
-            justify-content: space-between; 
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .accordion-content { padding-bottom: 16px; color: #666; font-size: 13px; line-height: 1.7; }
-        
-        /* Below Fold */
-        .section { padding: 48px 16px; max-width: 1400px; margin: 0 auto; border-top: 1px solid #ddd; }
-        .section-title { font-size: 20px; font-weight: 600; margin-bottom: 24px; text-align: center; }
-        
-        .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-        .product-card { }
-        .product-image { aspect-ratio: 3/4; margin-bottom: 12px; }
-        .product-title-sm { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
-        .product-price-sm { color: #666; font-size: 13px; }
-        
-        /* Footer */
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; margin-top: 48px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    </script>
 </head>
-<body>
+<body class="font-sans text-sm">
 
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
+    <!-- Top Bar -->
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
 
     <!-- Navigation -->
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 max-w-7xl mx-auto">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Sale</a>
         </div>
-        <a href="homepage.html" class="nav-logo" style="text-decoration: none;">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
-            <a href="account.html" style="color: #666; text-decoration: none;">[Akun]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="search.html" class="hidden sm:block hover:text-brand">[Cari]</a>
+            <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
-    <!-- Breadcrumb -->
-    <div class="container">
-        <div class="breadcrumb">
-            <a href="#">Beranda</a>
-            <span>/</span>
-            <a href="#">Freediving</a>
-            <span>/</span>
-            <a href="#">Masker</a>
-            <span>/</span>
-            Masker Freediving Pro
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-b px-4 py-4">
+        <div class="flex flex-col gap-3">
+            <a href="homepage.html" class="text-gray-600 py-2">Baru</a>
+            <a href="plp.html" class="text-gray-600 py-2">Freediving</a>
+            <a href="plp.html" class="text-gray-600 py-2">Scuba</a>
+            <a href="plp.html" class="text-gray-600 py-2">Aksesoris</a>
+            <a href="plp.html" class="text-gray-600 py-2">Sale</a>
         </div>
     </div>
 
-    <!-- Main Product Section -->
-    <div class="product-main">
-        <!-- Gallery -->
-        <div class="gallery">
-            <div class="gallery-main wireframe-box">Gambar Utama Produk</div>
-            <div class="gallery-thumbs">
-                <div class="gallery-thumb wireframe-box active">1</div>
-                <div class="gallery-thumb wireframe-box">2</div>
-                <div class="gallery-thumb wireframe-box">3</div>
-                <div class="gallery-thumb wireframe-box">4</div>
-            </div>
-        </div>
+    <!-- Breadcrumb -->
+    <div class="max-w-7xl mx-auto px-4 py-4 text-xs text-gray-600">
+        <a href="homepage.html">Beranda</a> / <a href="plp.html">Freediving</a> / <a href="plp.html">Masker</a> / Masker Freediving Pro
+    </div>
 
-        <!-- Product Info -->
-        <div class="product-info">
-            <div class="badge">Freediving</div>
-            <h1 class="product-title">Masker Freediving Pro</h1>
-            <div class="product-price">Rp 850.000</div>
-            <div class="product-rating">
-                <span class="stars">★★★★★</span>
-                <span class="review-count">4.8 (124 ulasan)</span>
-            </div>
+    <!-- Product Main -->
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
             
-            <!-- Color Selection -->
-            <div class="variant-section">
-                <div class="variant-label">Warna: <span style="font-weight: normal;">Hitam</span></div>
-                <div class="color-options">
-                    <div class="color-btn active" style="background: #000;"></div>
-                    <div class="color-btn" style="background: #1e3a5f;"></div>
-                    <div class="color-btn" style="background: #fff; border-color: #999;"></div>
+            <!-- Gallery -->
+            <div class="w-full lg:w-3/5">
+                <div class="aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-4">
+                    Gambar Utama Produk
+                </div>
+                <div class="flex gap-3 overflow-x-auto pb-2">
+                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-brand flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">1</div>
+                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">2</div>
+                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">3</div>
+                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">4</div>
                 </div>
             </div>
-            
-            <!-- Quantity -->
-            <div class="quantity-section">
-                <div class="qty-label">Jumlah</div>
-                <div class="qty-selector">
-                    <button class="qty-btn">−</button>
-                    <div class="qty-value">1</div>
-                    <button class="qty-btn">+</button>
+
+            <!-- Product Info -->
+            <div class="w-full lg:w-2/5">
+                <span class="inline-block bg-blue-900 text-white text-[10px] uppercase px-3 py-1 mb-4">Freediving</span>
+                
+                <h1 class="text-2xl lg:text-3xl font-semibold mb-2">Masker Freediving Pro</h1>
+                <p class="text-xl lg:text-2xl mb-3">Rp 850.000</p>
+                
+                <div class="flex items-center gap-2 mb-6">
+                    <span class="text-yellow-500">★★★★★</span>
+                    <span class="text-sm text-gray-600">4.8 (124 ulasan)</span>
                 </div>
-            </div>
-            
-            <!-- Buttons -->
-            <a href="#" class="btn-primary">Tambah ke Keranjang</a>
-            <a href="#" class="btn-secondary">Beli Sekarang</a>
-            
-            <!-- Links -->
-            <div class="product-links">
-                <a href="#">Panduan Ukuran</a>
-                <a href="#">Info Pengiriman</a>
-            </div>
-            
-            <!-- Accordion -->
-            <div class="accordion">
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        Deskripsi
-                        <span>+</span>
-                    </div>
-                    <div class="accordion-content">
-                        Masker freediving profesional dengan volume rendah untuk visibilitas maksimal di bawah air. Terbuat darisilikon premium berkualitas tinggi yang nyaman di wajah dan tidak meninggalkan bekas.
+
+                <!-- Color Selection -->
+                <div class="mb-6">
+                    <p class="text-xs uppercase tracking-wider text-gray-600 mb-2">Warna: <span class="font-medium text-brand">Hitam</span></p>
+                    <div class="flex gap-3">
+                        <button class="w-10 h-10 rounded-full bg-black border-2 border-brand ring-2 ring-offset-2 ring-brand"></button>
+                        <button class="w-10 h-10 rounded-full bg-blue-900 border-2 border-gray-300 hover:border-brand"></button>
+                        <button class="w-10 h-10 rounded-full bg-white border-2 border-gray-300 hover:border-brand"></button>
                     </div>
                 </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        Spesifikasi
-                        <span>+</span>
+
+                <!-- Quantity -->
+                <div class="mb-6">
+                    <p class="text-xs uppercase tracking-wider text-gray-600 mb-2">Jumlah</p>
+                    <div class="flex items-center border border-gray-300 w-fit">
+                        <button class="px-4 py-2 hover:bg-gray-100">−</button>
+                        <span class="px-4 py-2 border-x border-gray-300">1</span>
+                        <button class="px-4 py-2 hover:bg-gray-100">+</button>
                     </div>
                 </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        Perawatan
-                        <span>+</span>
+
+                <!-- Buttons -->
+                <a href="cart.html" class="block w-full bg-brand text-white py-4 text-center text-xs uppercase tracking-wider hover:bg-gray-700 mb-3">
+                    Tambah ke Keranjang
+                </a>
+                <a href="checkout.html" class="block w-full bg-white border border-brand py-4 text-center text-xs uppercase tracking-wider hover:bg-gray-100">
+                    Beli Sekarang
+                </a>
+
+                <!-- Links -->
+                <div class="flex gap-6 text-xs mt-6">
+                    <a href="#" class="text-gray-600 border-b border-gray-300 hover:border-brand">Panduan Ukuran</a>
+                    <a href="#" class="text-gray-600 border-b border-gray-300 hover:border-brand">Info Pengiriman</a>
+                </div>
+
+                <!-- Accordion -->
+                <div class="border-t border-gray-200 mt-8">
+                    <div class="border-b border-gray-200">
+                        <button class="w-full py-4 flex justify-between items-center" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <span class="font-medium">Deskripsi</span>
+                            <span>+</span>
+                        </button>
+                        <div class="pb-4 text-gray-600 text-sm leading-relaxed">
+                            Masker freediving profesional dengan volume rendah untuk visibilitas maksimal di bawah air. Terbuat dari silikon premium berkualitas tinggi.
+                        </div>
+                    </div>
+                    <div class="border-b border-gray-200">
+                        <button class="w-full py-4 flex justify-between items-center" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <span class="font-medium">Spesifikasi</span>
+                            <span>+</span>
+                        </button>
+                        <div class="pb-4 text-gray-600 text-sm hidden"></div>
+                    </div>
+                    <div class="border-b border-gray-200">
+                        <button class="w-full py-4 flex justify-between items-center" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <span class="font-medium">Perawatan</span>
+                            <span>+</span>
+                        </button>
+                        <div class="pb-4 text-gray-600 text-sm hidden"></div>
                     </div>
                 </div>
             </div>
@@ -295,76 +151,75 @@
     </div>
 
     <!-- Reviews Section -->
-    <section class="section">
-        <h2 class="section-title">Ulasan Pelanggan</h2>
-        <div class="wireframe-box" style="height: 200px;">Daftar Ulasan (review cards with rating, name, date, comment)</div>
+    <section class="border-t border-gray-200 py-12 px-4 max-w-7xl mx-auto">
+        <h2 class="text-xl font-semibold text-center mb-8">Ulasan Pelanggan</h2>
+        <div class="bg-gray-100 border-2 border-dashed border-gray-300 h-48 flex items-center justify-center text-gray-400 text-xs">
+            Daftar Ulasan (review cards with rating, name, date, comment)
+        </div>
     </section>
 
     <!-- Related Products -->
-    <section class="section">
-        <h2 class="section-title">Produk Terkait</h2>
-        <div class="related-grid">
-            <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                <div class="product-image wireframe-box">Gambar</div>
-                <div class="product-title-sm">Masker Low Volume</div>
-                <div class="product-price-sm">Rp 650.000</div>
+    <section class="border-t border-gray-200 py-12 px-4 max-w-7xl mx-auto">
+        <h2 class="text-xl font-semibold text-center mb-8">Produk Terkait</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
+                <h3 class="font-medium text-sm">Masker Low Volume</h3>
+                <p class="text-gray-600 text-sm">Rp 650.000</p>
             </a>
-            <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                <div class="product-image wireframe-box">Gambar</div>
-                <div class="product-title-sm">Masker Competition</div>
-                <div class="product-price-sm">Rp 520.000</div>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
+                <h3 class="font-medium text-sm">Masker Competition</h3>
+                <p class="text-gray-600 text-sm">Rp 520.000</p>
             </a>
-            <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                <div class="product-image wireframe-box">Gambar</div>
-                <div class="product-title-sm">Masker Frameless</div>
-                <div class="product-price-sm">Rp 950.000</div>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
+                <h3 class="font-medium text-sm">Masker Frameless</h3>
+                <p class="text-gray-600 text-sm">Rp 950.000</p>
             </a>
-            <a href="pdp.html" class="product-card" style="text-decoration: none; color: inherit;">
-                <div class="product-image wireframe-box">Gambar</div>
-                <div class="product-title-sm">Masker Junior</div>
-                <div class="product-price-sm">Rp 350.000</div>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
+                <h3 class="font-medium text-sm">Masker Junior</h3>
+                <p class="text-gray-600 text-sm">Rp 350.000</p>
             </a>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-grid">
+    <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Newsletter</h5>
+                <p class="text-xs text-gray-600 mb-3">Dapatkan info produk terbaru</p>
+                <input type="email" placeholder="Email Anda" class="w-full px-3 py-2 border border-gray-300 mb-2 text-sm">
+                <button class="w-full bg-brand text-white px-3 py-2 text-xs uppercase">Langganan</button>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Freediving</a></li>
-                    <li><a href="#">Scuba</a></li>
-                    <li><a href="#">Aksesoris</a></li>
-                    <li><a href="#">Sale</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Belanja</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Freediving</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Scuba</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Aksesoris</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Sale</a></li>
                 </ul>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Bantuan</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="faq.html" class="text-gray-600 hover:text-brand">FAQ</a></li>
+                    <li><a href="contact.html" class="text-gray-600 hover:text-brand">Hubungi Kami</a></li>
                 </ul>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="about.html">Tentang Kami</a></li>
-                    
-                    <li><a href="privacy.html">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html">Syarat <li><a href="#">Syarat & Ketentuan</a></li> Ketentuan</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Tentang</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="about.html" class="text-gray-600 hover:text-brand">Tentang Kami</a></li>
+                    <li><a href="privacy.html" class="text-gray-600 hover:text-brand">Kebijakan Privasi</a></li>
+                    <li><a href="terms.html" class="text-gray-600 hover:text-brand">Syarat & Ketentuan</a></li>
                 </ul>
             </div>
         </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
+        <div class="text-center pt-8 mt-8 border-t border-gray-200 text-xs text-gray-600">
             © 2024 Arnes Dive Shop. All rights reserved.
         </div>
     </footer>

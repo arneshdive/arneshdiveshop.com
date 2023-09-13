@@ -4,228 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: system-ui, sans-serif; 
-            font-size: 14px; 
-            line-height: 1.5; 
-            background: #fafafa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .auth-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px 16px;
-        }
-        
-        .auth-card {
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            margin-bottom: 48px;
-        }
-        
-        .auth-title {
-            font-size: 24px;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-        
-        .auth-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 32px;
-            font-size: 13px;
-        }
-        
-        .form-group { margin-bottom: 16px; }
-        
-        .form-label { 
-            display: block; 
-            font-size: 12px; 
-            color: #666; 
-            margin-bottom: 6px;
-        }
-        
-        .form-input { 
-            width: 100%; 
-            padding: 14px; 
-            border: 1px solid #ddd; 
-            font-size: 14px;
-            background: white;
-        }
-        .form-input:focus { outline: none; border-color: #333; }
-        
-        .btn-primary { 
-            display: block;
-            width: 100%;
-            padding: 14px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .btn-primary:hover { background: #444; }
-        
-        .divider { 
-            display: flex; 
-            align-items: center; 
-            margin: 24px 0; 
-            color: #999; 
-            font-size: 12px;
-        }
-        .divider::before, .divider::after { 
-            content: ""; 
-            flex: 1; 
-            height: 1px; 
-            background: #ddd; 
-        }
-        .divider span { padding: 0 16px; }
-        
-        .btn-google { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px; 
-            background: white; 
-            color: #333; 
-            border: 1px solid #ddd;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        
-        .auth-footer { 
-            text-align: center; 
-            font-size: 13px; 
-            color: #666; 
-            margin-top: 24px; 
-        }
-        .auth-footer a { color: #333; text-decoration: none; font-weight: 500; }
-        
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 32px;
-            font-size: 12px;
-            color: #999;
-            text-decoration: none;
-        }
-        
-        /* Step 2: OTP Input */
-        .otp-title {
-            font-size: 24px;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-        .otp-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 32px;
-            font-size: 13px;
-        }
-        .otp-subtitle span { color: #333; font-weight: 500; }
-        
-        .otp-inputs {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-        .otp-input {
-            width: 48px;
-            height: 56px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            border: 1px solid #ddd;
-            background: white;
-        }
-        .otp-input:focus { outline: none; border-color: #333; }
-        
-        .resend-link {
-            text-align: center;
-            font-size: 13px;
-            color: #666;
-        }
-        .resend-link a { color: #333; text-decoration: none; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }
+    </script>
 </head>
-<body>
+<body class="font-sans text-sm bg-gray-100 min-h-screen flex flex-col">
 
-    <div class="auth-container">
-        <div class="auth-card">
-            <a href="homepage.html" class="logo">ARNES DIVE</a>
+    <div class="flex-1 flex items-center justify-center p-6">
+        <div class="w-full max-w-sm">
+            <a href="homepage.html" class="block text-3xl font-bold text-brand text-center mb-12">ARNES DIVE</a>
             
-            <!-- STEP 1: Enter Email -->
-            <div>
-                <h1 class="auth-title">Masuk</h1>
-                <p class="auth-subtitle">Masukkan email untuk menerima kode login</p>
-                
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" placeholder="email@contoh.com">
-                    </div>
-                    
-                    <button type="submit" class="btn-primary">Kirim Kode Login</button>
-                </form>
-                
-                <div class="divider"><span>atau</span></div>
-                
-                <a href="#" class="btn-google">
-                    <span>G</span> Lanjutkan dengan Google
-                </a>
-                
-                <p class="auth-footer">
-                    Belum punya akun? <a href="register.html">Daftar</a>
-                </p>
-            </div>
-            
-            <!-- 
-            STEP 2: Enter OTP (shown after email submitted)
-            
-            <div>
-                <h1 class="otp-title">Masukkan Kode</h1>
-                <p class="otp-subtitle">Kode 6 digit telah dikirim ke <span>ahmad@email.com</span></p>
-                
-                <div class="otp-inputs">
-                    <input type="text" class="otp-input" maxlength="1" value="4">
-                    <input type="text" class="otp-input" maxlength="1" value="2">
-                    <input type="text" class="otp-input" maxlength="1">
-                    <input type="text" class="otp-input" maxlength="1">
-                    <input type="text" class="otp-input" maxlength="1">
-                    <input type="text" class="otp-input" maxlength="1">
+            <h1 class="text-2xl font-semibold text-center mb-2">Masuk</h1>
+            <p class="text-center text-gray-600 text-sm mb-8">Masukkan email untuk menerima kode login</p>
+
+            <form>
+                <div class="mb-4">
+                    <label class="block text-xs text-gray-600 mb-1">Email</label>
+                    <input type="email" placeholder="email@contoh.com" class="w-full px-4 py-3 border border-gray-300 text-sm focus:border-brand focus:outline-none bg-white">
                 </div>
                 
-                <button class="btn-primary">Verifikasi</button>
-                
-                <p class="resend-link">
-                    Tidak menerima kode? <a href="#">Kirim ulang</a>
-                </p>
+                <a href="otp.html" class="block w-full bg-brand text-white py-3 text-center text-sm hover:bg-gray-700">Kirim Kode Login</a>
+            </form>
+
+            <div class="flex items-center my-6">
+                <div class="flex-1 h-px bg-gray-300"></div>
+                <span class="px-4 text-xs text-gray-400">atau</span>
+                <div class="flex-1 h-px bg-gray-300"></div>
             </div>
-            -->
-            
-            <a href="homepage.html" class="back-link">← Kembali ke beranda</a>
+
+            <a href="#" class="flex items-center justify-center gap-3 w-full py-3 bg-white border border-gray-300 text-sm hover:border-brand">
+                <span class="font-medium">G</span>
+                Lanjutkan dengan Google
+            </a>
+
+            <p class="text-center text-sm text-gray-600 mt-6">
+                Belum punya akun? <a href="register.html" class="font-medium text-brand hover:underline">Daftar</a>
+            </p>
+
+            <a href="homepage.html" class="block text-center text-xs text-gray-400 mt-8 hover:text-brand">← Kembali ke beranda</a>
         </div>
     </div>
 

@@ -4,344 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keranjang - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        /* Wireframe styles */
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        /* Top Bar */
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        /* Navigation */
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        /* Page Title */
-        .page-title { padding: 32px 0; text-align: center; }
-        .page-title h1 { font-size: 28px; font-weight: 600; }
-        
-        /* Cart Layout */
-        .cart-main { display: flex; gap: 48px; padding: 0 16px 48px; max-width: 1400px; margin: 0 auto; }
-        
-        /* Cart Items */
-        .cart-items { flex: 1; }
-        
-        .cart-item { 
-            display: flex; 
-            gap: 24px; 
-            padding: 24px 0; 
-            border-bottom: 1px solid #ddd;
-        }
-        .cart-item-image { width: 120px; height: 150px; flex-shrink: 0; }
-        .cart-item-details { flex: 1; }
-        .cart-item-title { font-weight: 500; font-size: 16px; margin-bottom: 4px; }
-        .cart-item-variant { color: #666; font-size: 13px; margin-bottom: 12px; }
-        .cart-item-actions { display: flex; align-items: center; gap: 24px; }
-        
-        .qty-selector { display: flex; align-items: center; border: 1px solid #ddd; }
-        .qty-btn { padding: 8px 14px; background: white; border: none; cursor: pointer; font-size: 14px; }
-        .qty-value { padding: 8px 16px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; min-width: 40px; text-align: center; }
-        
-        .remove-btn { 
-            background: none; 
-            border: none; 
-            color: #999; 
-            cursor: pointer;
-            font-size: 18px;
-        }
-        .remove-btn:hover { color: #ff4444; }
-        
-        .cart-item-price { font-weight: 600; font-size: 16px; text-align: right; min-width: 120px; }
-        
-        .continue-shopping { 
-            display: inline-block; 
-            margin-top: 24px; 
-            color: #666; 
-            text-decoration: none; 
-            font-size: 13px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        /* Order Summary */
-        .order-summary { 
-            width: 380px; 
-            flex-shrink: 0;
-            background: #f9f9f9;
-            padding: 24px;
-            height: fit-content;
-        }
-        .summary-title { 
-            font-size: 16px; 
-            font-weight: 600; 
-            margin-bottom: 24px; 
-            padding-bottom: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .summary-row { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 12px; 
-            font-size: 14px;
-        }
-        .summary-row.total { 
-            font-weight: 600; 
-            font-size: 18px; 
-            margin-top: 16px; 
-            padding-top: 16px;
-            border-top: 1px solid #ddd;
-        }
-        .shipping-note { font-size: 12px; color: #999; margin-bottom: 16px; }
-        
-        .promo-section { margin: 24px 0; padding: 16px 0; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
-        .promo-input { display: flex; gap: 8px; }
-        .promo-input input { flex: 1; padding: 10px; border: 1px solid #ddd; }
-        .promo-input button { 
-            padding: 10px 16px; 
-            background: white; 
-            border: 1px solid #ddd; 
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .checkout-btn { 
-            display: block;
-            width: 100%;
-            padding: 16px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            margin-top: 24px;
-        }
-        
-        .trust-badges { 
-            display: flex; 
-            justify-content: center; 
-            gap: 16px; 
-            margin-top: 16px; 
-            padding-top: 16px;
-            font-size: 11px;
-            color: #666;
-        }
-        
-        /* Empty Cart State */
-        .empty-cart { 
-            text-align: center; 
-            padding: 80px 16px; 
-            max-width: 500px; 
-            margin: 0 auto;
-        }
-        .empty-cart .wireframe-box { 
-            width: 120px; 
-            height: 120px; 
-            margin: 0 auto 24px; 
-            border-radius: 50%;
-        }
-        .empty-cart h2 { font-size: 24px; margin-bottom: 12px; }
-        .empty-cart p { color: #666; margin-bottom: 24px; }
-        .shop-btn { 
-            display: inline-block;
-            padding: 12px 32px; 
-            background: #333; 
-            color: white; 
-            text-decoration: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        /* Footer */
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; margin-top: 48px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }
+    </script>
 </head>
-<body>
+<body class="font-sans text-sm bg-gray-50">
 
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
+    <!-- Top Bar -->
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
 
     <!-- Navigation -->
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Sale</a>
         </div>
-        <a href="homepage.html" class="nav-logo" style="text-decoration: none;">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
-            <a href="account.html" style="color: #666; text-decoration: none;">[Akun]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="search.html" class="hidden sm:block hover:text-brand">[Cari]</a>
+            <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-b px-4 py-4">
+        <div class="flex flex-col gap-3">
+            <a href="homepage.html" class="text-gray-600 py-2">Baru</a>
+            <a href="plp.html" class="text-gray-600 py-2">Freediving</a>
+            <a href="plp.html" class="text-gray-600 py-2">Scuba</a>
+            <a href="plp.html" class="text-gray-600 py-2">Aksesoris</a>
+            <a href="plp.html" class="text-gray-600 py-2">Sale</a>
+        </div>
+    </div>
+
     <!-- Page Title -->
-    <div class="page-title">
-        <h1>Keranjang Belanja</h1>
+    <div class="text-center py-8">
+        <h1 class="text-2xl lg:text-3xl font-semibold">Keranjang Belanja</h1>
     </div>
 
     <!-- Cart Content -->
-    <div class="cart-main">
-        <!-- Cart Items List -->
-        <div class="cart-items">
-            <!-- Item 1 -->
-            <div class="cart-item">
-                <div class="cart-item-image wireframe-box">Gambar</div>
-                <div class="cart-item-details">
-                    <div class="cart-item-title">Masker Freediving Pro</div>
-                    <div class="cart-item-variant">Warna: Hitam</div>
-                    <div class="cart-item-actions">
-                        <div class="qty-selector">
-                            <button class="qty-btn">−</button>
-                            <div class="qty-value">1</div>
-                            <button class="qty-btn">+</button>
-                        </div>
-                        <button class="remove-btn">✕</button>
-                    </div>
-                </div>
-                <div class="cart-item-price">Rp 850.000</div>
-            </div>
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="flex flex-col lg:flex-row gap-8">
             
-            <!-- Item 2 -->
-            <div class="cart-item">
-                <div class="cart-item-image wireframe-box">Gambar</div>
-                <div class="cart-item-details">
-                    <div class="cart-item-title">Fin Carbón Pro</div>
-                    <div class="cart-item-variant">Ukuran: 42-43 | Warna: Hitam</div>
-                    <div class="cart-item-actions">
-                        <div class="qty-selector">
-                            <button class="qty-btn">−</button>
-                            <div class="qty-value">1</div>
-                            <button class="qty-btn">+</button>
+            <!-- Cart Items -->
+            <div class="flex-1">
+                <!-- Cart Item 1 -->
+                <div class="flex gap-4 py-6 border-b border-gray-200 bg-white px-4 mb-4">
+                    <div class="w-24 h-32 lg:w-28 lg:h-36 bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs flex-shrink-0">Img</div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-medium">Masker Freediving Pro</h3>
+                            <p class="text-gray-600 text-xs mt-1">Warna: Hitam</p>
                         </div>
-                        <button class="remove-btn">✕</button>
+                        <div class="flex items-center gap-4 mt-2">
+                            <div class="flex items-center border border-gray-300">
+                                <button class="px-3 py-1 hover:bg-gray-100">−</button>
+                                <span class="px-3 py-1 border-x border-gray-300">1</span>
+                                <button class="px-3 py-1 hover:bg-gray-100">+</button>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-500 text-lg">✕</button>
+                        </div>
                     </div>
+                    <div class="font-semibold text-right">Rp 850.000</div>
                 </div>
-                <div class="cart-item-price">Rp 2.500.000</div>
-            </div>
-            
-            <a href="plp.html" class="continue-shopping">← Lanjut Belanja</a>
-        </div>
 
-        <!-- Order Summary -->
-        <div class="order-summary">
-            <div class="summary-title">Ringkasan Pesanan</div>
-            
-            <div class="summary-row">
-                <span>Subtotal (2 item)</span>
-                <span>Rp 3.350.000</span>
-            </div>
-            <div class="summary-row">
-                <span>Ongkos Kirim</span>
-                <span gratis" style="color: #50c878;">Gratis</span>
-            </div>
-            <p class="shipping-note">Dihitung saat checkout</p>
-            
-            <div class="promo-section">
-                <div style="font-size: 13px; margin-bottom: 8px; font-weight: 500;">Kode Promo</div>
-                <div class="promo-input">
-                    <input type="text" placeholder="Masukkan kode">
-                    <button>Terapkan</button>
+                <!-- Cart Item 2 -->
+                <div class="flex gap-4 py-6 border-b border-gray-200 bg-white px-4">
+                    <div class="w-24 h-32 lg:w-28 lg:h-36 bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs flex-shrink-0">Img</div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-medium">Fin Carbón Pro</h3>
+                            <p class="text-gray-600 text-xs mt-1">Ukuran: 42-43 | Warna: Hitam</p>
+                        </div>
+                        <div class="flex items-center gap-4 mt-2">
+                            <div class="flex items-center border border-gray-300">
+                                <button class="px-3 py-1 hover:bg-gray-100">−</button>
+                                <span class="px-3 py-1 border-x border-gray-300">1</span>
+                                <button class="px-3 py-1 hover:bg-gray-100">+</button>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-500 text-lg">✕</button>
+                        </div>
+                    </div>
+                    <div class="font-semibold text-right">Rp 2.500.000</div>
                 </div>
+
+                <a href="plp.html" class="inline-block mt-6 text-sm text-gray-600 border-b border-gray-300 hover:border-brand">← Lanjut Belanja</a>
             </div>
-            
-            <div class="summary-row total">
-                <span>Total</span>
-                <span>Rp 3.350.000</span>
-            </div>
-            
-            <a href="checkout.html" class="checkout-btn">Lanjut ke Checkout</a>
-            
-            <div class="trust-badges">
-                <span>🔒 Pembayaran Aman</span>
-                <span>🛡️ Garansi 100%</span>
+
+            <!-- Order Summary -->
+            <div class="w-full lg:w-80 bg-gray-100 p-6 h-fit">
+                <h2 class="font-semibold mb-6 pb-4 border-b border-gray-300">Ringkasan Pesanan</h2>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="flex justify-between text-sm">
+                        <span>Subtotal (2 item)</span>
+                        <span>Rp 3.350.000</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Ongkos Kirim</span>
+                        <span class="text-green-600">Gratis</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Dihitung saat checkout</p>
+                </div>
+
+                <div class="border-t border-b border-gray-300 py-4 my-4">
+                    <p class="text-sm font-medium mb-2">Kode Promo</p>
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Masukkan kode" class="flex-1 px-3 py-2 border border-gray-300 text-sm">
+                        <button class="px-4 py-2 bg-white border border-gray-300 text-xs hover:border-brand">Terapkan</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between font-semibold text-lg mb-6">
+                    <span>Total</span>
+                    <span>Rp 3.350.000</span>
+                </div>
+
+                <a href="checkout.html" class="block w-full bg-brand text-white py-4 text-center text-xs uppercase tracking-wider hover:bg-gray-700">
+                    Lanjut ke Checkout
+                </a>
+
+                <div class="flex justify-center gap-4 mt-4 pt-4 border-t border-gray-300 text-xs text-gray-600">
+                    <span>🔒 Pembayaran Aman</span>
+                    <span>🛡️ Garansi 100%</span>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- 
-    EMPTY CART STATE (uncomment to show)
-    
-    <div class="empty-cart">
-        <div class="wireframe-box">🛒</div>
-        <h2>Keranjang Anda Kosong</h2>
-        <p>Sepertinya Anda belum menambahkan produk ke keranjang.</p>
-        <a href="#" class="shop-btn">Mulai Belanja</a>
-    </div>
-    -->
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-grid">
+    <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Newsletter</h5>
+                <p class="text-xs text-gray-600 mb-3">Dapatkan info produk terbaru</p>
+                <input type="email" placeholder="Email Anda" class="w-full px-3 py-2 border border-gray-300 mb-2 text-sm">
+                <button class="w-full bg-brand text-white px-3 py-2 text-xs uppercase">Langganan</button>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Freediving</a></li>
-                    <li><a href="#">Scuba</a></li>
-                    <li><a href="#">Aksesoris</a></li>
-                    <li><a href="#">Sale</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Belanja</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Freediving</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Scuba</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Aksesoris</a></li>
+                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Sale</a></li>
                 </ul>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Bantuan</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="faq.html" class="text-gray-600 hover:text-brand">FAQ</a></li>
+                    <li><a href="contact.html" class="text-gray-600 hover:text-brand">Hubungi Kami</a></li>
                 </ul>
             </div>
             <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="about.html">Tentang Kami</a></li>
-                    
-                    <li><a href="privacy.html">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html">Syarat <li><a href="#">Syarat & Ketentuan</a></li> Ketentuan</a></li>
+                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Tentang</h5>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="about.html" class="text-gray-600 hover:text-brand">Tentang Kami</a></li>
+                    <li><a href="privacy.html" class="text-gray-600 hover:text-brand">Kebijakan Privasi</a></li>
+                    <li><a href="terms.html" class="text-gray-600 hover:text-brand">Syarat & Ketentuan</a></li>
                 </ul>
             </div>
         </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
+        <div class="text-center pt-8 mt-8 border-t border-gray-200 text-xs text-gray-600">
             © 2024 Arnes Dive Shop. All rights reserved.
         </div>
     </footer>

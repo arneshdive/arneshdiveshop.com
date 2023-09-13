@@ -4,186 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: system-ui, sans-serif; 
-            font-size: 14px; 
-            line-height: 1.5; 
-            background: #fafafa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .auth-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px 16px;
-        }
-        
-        .auth-card {
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            margin-bottom: 48px;
-        }
-        
-        .auth-title {
-            font-size: 24px;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-        
-        .auth-subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 32px;
-            font-size: 13px;
-        }
-        
-        .form-group { margin-bottom: 16px; }
-        
-        .form-label { 
-            display: block; 
-            font-size: 12px; 
-            color: #666; 
-            margin-bottom: 6px;
-        }
-        
-        .form-input { 
-            width: 100%; 
-            padding: 14px; 
-            border: 1px solid #ddd; 
-            font-size: 14px;
-            background: white;
-        }
-        .form-input:focus { outline: none; border-color: #333; }
-        
-        .btn-primary { 
-            display: block;
-            width: 100%;
-            padding: 14px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .btn-primary:hover { background: #444; }
-        
-        .divider { 
-            display: flex; 
-            align-items: center; 
-            margin: 24px 0; 
-            color: #999; 
-            font-size: 12px;
-        }
-        .divider::before, .divider::after { 
-            content: ""; 
-            flex: 1; 
-            height: 1px; 
-            background: #ddd; 
-        }
-        .divider span { padding: 0 16px; }
-        
-        .btn-google { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px; 
-            background: white; 
-            color: #333; 
-            border: 1px solid #ddd;
-            font-size: 13px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        
-        .auth-footer { 
-            text-align: center; 
-            font-size: 13px; 
-            color: #666; 
-            margin-top: 24px; 
-        }
-        .auth-footer a { color: #333; text-decoration: none; font-weight: 500; }
-        
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 32px;
-            font-size: 12px;
-            color: #999;
-            text-decoration: none;
-        }
-        
-        .terms {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-            margin-top: 16px;
-        }
-        .terms a { color: #333; text-decoration: underline; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }
+    </script>
 </head>
-<body>
+<body class="font-sans text-sm bg-gray-100 min-h-screen flex flex-col">
 
-    <div class="auth-container">
-        <div class="auth-card">
-            <a href="homepage.html" class="logo">ARNES DIVE</a>
+    <div class="flex-1 flex items-center justify-center p-6">
+        <div class="w-full max-w-sm">
+            <a href="homepage.html" class="block text-3xl font-bold text-brand text-center mb-12">ARNES DIVE</a>
             
-            <div>
-                <h1 class="auth-title">Daftar</h1>
-                <p class="auth-subtitle">Buat akun untuk melanjutkan</p>
+            <h1 class="text-2xl font-semibold text-center mb-2">Daftar</h1>
+            <p class="text-center text-gray-600 text-sm mb-8">Buat akun untuk melanjutkan</p>
+
+            <form>
+                <div class="mb-4">
+                    <label class="block text-xs text-gray-600 mb-1">Nama Lengkap</label>
+                    <input type="text" placeholder="Nama Anda" class="w-full px-4 py-3 border border-gray-300 text-sm focus:border-brand focus:outline-none bg-white">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs text-gray-600 mb-1">Email</label>
+                    <input type="email" placeholder="email@contoh.com" class="w-full px-4 py-3 border border-gray-300 text-sm focus:border-brand focus:outline-none bg-white">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-xs text-gray-600 mb-1">Nomor WhatsApp</label>
+                    <input type="tel" placeholder="08xxxxxxxxxx" class="w-full px-4 py-3 border border-gray-300 text-sm focus:border-brand focus:outline-none bg-white">
+                </div>
                 
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-input" placeholder="Nama Anda">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" placeholder="email@contoh.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Nomor WhatsApp</label>
-                        <input type="tel" class="form-input" placeholder="08xxxxxxxxxx">
-                    </div>
-                    
-                    <button type="submit" class="btn-primary">Daftar</button>
-                </form>
-                
-                <p class="terms">
-                    Dengan mendaftar, Anda menyetujui <a href="faq.html">Syarat & Ketentuan</a> dan <a href="faq.html">Kebijakan Privasi</a> kami.
-                </p>
-                
-                <div class="divider"><span>atau</span></div>
-                
-                <a href="#" class="btn-google">
-                    <span>G</span> Daftar dengan Google
-                </a>
-                
-                <p class="auth-footer">
-                    Sudah punya akun? <a href="login.html">Masuk</a>
-                </p>
+                <a href="otp.html" class="block w-full bg-brand text-white py-3 text-center text-sm hover:bg-gray-700">Daftar</a>
+            </form>
+
+            <p class="text-center text-xs text-gray-600 mt-4">
+                Dengan mendaftar, Anda menyetujui <a href="terms.html" class="underline hover:text-brand">Syarat & Ketentuan</a> dan <a href="privacy.html" class="underline hover:text-brand">Kebijakan Privasi</a> kami.
+            </p>
+
+            <div class="flex items-center my-6">
+                <div class="flex-1 h-px bg-gray-300"></div>
+                <span class="px-4 text-xs text-gray-400">atau</span>
+                <div class="flex-1 h-px bg-gray-300"></div>
             </div>
-            
-            <a href="homepage.html" class="back-link">← Kembali ke beranda</a>
+
+            <a href="#" class="flex items-center justify-center gap-3 w-full py-3 bg-white border border-gray-300 text-sm hover:border-brand">
+                <span class="font-medium">G</span>
+                Daftar dengan Google
+            </a>
+
+            <p class="text-center text-sm text-gray-600 mt-6">
+                Sudah punya akun? <a href="login.html" class="font-medium text-brand hover:underline">Masuk</a>
+            </p>
+
+            <a href="homepage.html" class="block text-center text-xs text-gray-400 mt-8 hover:text-brand">← Kembali ke beranda</a>
         </div>
     </div>
 

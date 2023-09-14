@@ -4,297 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesanan Saya - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        .dashboard { display: flex; gap: 32px; padding: 32px 16px 48px; max-width: 1400px; margin: 0 auto; }
-        
-        .sidebar { width: 250px; flex-shrink: 0; }
-        .user-info { text-align: center; padding: 24px; background: #f9f9f9; margin-bottom: 16px; }
-        .user-avatar { width: 80px; height: 80px; border-radius: 50%; background: #ddd; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #666; }
-        .user-name { font-weight: 600; margin-bottom: 4px; }
-        .user-email { font-size: 12px; color: #666; }
-        
-        .sidebar-nav { background: #f9f9f9; }
-        .sidebar-link { display: block; padding: 14px 20px; color: #666; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; }
-        .sidebar-link:hover { background: #f0f0f0; }
-        .sidebar-link.active { background: white; color: #333; font-weight: 500; border-left-color: #333; }
-        
-        .dashboard-main { flex: 1; }
-        .dashboard-title { font-size: 24px; font-weight: 600; margin-bottom: 24px; }
-        
-        /* Order Filters */
-        .order-filters { display: flex; gap: 8px; margin-bottom: 24px; }
-        .filter-btn { padding: 8px 16px; background: white; border: 1px solid #ddd; font-size: 13px; cursor: pointer; text-decoration: none; color: #666; }
-        .filter-btn:hover { border-color: #333; }
-        .filter-btn.active { background: #333; color: white; border-color: #333; }
-        
-        /* Orders List */
-        .order-card { background: white; border: 1px solid #eee; margin-bottom: 16px; }
-        .order-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f9f9f9; border-bottom: 1px solid #eee; }
-        .order-id { font-weight: 600; }
-        .order-date { font-size: 12px; color: #666; }
-        .order-status { display: inline-block; padding: 4px 12px; font-size: 11px; border-radius: 12px; text-transform: uppercase; font-weight: 500; }
-        .status-processing { background: #fff3cd; color: #856404; }
-        .status-shipped { background: #cce5ff; color: #004085; }
-        .status-delivered { background: #d4edda; color: #155724; }
-        .status-cancelled { background: #f8d7da; color: #721c24; }
-        
-        .order-items { padding: 16px 20px; }
-        .order-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .order-item:last-child { border-bottom: none; }
-        .order-item-image { width: 60px; height: 75px; flex-shrink: 0; }
-        .order-item-details { flex: 1; }
-        .order-item-title { font-weight: 500; font-size: 13px; }
-        .order-item-variant { font-size: 12px; color: #666; }
-        .order-item-price { font-weight: 500; font-size: 13px; text-align: right; }
-        
-        .order-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #f9f9f9; border-top: 1px solid #eee; }
-        .order-total { font-size: 13px; }
-        .order-total strong { font-size: 16px; }
-        .order-actions { display: flex; gap: 8px; }
-        .btn-outline { padding: 8px 16px; background: white; border: 1px solid #ddd; font-size: 12px; cursor: pointer; text-decoration: none; color: #333; }
-        .btn-outline:hover { border-color: #333; }
-        .btn-primary-sm { padding: 8px 16px; background: #333; border: 1px solid #333; font-size: 12px; cursor: pointer; text-decoration: none; color: white; }
-        
-        /* Empty State */
-        .empty-state { text-align: center; padding: 80px 16px; background: #f9f9f9; }
-        .empty-state h3 { font-size: 18px; margin-bottom: 8px; }
-        .empty-state p { color: #666; margin-bottom: 24px; }
-        
-        /* Pagination */
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
-        .pagination button { width: 40px; height: 40px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 13px; }
-        .pagination button.active { background: #333; color: white; border-color: #333; }
-        
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; background: #f9f9f9; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body>
-
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
-
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+<body class="font-sans text-sm">
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir</div>
+    <nav class="flex items-center justify-between px-4 py-4 border-b bg-white max-w-7xl mx-auto">
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
         </div>
-        <a href="homepage.html" class="nav-logo">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
-            <a href="account.html" style="color: #666; text-decoration: none;">[Akun]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="user-info">
-                <div class="user-avatar">A</div>
-                <div class="user-name">Ahmad Diver</div>
-                <div class="user-email">ahmad@email.com</div>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="account.html" class="sidebar-link">Dashboard</a>
-                <a href="account-orders.html" class="sidebar-link active">Pesanan Saya</a>
-                <a href="wishlist.html" class="sidebar-link">Wishlist</a>
-                <a href="account-address.html" class="sidebar-link">Alamat</a>
-                <a href="account-settings.html" class="sidebar-link">Pengaturan Akun</a>
-                <a href="login.html" class="sidebar-link">Keluar</a>
-            </nav>
-        </aside>
-
-        <main class="dashboard-main">
-            <h1 class="dashboard-title">Pesanan Saya</h1>
-            
-            <!-- Filters -->
-            <div class="order-filters">
-                <a href="#" class="filter-btn active">Semua</a>
-                <a href="#" class="filter-btn">Perlu Dibayar</a>
-                <a href="#" class="filter-btn">Diproses</a>
-                <a href="#" class="filter-btn">Dikirim</a>
-                <a href="#" class="filter-btn">Selesai</a>
-            </div>
-
-            <!-- Order 1 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div>
-                        <div class="order-id">#ARD-2024-0042</div>
-                        <div class="order-date">2 Juli 2024</div>
-                    </div>
-                    <span class="order-status status-processing">Perlu Dibayar</span>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <aside class="w-full lg:w-64 flex-shrink-0">
+                <div class="bg-gray-100 p-6 text-center mb-4">
+                    <div class="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 flex items-center justify-center text-3xl text-gray-500">A</div>
+                    <div class="font-medium">Ahmad Diver</div>
+                    <div class="text-xs text-gray-500">ahmad@email.com</div>
                 </div>
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="order-item-image wireframe-box">Img</div>
-                        <div class="order-item-details">
-                            <div class="order-item-title">Masker Freediving Pro</div>
-                            <div class="order-item-variant">Warna: Hitam | Qty: 1</div>
+                <nav class="bg-gray-100">
+                    <a href="account.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Dashboard</a>
+                    <a href="account-orders.html" class="block py-3 px-5 border-l-4 border-brand bg-white font-medium">Pesanan Saya</a>
+                    <a href="wishlist.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Wishlist</a>
+                    <a href="account-address.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Alamat</a>
+                    <a href="account-settings.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Pengaturan</a>
+                    <a href="login.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Keluar</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1">
+                <h1 class="text-2xl font-semibold mb-6">Pesanan Saya</h1>
+
+                <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+                    <a href="#" class="px-4 py-2 bg-brand text-white text-xs whitespace-nowrap">Semua</a>
+                    <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Perlu Dibayar</a>
+                    <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Diproses</a>
+                    <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Dikirim</a>
+                    <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Selesai</a>
+                </div>
+
+                <!-- Order 1 -->
+                <div class="bg-white border mb-4">
+                    <div class="flex justify-between items-center p-4 bg-gray-100 border-b">
+                        <div>
+                            <p class="font-medium">#ARD-2024-0042</p>
+                            <p class="text-xs text-gray-600">2 Juli 2024</p>
                         </div>
-                        <div class="order-item-price">Rp 850.000</div>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Perlu Dibayar</span>
                     </div>
-                    <div class="order-item">
-                        <div class="order-item-image wireframe-box">Img</div>
-                        <div class="order-item-details">
-                            <div class="order-item-title">Fin Carbón Pro</div>
-                            <div class="order-item-variant">Ukuran: 42-43 | Qty: 1</div>
+                    <div class="p-4">
+                        <div class="flex gap-3 pb-3 border-b">
+                            <div class="w-16 h-20 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-[10px]">Img</div>
+                            <div class="flex-1">
+                                <p class="font-medium text-sm">Masker Freediving Pro</p>
+                                <p class="text-xs text-gray-600">Warna: Hitam | Qty: 1</p>
+                            </div>
+                            <p class="font-medium text-sm">Rp 850.000</p>
                         </div>
-                        <div class="order-item-price">Rp 2.500.000</div>
-                    </div>
-                </div>
-                <div class="order-footer">
-                    <div class="order-total">Total: <strong>Rp 3.375.000</strong></div>
-                    <div class="order-actions">
-                        <a href="#" class="btn-outline">Lihat Detail</a>
-                        <a href="#" class="btn-primary-sm">Bayar Sekarang</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order 2 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div>
-                        <div class="order-id">#ARD-2024-0041</div>
-                        <div class="order-date">28 Juni 2024</div>
-                    </div>
-                    <span class="order-status status-shipped">Dikirim</span>
-                </div>
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="order-item-image wireframe-box">Img</div>
-                        <div class="order-item-details">
-                            <div class="order-item-title">Wetsuit 3mm Premium</div>
-                            <div class="order-item-variant">Ukuran: L | Warna: Hitam | Qty: 1</div>
+                        <div class="flex gap-3 pt-3">
+                            <div class="w-16 h-20 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-[10px]">Img</div>
+                            <div class="flex-1">
+                                <p class="font-medium text-sm">Fin Carbón Pro</p>
+                                <p class="text-xs text-gray-600">Ukuran: 42-43 | Qty: 1</p>
+                            </div>
+                            <p class="font-medium text-sm">Rp 2.500.000</p>
                         </div>
-                        <div class="order-item-price">Rp 1.800.000</div>
                     </div>
-                </div>
-                <div class="order-footer">
-                    <div class="order-total">Total: <strong>Rp 1.825.000</strong></div>
-                    <div class="order-actions">
-                        <a href="#" class="btn-outline">Lacak Pengiriman</a>
-                        <a href="#" class="btn-outline">Lihat Detail</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Order 3 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div>
-                        <div class="order-id">#ARD-2024-0038</div>
-                        <div class="order-date">15 Juni 2024</div>
-                    </div>
-                    <span class="order-status status-delivered">Selesai</span>
-                </div>
-                <div class="order-items">
-                    <div class="order-item">
-                        <div class="order-item-image wireframe-box">Img</div>
-                        <div class="order-item-details">
-                            <div class="order-item-title">Sabuk Pemberat Stainless</div>
-                            <div class="order-item-variant">Qty: 1</div>
+                    <div class="flex justify-between items-center p-4 bg-gray-100 border-t">
+                        <p class="text-sm">Total: <strong>Rp 3.375.000</strong></p>
+                        <div class="flex gap-2">
+                            <a href="#" class="px-4 py-2 border text-xs hover:border-brand">Lihat Detail</a>
+                            <a href="#" class="px-4 py-2 bg-brand text-white text-xs hover:bg-gray-700">Bayar Sekarang</a>
                         </div>
-                        <div class="order-item-price">Rp 450.000</div>
                     </div>
                 </div>
-                <div class="order-footer">
-                    <div class="order-total">Total: <strong>Rp 475.000</strong></div>
-                    <div class="order-actions">
-                        <a href="#" class="btn-outline">Beli Lagi</a>
-                        <a href="#" class="btn-outline">Lihat Detail</a>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Pagination -->
-            <div class="pagination">
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-            </div>
-        </main>
+                <!-- Order 2 -->
+                <div class="bg-white border">
+                    <div class="flex justify-between items-center p-4 bg-gray-100 border-b">
+                        <div>
+                            <p class="font-medium">#ARD-2024-0041</p>
+                            <p class="text-xs text-gray-600">28 Juni 2024</p>
+                        </div>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Dikirim</span>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex gap-3">
+                            <div class="w-16 h-20 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-[10px]">Img</div>
+                            <div class="flex-1">
+                                <p class="font-medium text-sm">Wetsuit 3mm Premium</p>
+                                <p class="text-xs text-gray-600">Ukuran: L | Qty: 1</p>
+                            </div>
+                            <p class="font-medium text-sm">Rp 1.800.000</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-gray-100 border-t">
+                        <p class="text-sm">Total: <strong>Rp 1.825.000</strong></p>
+                        <div class="flex gap-2">
+                            <a href="#" class="px-4 py-2 border text-xs hover:border-brand">Lacak Pengiriman</a>
+                            <a href="#" class="px-4 py-2 border text-xs hover:border-brand">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-2 mt-8">
+                    <button class="w-10 h-10 bg-brand text-white border border-brand">1</button>
+                    <button class="w-10 h-10 border hover:border-brand">2</button>
+                    <button class="w-10 h-10 border hover:border-brand">3</button>
+                </div>
+            </main>
+        </div>
     </div>
-
-    <footer class="footer">
-        <div class="footer-grid">
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="plp.html">Freediving</a></li>
-                    <li><a href="plp.html">Scuba</a></li>
-                    <li><a href="plp.html">Aksesoris</a></li>
-                    <li><a href="plp.html">Sale</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="about.html">Tentang Kami</a></li>
-                    
-                    <li><a href="privacy.html">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html">Syarat <li><a href="#">Syarat & Ketentuan</a></li> Ketentuan</a></li>
-                </ul>
-            </div>
-        </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
-            © 2024 Arnes Dive Shop. All rights reserved.
-        </div>
-    </footer>
-
 </body>
 </html>

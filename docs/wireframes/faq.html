@@ -4,363 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        /* Wireframe styles */
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        /* Top Bar */
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        /* Navigation */
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        /* Page Header */
-        .page-header { text-align: center; padding: 48px 16px 32px; background: #f9f9f9; }
-        .page-header h1 { font-size: 32px; font-weight: 600; margin-bottom: 8px; }
-        .page-header p { color: #666; margin-bottom: 24px; }
-        
-        /* Search Bar */
-        .faq-search { 
-            display: flex;
-            max-width: 500px; 
-            margin: 0 auto;
-        }
-        .faq-search-input { 
-            flex: 1; 
-            padding: 14px 20px; 
-            border: 1px solid #ddd; 
-            font-size: 14px;
-            border-radius: 4px 0 0 4px;
-        }
-        .faq-search-btn { 
-            padding: 14px 24px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            cursor: pointer;
-            border-radius: 0 4px 4px 0;
-        }
-        
-        /* Category Tabs */
-        .category-tabs { 
-            display: flex; 
-            justify-content: center; 
-            gap: 8px; 
-            padding: 24px 16px;
-            border-bottom: 1px solid #ddd;
-            flex-wrap: wrap;
-        }
-        .category-tab { 
-            padding: 8px 20px; 
-            background: white; 
-            border: 1px solid #ddd; 
-            text-decoration: none;
-            color: #666;
-            font-size: 13px;
-            border-radius: 20px;
-        }
-        .category-tab:hover { border-color: #333; }
-        .category-tab.active { background: #333; color: white; border-color: #333; }
-        
-        /* FAQ Content */
-        .faq-content { max-width: 800px; margin: 0 auto; padding: 32px 16px 64px; }
-        
-        .faq-category { margin-bottom: 40px; }
-        .faq-category-title { 
-            font-size: 18px; 
-            font-weight: 600; 
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #333;
-            display: inline-block;
-        }
-        
-        /* Accordion */
-        .accordion { border: 1px solid #ddd; }
-        .accordion-item { border-bottom: 1px solid #ddd; }
-        .accordion-item:last-child { border-bottom: none; }
-        .accordion-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            padding: 16px 20px; 
-            cursor: pointer;
-            background: white;
-        }
-        .accordion-header:hover { background: #f9f9f9; }
-        .accordion-question { font-weight: 500; font-size: 14px; }
-        .accordion-icon { 
-            font-size: 18px; 
-            color: #666;
-            transition: transform 0.2s;
-        }
-        .accordion-item.open .accordion-icon { transform: rotate(45deg); }
-        
-        .accordion-content { 
-            display: none;
-            padding: 0 20px 16px;
-            color: #666;
-            line-height: 1.7;
-            font-size: 14px;
-        }
-        .accordion-item.open .accordion-content { display: block; }
-        
-        /* Help Section */
-        .help-section { 
-            text-align: center; 
-            padding: 40px 16px; 
-            background: #f9f9f9;
-            border-top: 1px solid #ddd;
-        }
-        .help-section h3 { font-size: 20px; margin-bottom: 12px; }
-        .help-section p { color: #666; margin-bottom: 24px; }
-        
-        .help-buttons { display: flex; justify-content: center; gap: 16px; }
-        .btn-secondary { 
-            display: inline-block;
-            padding: 12px 24px; 
-            background: white; 
-            color: #333; 
-            border: 1px solid #333;
-            font-size: 13px;
-            text-decoration: none;
-        }
-        .btn-whatsapp { 
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px; 
-            background: #25D366; 
-            color: white; 
-            border: none;
-            font-size: 13px;
-            text-decoration: none;
-        }
-        
-        /* Footer */
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body>
-
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
-
-    <!-- Navigation -->
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+<body class="font-sans text-sm bg-gray-50 min-h-screen">
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir</div>
+    <nav class="flex items-center justify-between px-4 py-4 border-b bg-white max-w-7xl mx-auto">
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
         </div>
-        <a href="homepage.html" class="nav-logo" style="text-decoration: none;">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
-            <a href="account.html" style="color: #666; text-decoration: none;">[Akun]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
         </div>
     </nav>
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1>Pusat Bantuan</h1>
-        <p>Temukan jawaban untuk pertanyaan yang sering diajukan</p>
-        
-        <div class="faq-search">
-            <input type="text" class="faq-search-input" placeholder="Cari pertanyaan Anda...">
-            <button class="faq-search-btn">Cari</button>
+    <div class="bg-gray-100 py-12 px-4 text-center">
+        <h1 class="text-3xl font-semibold mb-2">Pusat Bantuan</h1>
+        <p class="text-gray-600 mb-6">Temukan jawaban untuk pertanyaan yang sering diajukan</p>
+        <div class="flex max-w-lg mx-auto">
+            <input type="text" placeholder="Cari pertanyaan Anda..." class="flex-1 px-4 py-3 border text-sm focus:border-brand focus:outline-none">
+            <button class="bg-brand text-white px-6">Cari</button>
         </div>
     </div>
 
-    <!-- Category Tabs -->
-    <div class="category-tabs">
-        <a href="#" class="category-tab active">Semua</a>
-        <a href="#" class="category-tab">Pengiriman</a>
-        <a href="#" class="category-tab">Pengembalian</a>
-        <a href="#" class="category-tab">Pembayaran</a>
-        <a href="#" class="category-tab">Produk</a>
-        <a href="#" class="category-tab">Akun</a>
+    <div class="flex justify-center gap-2 py-4 px-4 border-b overflow-x-auto">
+        <a href="#" class="px-4 py-2 bg-brand text-white text-xs whitespace-nowrap">Semua</a>
+        <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Pengiriman</a>
+        <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Pengembalian</a>
+        <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Pembayaran</a>
+        <a href="#" class="px-4 py-2 border text-xs whitespace-nowrap hover:border-brand">Produk</a>
     </div>
 
-    <!-- FAQ Content -->
-    <div class="faq-content">
-        
-        <!-- Pengiriman -->
-        <div class="faq-category">
-            <h2 class="faq-category-title">Pengiriman</h2>
-            <div class="accordion">
-                <div class="accordion-item open">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Berapa lama waktu pengiriman?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                    <div class="accordion-content">
-                        Waktu pengiriman tergantung lokasi Anda dan metode pengiriman yang dipilih. Untuk pengiriman reguler, estimasi waktu adalah 3-5 hari kerja. Untuk pengiriman ekspres (YES), estimasi waktu adalah 1-2 hari kerja.
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Bagaimana cara melacak pesanan saya?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Apakah ada gratis ongkir?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
+    <div class="max-w-3xl mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h2 class="font-semibold text-lg mb-4 pb-2 border-b-2 border-brand inline-block">Pengiriman</h2>
+            <div class="border">
+                <details class="border-b">
+                    <summary class="p-4 cursor-pointer hover:bg-gray-50 font-medium">Berapa lama waktu pengiriman?</summary>
+                    <p class="px-4 pb-4 text-gray-600 text-sm">Waktu pengiriman tergantung lokasi dan metode yang dipilih. Reguler 3-5 hari, Express 1-2 hari kerja.</p>
+                </details>
+                <details class="border-b">
+                    <summary class="p-4 cursor-pointer hover:bg-gray-50 font-medium">Bagaimana cara melacak pesanan?</summary>
+                    <p class="px-4 pb-4 text-gray-600 text-sm">Anda akan menerima nomor resi via email/WhatsApp setelah pesanan dikirim.</p>
+                </details>
+                <details>
+                    <summary class="p-4 cursor-pointer hover:bg-gray-50 font-medium">Apakah ada gratis ongkir?</summary>
+                    <p class="px-4 pb-4 text-gray-600 text-sm">Ya, untuk pembelian di atas Rp 500.000.</p>
+                </details>
             </div>
         </div>
 
-        <!-- Pengembalian -->
-        <div class="faq-category">
-            <h2 class="faq-category-title">Pengembalian & Penukaran</h2>
-            <div class="accordion">
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Bagaimana kebijakan pengembalian produk?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Berapa lama waktu proses pengembalian dana?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Bagaimana cara menukar ukuran produk?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
+        <div class="mb-8">
+            <h2 class="font-semibold text-lg mb-4 pb-2 border-b-2 border-brand inline-block">Pengembalian</h2>
+            <div class="border">
+                <details class="border-b">
+                    <summary class="p-4 cursor-pointer hover:bg-gray-50 font-medium">Bagaimana kebijakan pengembalian?</summary>
+                    <p class="px-4 pb-4 text-gray-600 text-sm">Pengembalian dapat dilakukan dalam 14 hari setelah penerimaan. Produk harus dalam kondisi asli.</p>
+                </details>
+                <details>
+                    <summary class="p-4 cursor-pointer hover:bg-gray-50 font-medium">Berapa lama proses pengembalian dana?</summary>
+                    <p class="px-4 pb-4 text-gray-600 text-sm">3-5 hari kerja setelah produk diterima dan diverifikasi.</p>
+                </details>
             </div>
-        </div>
-
-        <!-- Pembayaran -->
-        <div class="faq-category">
-            <h2 class="faq-category-title">Pembayaran</h2>
-            <div class="accordion">
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Metode pembayaran apa saja yang tersedia?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Apakah bisa bayar dengan cod?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Produk -->
-        <div class="faq-category">
-            <h2 class="faq-category-title">Produk</h2>
-            <div class="accordion">
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Bagaimana cara memilih ukuran yang tepat?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-question">Apakah produk memiliki garansi?</span>
-                        <span class="accordion-icon">+</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Help Section -->
-    <div class="help-section">
-        <h3>Masih butuh bantuan?</h3>
-        <p>Tim customer service kami siap membantu Anda</p>
-        <div class="help-buttons">
-            <a href="contact.html" class="btn-secondary">Hubungi Kami</a>
-            <a href="#" class="btn-whatsapp">💬 Chat WhatsApp</a>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-grid">
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Freediving</a></li>
-                    <li><a href="#">Scuba</a></li>
-                    <li><a href="#">Aksesoris</a></li>
-                    <li><a href="#">Sale</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="about.html">Tentang Kami</a></li>
-                    
-                    <li><a href="privacy.html">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html">Syarat <li><a href="#">Syarat & Ketentuan</a></li> Ketentuan</a></li>
-                </ul>
-            </div>
+    <div class="bg-gray-100 py-12 text-center">
+        <h3 class="text-lg font-semibold mb-2">Masih butuh bantuan?</h3>
+        <p class="text-gray-600 text-sm mb-4">Tim customer service kami siap membantu Anda</p>
+        <div class="flex justify-center gap-3">
+            <a href="contact.html" class="px-6 py-2 border border-brand hover:bg-white">Hubungi Kami</a>
+            <a href="#" class="px-6 py-2 bg-green-500 text-white hover:bg-green-600">💬 Chat WhatsApp</a>
         </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
-            © 2024 Arnes Dive Shop. All rights reserved.
-        </div>
-    </footer>
-
+    </div>
 </body>
 </html>

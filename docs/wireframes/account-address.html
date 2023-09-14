@@ -4,355 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alamat - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        .dashboard { display: flex; gap: 32px; padding: 32px 16px 48px; max-width: 1400px; margin: 0 auto; }
-        
-        .sidebar { width: 250px; flex-shrink: 0; }
-        .user-info { text-align: center; padding: 24px; background: #f9f9f9; margin-bottom: 16px; }
-        .user-avatar { width: 80px; height: 80px; border-radius: 50%; background: #ddd; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #666; }
-        .user-name { font-weight: 600; margin-bottom: 4px; }
-        .user-email { font-size: 12px; color: #666; }
-        
-        .sidebar-nav { background: #f9f9f9; }
-        .sidebar-link { display: block; padding: 14px 20px; color: #666; text-decoration: none; font-size: 13px; border-left: 3px solid transparent; }
-        .sidebar-link:hover { background: #f0f0f0; }
-        .sidebar-link.active { background: white; color: #333; font-weight: 500; border-left-color: #333; }
-        
-        .dashboard-main { flex: 1; }
-        .dashboard-title { font-size: 24px; font-weight: 600; margin-bottom: 24px; }
-        
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        
-        .btn-add { 
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px; 
-            background: #333; 
-            color: white; 
-            text-decoration: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            border: none;
-            cursor: pointer;
-        }
-        
-        /* Address Grid */
-        .address-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        
-        .address-card { background: white; border: 1px solid #eee; padding: 24px; position: relative; }
-        .address-card.default { border-color: #333; }
-        .address-default-badge { 
-            position: absolute; 
-            top: 12px; right: 12px;
-            background: #333; 
-            color: white; 
-            padding: 4px 10px; 
-            font-size: 10px; 
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-        
-        .address-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
-        .address-phone { font-size: 13px; color: #666; margin-bottom: 12px; }
-        .address-detail { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 16px; }
-        
-        .address-actions { display: flex; gap: 12px; }
-        .address-actions button { 
-            padding: 8px 16px; 
-            background: white; 
-            border: 1px solid #ddd; 
-            font-size: 12px; 
-            cursor: pointer;
-        }
-        .address-actions button:hover { border-color: #333; }
-        .address-actions button.delete { color: #ff4444; border-color: #ff4444; }
-        
-        /* Empty State */
-        .empty-state { 
-            text-align: center; 
-            padding: 60px 16px; 
-            background: #f9f9f9;
-            border: 2px dashed #ddd;
-        }
-        .empty-state h3 { font-size: 18px; margin-bottom: 8px; }
-        .empty-state p { color: #666; margin-bottom: 24px; }
-        
-        /* Modal */
-        .modal-overlay { 
-            position: fixed; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            background: rgba(0,0,0,0.5); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
-        .modal { 
-            background: white; 
-            width: 100%; 
-            max-width: 500px; 
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            padding: 20px 24px; 
-            border-bottom: 1px solid #eee; 
-        }
-        .modal-title { font-size: 18px; font-weight: 600; }
-        .modal-close { 
-            background: none; 
-            border: none; 
-            font-size: 24px; 
-            cursor: pointer; 
-            color: #666; 
-        }
-        .modal-body { padding: 24px; }
-        
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 12px; color: #666; margin-bottom: 6px; }
-        .form-label.required::after { content: " *"; color: #ff4444; }
-        .form-input { width: 100%; padding: 10px; border: 1px solid #ddd; font-size: 14px; }
-        .form-input:focus { outline: none; border-color: #333; }
-        
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
-        
-        .form-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-        .form-checkbox input { margin: 0; }
-        
-        .btn-primary { 
-            display: block;
-            width: 100%;
-            padding: 14px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 24px;
-        }
-        
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; background: #f9f9f9; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body>
-
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
-
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+<body class="font-sans text-sm">
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir</div>
+    <nav class="flex items-center justify-between px-4 py-4 border-b bg-white max-w-7xl mx-auto">
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
         </div>
-        <a href="homepage.html" class="nav-logo">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
-            <a href="account.html" style="color: #666; text-decoration: none;">[Akun]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="user-info">
-                <div class="user-avatar">A</div>
-                <div class="user-name">Ahmad Diver</div>
-                <div class="user-email">ahmad@email.com</div>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="account.html" class="sidebar-link">Dashboard</a>
-                <a href="account-orders.html" class="sidebar-link">Pesanan Saya</a>
-                <a href="wishlist.html" class="sidebar-link">Wishlist</a>
-                <a href="account-address.html" class="sidebar-link active">Alamat</a>
-                <a href="account-settings.html" class="sidebar-link">Pengaturan Akun</a>
-                <a href="login.html" class="sidebar-link">Keluar</a>
-            </nav>
-        </aside>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <aside class="w-full lg:w-64 flex-shrink-0">
+                <div class="bg-gray-100 p-6 text-center mb-4">
+                    <div class="w-20 h-20 rounded-full bg-gray-300 mx-auto mb-3 flex items-center justify-center text-3xl text-gray-500">A</div>
+                    <div class="font-medium">Ahmad Diver</div>
+                    <div class="text-xs text-gray-500">ahmad@email.com</div>
+                </div>
+                <nav class="bg-gray-100">
+                    <a href="account.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Dashboard</a>
+                    <a href="account-orders.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Pesanan Saya</a>
+                    <a href="wishlist.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Wishlist</a>
+                    <a href="account-address.html" class="block py-3 px-5 border-l-4 border-brand bg-white font-medium">Alamat</a>
+                    <a href="account-settings.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Pengaturan</a>
+                    <a href="login.html" class="block py-3 px-5 border-l-4 border-transparent text-gray-600 hover:bg-white">Keluar</a>
+                </nav>
+            </aside>
 
-        <main class="dashboard-main">
-            <div class="section-header">
-                <h1 class="dashboard-title">Alamat Saya</h1>
-                <button class="btn-add">+ Tambah Alamat</button>
-            </div>
-            
-            <div class="address-grid">
-                <!-- Default Address -->
-                <div class="address-card default">
-                    <div class="address-default-badge">Utama</div>
-                    <div class="address-name">Ahmad Diver</div>
-                    <div class="address-phone">+62 812-3456-7890</div>
-                    <div class="address-detail">
-                        Jl. Sudirman No. 123, RT 05/RW 02<br>
-                        Kelurahan Menteng, Kecamatan Menteng<br>
-                        Jakarta Pusat, DKI Jakarta 10310
-                    </div>
-                    <div class="address-actions">
-                        <button>Ubah</button>
-                        <button class="delete">Hapus</button>
-                    </div>
+            <main class="flex-1">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-semibold">Alamat Saya</h1>
+                    <button class="flex items-center gap-2 bg-brand text-white px-4 py-2 text-xs uppercase hover:bg-gray-700">+ Tambah Alamat</button>
                 </div>
-                
-                <!-- Secondary Address -->
-                <div class="address-card">
-                    <div class="address-name">Ahmad Diver</div>
-                    <div class="address-phone">+62 812-3456-7890</div>
-                    <div class="address-detail">
-                        Jl. Gatot Subroto No. 45, Apartment Sudirman Tower Lt. 15 Unit B<br>
-                        Jakarta Selatan, DKI Jakarta 12190
-                    </div>
-                    <div class="address-actions">
-                        <button>Jadikan Utama</button>
-                        <button>Ubah</button>
-                        <button class="delete">Hapus</button>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
 
-    <!-- 
-    ADD ADDRESS MODAL (shown when "Tambah Alamat" clicked)
-    
-    <div class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Tambah Alamat Baru</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label required">Nama Penerima</label>
-                    <input type="text" class="form-input" placeholder="Nama lengkap">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label required">Nomor Telepon</label>
-                    <input type="tel" class="form-input" placeholder="08xxxxxxxxxx">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label required">Alamat</label>
-                    <input type="text" class="form-input" placeholder="Nama jalan, nomor rumah">
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label required">Provinsi</label>
-                        <select class="form-input"><option>Pilih provinsi</option></select>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Default Address -->
+                    <div class="bg-white border-2 border-brand p-6 relative">
+                        <span class="absolute top-3 right-3 bg-brand text-white text-[10px] px-2 py-1 uppercase">Utama</span>
+                        <p class="font-medium mb-1">Ahmad Diver</p>
+                        <p class="text-gray-600 text-sm mb-3">+62 812-3456-7890</p>
+                        <p class="text-gray-600 text-sm mb-4">Jl. Sudirman No. 123, RT 05/RW 02<br>Kelurahan Menteng, Jakarta Pusat, DKI Jakarta 10310</p>
+                        <div class="flex gap-3">
+                            <button class="px-3 py-1 border text-xs hover:border-brand">Ubah</button>
+                            <button class="px-3 py-1 border border-red-500 text-red-500 text-xs hover:bg-red-50">Hapus</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label required">Kota</label>
-                        <select class="form-input"><option>Pilih kota</option></select>
+
+                    <!-- Secondary Address -->
+                    <div class="bg-white border p-6">
+                        <p class="font-medium mb-1">Ahmad Diver</p>
+                        <p class="text-gray-600 text-sm mb-3">+62 812-3456-7890</p>
+                        <p class="text-gray-600 text-sm mb-4">Jl. Gatot Subroto No. 45, Apartment Sudirman Tower Lt. 15<br>Jakarta Selatan, DKI Jakarta 12190</p>
+                        <div class="flex gap-3">
+                            <button class="px-3 py-1 border text-xs hover:border-brand">Jadikan Utama</button>
+                            <button class="px-3 py-1 border text-xs hover:border-brand">Ubah</button>
+                            <button class="px-3 py-1 border border-red-500 text-red-500 text-xs hover:bg-red-50">Hapus</button>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label required">Kecamatan</label>
-                        <input type="text" class="form-input" placeholder="Kecamatan">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label required">Kode Pos</label>
-                        <input type="text" class="form-input" placeholder="12345">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Catatan (opsional)</label>
-                    <input type="text" class="form-input" placeholder="Patokan, nama gedung, dll">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-checkbox">
-                        <input type="checkbox"> Jadikan alamat utama
-                    </label>
-                </div>
-                
-                <button class="btn-primary">Simpan Alamat</button>
-            </div>
+            </main>
         </div>
     </div>
-    -->
-
-    <footer class="footer">
-        <div class="footer-grid">
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="plp.html">Freediving</a></li>
-                    <li><a href="plp.html">Scuba</a></li>
-                    <li><a href="plp.html">Aksesoris</a></li>
-                    <li><a href="plp.html">Sale</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="about.html">Tentang Kami</a></li>
-                    
-                    <li><a href="privacy.html">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html">Syarat <li><a href="#">Syarat & Ketentuan</a></li> Ketentuan</a></li>
-                </ul>
-            </div>
-        </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
-            © 2024 Arnes Dive Shop. All rights reserved.
+</body>
+</html>

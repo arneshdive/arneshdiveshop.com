@@ -4,265 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wishlist - Arnes Dive Shop</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
-        
-        .wireframe-box {
-            background: #f0f0f0;
-            border: 2px dashed #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 16px; }
-        
-        .top-bar { background: #e0e0e0; padding: 8px; text-align: center; font-size: 12px; }
-        
-        .nav { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { color: #666; text-decoration: none; font-size: 13px; }
-        .nav-logo { font-size: 24px; font-weight: bold; color: #333; text-decoration: none; }
-        .nav-icons { display: flex; gap: 16px; color: #666; }
-        
-        .page-title { padding: 32px 0 24px; }
-        .page-title h1 { font-size: 28px; font-weight: 600; }
-        .page-title p { color: #666; margin-top: 4px; }
-        
-        .wishlist-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 24px; 
-            padding-bottom: 48px;
-        }
-        
-        .wishlist-card { background: white; border: 1px solid #eee; }
-        .wishlist-image { aspect-ratio: 3/4; position: relative; }
-        .wishlist-remove { 
-            position: absolute; 
-            top: 8px; 
-            right: 8px; 
-            width: 28px; 
-            height: 28px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
-            color: #666;
-        }
-        .wishlist-remove:hover { border-color: #ff4444; color: #ff4444; }
-        
-        .wishlist-info { padding: 16px; }
-        .wishlist-title { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
-        .wishlist-price { color: #333; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .wishlist-stock { font-size: 12px; margin-bottom: 12px; }
-        .in-stock { color: #50c878; }
-        .out-stock { color: #ff4444; }
-        
-        .btn-add-cart { 
-            display: block;
-            width: 100%;
-            padding: 10px; 
-            background: #333; 
-            color: white; 
-            border: none;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-        }
-        .btn-add-cart:hover { background: #444; }
-        .btn-add-cart.disabled { background: #ddd; color: #999; cursor: not-allowed; }
-        
-        .shop-btn { 
-            display: inline-block;
-            padding: 12px 32px; 
-            background: #333; 
-            color: white; 
-            text-decoration: none;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .footer { border-top: 1px solid #ddd; padding: 48px 16px; background: #f9f9f9; }
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto; }
-        .footer-links { list-style: none; }
-        .footer-links li { margin-bottom: 8px; }
-        .footer-links a { color: #666; text-decoration: none; font-size: 13px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body>
+<body class="font-sans text-sm">
 
-    <div class="top-bar">
-        Gratis Ongkir untuk pembelian di atas Rp 500.000
-    </div>
-
-    <nav class="nav container">
-        <div class="nav-links">
-            <a href="homepage.html" class="nav-link">Baru</a>
-            <a href="plp.html" class="nav-link">Freediving</a>
-            <a href="plp.html" class="nav-link">Scuba</a>
-            <a href="plp.html" class="nav-link">Aksesoris</a>
-            <a href="plp.html" class="nav-link">Sale</a>
+    <!-- Top Bar & Nav -->
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white max-w-7xl mx-auto">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Sale</a>
         </div>
-        <a href="homepage.html" class="nav-logo">ARNES DIVE</a>
-        <div class="nav-icons">
-            <a href="search.html" style="color: #666; text-decoration: none;">[Cari]</a>
-            <a href="wishlist.html" style="color: #666; text-decoration: none;">[Wishlist]</a>
-            <a href="cart.html" style="color: #666; text-decoration: none;">[Keranjang (2)]</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="page-title">
-            <h1>Wishlist Saya</h1>
-            <p>5 produk tersimpan</p>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold">Wishlist Saya</h1>
+            <p class="text-gray-600 text-sm">5 produk tersimpan</p>
         </div>
-        
-        <div class="wishlist-grid">
-            <div class="wishlist-card">
-                <a href="pdp.html" style="text-decoration: none; color: inherit;">
-                    <div class="wishlist-image wireframe-box">
-                        <button class="wishlist-remove">✕</button>
-                        Gambar
-                    </div>
-                    <div class="wishlist-info">
-                        <div class="wishlist-title">Masker Freediving Pro</div>
-                        <div class="wishlist-price">Rp 850.000</div>
-                        <div class="wishlist-stock in-stock">✓ Tersedia</div>
-                    </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Item 1 -->
+            <div class="bg-white border border-gray-200">
+                <a href="pdp.html" class="block relative aspect-[3/4] bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                    Gambar
+                    <button class="absolute top-2 right-2 w-7 h-7 bg-white rounded-full border border-gray-300 flex items-center justify-center text-gray-400 hover:border-red-500 hover:text-red-500">✕</button>
                 </a>
-                <div style="padding: 0 16px 16px;">
-                    <a href="#" class="btn-add-cart">Tambah ke Keranjang</a>
+                <div class="p-3">
+                    <h3 class="font-medium text-sm">Masker Freediving Pro</h3>
+                    <p class="font-semibold">Rp 850.000</p>
+                    <p class="text-xs text-green-600 mb-2">✓ Tersedia</p>
+                    <a href="#" class="block w-full bg-brand text-white py-2 text-center text-xs uppercase hover:bg-gray-700">Tambah ke Keranjang</a>
                 </div>
             </div>
-            
-            <div class="wishlist-card">
-                <a href="pdp.html" style="text-decoration: none; color: inherit;">
-                    <div class="wishlist-image wireframe-box">
-                        <button class="wishlist-remove">✕</button>
-                        Gambar
-                    </div>
-                    <div class="wishlist-info">
-                        <div class="wishlist-title">Fin Carbón Pro</div>
-                        <div class="wishlist-price">Rp 2.500.000</div>
-                        <div class="wishlist-stock in-stock">✓ Tersedia</div>
-                    </div>
+
+            <!-- Item 2 -->
+            <div class="bg-white border border-gray-200">
+                <a href="pdp.html" class="block relative aspect-[3/4] bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                    Gambar
+                    <button class="absolute top-2 right-2 w-7 h-7 bg-white rounded-full border border-gray-300 flex items-center justify-center text-gray-400 hover:border-red-500 hover:text-red-500">✕</button>
                 </a>
-                <div style="padding: 0 16px 16px;">
-                    <a href="#" class="btn-add-cart">Tambah ke Keranjang</a>
+                <div class="p-3">
+                    <h3 class="font-medium text-sm">Fin Carbón Pro</h3>
+                    <p class="font-semibold">Rp 2.500.000</p>
+                    <p class="text-xs text-green-600 mb-2">✓ Tersedia</p>
+                    <a href="#" class="block w-full bg-brand text-white py-2 text-center text-xs uppercase hover:bg-gray-700">Tambah ke Keranjang</a>
                 </div>
             </div>
-            
-            <div class="wishlist-card">
-                <a href="pdp.html" style="text-decoration: none; color: inherit;">
-                    <div class="wishlist-image wireframe-box">
-                        <button class="wishlist-remove">✕</button>
-                        Gambar
-                    </div>
-                    <div class="wishlist-info">
-                        <div class="wishlist-title">Wetsuit 3mm Premium</div>
-                        <div class="wishlist-price">Rp 1.800.000</div>
-                        <div class="wishlist-stock out-stock">✗ Stok Habis</div>
-                    </div>
+
+            <!-- Item 3 - Out of Stock -->
+            <div class="bg-white border border-gray-200">
+                <a href="pdp.html" class="block relative aspect-[3/4] bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                    Gambar
+                    <button class="absolute top-2 right-2 w-7 h-7 bg-white rounded-full border border-gray-300 flex items-center justify-center text-gray-400 hover:border-red-500 hover:text-red-500">✕</button>
                 </a>
-                <div style="padding: 0 16px 16px;">
-                    <a href="#" class="btn-add-cart disabled">Stok Habis</a>
+                <div class="p-3">
+                    <h3 class="font-medium text-sm">Wetsuit 3mm Premium</h3>
+                    <p class="font-semibold">Rp 1.800.000</p>
+                    <p class="text-xs text-red-500 mb-2">✗ Stok Habis</p>
+                    <span class="block w-full bg-gray-300 text-gray-500 py-2 text-center text-xs uppercase">Stok Habis</span>
                 </div>
             </div>
-            
-            <div class="wishlist-card">
-                <a href="pdp.html" style="text-decoration: none; color: inherit;">
-                    <div class="wishlist-image wireframe-box">
-                        <button class="wishlist-remove">✕</button>
-                        Gambar
-                    </div>
-                    <div class="wishlist-info">
-                        <div class="wishlist-title">Sabuk Pemberat Stainless</div>
-                        <div class="wishlist-price">Rp 450.000</div>
-                        <div class="wishlist-stock in-stock">✓ Tersedia</div>
-                    </div>
+
+            <!-- Item 4 -->
+            <div class="bg-white border border-gray-200">
+                <a href="pdp.html" class="block relative aspect-[3/4] bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                    Gambar
+                    <button class="absolute top-2 right-2 w-7 h-7 bg-white rounded-full border border-gray-300 flex items-center justify-center text-gray-400 hover:border-red-500 hover:text-red-500">✕</button>
                 </a>
-                <div style="padding: 0 16px 16px;">
-                    <a href="#" class="btn-add-cart">Tambah ke Keranjang</a>
+                <div class="p-3">
+                    <h3 class="font-medium text-sm">Sabuk Pemberat</h3>
+                    <p class="font-semibold">Rp 450.000</p>
+                    <p class="text-xs text-green-600 mb-2">✓ Tersedia</p>
+                    <a href="#" class="block w-full bg-brand text-white py-2 text-center text-xs uppercase hover:bg-gray-700">Tambah ke Keranjang</a>
                 </div>
             </div>
-            
-            <div class="wishlist-card">
-                <a href="pdp.html" style="text-decoration: none; color: inherit;">
-                    <div class="wishlist-image wireframe-box">
-                        <button class="wishlist-remove">✕</button>
-                        Gambar
-                    </div>
-                    <div class="wishlist-info">
-                        <div class="wishlist-title">Snorkel Dry Top</div>
-                        <div class="wishlist-price">Rp 320.000</div>
-                        <div class="wishlist-stock in-stock">✓ Tersedia</div>
-                    </div>
+
+            <!-- Item 5 -->
+            <div class="bg-white border border-gray-200">
+                <a href="pdp.html" class="block relative aspect-[3/4] bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                    Gambar
+                    <button class="absolute top-2 right-2 w-7 h-7 bg-white rounded-full border border-gray-300 flex items-center justify-center text-gray-400 hover:border-red-500 hover:text-red-500">✕</button>
                 </a>
-                <div style="padding: 0 16px 16px;">
-                    <a href="#" class="btn-add-cart">Tambah ke Keranjang</a>
+                <div class="p-3">
+                    <h3 class="font-medium text-sm">Snorkel Dry Top</h3>
+                    <p class="font-semibold">Rp 320.000</p>
+                    <p class="text-xs text-green-600 mb-2">✓ Tersedia</p>
+                    <a href="#" class="block w-full bg-brand text-white py-2 text-center text-xs uppercase hover:bg-gray-700">Tambah ke Keranjang</a>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="footer-grid">
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Newsletter</h5>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" style="width: 100%; padding: 10px; border: 1px solid #ddd; margin-bottom: 8px;">
-                <button style="width: 100%; padding: 10px; background: #333; color: white; border: none; font-size: 12px; text-transform: uppercase;">Langganan</button>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Belanja</h5>
-                <ul class="footer-links">
-                    <li><a href="plp.html">Freediving</a></li>
-                    <li><a href="plp.html">Scuba</a></li>
-                    <li><a href="plp.html">Aksesoris</a></li>
-                    <li><a href="plp.html">Sale</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Bantuan</h5>
-                <ul class="footer-links">
-                    <li><a href="faq.html">FAQ</a></li>
-                    <li><a href="faq.html">Pengiriman</a></li>
-                    <li><a href="faq.html">Pengembalian</a></li>
-                    <li><a href="contact.html">Hubungi Kami</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 style="font-size: 11px; text-transform: uppercase; margin-bottom: 16px;">Tentang</h5>
-                <ul class="footer-links">
-                    <li><a href="about.html">Tentang Kami</a></li>
-                    
-                    <li><a href="privacy.html">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html">Syarat <li><a href="#">Syarat & Ketentuan</a></li> Ketentuan</a></li>
-                </ul>
-            </div>
-        </div>
-        <div style="text-align: center; padding-top: 24px; border-top: 1px solid #ddd; margin-top: 24px; font-size: 12px; color: #666;">
-            © 2024 Arnes Dive Shop. All rights reserved.
-        </div>
-    </footer>
 
 </body>
 </html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - Admin Arnes Dive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
+</head>
+<body class="font-sans text-sm bg-gray-100">
+    <div class="flex min-h-screen">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-brand text-white transform -translate-x-full lg:translate-x-0 z-30">
+            <div class="p-6 border-b border-gray-700"><a href="index.html" class="text-xl font-bold">ARNES DIVE</a><p class="text-xs text-gray-400 mt-1">Admin Panel</p></div>
+            <nav class="p-4 space-y-1">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📊</span> Dashboard</a>
+                <a href="products.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📦</span> Products</a>
+                <a href="orders.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🛒</span> Orders</a>
+                <a href="customers.html" class="flex items-center gap-3 px-4 py-3 bg-gray-700 rounded font-medium"><span>👥</span> Customers</a>
+                <div class="pt-4 border-t border-gray-700 mt-4"><a href="settings.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>⚙️</span> Settings</a><a href="../login.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🚪</span> Logout</a></div>
+            </nav>
+        </aside>
+        <div class="flex-1 lg:ml-64">
+            <header class="bg-white border-b px-4 py-3 flex items-center justify-between">
+                <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')">☰</button>
+                <h1 class="text-lg font-semibold">Customers</h1>
+                <div class="flex gap-2"><input type="text" placeholder="Search customers..." class="px-3 py-2 border text-sm"><button class="bg-brand text-white px-4 text-xs">Search</button></div>
+            </header>
+            <main class="p-6">
+                <div class="bg-white border overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 text-xs uppercase text-gray-600">
+                            <tr><th class="text-left p-4">Customer</th><th class="text-left p-4">Email</th><th class="text-left p-4">Phone</th><th class="text-left p-4">Orders</th><th class="text-left p-4">Total Spent</th><th class="text-left p-4">Joined</th><th class="text-right p-4">Actions</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t hover:bg-gray-50"><td class="p-4 font-medium">Ahmad Diver</td><td class="p-4">ahmad@email.com</td><td class="p-4">+62 812-3456-7890</td><td class="p-4">8</td><td class="p-4">Rp 12.450.000</td><td class="p-4">15 Mar 2024</td><td class="p-4 text-right"><a href="customer-detail.html" class="text-brand text-xs">View</a></td></tr>
+                            <tr class="border-t hover:bg-gray-50"><td class="p-4 font-medium">Budi Santoso</td><td class="p-4">budi@email.com</td><td class="p-4">+62 811-2345-6789</td><td class="p-4">3</td><td class="p-4">Rp 4.200.000</td><td class="p-4">2 Apr 2024</td><td class="p-4 text-right"><a href="customer-detail.html" class="text-brand text-xs">View</a></td></tr>
+                            <tr class="border-t hover:bg-gray-50"><td class="p-4 font-medium">Citra Dewi</td><td class="p-4">citra@email.com</td><td class="p-4">+62 822-3456-7890</td><td class="p-4">5</td><td class="p-4">Rp 7.850.000</td><td class="p-4">20 Feb 2024</td><td class="p-4 text-right"><a href="customer-detail.html" class="text-brand text-xs">View</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

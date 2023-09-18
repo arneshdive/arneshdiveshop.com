@@ -1,0 +1,32 @@
+{
+  "featureId": "F-010",
+  "title": "Client-side cart",
+  "module": "Cart",
+  "description": "Cart context with add/remove/update items, variant support, localStorage persistence",
+  "scope": {
+    "inScope": [
+      "Cart context provider with React Context",
+      "useReducer for cart state management",
+      "Add item to cart (with variant selection)",
+      "Remove item from cart",
+      "Update item quantity",
+      "localStorage persistence",
+      "Cart total calculation",
+      "Cart drawer component"
+    ],
+    "outOfScope": [
+      "Server-side cart sync",
+      "Cart sharing",
+      "Saved for later"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "User can add product to cart from PDP", "done": false },
+    { "id": "AC2", "text": "Cart persists across page refreshes via localStorage", "done": false },
+    { "id": "AC3", "text": "User can update quantity in cart drawer", "done": false },
+    { "id": "AC4", "text": "User can remove item from cart", "done": false },
+    { "id": "AC5", "text": "Cart total shows sum of all items", "done": false }
+  ],
+  "dependsOn": ["F-001", "F-002", "F-008"],
+  "source": { "file": "prd.md", "lines": "cart-module" }
+}

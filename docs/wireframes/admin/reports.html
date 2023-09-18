@@ -7,63 +7,118 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body class="font-sans text-sm bg-gray-100">
-    <div class="flex min-h-screen">
-        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-brand text-white transform -translate-x-full lg:translate-x-0 z-30">
-            <div class="p-6 border-b border-gray-700"><a href="index.html" class="text-xl font-bold">ARNES DIVE</a><p class="text-xs text-gray-400 mt-1">Admin Panel</p></div>
-            <nav class="p-4 space-y-1">
-                <a href="index.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📊</span> Dashboard</a>
-                <a href="products.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📦</span> Products</a>
-                <a href="orders.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🛒</span> Orders</a>
-                <a href="customers.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>👥</span> Customers</a>
-                <a href="inventory.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📋</span> Inventory</a>
-                <a href="banners.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🖼️</span> Banners</a>
-                <a href="promotions.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🏷️</span> Promotions</a>
-                <a href="reports.html" class="flex items-center gap-3 px-4 py-3 bg-gray-700 rounded font-medium"><span>📈</span> Reports</a>
-                <div class="pt-4 border-t border-gray-700 mt-4"><a href="settings.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>⚙️</span> Settings</a><a href="../login.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🚪</span> Logout</a></div>
-            </nav>
-        </aside>
-        <div class="flex-1 lg:ml-64">
-            <header class="bg-white border-b px-4 py-3 flex items-center justify-between">
-                <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')">☰</button>
-                <h1 class="text-lg font-semibold">Reports</h1>
-                <button class="border px-4 py-2 text-xs">Download Report</button>
-            </header>
-            <main class="p-6">
-                <div class="flex gap-4 mb-6">
-                    <select class="px-3 py-2 border bg-white"><option>Last 7 days</option><option>Last 30 days</option><option>Last 3 months</option><option>This year</option></select>
-                    <select class="px-3 py-2 border bg-white"><option>All Categories</option><option>Masker</option><option>Fin</option><option>Wetsuit</option></select>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white border p-6"><p class="text-xs text-gray-600 uppercase">Total Revenue</p><p class="text-2xl font-semibold">Rp 85.420.000</p><p class="text-xs text-green-600 mt-1">↑ 15% vs last period</p></div>
-                    <div class="bg-white border p-6"><p class="text-xs text-gray-600 uppercase">Orders</p><p class="text-2xl font-semibold">248</p><p class="text-xs text-green-600 mt-1">↑ 8% vs last period</p></div>
-                    <div class="bg-white border p-6"><p class="text-xs text-gray-600 uppercase">Avg Order Value</p><p class="text-2xl font-semibold">Rp 345.000</p><p class="text-xs text-green-600 mt-1">↑ 3% vs last period</p></div>
-                    <div class="bg-white border p-6"><p class="text-xs text-gray-600 uppercase">Conversion Rate</p><p class="text-2xl font-semibold">2.4%</p><p class="text-xs text-red-600 mt-1">↓ 0.2% vs last period</p></div>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Top Selling Products</h2>
-                        <div class="space-y-4">
-                            <div class="flex justify-between"><span>1. Masker Freediving Pro</span><span class="font-medium">156 sold</span></div>
-                            <div class="flex justify-between"><span>2. Fin Carbón Pro</span><span class="font-medium">98 sold</span></div>
-                            <div class="flex justify-between"><span>3. Wetsuit 3mm Premium</span><span class="font-medium">87 sold</span></div>
-                            <div class="flex justify-between"><span>4. Snorkel Dry Top</span><span class="font-medium">72 sold</span></div>
-                            <div class="flex justify-between"><span>5. Sabuk Pemberat</span><span class="font-medium">65 sold</span></div>
-                        </div>
-                    </div>
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Sales by Category</h2>
-                        <div class="space-y-3">
-                            <div><div class="flex justify-between text-sm"><span>Masker</span><span>38%</span></div><div class="w-full bg-gray-200 h-2 mt-1"><div class="bg-brand h-2" style="width: 38%"></div></div></div>
-                            <div><div class="flex justify-between text-sm"><span>Fin</span><span>28%</span></div><div class="w-full bg-gray-200 h-2 mt-1"><div class="bg-brand h-2" style="width: 28%"></div></div></div>
-                            <div><div class="flex justify-between text-sm"><span>Wetsuit</span><span>22%</span></div><div class="w-full bg-gray-200 h-2 mt-1"><div class="bg-brand h-2" style="width: 22%"></div></div></div>
-                            <div><div class="flex justify-between text-sm"><span>Sabuk Pemberat</span><span>8%</span></div><div class="w-full bg-gray-200 h-2 mt-1"><div class="bg-brand h-2" style="width: 8%"></div></div></div>
-                            <div><div class="flex justify-between text-sm"><span>Aksesoris</span><span>4%</span></div><div class="w-full bg-gray-200 h-2 mt-1"><div class="bg-brand h-2" style="width: 4%"></div></div></div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+<body class="font-sans text-sm leading-relaxed bg-white">
+
+    <header class="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <a href="index.html" class="text-xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-xs">
+            <a href="../homepage.html" class="hover:text-brand">[View Store]</a>
+            <a href="../login.html" class="hover:text-brand">[Logout]</a>
         </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="hidden lg:block w-full lg:w-48 border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-screen p-4 lg:p-6 flex-shrink-0">
+            <div class="flex flex-wrap lg:flex-col gap-1">
+                <a href="index.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Dashboard</a>
+                <a href="products.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Products</a>
+                <a href="categories.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Categories</a>
+                <a href="brands.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Brands</a>
+                <a href="orders.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Orders</a>
+                <a href="customers.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Customers</a>
+                <a href="inventory.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Inventory</a>
+                <a href="banners.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Banners</a>
+                <a href="promotions.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Promotions</a>
+                <a href="reports.html" class="block px-3 py-2 text-brand font-medium border-l-2 border-brand">Reports</a>
+                <div class="w-full border-t border-gray-200 my-2 hidden lg:block"></div>
+                <a href="settings.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Settings</a>
+                <a href="admin-users.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Admin Users</a>
+            </div>
+        </nav>
+
+        <main class="flex-1 p-4 lg:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h1 class="text-2xl font-semibold">Reports</h1>
+                <select class="px-3 py-2 border border-gray-200 bg-white">
+                    <option>Last 7 days</option>
+                    <option>Last 30 days</option>
+                    <option>Last 3 months</option>
+                    <option>This year</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="border border-gray-200 p-4">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Revenue</p>
+                    <p class="text-xl font-semibold mt-1">Rp 85.4jt</p>
+                    <p class="text-xs mt-2">↑ 15%</p>
+                </div>
+                <div class="border border-gray-200 p-4">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Orders</p>
+                    <p class="text-xl font-semibold mt-1">248</p>
+                    <p class="text-xs mt-2">↑ 8%</p>
+                </div>
+                <div class="border border-gray-200 p-4">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Avg. Order</p>
+                    <p class="text-xl font-semibold mt-1">Rp 345rb</p>
+                    <p class="text-xs mt-2">↑ 3%</p>
+                </div>
+                <div class="border border-gray-200 p-4">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Conversion</p>
+                    <p class="text-xl font-semibold mt-1">2.4%</p>
+                    <p class="text-xs mt-2">↓ 0.2%</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="border border-gray-200">
+                    <div class="p-4 border-b border-gray-200">
+                        <h2 class="font-semibold">Top Products</h2>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="p-4 flex justify-between">
+                            <span>1. Masker Freediving Pro</span>
+                            <span class="text-sm">156 sold</span>
+                        </div>
+                        <div class="p-4 flex justify-between">
+                            <span>2. Fin Carbón Pro</span>
+                            <span class="text-sm">98 sold</span>
+                        </div>
+                        <div class="p-4 flex justify-between">
+                            <span>3. Wetsuit 3mm Premium</span>
+                            <span class="text-sm">87 sold</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 p-4">
+                    <h2 class="font-semibold mb-4">Sales by Category</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span>Masker</span><span>38%</span></div>
+                            <div class="w-full bg-gray-100 h-2"><div class="bg-brand h-2" style="width: 38%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span>Fin</span><span>28%</span></div>
+                            <div class="w-full bg-gray-100 h-2"><div class="bg-brand h-2" style="width: 28%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span>Wetsuit</span><span>22%</span></div>
+                            <div class="w-full bg-gray-100 h-2"><div class="bg-brand h-2" style="width: 22%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span>Other</span><span>12%</span></div>
+                            <div class="w-full bg-gray-100 h-2"><div class="bg-brand h-2" style="width: 12%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+
 </body>
 </html>

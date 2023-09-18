@@ -1,0 +1,18 @@
+{
+  "questions": [
+    {
+      "id": "Q-001",
+      "question": "What shipping calculation method should be used for domestic orders? And for overseas shipping, which regions/carriers should be supported?",
+      "why": "Client wants overseas shipping support. Need to define: domestic calculation method (flat rate, weight-based, RajaOngkir), and scope for international shipping (regions, carriers, customs handling).",
+      "blocks": ["Orders", "Checkout"],
+      "priority": "high"
+    },
+    {
+      "id": "Q-002",
+      "question": "Which analytics platform should be integrated (Google Analytics 4, Hotjar, Mixpanel, etc.)?",
+      "why": "Analytics deferred for now but will be needed for tracking conversions and user behavior. Early decision helps plan the integration structure.",
+      "blocks": [],
+      "priority": "low"
+    }
+  ]
+}

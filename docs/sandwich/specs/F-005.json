@@ -1,0 +1,28 @@
+{
+  "featureId": "F-005",
+  "title": "OTP verification via Mailgun",
+  "module": "Auth",
+  "description": "OTP generation, email sending via Mailgun, verification flow with 15-minute expiry",
+  "scope": {
+    "inScope": [
+      "OTP code generation (6 digits)",
+      "OTP storage with expiry (15 minutes)",
+      "Email template for OTP",
+      "Mailgun API integration",
+      "OTP verification endpoint",
+      "Rate limiting for OTP requests"
+    ],
+    "outOfScope": [
+      "SMS OTP",
+      "OTP for password reset"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "User receives OTP email within 60 seconds of registration", "done": false },
+    { "id": "AC2", "text": "OTP expires after 15 minutes", "done": false },
+    { "id": "AC3", "text": "User can verify OTP to complete registration", "done": false },
+    { "id": "AC4", "text": "Rate limiting prevents OTP spam (max 3 per 10 minutes)", "done": false }
+  ],
+  "dependsOn": ["F-003"],
+  "source": { "file": "prd.md", "lines": "auth-module" }
+}

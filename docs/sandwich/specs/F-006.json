@@ -1,0 +1,29 @@
+{
+  "featureId": "F-006",
+  "title": "Category management",
+  "module": "Products",
+  "description": "CRUD for categories with parent/child relationships, slug generation, sort order",
+  "scope": {
+    "inScope": [
+      "Category list view in admin",
+      "Category create/edit form",
+      "Parent category selection (hierarchy)",
+      "Automatic slug generation from name",
+      "Sort order field",
+      "Category delete with reassign option",
+      "ISR revalidation on category changes"
+    ],
+    "outOfScope": [
+      "Category images",
+      "Category-specific attributes"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Admin can create category with name, slug, parent, and sort order", "done": false },
+    { "id": "AC2", "text": "Slug auto-generated from name (editable)", "done": false },
+    { "id": "AC3", "text": "Parent category selection shows dropdown of existing categories", "done": false },
+    { "id": "AC4", "text": "Categories display in sort order on storefront navigation", "done": false }
+  ],
+  "dependsOn": ["F-001", "F-002"],
+  "source": { "file": "prd.md", "lines": "products-module" }
+}

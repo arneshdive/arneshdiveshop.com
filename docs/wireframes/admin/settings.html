@@ -7,55 +7,97 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body class="font-sans text-sm bg-gray-100">
-    <div class="flex min-h-screen">
-        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-brand text-white transform -translate-x-full lg:translate-x-0 z-30">
-            <div class="p-6 border-b border-gray-700"><a href="index.html" class="text-xl font-bold">ARNES DIVE</a><p class="text-xs text-gray-400 mt-1">Admin Panel</p></div>
-            <nav class="p-4 space-y-1">
-                <a href="index.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📊</span> Dashboard</a>
-                <a href="products.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📦</span> Products</a>
-                <a href="orders.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🛒</span> Orders</a>
-                <a href="customers.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>👥</span> Customers</a>
-                <a href="reports.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📈</span> Reports</a>
-                <div class="pt-4 border-t border-gray-700 mt-4"><a href="settings.html" class="flex items-center gap-3 px-4 py-3 bg-gray-700 rounded font-medium"><span>⚙️</span> Settings</a><a href="../login.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🚪</span> Logout</a></div>
-            </nav>
-        </aside>
-        <div class="flex-1 lg:ml-64">
-            <header class="bg-white border-b px-4 py-3 flex items-center justify-between">
-                <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')">☰</button>
-                <h1 class="text-lg font-semibold">Settings</h1>
-            </header>
-            <main class="p-6 max-w-4xl">
-                <form class="space-y-6">
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Store Information</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="block text-xs text-gray-600 mb-1">Store Name</label><input type="text" value="Arnes Dive Shop" class="w-full px-3 py-2 border"></div>
-                            <div><label class="block text-xs text-gray-600 mb-1">Store Email</label><input type="email" value="support@arnesdive.com" class="w-full px-3 py-2 border"></div>
-                            <div><label class="block text-xs text-gray-600 mb-1">Phone</label><input type="text" value="+62 812-3456-7890" class="w-full px-3 py-2 border"></div>
-                            <div><label class="block text-xs text-gray-600 mb-1">Address</label><input type="text" value="Jakarta, Indonesia" class="w-full px-3 py-2 border"></div>
-                        </div>
-                    </div>
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Payment Methods</h2>
-                        <div class="space-y-2">
-                            <label class="flex items-center justify-between p-3 border"><input type="checkbox" checked class="mr-3"> Bank Transfer (VA)<span class="text-xs text-gray-600">BCA, BNI, BRI, Mandiri</span></label>
-                            <label class="flex items-center justify-between p-3 border"><input type="checkbox" checked class="mr-3"> Credit/Debit Card<span class="text-xs text-gray-600">Visa, Mastercard</span></label>
-                            <label class="flex items-center justify-between p-3 border"><input type="checkbox" checked class="mr-3"> E-Wallet<span class="text-xs text-gray-600">GoPay, OVO, DANA</span></label>
-                        </div>
-                    </div>
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Shipping Methods</h2>
-                        <div class="space-y-2">
-                            <label class="flex items-center justify-between p-3 border"><input type="checkbox" checked class="mr-3"> JNE<span class="text-xs text-gray-600">Reguler, YES</span></label>
-                            <label class="flex items-center justify-between p-3 border"><input type="checkbox" checked class="mr-3"> SiCepat<span class="text-xs text-gray-600">REG, BEST</span></label>
-                            <label class="flex items-center justify-between p-3 border"><input type="checkbox" checked class="mr-3"> J&T Express</label>
-                        </div>
-                    </div>
-                    <button type="submit" class="bg-brand text-white px-6 py-2 text-xs uppercase">Save Settings</button>
-                </form>
-            </main>
+<body class="font-sans text-sm leading-relaxed bg-white">
+
+    <header class="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <a href="index.html" class="text-xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-xs">
+            <a href="../homepage.html" class="hover:text-brand">[View Store]</a>
+            <a href="../login.html" class="hover:text-brand">[Logout]</a>
         </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="hidden lg:block w-full lg:w-48 border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-screen p-4 lg:p-6 flex-shrink-0">
+            <div class="flex flex-wrap lg:flex-col gap-1">
+                <a href="index.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Dashboard</a>
+                <a href="products.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Products</a>
+                <a href="categories.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Categories</a>
+                <a href="brands.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Brands</a>
+                <a href="orders.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Orders</a>
+                <a href="customers.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Customers</a>
+                <a href="inventory.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Inventory</a>
+                <a href="banners.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Banners</a>
+                <a href="promotions.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Promotions</a>
+                <a href="reports.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Reports</a>
+                <div class="w-full border-t border-gray-200 my-2 hidden lg:block"></div>
+                <a href="settings.html" class="block px-3 py-2 text-brand font-medium border-l-2 border-brand">Settings</a>
+                <a href="admin-users.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Admin Users</a>
+            </div>
+        </nav>
+
+        <main class="flex-1 p-4 lg:p-8">
+            <h1 class="text-2xl font-semibold mb-6">Settings</h1>
+
+            <form class="space-y-6 max-w-2xl">
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <h2 class="font-semibold mb-4">Store Information</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Store Name</label>
+                            <input type="text" value="Arnes Dive Shop" class="w-full px-3 py-2 border border-gray-200">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Email</label>
+                                <input type="email" value="support@arnesdive.com" class="w-full px-3 py-2 border border-gray-200">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Phone</label>
+                                <input type="text" value="+62 812-3456-7890" class="w-full px-3 py-2 border border-gray-200">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <h2 class="font-semibold mb-4">Payment Methods</h2>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-3 border border-gray-200">
+                            <input type="checkbox" checked> Bank Transfer (VA)
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200">
+                            <input type="checkbox" checked> Credit/Debit Card
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200">
+                            <input type="checkbox" checked> E-Wallet
+                        </label>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <h2 class="font-semibold mb-4">Shipping Methods</h2>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-3 border border-gray-200">
+                            <input type="checkbox" checked> JNE
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200">
+                            <input type="checkbox" checked> SiCepat
+                        </label>
+                        <label class="flex items-center gap-3 p-3 border border-gray-200">
+                            <input type="checkbox" checked> J&T Express
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-brand text-white px-6 py-2 text-xs uppercase tracking-wider">Save Settings</button>
+            </form>
+        </main>
     </div>
+
 </body>
 </html>

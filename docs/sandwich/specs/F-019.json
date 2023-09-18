@@ -1,0 +1,27 @@
+{
+  "featureId": "F-019",
+  "title": "Storefront homepage",
+  "module": "Home",
+  "description": "Homepage with hero carousel, featured products, category navigation, ISR",
+  "scope": {
+    "inScope": [
+      "Hero section with banner carousel",
+      "Featured products grid",
+      "Category navigation section",
+      "ISR with hourly revalidation",
+      "Mobile-responsive layout per wireframes"
+    ],
+    "outOfScope": [
+      "Newsletter signup",
+      "Blog section"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Hero carousel displays active banners", "done": false },
+    { "id": "AC2", "text": "Featured products grid shows products with isFeatured=true", "done": false },
+    { "id": "AC3", "text": "Categories display in navigation", "done": false },
+    { "id": "AC4", "text": "Page revalidates every hour for ISR", "done": false }
+  ],
+  "dependsOn": ["F-006", "F-008", "F-017"],
+  "source": { "file": "prd.md", "lines": "home-module" }
+}

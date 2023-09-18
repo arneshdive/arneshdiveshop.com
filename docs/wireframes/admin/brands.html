@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brands - Admin Arnes Dive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
+</head>
+<body class="font-sans text-sm leading-relaxed bg-white">
+
+    <header class="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <a href="index.html" class="text-xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-xs">
+            <a href="../homepage.html" class="hover:text-brand">[View Store]</a>
+            <a href="../login.html" class="hover:text-brand">[Logout]</a>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="hidden lg:block w-full lg:w-48 border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-screen p-4 lg:p-6 flex-shrink-0">
+            <div class="flex flex-wrap lg:flex-col gap-1">
+                <a href="index.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Dashboard</a>
+                <a href="products.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Products</a>
+                <a href="categories.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Categories</a>
+                <a href="brands.html" class="block px-3 py-2 text-brand font-medium border-l-2 border-brand">Brands</a>
+                <a href="orders.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Orders</a>
+                <a href="customers.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Customers</a>
+                <a href="inventory.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Inventory</a>
+                <a href="banners.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Banners</a>
+                <a href="promotions.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Promotions</a>
+                <a href="reports.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Reports</a>
+                <div class="w-full border-t border-gray-200 my-2 hidden lg:block"></div>
+                <a href="settings.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Settings</a>
+                <a href="admin-users.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Admin Users</a>
+            </div>
+        </nav>
+
+        <main class="flex-1 p-4 lg:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h1 class="text-2xl font-semibold">Brands</h1>
+                <button class="bg-brand text-white px-4 py-2 text-xs uppercase tracking-wider">+ Add Brand</button>
+            </div>
+
+            <div class="border border-gray-200 divide-y divide-gray-200">
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">Logo</div>
+                        <span class="font-medium">Mares</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-gray-600">28 products</span>
+                        <button class="text-xs text-brand">Edit</button>
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">Logo</div>
+                        <span class="font-medium">Cressi</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-gray-600">22 products</span>
+                        <button class="text-xs text-brand">Edit</button>
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">Logo</div>
+                        <span class="font-medium">Beuchat</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-gray-600">15 products</span>
+                        <button class="text-xs text-brand">Edit</button>
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">Logo</div>
+                        <span class="font-medium">Salvimar</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-xs text-gray-600">18 products</span>
+                        <button class="text-xs text-brand">Edit</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

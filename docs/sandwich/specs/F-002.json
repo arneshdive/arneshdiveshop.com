@@ -1,0 +1,34 @@
+{
+  "featureId": "F-002",
+  "title": "Database schema and migrations",
+  "module": "Infrastructure",
+  "description": "Define all tables using Drizzle ORM with pgEnum types for orders, payments, promotions, banners",
+  "scope": {
+    "inScope": [
+      "Users table with role enum",
+      "Categories table with parent/child hierarchy",
+      "Brands table",
+      "Products and product_variants tables",
+      "Customers and addresses tables",
+      "Orders and order_items tables",
+      "Payments table with status enum",
+      "Promotions table with type enum",
+      "Banners table with position enum",
+      "Sessions and accounts tables for Auth.js",
+      "pgEnum definitions for all status/type fields",
+      "Drizzle migrations setup"
+    ],
+    "outOfScope": [
+      "Seed data",
+      "Query functions"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "All tables from SPEC.md schema created in database", "done": false },
+    { "id": "AC2", "text": "All pgEnum types defined and applied", "done": false },
+    { "id": "AC3", "text": "Foreign key relationships established correctly", "done": false },
+    { "id": "AC4", "text": "Drizzle migrations can be run with drizzle-kit push", "done": false }
+  ],
+  "dependsOn": ["F-001"],
+  "source": { "file": "prd.md", "lines": "database-schema" }
+}

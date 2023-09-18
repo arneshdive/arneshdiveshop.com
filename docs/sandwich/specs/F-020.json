@@ -1,0 +1,27 @@
+{
+  "featureId": "F-020",
+  "title": "SEO implementation",
+  "module": "SEO",
+  "description": "JSON-LD for products, sitemap, meta tags, Open Graph",
+  "scope": {
+    "inScope": [
+      "JSON-LD structured data for products (Product, Offer schema)",
+      "Dynamic sitemap.ts generation",
+      "Per-page generateMetadata for title, description",
+      "Open Graph tags for social sharing",
+      "Canonical URLs"
+    ],
+    "outOfScope": [
+      "Schema validation tools",
+      "SEO dashboard"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Product pages have valid JSON-LD for Product schema", "done": false },
+    { "id": "AC2", "text": "Sitemap accessible at /sitemap.xml", "done": false },
+    { "id": "AC3", "text": "Each page has unique title and description", "done": false },
+    { "id": "AC4", "text": "Open Graph tags present for social sharing", "done": false }
+  ],
+  "dependsOn": ["F-002", "F-008", "F-019"],
+  "source": { "file": "prd.md", "lines": "seo-module" }
+}

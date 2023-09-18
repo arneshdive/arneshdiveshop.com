@@ -1,0 +1,131 @@
+{
+  "flows": [
+    {
+      "id": "UF-001",
+      "title": "Customer browses products and views details",
+      "actor": "Customer",
+      "trigger": "Customer lands on homepage or navigates to category page",
+      "steps": [
+        "Customer views hero carousel with promotional banners",
+        "Customer browses featured products on homepage or navigates to category page",
+        "Customer clicks product card to view product detail page",
+        "System displays product with images, description, price, and variant options",
+        "Customer selects variant (if applicable) and adds to cart"
+      ],
+      "outcome": "Product is added to cart, cart drawer shows updated contents",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-002",
+      "title": "Customer registers account",
+      "actor": "Customer",
+      "trigger": "Customer clicks 'Register' from navigation or is prompted at checkout",
+      "steps": [
+        "Customer fills registration form with email, password, and name",
+        "System validates input and checks for existing email",
+        "System sends OTP to email for verification",
+        "Customer enters OTP code",
+        "System creates account and logs user in"
+      ],
+      "outcome": "Customer account created and authenticated",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-003",
+      "title": "Customer places order with Midtrans payment",
+      "actor": "Customer",
+      "trigger": "Customer proceeds to checkout from cart",
+      "steps": [
+        "Customer reviews cart contents andProceeds to checkout",
+        "Customer enters or selects shipping address",
+        "System calculates shipping, tax, and applies any promo code",
+        "Customer confirms order and initiates payment",
+        "System creates order atomically (order + items + payment record)",
+        "System redirects to Midtrans Snap payment page",
+        "Customer completes payment via chosen method (GoPay, bank transfer, QRIS)",
+        "Midtrans sends webhook confirming payment",
+        "System updates order status to 'processing'",
+        "Customer sees order confirmation page"
+      ],
+      "outcome": "Order placed and payment confirmed, customer receives confirmation",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-004",
+      "title": "Customer manages their account",
+      "actor": "Customer",
+      "trigger": "Customer navigates to Account section",
+      "steps": [
+        "Customer views account dashboard with order summary",
+        "Customer can navigate to orders, addresses, or settings",
+        "Customer views order history with status",
+        "Customer adds or edits shipping addresses",
+        "Customer updates profile information"
+      ],
+      "outcome": "Customer can view and manage their account data",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-005",
+      "title": "Admin manages products",
+      "actor": "Admin",
+      "trigger": "Admin navigates to Products section in admin panel",
+      "steps": [
+        "Admin views product list with status and quick actions",
+        "Admin clicks 'Add Product' to create new product",
+        "Admin fills product details: name, slug, description, price, category, brand, images",
+        "Admin adds product variants if applicable",
+        "Admin sets product as active/inactive and featured status",
+        "System validates and creates product",
+        "Storefront pages are revalidated for ISR"
+      ],
+      "outcome": "Product created and visible on storefront (if active)",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-006",
+      "title": "Admin processes orders",
+      "actor": "Admin",
+      "trigger": "Admin navigates to Orders section in admin panel",
+      "steps": [
+        "Admin views order list with filters (status, date, customer)",
+        "Admin clicks order to view details",
+        "Admin reviews order items, customer info, and payment status",
+        "Admin updates order status (processing → shipped → delivered)",
+        "System records status change and timestamps"
+      ],
+      "outcome": "Order status updated, customer can track progress",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-007",
+      "title": "Admin manages promotions",
+      "actor": "Admin",
+      "trigger": "Admin navigates to Promotions section in admin panel",
+      "steps": [
+        "Admin views list of promo codes with usage stats",
+        "Admin creates new promo code with discount type, value, and conditions",
+        "Admin sets minimum order requirement and usage limits",
+        "Admin sets validity date range",
+        "System validates and creates promotion"
+      ],
+      "outcome": "Promo code available for customers at checkout",
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-008",
+      "title": "Customer searches for products",
+      "actor": "Customer",
+      "trigger": "Customer enters search query in search bar",
+      "steps": [
+        "Customer types search query",
+        "System performs full-text search on product names and descriptions",
+        "System displays matching products in search results page",
+        "Customer can filter or sort results",
+        "Customer clicks product to view details"
+      ],
+      "outcome": "Customer finds desired products via search",
+      "confidence": "stated"
+    }
+  ]
+}

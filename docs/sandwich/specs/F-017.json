@@ -1,0 +1,28 @@
+{
+  "featureId": "F-017",
+  "title": "Banner management and hero carousel",
+  "module": "Banners",
+  "description": "Banner CRUD with positions, sorting, hero carousel component",
+  "scope": {
+    "inScope": [
+      "Banner CRUD in admin",
+      "Banner image upload",
+      "Position selection (hero, sidebar, footer)",
+      "Sort order",
+      "Link to products or pages",
+      "Hero carousel component for storefront",
+      "Active/inactive toggle"
+    ],
+    "outOfScope": [
+      "Banner analytics",
+      "A/B testing"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Admin can create banner with image, title, link, position", "done": false },
+    { "id": "AC2", "text": "Banners display in hero carousel on homepage", "done": false },
+    { "id": "AC3", "text": "Carousel auto-plays with navigation dots", "done": false }
+  ],
+  "dependsOn": ["F-001", "F-002"],
+  "source": { "file": "prd.md", "lines": "banners-module" }
+}

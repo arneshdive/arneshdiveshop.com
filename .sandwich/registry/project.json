@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "Arne's Dive Shop",
+  "briefHashes": {
+    "prd": "04982ad507f26762",
+    "userFlows": "e42b18c15a3e5c14",
+    "technicalNotes": "ad12ff058210bfcb",
+    "clientQuestions": "02a7301d23de00e0"
+  },
+  "gates": {
+    "briefApproved": {
+      "passed": false
+    },
+    "queueApproved": {
+      "passed": false
+    }
+  },
+  "createdAt": "2026-07-05T20:30:00.000Z",
+  "updatedAt": "2026-07-05T20:30:00.000Z"
+}

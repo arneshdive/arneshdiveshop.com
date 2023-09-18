@@ -1,0 +1,27 @@
+{
+  "featureId": "F-018",
+  "title": "Product search",
+  "module": "Search",
+  "description": "Full-text search on products with results page",
+  "scope": {
+    "inScope": [
+      "Search bar in header",
+      "Full-text search on product names and descriptions",
+      "Search results page",
+      "Search query highlighting",
+      "ISR for search page"
+    ],
+    "outOfScope": [
+      "Advanced filters",
+      "Search suggestions",
+      "Search history"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "User can type query in search bar", "done": false },
+    { "id": "AC2", "text": "Search results show matching products", "done": false },
+    { "id": "AC3", "text": "Results link to product detail pages", "done": false }
+  ],
+  "dependsOn": ["F-002", "F-008"],
+  "source": { "file": "prd.md", "lines": "search-module" }
+}

@@ -7,72 +7,233 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
 </head>
-<body class="font-sans text-sm bg-gray-100">
-    <div class="flex min-h-screen">
-        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-brand text-white transform -translate-x-full lg:translate-x-0 z-30">
-            <div class="p-6 border-b border-gray-700">
-                <a href="index.html" class="text-xl font-bold">ARNES DIVE</a>
-                <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
-            </div>
-            <nav class="p-4 space-y-1">
-                <a href="index.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>📊</span> Dashboard</a>
-                <a href="products.html" class="flex items-center gap-3 px-4 py-3 bg-gray-700 rounded font-medium"><span>📦</span> Products</a>
-                <a href="orders.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🛒</span> Orders</a>
-                <a href="customers.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>👥</span> Customers</a>
-                <div class="pt-4 border-t border-gray-700 mt-4">
-                    <a href="settings.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>⚙️</span> Settings</a>
-                    <a href="../login.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300"><span>🚪</span> Logout</a>
-                </div>
-            </nav>
-        </aside>
-        <div class="flex-1 lg:ml-64">
-            <header class="bg-white border-b px-4 py-3 flex items-center justify-between">
-                <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')">☰</button>
-                <h1 class="text-lg font-semibold">Add New Product</h1>
-                <div class="flex gap-3">
-                    <a href="products.html" class="border px-4 py-2 text-xs uppercase">Cancel</a>
-                    <button class="bg-brand text-white px-4 py-2 text-xs uppercase">Save</button>
-                </div>
-            </header>
-            <main class="p-6 max-w-4xl">
-                <form class="space-y-6">
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Basic Information</h2>
-                        <div class="space-y-4">
-                            <div><label class="block text-xs text-gray-600 mb-1">Product Name *</label><input type="text" class="w-full px-3 py-2 border"></div>
-                            <div><label class="block text-xs text-gray-600 mb-1">Description</label><textarea rows="4" class="w-full px-3 py-2 border"></textarea></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><label class="block text-xs text-gray-600 mb-1">Category *</label><select class="w-full px-3 py-2 border bg-white"><option>Masker</option><option>Fin</option><option>Wetsuit</option></select></div>
-                                <div><label class="block text-xs text-gray-600 mb-1">Brand</label><select class="w-full px-3 py-2 border bg-white"><option>Mares</option><option>Cressi</option><option>Beuchat</option></select></div>
-                            </div>
-                            <div><label class="block text-xs text-gray-600 mb-1">Diving Type</label>
-                                <div class="flex gap-4"><label class="flex items-center gap-2"><input type="checkbox"> Freediving</label><label class="flex items-center gap-2"><input type="checkbox"> Scuba</label></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Variants</h2>
-                        <div class="border p-4 mb-4">
-                            <div class="grid grid-cols-3 gap-4 mb-4">
-                                <div><label class="block text-xs text-gray-600 mb-1">SKU *</label><input type="text" class="w-full px-3 py-2 border"></div>
-                                <div><label class="block text-xs text-gray-600 mb-1">Color</label><input type="text" class="w-full px-3 py-2 border"></div>
-                                <div><label class="block text-xs text-gray-600 mb-1">Size</label><input type="text" class="w-full px-3 py-2 border"></div>
-                            </div>
-                            <div class="grid grid-cols-3 gap-4">
-                                <div><label class="block text-xs text-gray-600 mb-1">Price *</label><input type="number" class="w-full px-3 py-2 border"></div>
-                                <div><label class="block text-xs text-gray-600 mb-1">Sale Price</label><input type="number" class="w-full px-3 py-2 border"></div>
-                                <div><label class="block text-xs text-gray-600 mb-1">Stock *</label><input type="number" class="w-full px-3 py-2 border"></div>
-                            </div>
-                        </div>
-                        <button type="button" class="text-xs text-brand">+ Add Another Variant</button>
-                    </div>
-                    <div class="bg-white border p-6">
-                        <h2 class="font-semibold mb-4">Images</h2>
-                        <div class="border-2 border-dashed border-gray-300 p-8 text-center text-gray-500 text-xs">Drop images or click to upload</div>
-                    </div>
-                </form>
-            </main>
+<body class="font-sans text-sm leading-relaxed bg-white">
+
+    <header class="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <a href="index.html" class="text-xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-xs">
+            <a href="products.html" class="hover:text-brand">[Cancel]</a>
         </div>
+    </header>
+
+    <div class="flex">
+        <nav id="sidebar" class="hidden lg:block w-full lg:w-48 border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-screen p-4 lg:p-6 flex-shrink-0">
+            <div class="flex flex-wrap lg:flex-col gap-1">
+                <a href="index.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Dashboard</a>
+                <a href="products.html" class="block px-3 py-2 text-brand font-medium border-l-2 border-brand">Products</a>
+                <a href="orders.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Orders</a>
+                <a href="customers.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Customers</a>
+                <div class="w-full border-t border-gray-200 my-2 hidden lg:block"></div>
+                <a href="settings.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Settings</a>
+            </div>
+        </nav>
+
+        <main class="flex-1 p-4 lg:p-8">
+            <h1 class="text-2xl font-semibold mb-6">Add Product</h1>
+
+            <form class="space-y-6 max-w-3xl">
+                <!-- Basic Info -->
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <h2 class="font-semibold mb-4">Informasi Dasar</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Nama Produk *</label>
+                            <input type="text" placeholder="contoh: Masker Freediving Pro" class="w-full px-3 py-2 border border-gray-200">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Deskripsi</label>
+                            <textarea rows="3" class="w-full px-3 py-2 border border-gray-200"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Kategori *</label>
+                                <select class="w-full px-3 py-2 border border-gray-200 bg-white">
+                                    <option>Masker</option>
+                                    <option>Fin</option>
+                                    <option>Wetsuit</option>
+                                    <option>Sabuk Pemberat</option>
+                                    <option>Aksesoris</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Merek</label>
+                                <select class="w-full px-3 py-2 border border-gray-200 bg-white">
+                                    <option>Mares</option>
+                                    <option>Cressi</option>
+                                    <option>Beuchat</option>
+                                    <option>Salvimar</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Tipe Diving</label>
+                                <select class="w-full px-3 py-2 border border-gray-200 bg-white">
+                                    <option>Freediving</option>
+                                    <option>Scuba</option>
+                                    <option>Keduanya</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <h2 class="font-semibold mb-4">Harga</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Harga (Rp) *</label>
+                            <input type="number" placeholder="850000" class="w-full px-3 py-2 border border-gray-200">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-1">Harga Sale (Rp)</label>
+                            <input type="number" placeholder="Kosongkan jika tidak ada" class="w-full px-3 py-2 border border-gray-200">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variants Toggle -->
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-semibold">Varian Produk</h2>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="accent-brand" checked> Produk punya varian
+                        </label>
+                    </div>
+
+                    <!-- Variant Options -->
+                    <div class="space-y-6">
+                        <!-- Preset Variants -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <!-- Warna -->
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-2">Warna</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand" checked> Hitam
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> Blue
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand" checked> Cyan
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> Clear
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> Yellow
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Ukuran -->
+                            <div>
+                                <label class="block text-xs text-gray-500 uppercase tracking-wide mb-2">Ukuran</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> S
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand" checked> M
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand" checked> L
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> XL
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> 40-41
+                                    </label>
+                                    <label class="flex items-center gap-1 px-2 py-1 border border-gray-200 cursor-pointer hover:border-brand text-xs">
+                                        <input type="checkbox" class="accent-brand"> 42-43
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Variant -->
+                        <div>
+                            <button type="button" class="text-xs text-brand hover:underline">+ Tambah Varian Lain (Ketebalan, Head Type, dll)</button>
+                        </div>
+
+                        <!-- Variant Grid -->
+                        <div>
+                            <label class="block text-xs text-gray-500 uppercase tracking-wide mb-2">Stok per Varian</label>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs">
+                                    <thead class="bg-gray-50 text-gray-500 uppercase">
+                                        <tr>
+                                            <th class="text-left p-2">Varian</th>
+                                            <th class="text-left p-2">SKU</th>
+                                            <th class="text-left p-2">Harga</th>
+                                            <th class="text-left p-2">Stok</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="p-2">Hitam / M</td>
+                                            <td class="p-2"><input type="text" value="MFP-H-M" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="850000" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="10" class="px-2 py-1 border border-gray-200 w-16"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Hitam / L</td>
+                                            <td class="p-2"><input type="text" value="MFP-H-L" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="850000" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="15" class="px-2 py-1 border border-gray-200 w-16"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Cyan / M</td>
+                                            <td class="p-2"><input type="text" value="MFP-C-M" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="850000" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="8" class="px-2 py-1 border border-gray-200 w-16"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2">Cyan / L</td>
+                                            <td class="p-2"><input type="text" value="MFP-C-L" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="850000" class="px-2 py-1 border border-gray-200 w-24"></td>
+                                            <td class="p-2"><input type="text" value="12" class="px-2 py-1 border border-gray-200 w-16"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Varian dibuat otomatis dari kombinasi warna & ukuran</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div class="border border-gray-200 p-4 lg:p-6">
+                    <h2 class="font-semibold mb-4">Gambar</h2>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="aspect-square bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs cursor-pointer hover:border-brand relative">
+                            <span class="absolute top-1 left-1 bg-brand text-white text-[8px] px-1 rounded">UTAMA</span>
+                            + Tambah
+                        </div>
+                        <div class="aspect-square bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs cursor-pointer hover:border-brand">
+                            + Tambah
+                        </div>
+                        <div class="aspect-square bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs cursor-pointer hover:border-brand">
+                            + Tambah
+                        </div>
+                        <div class="aspect-square bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs cursor-pointer hover:border-brand">
+                            + Tambah
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="bg-brand text-white px-6 py-2 text-xs uppercase tracking-wider">Save Product</button>
+                    <a href="products.html" class="border border-gray-200 px-6 py-2 text-xs uppercase tracking-wider">Cancel</a>
+                </div>
+            </form>
+        </main>
     </div>
+
 </body>
 </html>

@@ -6,103 +6,70 @@
     <title>Hasil Pencarian - Arnes Dive Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
+
 </head>
 <body class="font-sans text-sm">
 
     <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
 
-    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 bg-white max-w-7xl mx-auto">
-        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 max-w-7xl mx-auto">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
         <div class="hidden lg:flex gap-6">
-            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Sale</a>
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Beranda</a>
+            <a href="plp-freediving.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp-scuba.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp-accessories.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
+            <a href="plp-sale.html" class="text-red-500 hover:text-red-700 text-sm">Sale</a>
         </div>
-        <a href="homepage.html" class="text-2xl font-bold text-brand">ARNES DIVE</a>
+        <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
         <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="search.html" class="hidden sm:block text-brand">[Cari]</a>
             <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
             <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
             <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
         </div>
     </nav>
 
-    <!-- Search Header -->
-    <div class="bg-gray-100 py-8 text-center px-4">
-        <div class="flex max-w-lg mx-auto mb-4">
-            <input type="text" placeholder="Cari produk..." value="masker freediving" class="flex-1 px-4 py-3 border border-gray-300 text-sm focus:border-brand focus:outline-none">
-            <button class="bg-brand text-white px-6 hover:bg-gray-700">Cari</button>
-        </div>
-        <h1 class="text-xl font-semibold">Hasil pencarian untuk "masker freediving"</h1>
-        <p class="text-gray-600 text-sm">12 produk ditemukan</p>
-        <p class="text-sm mt-2">Maksud Anda: <a href="#" class="text-brand hover:underline">masker scuba</a> • <a href="#" class="text-brand hover:underline">masker diving</a></p>
-    </div>
-
     <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="flex flex-col lg:flex-row gap-8">
+        <input type="text" value="masker" class="w-full lg:w-1/2 px-4 py-3 border border-gray-300 text-lg mb-6">
+        <p class="text-sm text-gray-600 mb-6">Ditemukan <span class="font-medium text-brand">12 produk</span> untuk "masker"</p>
 
-            <!-- Filters (simplified) -->
-            <aside class="hidden lg:block w-64 flex-shrink-0">
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Kategori</h3>
-                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600"><input type="checkbox"> Masker</label>
-                        <label class="flex items-center gap-2 text-sm text-gray-600"><input type="checkbox"> Aksesoris</label>
-                    </div>
-                    <div>
-                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Harga</h3>
-                        <div class="bg-gray-100 border border-dashed border-gray-300 h-10 flex items-center justify-center text-gray-400 text-xs">Slider</div>
-                    </div>
-                    <div>
-                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Merek</h3>
-                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600"><input type="checkbox"> Mares</label>
-                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600"><input type="checkbox"> Cressi</label>
-                        <label class="flex items-center gap-2 text-sm text-gray-600"><input type="checkbox"> Beuchat</label>
-                    </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                    <span class="absolute top-2 left-2 bg-brand text-white text-[10px] uppercase px-2 py-1">Baru</span>
+                    Gambar
                 </div>
-            </aside>
-
-            <!-- Results -->
-            <main class="flex-1">
-                <div class="flex justify-between items-center mb-6">
-                    <p class="text-sm text-gray-600">Menampilkan 1-12 dari 12 produk</p>
-                    <select class="border border-gray-300 px-3 py-2 text-sm">
-                        <option>Urutkan: Terbaru</option>
-                        <option>Harga: Rendah ke Tinggi</option>
-                        <option>Harga: Tinggi ke Rendah</option>
-                    </select>
+                <h3 class="font-medium text-sm mb-1">Masker Freediving Pro</h3>
+                <p class="text-gray-600 text-sm">Rp 850.000</p>
+            </a>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Masker Low Volume</h3>
+                <p class="text-gray-600 text-sm">Rp 650.000</p>
+            </a>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                    <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] uppercase px-2 py-1">Sale</span>
+                    Gambar
                 </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <a href="pdp.html">
-                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs relative mb-2">
-                            <span class="absolute top-2 left-2 bg-brand text-white text-[10px] px-2 py-1">Baru</span>
-                            Gambar
-                        </div>
-                        <h3 class="font-medium text-sm">Masker Freediving Pro</h3>
-                        <p class="text-gray-600 text-sm">Rp 850.000</p>
-                    </a>
-                    <a href="pdp.html">
-                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                        <h3 class="font-medium text-sm">Masker Low Volume</h3>
-                        <p class="text-gray-600 text-sm">Rp 650.000</p>
-                    </a>
-                    <a href="pdp.html">
-                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                        <h3 class="font-medium text-sm">Masker Competition</h3>
-                        <p class="text-gray-600 text-sm">Rp 520.000</p>
-                    </a>
-                    <a href="pdp.html">
-                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                        <h3 class="font-medium text-sm">Masker Frameless</h3>
-                        <p class="text-gray-600 text-sm">Rp 950.000</p>
-                    </a>
-                </div>
-            </main>
+                <h3 class="font-medium text-sm mb-1">Masker Competition</h3>
+                <p class="text-sm"><span class="text-red-500">Rp 520.000</span> <s class="text-gray-400 text-xs">Rp 750.000</s></p>
+            </a>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Masker Junior</h3>
+                <p class="text-gray-600 text-sm">Rp 350.000</p>
+            </a>
+            <a href="pdp.html">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Masker Silicone</h3>
+                <p class="text-gray-600 text-sm">Rp 1.100.000</p>
+            </a>
         </div>
     </div>
+
+    <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50"><div class="max-w-7xl mx-auto text-center text-xs text-gray-600">© 2024 Arnes Dive Shop. All rights reserved.</div></footer>
 
 </body>
 </html>

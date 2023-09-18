@@ -1,0 +1,32 @@
+{
+  "featureId": "F-012",
+  "title": "Order creation with atomic transaction",
+  "module": "Orders",
+  "description": "Order creation with idempotency keys, atomic order+items+payment insert, status workflow",
+  "scope": {
+    "inScope": [
+      "Order creation Server Action",
+      "Atomic transaction: order + items + payment record",
+      "Idempotency key generation and validation",
+      "Order number generation",
+      "Order status enum and workflow",
+      "Order confirmation email via Mailgun",
+      "Order history for customers",
+      "Admin order list with filters"
+    ],
+    "outOfScope": [
+      "Order refunds",
+      "Order cancellation by customer"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Order created with all items in single atomic transaction", "done": false },
+    { "id": "AC2", "text": "Duplicate submission prevented by idempotency key", "done": false },
+    { "id": "AC3", "text": "Order number auto-generated with format ORD-XXXXX", "done": false },
+    { "id": "AC4", "text": "Customer receives order confirmation email", "done": false },
+    { "id": "AC5", "text": "Customer can view order history in account", "done": false },
+    { "id": "AC6", "text": "Admin can view and filter orders", "done": false }
+  ],
+  "dependsOn": ["F-003", "F-008", "F-010", "F-011"],
+  "source": { "file": "prd.md", "lines": "orders-module" }
+}

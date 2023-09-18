@@ -1,0 +1,28 @@
+{
+  "featureId": "F-011",
+  "title": "Midtrans payment integration",
+  "module": "Payment",
+  "description": "Midtrans Snap integration with provider abstraction, transaction creation, redirect flow",
+  "scope": {
+    "inScope": [
+      "PaymentProvider interface definition",
+      "Midtrans provider implementation",
+      "Transaction creation via Midtrans Snap API",
+      "Redirect URL handling",
+      "Sandbox vs production configuration",
+      "Error handling for failed transactions"
+    ],
+    "outOfScope": [
+      "Webhook handling (separate feature)",
+      "Refund processing"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "PaymentProvider interface defines createTransaction and verifyWebhook methods", "done": false },
+    { "id": "AC2", "text": "Midtrans provider creates Snap transaction successfully", "done": false },
+    { "id": "AC3", "text": "User redirected to Midtrans payment page", "done": false },
+    { "id": "AC4", "text": "Sandbox mode configurable via environment variable", "done": false }
+  ],
+  "dependsOn": ["F-002", "F-008"],
+  "source": { "file": "prd.md", "lines": "payment-module" }
+}

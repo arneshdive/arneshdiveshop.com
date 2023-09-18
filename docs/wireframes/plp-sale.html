@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sale - Arnes Dive Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { brand: '#333333' } } }
+        }
+    </script>
+
+</head>
+<body class="font-sans text-sm">
+
+    <div class="bg-red-500 text-white py-2 text-center text-xs font-medium">🔥 SALE HINGGA 50% - Penawaran Terbatas!</div>
+
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 max-w-7xl mx-auto">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Beranda</a>
+            <a href="plp-freediving.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp-scuba.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp-accessories.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
+            <a href="plp-sale.html" class="text-red-500 font-medium text-sm">Sale</a>
+        </div>
+        <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="search.html" class="hidden sm:block hover:text-brand">[Cari]</a>
+            <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-b px-4 py-4">
+        <div class="flex flex-col gap-3">
+            <a href="homepage.html" class="text-gray-600 py-2">Beranda</a>
+            <a href="plp-freediving.html" class="text-gray-600 py-2">Freediving</a>
+            <a href="plp-scuba.html" class="text-gray-600 py-2">Scuba</a>
+            <a href="plp-accessories.html" class="text-gray-600 py-2">Aksesoris</a>
+            <a href="plp-sale.html" class="text-red-500 font-medium py-2">Sale</a>
+        </div>
+    </div>
+
+    <!-- Category Banner - SALE -->
+    <section class="bg-gradient-to-r from-red-600 to-red-500 text-white py-12 lg:py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center gap-3 mb-2">
+                <h1 class="text-3xl lg:text-4xl font-semibold">SALE</h1>
+                <span class="bg-white text-red-600 text-xs font-bold px-2 py-1 rounded">HINGGA 50% OFF</span>
+            </div>
+            <p class="text-red-100 max-w-xl">Penawaran spesial untuk peralatan diving pilihan. Stok terbatas, grab sekarang!</p>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 py-4 text-xs text-gray-600">
+        <a href="homepage.html" class="hover:text-brand">Beranda</a> / <span class="text-red-500">Sale</span>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <button class="lg:hidden border border-gray-300 py-3 px-4 text-sm" onclick="document.getElementById('filters').classList.toggle('hidden')">Filter & Sort</button>
+
+            <aside id="filters" class="hidden lg:block w-full lg:w-64 flex-shrink-0">
+                <div class="lg:sticky lg:top-4 space-y-6">
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Diskon</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> 10-30%</label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> 30-50%</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> 50%+</label>
+                    </div>
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Kategori</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> Masker</label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> Fin</label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> Wetsuit</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-red-500"> Aksesoris</label>
+                    </div>
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Harga</h3>
+                        <div class="bg-gray-100 border border-dashed border-gray-300 h-10 flex items-center justify-center text-gray-400 text-xs">Slider Harga</div>
+                    </div>
+                    <a href="#" class="text-xs text-gray-400 hover:text-brand">Hapus Semua Filter</a>
+                </div>
+            </aside>
+
+            <main class="flex-1">
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-sm text-gray-600">Menampilkan <span class="font-medium text-red-500">32</span> produk</p>
+                    <select class="border border-gray-300 px-3 py-2 text-sm"><option>Urutkan: Diskon Terbesar</option></select>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 lg:gap-6">
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-40%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Masker Competition</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 450.000</span> <s class="text-gray-400 text-xs">Rp 750.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-25%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Fin Fiber Glass</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 1.500.000</span> <s class="text-gray-400 text-xs">Rp 2.000.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-50%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Wetsuit 2mm</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 600.000</span> <s class="text-gray-400 text-xs">Rp 1.200.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-30%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Snorkel Set</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 350.000</span> <s class="text-gray-400 text-xs">Rp 500.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-35%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Gloves 3mm</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 260.000</span> <s class="text-gray-400 text-xs">Rp 400.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-15%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Masker Pro</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 680.000</span> <s class="text-gray-400 text-xs">Rp 800.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-45%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Fin Set</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 990.000</span> <s class="text-gray-400 text-xs">Rp 1.800.000</s></p>
+                    </a>
+                    <a href="pdp.html" class="group">
+                        <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 relative">
+                            <span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold uppercase px-2 py-1">-30%</span>
+                            Gambar Produk
+                        </div>
+                        <h3 class="font-medium text-sm mb-1">Wetsuit 2mm</h3>
+                        <p class="text-sm"><span class="text-red-500 font-medium">Rp 700.000</span> <s class="text-gray-400 text-xs">Rp 1.000.000</s></p>
+                    </a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50">
+        <div class="max-w-7xl mx-auto text-center text-xs text-gray-600">© 2024 Arnes Dive Shop. All rights reserved.</div>
+    </footer>
+
+</body>
+</html>

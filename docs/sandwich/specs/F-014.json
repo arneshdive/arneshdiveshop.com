@@ -1,0 +1,29 @@
+{
+  "featureId": "F-014",
+  "title": "Customer profiles and addresses",
+  "module": "Customers",
+  "description": "Customer management with addresses, order history, total spent tracking",
+  "scope": {
+    "inScope": [
+      "Customer profile auto-created on registration",
+      "Profile edit (name, phone)",
+      "Address management (add, edit, delete)",
+      "Default address selection",
+      "Total spent tracking",
+      "Order history display"
+    ],
+    "outOfScope": [
+      "Customer segmentation",
+      "Loyalty points"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Customer profile created automatically on registration", "done": false },
+    { "id": "AC2", "text": "Customer can add multiple addresses", "done": false },
+    { "id": "AC3", "text": "Customer can set default address", "done": false },
+    { "id": "AC4", "text": "Total spent updated after each order", "done": false },
+    { "id": "AC5", "text": "Customer can view order history with status", "done": false }
+  ],
+  "dependsOn": ["F-002", "F-003", "F-012"],
+  "source": { "file": "prd.md", "lines": "customers-module" }
+}

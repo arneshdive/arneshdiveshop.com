@@ -1,0 +1,28 @@
+{
+  "featureId": "F-016",
+  "title": "Promo code management",
+  "module": "Promotions",
+  "description": "Promo codes with percentage/fixed discounts, limits, validity periods",
+  "scope": {
+    "inScope": [
+      "Promo code CRUD",
+      "Percentage or fixed amount discount types",
+      "Minimum order requirement",
+      "Usage limits and tracking",
+      "Validity date range",
+      "Promo application at checkout"
+    ],
+    "outOfScope": [
+      "Auto-applied promotions",
+      "Stackable promo codes"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Admin can create promo code with code, type, value, and conditions", "done": false },
+    { "id": "AC2", "text": "Promo codes expire after end date", "done": false },
+    { "id": "AC3", "text": "Usage count incremented on each use", "done": false },
+    { "id": "AC4", "text": "Customer can apply promo code at checkout", "done": false }
+  ],
+  "dependsOn": ["F-002", "F-012"],
+  "source": { "file": "prd.md", "lines": "promotions-module" }
+}

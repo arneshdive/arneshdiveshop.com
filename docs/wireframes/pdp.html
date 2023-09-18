@@ -3,34 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Detail - Arnes Dive Shop</title>
+    <title>Masker Freediving Pro - Arnes Dive Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: '#333333' }
-                }
-            }
+            theme: { extend: { colors: { brand: '#333333' } } }
         }
     </script>
 </head>
 <body class="font-sans text-sm">
 
-    <!-- Top Bar -->
     <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
 
-    <!-- Navigation -->
     <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 max-w-7xl mx-auto">
         <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
         <div class="hidden lg:flex gap-6">
-            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Baru</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
-            <a href="plp.html" class="text-gray-600 hover:text-brand text-sm">Sale</a>
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Beranda</a>
+            <a href="plp-freediving.html" class="text-brand text-sm">Freediving</a>
+            <a href="plp-scuba.html" class="text-gray-600 hover:text-brand text-sm">Scuba</a>
+            <a href="plp-sale.html" class="text-red-500 hover:text-red-700 text-sm">Sale</a>
         </div>
         <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
         <div class="flex gap-4 text-gray-600 text-sm">
@@ -41,187 +34,138 @@
         </div>
     </nav>
 
-    <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden lg:hidden bg-white border-b px-4 py-4">
         <div class="flex flex-col gap-3">
-            <a href="homepage.html" class="text-gray-600 py-2">Baru</a>
-            <a href="plp.html" class="text-gray-600 py-2">Freediving</a>
-            <a href="plp.html" class="text-gray-600 py-2">Scuba</a>
-            <a href="plp.html" class="text-gray-600 py-2">Aksesoris</a>
-            <a href="plp.html" class="text-gray-600 py-2">Sale</a>
+            <a href="homepage.html" class="text-gray-600 py-2">Beranda</a>
+            <a href="plp-freediving.html" class="text-brand py-2">Freediving</a>
+            <a href="plp-scuba.html" class="text-gray-600 py-2">Scuba</a>
+            <a href="plp-sale.html" class="text-red-500 py-2">Sale</a>
         </div>
     </div>
 
-    <!-- Breadcrumb -->
     <div class="max-w-7xl mx-auto px-4 py-4 text-xs text-gray-600">
-        <a href="homepage.html">Beranda</a> / <a href="plp.html">Freediving</a> / <a href="plp.html">Masker</a> / Masker Freediving Pro
+        <a href="homepage.html">Beranda</a> / <a href="plp-freediving.html" class="hover:text-brand">Freediving</a> / <span class="text-brand">Masker Freediving Pro</span>
     </div>
 
     <!-- Product Main -->
     <div class="max-w-7xl mx-auto px-4 pb-12">
         <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
             
-            <!-- Gallery -->
+            <!-- Gallery - STICKY on desktop -->
             <div class="w-full lg:w-3/5">
-                <div class="aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-4">
-                    Gambar Utama Produk
-                </div>
-                <div class="flex gap-3 overflow-x-auto pb-2">
-                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-brand flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">1</div>
-                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">2</div>
-                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">3</div>
-                    <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">4</div>
+                <div class="lg:sticky lg:top-4">
+                    <div class="aspect-[4/3] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-4">
+                        Gambar Utama Produk
+                    </div>
+                    <div class="flex gap-3 overflow-x-auto pb-2">
+                        <div class="w-20 h-20 bg-gray-100 border-2 border-brand flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">1</div>
+                        <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">2</div>
+                        <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">3</div>
+                        <div class="w-20 h-20 bg-gray-100 border-2 border-dashed border-gray-300 flex-shrink-0 flex items-center justify-center text-gray-400 text-xs cursor-pointer">4</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Product Info -->
+            <!-- Product Info - STICKY on desktop -->
             <div class="w-full lg:w-2/5">
-                <span class="inline-block bg-blue-900 text-white text-[10px] uppercase px-3 py-1 mb-4">Freediving</span>
-                
-                <h1 class="text-2xl lg:text-3xl font-semibold mb-2">Masker Freediving Pro</h1>
-                <p class="text-xl lg:text-2xl mb-3">Rp 850.000</p>
-                
-                <div class="flex items-center gap-2 mb-6">
-                    <span class="text-yellow-500">★★★★★</span>
-                    <span class="text-sm text-gray-600">4.8 (124 ulasan)</span>
-                </div>
-
-                <!-- Color Selection -->
-                <div class="mb-6">
-                    <p class="text-xs uppercase tracking-wider text-gray-600 mb-2">Warna: <span class="font-medium text-brand">Hitam</span></p>
-                    <div class="flex gap-3">
-                        <button class="w-10 h-10 rounded-full bg-black border-2 border-brand ring-2 ring-offset-2 ring-brand"></button>
-                        <button class="w-10 h-10 rounded-full bg-blue-900 border-2 border-gray-300 hover:border-brand"></button>
-                        <button class="w-10 h-10 rounded-full bg-white border-2 border-gray-300 hover:border-brand"></button>
+                <div class="lg:sticky lg:top-4">
+                    <span class="inline-block bg-cyan-700 text-white text-[10px] uppercase px-3 py-1 mb-4">Freediving</span>
+                    
+                    <h1 class="text-2xl lg:text-3xl font-semibold mb-2">Masker Freediving Pro</h1>
+                    <p class="text-xl lg:text-2xl mb-3">Rp 850.000</p>
+                    
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-yellow-500">★★★★★</span>
+                        <span class="text-sm text-gray-600">4.8 (124 ulasan)</span>
                     </div>
-                </div>
 
-                <!-- Quantity -->
-                <div class="mb-6">
-                    <p class="text-xs uppercase tracking-wider text-gray-600 mb-2">Jumlah</p>
-                    <div class="flex items-center border border-gray-300 w-fit">
-                        <button class="px-4 py-2 hover:bg-gray-100">−</button>
-                        <span class="px-4 py-2 border-x border-gray-300">1</span>
-                        <button class="px-4 py-2 hover:bg-gray-100">+</button>
-                    </div>
-                </div>
-
-                <!-- Buttons -->
-                <a href="cart.html" class="block w-full bg-brand text-white py-4 text-center text-xs uppercase tracking-wider hover:bg-gray-700 mb-3">
-                    Tambah ke Keranjang
-                </a>
-                <a href="checkout.html" class="block w-full bg-white border border-brand py-4 text-center text-xs uppercase tracking-wider hover:bg-gray-100">
-                    Beli Sekarang
-                </a>
-
-                <!-- Links -->
-                <div class="flex gap-6 text-xs mt-6">
-                    <a href="#" class="text-gray-600 border-b border-gray-300 hover:border-brand">Panduan Ukuran</a>
-                    <a href="#" class="text-gray-600 border-b border-gray-300 hover:border-brand">Info Pengiriman</a>
-                </div>
-
-                <!-- Accordion -->
-                <div class="border-t border-gray-200 mt-8">
-                    <div class="border-b border-gray-200">
-                        <button class="w-full py-4 flex justify-between items-center" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                            <span class="font-medium">Deskripsi</span>
-                            <span>+</span>
-                        </button>
-                        <div class="pb-4 text-gray-600 text-sm leading-relaxed">
-                            Masker freediving profesional dengan volume rendah untuk visibilitas maksimal di bawah air. Terbuat dari silikon premium berkualitas tinggi.
+                    <!-- Color Selection -->
+                    <div class="mb-6">
+                        <p class="text-xs uppercase tracking-wider text-gray-600 mb-2">Warna: <span class="font-medium text-brand">Hitam</span></p>
+                        <div class="flex gap-3">
+                            <button class="w-10 h-10 rounded-full bg-black border-2 border-brand ring-2 ring-offset-2 ring-brand"></button>
+                            <button class="w-10 h-10 rounded-full bg-blue-900 border-2 border-gray-300 hover:border-brand"></button>
+                            <button class="w-10 h-10 rounded-full bg-white border-2 border-gray-300 hover:border-brand"></button>
                         </div>
                     </div>
-                    <div class="border-b border-gray-200">
-                        <button class="w-full py-4 flex justify-between items-center" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                            <span class="font-medium">Spesifikasi</span>
-                            <span>+</span>
-                        </button>
-                        <div class="pb-4 text-gray-600 text-sm hidden"></div>
+
+                    <!-- Quantity -->
+                    <div class="mb-6">
+                        <p class="text-xs uppercase tracking-wider text-gray-600 mb-2">Jumlah</p>
+                        <div class="flex items-center gap-3">
+                            <button class="w-10 h-10 border border-gray-300 text-lg hover:border-brand">−</button>
+                            <span class="w-12 text-center">1</span>
+                            <button class="w-10 h-10 border border-gray-300 text-lg hover:border-brand">+</button>
+                        </div>
                     </div>
-                    <div class="border-b border-gray-200">
-                        <button class="w-full py-4 flex justify-between items-center" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                            <span class="font-medium">Perawatan</span>
-                            <span>+</span>
-                        </button>
-                        <div class="pb-4 text-gray-600 text-sm hidden"></div>
+
+                    <!-- Stock Status -->
+                    <p class="text-sm text-green-600 mb-6">✓ Stok tersedia</p>
+
+                    <!-- Actions -->
+                    <div class="space-y-3 mb-8">
+                        <button class="w-full bg-brand text-white py-4 text-sm uppercase tracking-wider hover:bg-gray-700">Tambah ke Keranjang</button>
+                        <button class="w-full border border-brand py-4 text-sm uppercase tracking-wider hover:bg-gray-100">Wishlist</button>
+                    </div>
+
+                    <!-- Accordion -->
+                    <div class="border-t border-gray-200">
+                        <details class="border-b border-gray-200" open>
+                            <summary class="py-4 cursor-pointer text-sm font-medium flex justify-between items-center">Deskripsi <span>−</span></summary>
+                            <p class="pb-4 text-gray-600 text-sm leading-relaxed">Masker freediving profesional dengan volume rendah untuk penglihatan maksimal di bawah air. Lensa tempered glass dan skirt silicone premium untuk kenyamanan.</p>
+                        </details>
+                        <details class="border-b border-gray-200">
+                            <summary class="py-4 cursor-pointer text-sm font-medium flex justify-between items-center">Spesifikasi <span>+</span></summary>
+                            <div class="pb-4 text-gray-600 text-sm">
+                                <table class="w-full"><tbody>
+                                    <tr><td class="py-1 text-gray-500">Volume</td><td>110ml</td></tr>
+                                    <tr><td class="py-1 text-gray-500">Lensa</td><td>Tempered Glass</td></tr>
+                                    <tr><td class="py-1 text-gray-500">Skirt</td><td>Silicone Premium</td></tr>
+                                </tbody></table>
+                            </div>
+                        </details>
+                        <details class="border-b border-gray-200">
+                            <summary class="py-4 cursor-pointer text-sm font-medium flex justify-between items-center">Pengiriman <span>+</span></summary>
+                            <div class="pb-4 text-gray-600 text-sm">
+                                <p class="mb-2">• Gratis ongkir untuk pembelian di atas Rp 500.000</p>
+                                <p>• Pengiriman 1-3 hari kerja (Jabodetabek)</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Reviews Section -->
-    <section class="border-t border-gray-200 py-12 px-4 max-w-7xl mx-auto">
-        <h2 class="text-xl font-semibold text-center mb-8">Ulasan Pelanggan</h2>
-        <div class="bg-gray-100 border-2 border-dashed border-gray-300 h-48 flex items-center justify-center text-gray-400 text-xs">
-            Daftar Ulasan (review cards with rating, name, date, comment)
-        </div>
-    </section>
-
     <!-- Related Products -->
-    <section class="border-t border-gray-200 py-12 px-4 max-w-7xl mx-auto">
-        <h2 class="text-xl font-semibold text-center mb-8">Produk Terkait</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-            <a href="pdp.html">
-                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                <h3 class="font-medium text-sm">Masker Low Volume</h3>
+    <section class="max-w-7xl mx-auto px-4 pb-12">
+        <h2 class="text-lg font-semibold mb-6">Produk Terkait</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="pdp.html" class="group">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 text-xs">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Masker Low Volume</h3>
                 <p class="text-gray-600 text-sm">Rp 650.000</p>
             </a>
-            <a href="pdp.html">
-                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                <h3 class="font-medium text-sm">Masker Competition</h3>
-                <p class="text-gray-600 text-sm">Rp 520.000</p>
+            <a href="pdp.html" class="group">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 text-xs">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Snorkel Dry Top</h3>
+                <p class="text-gray-600 text-sm">Rp 280.000</p>
             </a>
-            <a href="pdp.html">
-                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                <h3 class="font-medium text-sm">Masker Frameless</h3>
-                <p class="text-gray-600 text-sm">Rp 950.000</p>
+            <a href="pdp.html" class="group">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 text-xs">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Fin Carbón Pro</h3>
+                <p class="text-gray-600 text-sm">Rp 2.500.000</p>
             </a>
-            <a href="pdp.html">
-                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs mb-2">Gambar</div>
-                <h3 class="font-medium text-sm">Masker Junior</h3>
-                <p class="text-gray-600 text-sm">Rp 350.000</p>
+            <a href="pdp.html" class="group">
+                <div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3 text-xs">Gambar</div>
+                <h3 class="font-medium text-sm mb-1">Wetsuit 3mm</h3>
+                <p class="text-gray-600 text-sm">Rp 1.850.000</p>
             </a>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Newsletter</h5>
-                <p class="text-xs text-gray-600 mb-3">Dapatkan info produk terbaru</p>
-                <input type="email" placeholder="Email Anda" class="w-full px-3 py-2 border border-gray-300 mb-2 text-sm">
-                <button class="w-full bg-brand text-white px-3 py-2 text-xs uppercase">Langganan</button>
-            </div>
-            <div>
-                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Belanja</h5>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Freediving</a></li>
-                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Scuba</a></li>
-                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Aksesoris</a></li>
-                    <li><a href="plp.html" class="text-gray-600 hover:text-brand">Sale</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Bantuan</h5>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="faq.html" class="text-gray-600 hover:text-brand">FAQ</a></li>
-                    <li><a href="contact.html" class="text-gray-600 hover:text-brand">Hubungi Kami</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="text-xs uppercase tracking-wider font-semibold mb-4">Tentang</h5>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="about.html" class="text-gray-600 hover:text-brand">Tentang Kami</a></li>
-                    <li><a href="privacy.html" class="text-gray-600 hover:text-brand">Kebijakan Privasi</a></li>
-                    <li><a href="terms.html" class="text-gray-600 hover:text-brand">Syarat & Ketentuan</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="text-center pt-8 mt-8 border-t border-gray-200 text-xs text-gray-600">
-            © 2024 Arnes Dive Shop. All rights reserved.
-        </div>
+        <div class="max-w-7xl mx-auto text-center text-xs text-gray-600">© 2024 Arnes Dive Shop. All rights reserved.</div>
     </footer>
 
 </body>

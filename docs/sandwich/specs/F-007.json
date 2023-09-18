@@ -1,0 +1,25 @@
+{
+  "featureId": "F-007",
+  "title": "Brand management",
+  "module": "Products",
+  "description": "CRUD for brands with slug generation",
+  "scope": {
+    "inScope": [
+      "Brand list view in admin",
+      "Brand create/edit form",
+      "Automatic slug generation from name",
+      "Brand delete"
+    ],
+    "outOfScope": [
+      "Brand images/logos",
+      "Brand descriptions"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Admin can create brand with name and slug", "done": false },
+    { "id": "AC2", "text": "Slug auto-generated from name (editable)", "done": false },
+    { "id": "AC3", "text": "Brands available in product form dropdown", "done": false }
+  ],
+  "dependsOn": ["F-001", "F-002"],
+  "source": { "file": "prd.md", "lines": "products-module" }
+}

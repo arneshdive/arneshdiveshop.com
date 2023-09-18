@@ -5,199 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Admin Arnes Dive</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#333333',
+                        'brand-light': '#666666',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="font-sans text-sm bg-gray-100">
+<body class="font-sans text-sm leading-relaxed bg-white">
 
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-brand text-white transform -translate-x-full lg:translate-x-0 transition-transform z-30">
-            <div class="p-6 border-b border-gray-700">
-                <a href="index.html" class="text-xl font-bold">ARNES DIVE</a>
-                <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
-            </div>
-            <nav class="p-4 space-y-1">
-                <a href="index.html" class="flex items-center gap-3 px-4 py-3 bg-gray-700 rounded font-medium">
-                    <span>📊</span> Dashboard
-                </a>
-                <a href="products.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>📦</span> Products
-                </a>
-                <a href="orders.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>🛒</span> Orders
-                </a>
-                <a href="customers.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>👥</span> Customers
-                </a>
-                <a href="inventory.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>📋</span> Inventory
-                </a>
-                <a href="banners.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>🖼️</span> Banners
-                </a>
-                <a href="promotions.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>🏷️</span> Promotions
-                </a>
-                <a href="reports.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                    <span>📈</span> Reports
-                </a>
-                <div class="pt-4 border-t border-gray-700 mt-4">
-                    <a href="settings.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                        <span>⚙️</span> Settings
-                    </a>
-                    <a href="../homepage.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                        <span>🌐</span> View Store
-                    </a>
-                    <a href="../login.html" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded text-gray-300">
-                        <span>🚪</span> Logout
-                    </a>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <div class="flex-1 lg:ml-64">
-            <!-- Top Bar -->
-            <header class="bg-white border-b px-4 py-3 flex items-center justify-between">
-                <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('-translate-x-full')">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-                <h1 class="text-lg font-semibold">Dashboard</h1>
-                <div class="flex items-center gap-4">
-                    <span class="text-gray-600 text-sm">Admin User</span>
-                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm">A</div>
-                </div>
-            </header>
-
-            <!-- Content -->
-            <main class="p-6">
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-6 border-l-4 border-blue-500">
-                        <p class="text-xs text-gray-600 uppercase tracking-wider">Today's Sales</p>
-                        <p class="text-2xl font-semibold mt-1">Rp 12.450.000</p>
-                        <p class="text-xs text-green-600 mt-2">↑ 12% from yesterday</p>
-                    </div>
-                    <div class="bg-white p-6 border-l-4 border-green-500">
-                        <p class="text-xs text-gray-600 uppercase tracking-wider">Total Orders</p>
-                        <p class="text-2xl font-semibold mt-1">48</p>
-                        <p class="text-xs text-green-600 mt-2">↑ 8 new today</p>
-                    </div>
-                    <div class="bg-white p-6 border-l-4 border-yellow-500">
-                        <p class="text-xs text-gray-600 uppercase tracking-wider">Pending Orders</p>
-                        <p class="text-2xl font-semibold mt-1">12</p>
-                        <p class="text-xs text-gray-500 mt-2">Need attention</p>
-                    </div>
-                    <div class="bg-white p-6 border-l-4 border-purple-500">
-                        <p class="text-xs text-gray-600 uppercase tracking-wider">New Customers</p>
-                        <p class="text-2xl font-semibold mt-1">24</p>
-                        <p class="text-xs text-green-600 mt-2">↑ 5 this week</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Recent Orders -->
-                    <div class="lg:col-span-2 bg-white border">
-                        <div class="p-4 border-b flex justify-between items-center">
-                            <h2 class="font-semibold">Recent Orders</h2>
-                            <a href="orders.html" class="text-xs text-brand hover:underline">View All</a>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-50 text-xs uppercase text-gray-600">
-                                    <tr>
-                                        <th class="text-left p-4">Order ID</th>
-                                        <th class="text-left p-4">Customer</th>
-                                        <th class="text-left p-4">Total</th>
-                                        <th class="text-left p-4">Status</th>
-                                        <th class="text-right p-4"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-t">
-                                        <td class="p-4 font-medium">#ARD-2024-0048</td>
-                                        <td class="p-4">Ahmad Diver</td>
-                                        <td class="p-4">Rp 3.375.000</td>
-                                        <td class="p-4"><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Pending</span></td>
-                                        <td class="p-4 text-right"><a href="order-detail.html" class="text-brand text-xs hover:underline">View</a></td>
-                                    </tr>
-                                    <tr class="border-t">
-                                        <td class="p-4 font-medium">#ARD-2024-0047</td>
-                                        <td class="p-4">Budi Santoso</td>
-                                        <td class="p-4">Rp 1.250.000</td>
-                                        <td class="p-4"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Processing</span></td>
-                                        <td class="p-4 text-right"><a href="order-detail.html" class="text-brand text-xs hover:underline">View</a></td>
-                                    </tr>
-                                    <tr class="border-t">
-                                        <td class="p-4 font-medium">#ARD-2024-0046</td>
-                                        <td class="p-4">Citra Dewi</td>
-                                        <td class="p-4">Rp 850.000</td>
-                                        <td class="p-4"><span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Completed</span></td>
-                                        <td class="p-4 text-right"><a href="order-detail.html" class="text-brand text-xs hover:underline">View</a></td>
-                                    </tr>
-                                    <tr class="border-t">
-                                        <td class="p-4 font-medium">#ARD-2024-0045</td>
-                                        <td class="p-4">Dimas Putra</td>
-                                        <td class="p-4">Rp 2.100.000</td>
-                                        <td class="p-4"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Shipped</span></td>
-                                        <td class="p-4 text-right"><a href="order-detail.html" class="text-brand text-xs hover:underline">View</a></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Low Stock Alert -->
-                    <div class="bg-white border">
-                        <div class="p-4 border-b flex justify-between items-center">
-                            <h2 class="font-semibold">Low Stock Alert</h2>
-                            <a href="inventory.html" class="text-xs text-brand hover:underline">View All</a>
-                        </div>
-                        <div class="p-4 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium text-sm">Masker Freediving Pro</p>
-                                    <p class="text-xs text-gray-600">SKU: MFP-001</p>
-                                </div>
-                                <span class="text-red-600 font-semibold text-sm">3 left</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium text-sm">Fin Carbón Pro</p>
-                                    <p class="text-xs text-gray-600">SKU: FCP-042</p>
-                                </div>
-                                <span class="text-red-600 font-semibold text-sm">5 left</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium text-sm">Wetsuit 3mm Premium</p>
-                                    <p class="text-xs text-gray-600">SKU: W3P-L</p>
-                                </div>
-                                <span class="text-orange-500 font-semibold text-sm">8 left</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="font-medium text-sm">Snorkel Dry Top</p>
-                                    <p class="text-xs text-gray-600">SKU: SDT-001</p>
-                                </div>
-                                <span class="text-orange-500 font-semibold text-sm">12 left</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="mt-8 bg-white border p-6">
-                    <h2 class="font-semibold mb-4">Quick Actions</h2>
-                    <div class="flex flex-wrap gap-3">
-                        <a href="product-form.html" class="px-4 py-2 bg-brand text-white text-xs uppercase hover:bg-gray-700">+ Add Product</a>
-                        <a href="orders.html?status=pending" class="px-4 py-2 border text-xs uppercase hover:border-brand">View Pending Orders</a>
-                        <a href="reports.html" class="px-4 py-2 border text-xs uppercase hover:border-brand">View Reports</a>
-                        <a href="banners.html" class="px-4 py-2 border text-xs uppercase hover:border-brand">Manage Banners</a>
-                    </div>
-                </div>
-            </main>
+    <!-- Top Bar -->
+    <header class="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('sidebar').classList.toggle('hidden')">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <a href="index.html" class="text-xl font-bold text-brand">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-xs">
+            <a href="../homepage.html" class="hover:text-brand">[View Store]</a>
+            <a href="../login.html" class="hover:text-brand">[Logout]</a>
         </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="hidden lg:block w-full lg:w-48 border-b lg:border-b-0 lg:border-r border-gray-200 lg:min-h-screen p-4 lg:p-6 flex-shrink-0">
+            <div class="flex flex-wrap lg:flex-col gap-1">
+                <a href="index.html" class="block px-3 py-2 text-brand font-medium border-l-2 border-brand">Dashboard</a>
+                <a href="products.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Products</a>
+                <a href="categories.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Categories</a>
+                <a href="brands.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Brands</a>
+                <a href="orders.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Orders</a>
+                <a href="customers.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Customers</a>
+                <a href="inventory.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Inventory</a>
+                <a href="banners.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Banners</a>
+                <a href="promotions.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Promotions</a>
+                <a href="reports.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Reports</a>
+                <div class="w-full border-t border-gray-200 my-2 hidden lg:block"></div>
+                <a href="settings.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Settings</a>
+                <a href="admin-users.html" class="block px-3 py-2 text-gray-600 hover:text-brand border-l-2 border-transparent hover:border-gray-300">Admin Users</a>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main class="flex-1 p-4 lg:p-8">
+            <h1 class="text-2xl font-semibold mb-6">Dashboard</h1>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="p-4 border border-gray-200">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Today's Sales</p>
+                    <p class="text-xl font-semibold mt-1">Rp 12.4jt</p>
+                    <p class="text-xs text-gray-600 mt-2">↑ 12%</p>
+                </div>
+                <div class="p-4 border border-gray-200">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Orders</p>
+                    <p class="text-xl font-semibold mt-1">24</p>
+                    <p class="text-xs text-gray-600 mt-2">↑ 8%</p>
+                </div>
+                <div class="p-4 border border-gray-200">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Visitors</p>
+                    <p class="text-xl font-semibold mt-1">1,234</p>
+                    <p class="text-xs text-gray-600 mt-2">↑ 5%</p>
+                </div>
+                <div class="p-4 border border-gray-200">
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Conv. Rate</p>
+                    <p class="text-xl font-semibold mt-1">2.4%</p>
+                    <p class="text-xs text-gray-600 mt-2">↓ 0.2%</p>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="border border-gray-200 mb-8">
+                <div class="p-4 border-b border-gray-200">
+                    <h2 class="font-semibold">Recent Orders</h2>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <a href="order-detail.html" class="font-medium hover:underline">#ARD-2024-0048</a>
+                            <p class="text-xs text-gray-500 mt-1">Ahmad Diver • 2 items</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm">Rp 3.375.000</span>
+                            <span class="text-xs px-2 py-1 bg-yellow-50 text-yellow-700">Pending</span>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <a href="order-detail.html" class="font-medium hover:underline">#ARD-2024-0047</a>
+                            <p class="text-xs text-gray-500 mt-1">Budi Santoso • 1 item</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm">Rp 1.250.000</span>
+                            <span class="text-xs px-2 py-1 bg-blue-50 text-blue-700">Processing</span>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <a href="order-detail.html" class="font-medium hover:underline">#ARD-2024-0046</a>
+                            <p class="text-xs text-gray-500 mt-1">Citra Dewi • 3 items</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm">Rp 2.100.000</span>
+                            <span class="text-xs px-2 py-1 bg-green-50 text-green-700">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Alert -->
+            <div class="border border-gray-200">
+                <div class="p-4 border-b border-gray-200">
+                    <h2 class="font-semibold">Low Stock Alert</h2>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <p class="font-medium">Masker Freediving Pro</p>
+                            <p class="text-xs text-gray-500 mt-1">SKU: MFP-001</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm text-red-600">3 units left</span>
+                            <a href="inventory.html" class="text-xs text-brand hover:underline">Update Stock</a>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <p class="font-medium">Snorkel Dry Top</p>
+                            <p class="text-xs text-gray-500 mt-1">SKU: SDT-001</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm text-red-600">Out of stock</span>
+                            <a href="inventory.html" class="text-xs text-brand hover:underline">Update Stock</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
 </body>

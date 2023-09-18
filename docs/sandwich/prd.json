@@ -1,0 +1,174 @@
+{
+  "projectName": "Arne's Dive Shop",
+  "mode": "answer",
+  "overview": "E-commerce platform for a dive shop featuring ISR-powered storefront and dynamic admin dashboard. Built with Next.js 15, PostgreSQL, Drizzle ORM, and Midtrans payment integration. Deployed on Vercel with Mailgun for transactional emails and Vercel Blob for image storage. Emphasis on vertical slice architecture with clean separation of domain, application, and presentation layers.",
+  "projectState": {
+    "phase": "planning",
+    "hasExistingCodebase": false,
+    "orderSource": "SPEC.md document with wireframes"
+  },
+  "actors": [
+    { "name": "Customer", "role": "Storefront visitor who browses products, manages cart, and places orders", "confidence": "stated" },
+    { "name": "Admin", "role": "Shop staff managing products, orders, customers, and promotions", "confidence": "stated" },
+    { "name": "Super Admin", "role": "Full system access including user management", "confidence": "stated" }
+  ],
+  "modules": [
+    {
+      "name": "Auth",
+      "status": "planned",
+      "description": "User authentication via NextAuth.js v5 with email/password and OAuth (Google). Role-based access control (customer, admin, super_admin). OTP verification via Mailgun.",
+      "features": [
+        { "text": "Email/password login", "confidence": "stated" },
+        { "text": "Google OAuth login", "confidence": "stated" },
+        { "text": "OTP verification via Mailgun", "confidence": "stated" },
+        { "text": "Role-based access control (customer, admin, super_admin)", "confidence": "stated" },
+        { "text": "Session management", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Products",
+      "status": "planned",
+      "description": "Product catalog with variants, categories, and brands. Supports featured products, image galleries (Vercel Blob), and slug-based URLs. Single availability flag (isActive).",
+      "features": [
+        { "text": "Product CRUD with variants", "confidence": "stated" },
+        { "text": "Category hierarchy with parent/child relationships", "confidence": "stated" },
+        { "text": "Brand management", "confidence": "stated" },
+        { "text": "Product image galleries via Vercel Blob", "confidence": "stated" },
+        { "text": "Slug-based product URLs", "confidence": "stated" },
+        { "text": "Featured products flag", "confidence": "stated" },
+        { "text": "No inventory tracking (client dropped)", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Cart",
+      "status": "planned",
+      "description": "Client-side cart using React Context with localStorage persistence. Simple item management without server sync.",
+      "features": [
+        { "text": "Add/remove/update items", "confidence": "stated" },
+        { "text": "localStorage persistence", "confidence": "stated" },
+        { "text": "Variant selection support", "confidence": "stated" },
+        { "text": "Cart total calculation (client-side)", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Orders",
+      "status": "planned",
+      "description": "Order management with atomic transactions, status tracking, and Midtrans integration. Includes order items, shipping, tax, and discount calculations.",
+      "features": [
+        { "text": "Order creation with atomic transaction (order + items + payment)", "confidence": "stated" },
+        { "text": "Order status workflow (pending_payment → processing → shipped → delivered)", "confidence": "stated" },
+        { "text": "Idempotency key for duplicate prevention", "confidence": "stated" },
+        { "text": "Order history for customers", "confidence": "stated" },
+        { "text": "Admin order management", "confidence": "stated" },
+        { "text": "Order confirmation emails via Mailgun", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Payment",
+      "status": "planned",
+      "description": "Midtrans payment gateway with provider abstraction. Webhook handling for payment status updates.",
+      "features": [
+        { "text": "Midtrans Snap integration", "confidence": "stated" },
+        { "text": "Payment provider abstraction (swappable)", "confidence": "stated" },
+        { "text": "Webhook handling with signature verification", "confidence": "stated" },
+        { "text": "Payment status tracking", "confidence": "stated" },
+        { "text": "Multiple payment methods (GoPay, bank transfer, QRIS)", "confidence": "inferred" }
+      ]
+    },
+    {
+      "name": "Customers",
+      "status": "planned",
+      "description": "Customer profiles with addresses, order history, and spending tracking.",
+      "features": [
+        { "text": "Customer profile management", "confidence": "stated" },
+        { "text": "Multiple shipping addresses", "confidence": "stated" },
+        { "text": "Default address selection", "confidence": "stated" },
+        { "text": "Total spent tracking", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Promotions",
+      "status": "planned",
+      "description": "Discount codes with percentage or fixed amounts. Usage limits and validity periods.",
+      "features": [
+        { "text": "Promo code CRUD", "confidence": "stated" },
+        { "text": "Percentage or fixed discount types", "confidence": "stated" },
+        { "text": "Minimum order requirements", "confidence": "stated" },
+        { "text": "Usage limits and tracking", "confidence": "stated" },
+        { "text": "Validity date ranges", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Banners",
+      "status": "planned",
+      "description": "Hero carousel and promotional banners. Simple CRUD with position and sort order.",
+      "features": [
+        { "text": "Banner CRUD", "confidence": "stated" },
+        { "text": "Position options (hero, sidebar, footer)", "confidence": "stated" },
+        { "text": "Sort ordering", "confidence": "stated" },
+        { "text": "Link to products or pages", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "status": "planned",
+      "description": "Admin dashboard with sales statistics and charts.",
+      "features": [
+        { "text": "Sales statistics cards", "confidence": "stated" },
+        { "text": "Sales chart visualization", "confidence": "stated" },
+        { "text": "Real-time data via TanStack Query", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Search",
+      "status": "planned",
+      "description": "Product search functionality for storefront.",
+      "features": [
+        { "text": "Full-text product search", "confidence": "stated" },
+        { "text": "Search results page", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "Home",
+      "status": "planned",
+      "description": "Storefront homepage with hero, featured products, and category navigation.",
+      "features": [
+        { "text": "Hero carousel from banners", "confidence": "stated" },
+        { "text": "Featured products grid", "confidence": "stated" },
+        { "text": "Category navigation", "confidence": "stated" }
+      ]
+    },
+    {
+      "name": "SEO",
+      "status": "planned",
+      "description": "Search engine optimization features for product discoverability.",
+      "features": [
+        { "text": "Structured data (JSON-LD) for products", "confidence": "stated" },
+        { "text": "Dynamic sitemap generation", "confidence": "stated" },
+        { "text": "Meta tag customization per page", "confidence": "stated" },
+        { "text": "Open Graph tags for social sharing", "confidence": "inferred" }
+      ]
+    }
+  ],
+  "integrations": [
+    { "text": "Midtrans payment gateway", "confidence": "stated" },
+    { "text": "Google OAuth", "confidence": "stated" },
+    { "text": "PostgreSQL database", "confidence": "stated" },
+    { "text": "Vercel hosting and deployment", "confidence": "stated" },
+    { "text": "Mailgun for transactional emails", "confidence": "stated" },
+    { "text": "Vercel Blob for image storage", "confidence": "stated" }
+  ],
+  "constraints": [
+    { "text": "Money stored as integer cents to avoid floating-point issues", "confidence": "stated" },
+    { "text": "Storefront must use ISR for SEO (Server Components)", "confidence": "stated" },
+    { "text": "Admin panel must use CSR with TanStack Query for real-time updates", "confidence": "stated" },
+    { "text": "Mutations must use Server Actions", "confidence": "stated" },
+    { "text": "Wireframes exist and define UI structure", "confidence": "stated" },
+    { "text": "Deployed on Vercel with edge functions support", "confidence": "stated" }
+  ],
+  "stakeholders": [
+    { "name": "Arne's Dive Shop", "role": "Client" }
+  ],
+  "timeline": null,
+  "openQuestionsCount": 2
+}

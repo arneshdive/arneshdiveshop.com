@@ -1,0 +1,25 @@
+{
+  "featureId": "F-004",
+  "title": "Google OAuth integration",
+  "module": "Auth",
+  "description": "Add Google OAuth provider to NextAuth.js for social login",
+  "scope": {
+    "inScope": [
+      "Google OAuth provider configuration in NextAuth",
+      "Google Cloud Console setup documentation",
+      "OAuth callback handling",
+      "User creation from Google profile"
+    ],
+    "outOfScope": [
+      "Other OAuth providers",
+      "Account linking"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "User can login with Google account", "done": false },
+    { "id": "AC2", "text": "New user created from Google profile on first login", "done": false },
+    { "id": "AC3", "text": "OAuth callback redirects to correct page", "done": false }
+  ],
+  "dependsOn": ["F-003"],
+  "source": { "file": "prd.md", "lines": "auth-module" }
+}

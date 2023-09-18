@@ -1,0 +1,1181 @@
+[
+  {
+    "id": "F-001",
+    "fingerprint": "project-foundation-nextjs",
+    "title": "Project foundation and infrastructure setup",
+    "description": "Initialize Next.js 15 project with TypeScript, Tailwind CSS v4, Drizzle ORM, PostgreSQL connection, and Vercel deployment config",
+    "type": "infrastructure",
+    "module": "Infrastructure",
+    "confidence": "stated",
+    "lifecycle": "building",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "tech-stack",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [],
+    "blocks": [
+      "F-002",
+      "F-003",
+      "F-006"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 10,
+        "factors": [
+          "Enables all other features"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "Standard Next.js setup"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Mature tooling"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Blocks all development"
+      },
+      "priority": 30,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-001.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-002",
+    "fingerprint": "database-schema-drizzle",
+    "title": "Database schema and migrations",
+    "description": "Define all tables using Drizzle ORM with pgEnum types for orders, payments, promotions, banners",
+    "type": "infrastructure",
+    "module": "Infrastructure",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "database-schema",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-001"
+    ],
+    "blocks": [
+      "F-003",
+      "F-006",
+      "F-008"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 9,
+        "factors": [
+          "Required for all data models"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Schema defined in SPEC"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Drizzle handles migrations"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Blocks all data features"
+      },
+      "priority": 20,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-002.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-003",
+    "fingerprint": "auth-email-password-nextauth",
+    "title": "Email/password authentication",
+    "description": "Credential-based auth with NextAuth.js v5, password hashing, session management, middleware protection, RBAC",
+    "type": "feature",
+    "module": "Auth",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "auth-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002"
+    ],
+    "blocks": [
+      "F-004",
+      "F-005",
+      "F-012",
+      "F-014"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 9,
+        "factors": [
+          "Required for user features",
+          "Enables RBAC"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "NextAuth setup",
+          "Session management"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Well-documented pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Blocks Orders and Customers"
+      },
+      "priority": 14,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-003.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-004",
+    "fingerprint": "auth-google-oauth",
+    "title": "Google OAuth integration",
+    "description": "Add Google OAuth provider to NextAuth.js for social login",
+    "type": "feature",
+    "module": "Auth",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "auth-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-003"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Improves UX",
+          "Reduces friction"
+        ]
+      },
+      "effort": {
+        "score": 2,
+        "factors": [
+          "Standard OAuth flow"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Common pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Nice to have"
+      },
+      "priority": 21,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-004.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-005",
+    "fingerprint": "auth-otp-mailgun",
+    "title": "OTP verification via Mailgun",
+    "description": "OTP generation, email sending via Mailgun, verification flow with 15-minute expiry",
+    "type": "feature",
+    "module": "Auth",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "auth-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-003"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Required for email verification"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Mailgun API integration"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "External service dependency"
+        ]
+      },
+      "urgency": {
+        "factor": 1.2,
+        "reason": "Important for trust"
+      },
+      "priority": 11,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-005.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-006",
+    "fingerprint": "categories-hierarchy-crud",
+    "title": "Category management",
+    "description": "CRUD for categories with parent/child relationships, slug generation, sort order",
+    "type": "feature",
+    "module": "Products",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "products-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002"
+    ],
+    "blocks": [
+      "F-008",
+      "F-019"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 8,
+        "factors": [
+          "Required for product organization"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "Simple CRUD"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Straightforward"
+        ]
+      },
+      "urgency": {
+        "factor": 1.2,
+        "reason": "Blocks products"
+      },
+      "priority": 19,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-006.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-007",
+    "fingerprint": "brands-crud",
+    "title": "Brand management",
+    "description": "CRUD for brands with slug generation",
+    "type": "feature",
+    "module": "Products",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "products-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002"
+    ],
+    "blocks": [
+      "F-008"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Nice to have"
+        ]
+      },
+      "effort": {
+        "score": 2,
+        "factors": [
+          "Simple CRUD"
+        ]
+      },
+      "risk": {
+        "score": 1,
+        "factors": [
+          "Very straightforward"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Can be deferred"
+      },
+      "priority": 20,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-007.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-008",
+    "fingerprint": "products-crud-variants",
+    "title": "Product CRUD with variants",
+    "description": "Full product management with variants, pricing in cents, slug generation, featured flag, ISR revalidation",
+    "type": "feature",
+    "module": "Products",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "products-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-006",
+      "F-009"
+    ],
+    "blocks": [
+      "F-010",
+      "F-012",
+      "F-019"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 10,
+        "factors": [
+          "Core business entity"
+        ]
+      },
+      "effort": {
+        "score": 6,
+        "factors": [
+          "Variants, images, ISR"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Multi-step form"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Blocks cart, orders"
+      },
+      "priority": 13,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-008.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-009",
+    "fingerprint": "vercel-blob-image-upload",
+    "title": "Image upload with Vercel Blob",
+    "description": "Image upload component using @vercel/blob, CDN-backed serving",
+    "type": "infrastructure",
+    "module": "Products",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "technical-notes.md",
+      "lines": "image-management",
+      "briefHash": "ad12ff058210bfcb"
+    },
+    "dependsOn": [
+      "F-001"
+    ],
+    "blocks": [
+      "F-008"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 8,
+        "factors": [
+          "Required for product images"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "Vercel Blob simple API"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Vercel native"
+        ]
+      },
+      "urgency": {
+        "factor": 1.2,
+        "reason": "Blocks product management"
+      },
+      "priority": 19,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-009.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-010",
+    "fingerprint": "cart-react-context-localstorage",
+    "title": "Client-side cart",
+    "description": "Cart context with add/remove/update items, variant support, localStorage persistence",
+    "type": "feature",
+    "module": "Cart",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "cart-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002",
+      "F-008"
+    ],
+    "blocks": [
+      "F-012"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 8,
+        "factors": [
+          "Required for checkout"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Context + localStorage"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Client-side only"
+        ]
+      },
+      "urgency": {
+        "factor": 1.2,
+        "reason": "Blocks checkout"
+      },
+      "priority": 14,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-010.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-011",
+    "fingerprint": "payment-midtrans-integration",
+    "title": "Midtrans payment integration",
+    "description": "Midtrans Snap integration with provider abstraction, transaction creation, redirect flow",
+    "type": "feature",
+    "module": "Payment",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "payment-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-008"
+    ],
+    "blocks": [
+      "F-012"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 9,
+        "factors": [
+          "Core revenue feature"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "Midtrans API",
+          "Provider abstraction"
+        ]
+      },
+      "risk": {
+        "score": 4,
+        "factors": [
+          "External service",
+          "Webhook handling"
+        ]
+      },
+      "urgency": {
+        "factor": 1.2,
+        "reason": "Blocks order completion"
+      },
+      "priority": 10,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-011.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-012",
+    "fingerprint": "orders-creation-atomic",
+    "title": "Order creation with atomic transaction",
+    "description": "Order creation with idempotency keys, atomic order+items+payment insert, status workflow",
+    "type": "feature",
+    "module": "Orders",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "orders-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-003",
+      "F-008",
+      "F-010",
+      "F-011"
+    ],
+    "blocks": [
+      "F-014",
+      "F-016"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 10,
+        "factors": [
+          "Core business transaction"
+        ]
+      },
+      "effort": {
+        "score": 6,
+        "factors": [
+          "Atomic transaction logic"
+        ]
+      },
+      "risk": {
+        "score": 4,
+        "factors": [
+          "Transaction integrity"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Core e-commerce capability"
+      },
+      "priority": 11,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-012.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-013",
+    "fingerprint": "webhook-midtrans-handler",
+    "title": "Midtrans webhook handler",
+    "description": "Webhook endpoint with signature verification, order status update",
+    "type": "feature",
+    "module": "Payment",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "technical-notes.md",
+      "lines": "webhook",
+      "briefHash": "ad12ff058210bfcb"
+    },
+    "dependsOn": [
+      "F-011"
+    ],
+    "blocks": [
+      "F-012"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 9,
+        "factors": [
+          "Required for payment confirmation"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Signature verification"
+        ]
+      },
+      "risk": {
+        "score": 4,
+        "factors": [
+          "Webhook reliability"
+        ]
+      },
+      "urgency": {
+        "factor": 1.2,
+        "reason": "Required for order completion"
+      },
+      "priority": 12,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-013.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-014",
+    "fingerprint": "customers-profile-addresses",
+    "title": "Customer profiles and addresses",
+    "description": "Customer management with addresses, order history, total spent tracking",
+    "type": "feature",
+    "module": "Customers",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "customers-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-003",
+      "F-012"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Improves UX"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "CRUD operations"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Standard CRUD"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Enhances experience"
+      },
+      "priority": 10,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-014.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-015",
+    "fingerprint": "admin-dashboard-stats",
+    "title": "Admin dashboard with statistics",
+    "description": "Dashboard with sales stats, chart visualization, TanStack Query",
+    "type": "feature",
+    "module": "Dashboard",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "dashboard-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-003"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Business insights"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Chart library integration"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Standard admin pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Not critical for MVP"
+      },
+      "priority": 7,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-015.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-016",
+    "fingerprint": "promotions-codes-crud",
+    "title": "Promo code management",
+    "description": "Promo codes with percentage/fixed discounts, limits, validity periods",
+    "type": "feature",
+    "module": "Promotions",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "promotions-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-012"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Marketing tool"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "Standard CRUD"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Well-understood"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Can be deferred"
+      },
+      "priority": 9,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-016.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-017",
+    "fingerprint": "banners-crud-carousel",
+    "title": "Banner management and hero carousel",
+    "description": "Banner CRUD with positions, sorting, hero carousel component",
+    "type": "feature",
+    "module": "Banners",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "banners-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002"
+    ],
+    "blocks": [
+      "F-019"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Homepage appeal"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "Simple CRUD"
+        ]
+      },
+      "risk": {
+        "score": 1,
+        "factors": [
+          "Straightforward"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Used in homepage"
+      },
+      "priority": 13,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-017.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-018",
+    "fingerprint": "search-fulltext-products",
+    "title": "Product search",
+    "description": "Full-text search on products with results page",
+    "type": "feature",
+    "module": "Search",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "search-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-008"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Product discoverability"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "PostgreSQL full-text"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Built-in capability"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Important but not blocking"
+      },
+      "priority": 14,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-018.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-019",
+    "fingerprint": "home-hero-products-navigation",
+    "title": "Storefront homepage",
+    "description": "Homepage with hero carousel, featured products, category navigation, ISR",
+    "type": "feature",
+    "module": "Home",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "home-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-006",
+      "F-008",
+      "F-017"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 8,
+        "factors": [
+          "First touchpoint"
+        ]
+      },
+      "effort": {
+        "score": 3,
+        "factors": [
+          "Component assembly"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Wireframes defined"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Important for launch"
+      },
+      "priority": 16,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-019.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  },
+  {
+    "id": "F-020",
+    "fingerprint": "seo-jsonld-sitemap-meta",
+    "title": "SEO implementation",
+    "description": "JSON-LD for products, sitemap, meta tags, Open Graph",
+    "type": "feature",
+    "module": "SEO",
+    "confidence": "stated",
+    "lifecycle": "proposed",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "seo-module",
+      "briefHash": "04982ad507f26762"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-008",
+      "F-019"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Organic traffic"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "JSON-LD schemas"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Documented patterns"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Important for growth"
+      },
+      "priority": 8,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-020.json",
+    "commits": [],
+    "createdAt": "2026-07-05T20:30:00.000Z",
+    "updatedAt": "2026-07-05T20:30:00.000Z"
+  }
+]

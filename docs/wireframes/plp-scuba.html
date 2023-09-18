@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scuba - Arnes Dive Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { brand: '#333333' } } } }</script>
+</head>
+<body class="font-sans text-sm">
+
+    <div class="bg-gray-200 py-2 text-center text-xs">Gratis Ongkir untuk pembelian di atas Rp 500.000</div>
+
+    <nav class="flex items-center justify-between px-4 py-4 border-b border-gray-200 max-w-7xl mx-auto">
+        <button class="lg:hidden text-gray-600" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+        <div class="hidden lg:flex gap-6">
+            <a href="homepage.html" class="text-gray-600 hover:text-brand text-sm">Beranda</a>
+            <a href="plp-freediving.html" class="text-gray-600 hover:text-brand text-sm">Freediving</a>
+            <a href="plp-scuba.html" class="text-brand font-medium text-sm">Scuba</a>
+            <a href="plp-accessories.html" class="text-gray-600 hover:text-brand text-sm">Aksesoris</a>
+            <a href="plp-sale.html" class="text-red-500 hover:text-red-700 text-sm">Sale</a>
+        </div>
+        <a href="homepage.html" class="text-2xl font-bold text-brand absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0">ARNES DIVE</a>
+        <div class="flex gap-4 text-gray-600 text-sm">
+            <a href="search.html" class="hidden sm:block hover:text-brand">[Cari]</a>
+            <a href="wishlist.html" class="hover:text-brand">[Wishlist]</a>
+            <a href="cart.html" class="hover:text-brand">[Keranjang]</a>
+            <a href="account.html" class="hidden sm:block hover:text-brand">[Akun]</a>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-b px-4 py-4">
+        <div class="flex flex-col gap-3">
+            <a href="homepage.html" class="text-gray-600 py-2">Beranda</a>
+            <a href="plp-freediving.html" class="text-gray-600 py-2">Freediving</a>
+            <a href="plp-scuba.html" class="text-brand font-medium py-2">Scuba</a>
+            <a href="plp-accessories.html" class="text-gray-600 py-2">Aksesoris</a>
+            <a href="plp-sale.html" class="text-red-500 py-2">Sale</a>
+        </div>
+    </div>
+
+    <!-- Category Banner - SCUBA -->
+    <section class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-12 lg:py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl lg:text-4xl font-semibold mb-2">Scuba Diving</h1>
+            <p class="text-blue-100 max-w-xl">Peralatan scuba diving lengkap. BCD, regulator, kompas, dive computer, dan aksesoris untuk penyelam scuba.</p>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 py-4 text-xs text-gray-600">
+        <a href="homepage.html" class="hover:text-brand">Beranda</a> / <span class="text-brand">Scuba</span>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <button class="lg:hidden border border-gray-300 py-3 px-4 text-sm" onclick="document.getElementById('filters').classList.toggle('hidden')">Filter & Sort</button>
+
+            <aside id="filters" class="hidden lg:block w-full lg:w-64 flex-shrink-0">
+                <div class="lg:sticky lg:top-4 space-y-6">
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Tipe Selam</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Freediving</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" checked class="accent-brand"> Scuba</label>
+                    </div>
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Kategori</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> BCD</label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Regulator</label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Dive Computer</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Aksesoris</label>
+                    </div>
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Harga</h3>
+                        <div class="bg-gray-100 border border-dashed border-gray-300 h-10 flex items-center justify-center text-gray-400 text-xs">Slider Harga</div>
+                    </div>
+                    <div>
+                        <h3 class="text-xs uppercase tracking-wider font-semibold mb-3 pb-2 border-b">Merek</h3>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Apeks</label>
+                        <label class="flex items-center gap-2 mb-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Scubapro</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer"><input type="checkbox" class="accent-brand"> Aqualung</label>
+                    </div>
+                    <a href="#" class="text-xs text-gray-400 hover:text-brand">Hapus Semua Filter</a>
+                </div>
+            </aside>
+
+            <main class="flex-1">
+                <div class="flex justify-between items-center mb-6">
+                    <p class="text-sm text-gray-600">Menampilkan <span class="font-medium text-brand">12</span> produk</p>
+                    <select class="border border-gray-300 px-3 py-2 text-sm"><option>Urutkan: Terbaru</option></select>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 lg:gap-6">
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">BCD Backplate</h3><p class="text-gray-600 text-sm">Rp 4.500.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Regulator Pro</h3><p class="text-gray-600 text-sm">Rp 8.200.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Dive Computer</h3><p class="text-gray-600 text-sm">Rp 5.800.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Kompas Underwater</h3><p class="text-gray-600 text-sm">Rp 850.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Masker Scuba</h3><p class="text-gray-600 text-sm">Rp 480.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Octopus Set</h3><p class="text-gray-600 text-sm">Rp 3.500.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Dive Computer Pro</h3><p class="text-gray-600 text-sm">Rp 6.200.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">BCD Jacket</h3><p class="text-gray-600 text-sm">Rp 5.100.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Fin Scuba</h3><p class="text-gray-600 text-sm">Rp 1.200.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Gauges Console</h3><p class="text-gray-600 text-sm">Rp 2.800.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Torch 1500LM</h3><p class="text-gray-600 text-sm">Rp 950.000</p></a>
+                    <a href="pdp.html"><div class="aspect-[3/4] bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 mb-3">Gambar</div><h3 class="font-medium text-sm mb-1">Regulator Entry</h3><p class="text-gray-600 text-sm">Rp 5.200.000</p></a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="border-t border-gray-200 py-12 px-4 bg-gray-50"><div class="max-w-7xl mx-auto text-center text-xs text-gray-600">© 2024 Arnes Dive Shop. All rights reserved.</div></footer>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+{
+  "stack": [
+    { "layer": "Framework", "choice": "Next.js 15 (App Router)", "rationale": "ISR for storefront SEO, Server Actions for mutations, modern React patterns" },
+    { "layer": "Language", "choice": "TypeScript (strict mode)", "rationale": "Type safety across domain, application, and presentation layers" },
+    { "layer": "Styling", "choice": "Tailwind CSS v4", "rationale": "Matches existing wireframes built with Tailwind, rapid UI development" },
+    { "layer": "ORM", "choice": "Drizzle ORM", "rationale": "Type-safe queries, lightweight, good DX with migrations" },
+    { "layer": "Database", "choice": "PostgreSQL", "rationale": "Relational data model, pgEnum support, production reliability" },
+    { "layer": "Validation", "choice": "Zod", "rationale": "Shared schemas between client and server, React Hook Form integration" },
+    { "layer": "State (Admin)", "choice": "TanStack Query v5", "rationale": "Server state management, caching, real-time updates for admin panel" },
+    { "layer": "State (Cart)", "choice": "React Context + localStorage", "rationale": "Simple client-side cart without server sync, lightweight" },
+    { "layer": "Auth", "choice": "NextAuth.js v5 / Auth.js", "rationale": "Next.js native, supports email/password and OAuth providers" },
+    { "layer": "Payment", "choice": "Midtrans", "rationale": "Indonesian payment gateway, supports multiple local payment methods" },
+    { "layer": "Forms", "choice": "React Hook Form + Zod resolver", "rationale": "Performant forms with schema validation" },
+    { "layer": "UI Components", "choice": "Radix UI primitives", "rationale": "Accessible headless components, composable with Tailwind" },
+    { "layer": "Hosting", "choice": "Vercel", "rationale": "Native Next.js support, edge functions, automatic ISR, preview deployments" },
+    { "layer": "Email", "choice": "Mailgun", "rationale": "Reliable transactional email service for OTP and order notifications" },
+    { "layer": "File Storage", "choice": "Vercel Blob", "rationale": "Native Vercel integration, simple API for product image uploads" }
+  ],
+  "architectureNotes": [
+    {
+      "heading": "Vertical Slice Architecture",
+      "body": "Each feature is a self-contained module under `features/`. Complex features (products, orders, payment) have full domain/application/presentation layering. Simple features (banners, categories) use presentation-only with direct DB queries. Start simple, add layers only when needed."
+    },
+    {
+      "heading": "Clean Architecture Layers",
+      "body": "Domain layer contains pure TypeScript with zero dependencies. Application layer has direct Drizzle queries (no repository pattern for CRUD). Presentation layer contains UI components and route handlers. No infrastructure abstraction layer."
+    },
+    {
+      "heading": "Query/Command Split",
+      "body": "Commands (mutations) use Server Actions for form submissions. Store queries use direct query import in Server Components (no HTTP overhead). Admin queries use Route Handlers + TanStack Query (HTTP cached, parallelizable)."
+    },
+    {
+      "heading": "Storefront ISR vs Admin CSR",
+      "body": "Storefront uses ISR with Server Components for SEO and static HTML generation. Admin uses CSR with TanStack Query for real-time updates. Route handlers serve admin data via HTTP for caching and parallelization."
+    },
+    {
+      "heading": "Money as Cents",
+      "body": "All prices stored as integer cents in database to avoid floating-point issues. Converted to dollars at API boundaries. Display uses formatCurrency helper. DB: priceCents (integer) → API: priceDollars (number) → Display: formatCurrency(cents)."
+    },
+    {
+      "heading": "Payment Gateway Abstraction",
+      "body": "PaymentProvider interface allows swapping Midtrans for other providers (Stripe, Xendit) without touching order logic. Webhook handler verifies signature and updates order status atomically."
+    },
+    {
+      "heading": "Atomic Order Creation",
+      "body": "Order + orderItems + payment record inserted in single database transaction. If any fails, all roll back. Idempotency key prevents duplicate orders from double form-submits."
+    },
+    {
+      "heading": "SEO Implementation",
+      "body": "Structured data using JSON-LD for products (schema.org Product, Offer). Dynamic sitemap generated via Next.js sitemap.ts. Per-page meta tags via generateMetadata. Open Graph tags for social sharing. ISR ensures fresh SEO data without rebuilds."
+    },
+    {
+      "heading": "Image Management",
+      "body": "Product images stored in Vercel Blob. Admin uploads via @vercel/blob client. Images served via Vercel's CDN with automatic optimization. No separate CDN service needed."
+    }
+  ],
+  "risks": [
+    { "text": "Midtrans sandbox vs production configuration must be clearly separated to avoid payment issues", "severity": "high" },
+    { "text": "ISR revalidation must be triggered correctly after product/order mutations to avoid stale storefront data", "severity": "medium" },
+    { "text": "Cart stored in localStorage only - clearing browser data loses cart contents", "severity": "low" },
+    { "text": "No inventory tracking was explicitly dropped - may need to be added later if client requirements change", "severity": "medium" },
+    { "text": "Overseas shipping calculation adds complexity - need to define supported regions and carrier integrations", "severity": "medium" }
+  ],
+  "openDecisions": [
+    { "text": "Shipping calculation: flat rate, weight-based, or carrier API integration? Client wants overseas shipping support - need to define scope and regions", "confidence": "stated" },
+    { "text": "Analytics integration (GA, Hotjar) - deferred but will be needed", "confidence": "stated" }
+  ]
+}

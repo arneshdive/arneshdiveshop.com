@@ -1,0 +1,26 @@
+{
+  "featureId": "F-015",
+  "title": "Admin dashboard with statistics",
+  "module": "Dashboard",
+  "description": "Dashboard with sales stats, chart visualization, TanStack Query",
+  "scope": {
+    "inScope": [
+      "Sales statistics cards (total, today, this month)",
+      "Order count by status",
+      "Revenue chart (7-day or 30-day)",
+      "TanStack Query for data fetching",
+      "Real-time updates"
+    ],
+    "outOfScope": [
+      "Custom date range filters",
+      "Export reports"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Dashboard displays total revenue and order count", "done": false },
+    { "id": "AC2", "text": "Chart shows revenue trend over 7 days", "done": false },
+    { "id": "AC3", "text": "Data fetched via TanStack Query with caching", "done": false }
+  ],
+  "dependsOn": ["F-002", "F-003"],
+  "source": { "file": "prd.md", "lines": "dashboard-module" }
+}

@@ -1,0 +1,27 @@
+{
+  "featureId": "F-013",
+  "title": "Midtrans webhook handler",
+  "module": "Payment",
+  "description": "Webhook endpoint with signature verification, order status update",
+  "scope": {
+    "inScope": [
+      "Webhook endpoint at /api/payment/webhook",
+      "Signature verification using Midtrans server key",
+      "Order status mapping from Midtrans status",
+      "Atomic payment + order status update",
+      "Error logging for failed webhooks"
+    ],
+    "outOfScope": [
+      "Retry mechanism for failed webhooks",
+      "Webhook dashboard"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Webhook endpoint accepts POST from Midtrans", "done": false },
+    { "id": "AC2", "text": "Signature verified before processing", "done": false },
+    { "id": "AC3", "text": "Payment status updated in database", "done": false },
+    { "id": "AC4", "text": "Order status updated to 'processing' on successful payment", "done": false }
+  ],
+  "dependsOn": ["F-011"],
+  "source": { "file": "technical-notes.md", "lines": "webhook" }
+}

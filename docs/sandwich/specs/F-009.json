@@ -1,0 +1,28 @@
+{
+  "featureId": "F-009",
+  "title": "Image upload with Vercel Blob",
+  "module": "Products",
+  "description": "Image upload component using @vercel/blob, CDN-backed serving",
+  "scope": {
+    "inScope": [
+      "Vercel Blob client setup",
+      "Image upload component with drag-and-drop",
+      "Image preview before upload",
+      "Multiple image support",
+      "Image deletion",
+      "Error handling for failed uploads"
+    ],
+    "outOfScope": [
+      "Image cropping/editing",
+      "Image optimization (handled by Vercel)"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "User can upload images via drag-and-drop or file picker", "done": false },
+    { "id": "AC2", "text": "Images stored in Vercel Blob with unique filenames", "done": false },
+    { "id": "AC3", "text": "Images served via Vercel CDN", "done": false },
+    { "id": "AC4", "text": "User can remove uploaded images", "done": false }
+  ],
+  "dependsOn": ["F-001"],
+  "source": { "file": "technical-notes.md", "lines": "image-management" }
+}

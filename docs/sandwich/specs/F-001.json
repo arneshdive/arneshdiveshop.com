@@ -1,0 +1,31 @@
+{
+  "featureId": "F-001",
+  "title": "Project foundation and infrastructure setup",
+  "module": "Infrastructure",
+  "description": "Initialize Next.js 15 project with TypeScript, Tailwind CSS v4, Drizzle ORM, PostgreSQL connection, and Vercel deployment config",
+  "scope": {
+    "inScope": [
+      "Next.js 15 project initialization with App Router",
+      "TypeScript strict mode configuration",
+      "Tailwind CSS v4 setup",
+      "Drizzle ORM configuration",
+      "PostgreSQL database connection",
+      "Vercel deployment configuration",
+      "Environment variables setup",
+      "Basic folder structure per SPEC.md"
+    ],
+    "outOfScope": [
+      "Feature implementation",
+      "Database schema"
+    ]
+  },
+  "acceptanceCriteria": [
+    { "id": "AC1", "text": "Next.js 15 project runs successfully on localhost:3000", "done": true },
+    { "id": "AC2", "text": "TypeScript strict mode enabled with no compilation errors", "done": true },
+    { "id": "AC3", "text": "Tailwind CSS v4 working with sample component", "done": true },
+    { "id": "AC4", "text": "Drizzle ORM connected to PostgreSQL database", "done": true },
+    { "id": "AC5", "text": "Project deploys successfully to Vercel preview", "done": false }
+  ],
+  "dependsOn": [],
+  "source": { "file": "prd.md", "lines": "tech-stack" }
+}

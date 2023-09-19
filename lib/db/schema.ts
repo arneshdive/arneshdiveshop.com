@@ -170,26 +170,12 @@ export const banners = pgTable('banners', {
   isActive: boolean('is_active').default(true),
 });
 
-// Auth.js tables
-export const sessions = pgTable('sessions', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  sessionToken: text('session_token').notNull().unique(),
-  userId: text('user_id').references(() => users.id).notNull(),
-  expires: timestamp('expires').notNull(),
-});
-
-export const accounts = pgTable('accounts', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').references(() => users.id).notNull(),
-  type: text('type').notNull(),
-  provider: text('provider').notNull(),
-  providerAccountId: text('provider_account_id').notNull(),
-  refresh_token: text('refresh_token'),
-  access_token: text('access_token'),
-});
-
+// OTP verification tokens for email verification
 export const verificationTokens = pgTable('verification_tokens', {
-  identifier: text('identifier').notNull(),
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  email: text('email').notNull(),
   token: text('token').notNull().unique(),
+  type: text('type').notNull(), // 'email_verification', 'password_reset'
   expires: timestamp('expires').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });

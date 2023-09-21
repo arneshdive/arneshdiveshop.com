@@ -157,13 +157,14 @@ export default function HomePage() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 min-h-[500px] lg:min-h-[560px] items-center gap-8 lg:gap-12">
+        <div className="absolute inset-0 z-10 flex items-center">
+          <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div className="grid lg:grid-cols-2 min-h-[650px] lg:min-h-[740px] items-center gap-8 lg:gap-12">
             <div className="py-12 lg:py-0">
               <span className="inline-block text-xs uppercase tracking-widest text-white/70 mb-4">
                 Freediving & Scuba
               </span>
-              <h1 className="text-4xl lg:text-7xl font-bold text-white mb-6 leading-none tracking-tighter">
+              <h1 className="text-4xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tighter">
                 Berjelajah di kedalaman
               </h1>
               <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed">
@@ -179,6 +180,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="hidden lg:block" />
+            </div>
           </div>
         </div>
       </section>
@@ -310,14 +312,13 @@ export default function HomePage() {
       {/* All Products */}
       <section className="py-12 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
-          <div className="flex justify-between items-center mb-10">
+          <div className="flex justify-between items-end mb-10">
             <div className="flex flex-col">
-              <div className="grid gap-4">
-              <p className="heading normal-case font-medium subtext-lg leading-none tracking-none text-neutral-500">Temukan perlengkapan diving untuk kebutuhan Anda.</p>
-              <h2 className="heading title-md text-4xl lg:text-5xl font-bold tracking-tighter">Eksplor Lainnya - <em is="highlighted-text" className="highlighted-text not-italic relative inline-block animated" data-style="scribble">Semua Produk<svg className="icon icon-squiggle-underline" viewBox="-347 -30.1947 694 96.19" stroke="currentColor" fill="none" role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-width="20" pathLength="1" d="M-335,54 C-335,54 -171,-58 -194,-3 C-217,52 -224.1199951171875,73.552001953125 -127,11 C-68,-27 -137,50 -33,42 C31.43899917602539,37.042999267578125 147.14700317382812,-29.308000564575195 335,2"></path>
+              <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Semua Produk</span>
+              <h2 className="text-2xl lg:text-4xl font-bold tracking-tighter mb-2">Eksplor <em is="highlighted-text" className="highlighted-text not-italic relative inline-block animated" data-style="scribble"><span className="relative z-10">Lainnya</span><svg className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-3 left-0 w-full" viewBox="-347 -30.1947 694 96.19" stroke="#93c5fd" fill="none" role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeWidth={24} pathLength={1} d="M-335,35 C-280,35 -250,70 -200,25 C-150,-20 -120,60 -60,30 C0,0 50,55 120,35 C190,15 250,45 335,20"></path>
     </svg></em></h2>
-            </div>
+              <p className="text-neutral-500 text-sm lg:text-base max-w-md">Temukan perlengkapan diving untuk kebutuhan Anda.</p>
             </div>
             <AnimatedButton asChild variant="outline" className="hidden sm:flex text-sm font-medium px-6 py-3">
               <Link 

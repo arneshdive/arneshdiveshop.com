@@ -245,7 +245,7 @@ export default function HomePage() {
       </section>
 
       {/* Split Banner */}
-      <section className="grid md:grid-cols-2 my-20">
+      <section className="relative grid md:grid-cols-2 mt-20">
         <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-200 flex items-end p-8 lg:p-12">
           <div className="relative z-10">
             <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2 block">Freediving</span>
@@ -271,6 +271,19 @@ export default function HomePage() {
               <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
             </Link>
           </div>
+        </div>
+        {/* Wavy bottom */}
+        <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0] translate-y-[1px]">
+          <svg 
+            className="relative block w-full h-[60px] lg:h-[80px]" 
+            viewBox="0 0 1440 120" 
+            preserveAspectRatio="none"
+          >
+            <path 
+              d="M0,64 C288,120 576,0 720,64 C864,120 1152,0 1440,64 L1440,120 L0,120 Z" 
+              fill="white"
+            />
+          </svg>
         </div>
       </section>
 

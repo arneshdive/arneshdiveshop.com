@@ -206,13 +206,15 @@ export default function HomePage() {
       {/* </section> */}
 
       {/* Latest Products */}
-      <section className="py-16">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <section className="py-12 lg:py-16">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
           <div className="flex justify-between items-end mb-10">
             <div className="flex flex-col">
-              <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Latest Products</span>
-              <h2 className="text-2xl lg:text-4xl font-bold tracking-tighter mb-2">Produk Terbaru</h2>
-              <p className="text-neutral-500 text-sm lg:text-base max-w-md">Peralatan diving berkualitas untuk petualangan bawah laut.</p>
+              <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">Latest Products</span>
+              <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter mb-2">Produk <em is="highlighted-text" className="highlighted-text not-italic relative inline-block animated" data-style="scribble"><span className="relative z-10">Terbaru</span><svg className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-2 left-0 w-full" viewBox="-347 -30.1947 694 96.19" stroke="#93c5fd" fill="none" role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeWidth={24} pathLength={1} d="M-335,35 C-280,35 -250,70 -200,25 C-150,-20 -120,60 -60,30 C0,0 50,55 120,35 C190,15 250,45 335,20"></path>
+    </svg></em></h2>
+              <p className="text-sm lg:text-base max-w-md">Peralatan diving berkualitas untuk petualangan bawah laut.</p>
             </div>
             <AnimatedButton asChild variant="outline" className="hidden sm:flex text-sm font-medium px-6 py-3">
               <Link 
@@ -225,7 +227,7 @@ export default function HomePage() {
             </AnimatedButton>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
             {featuredProducts.slice(0, 4).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -243,7 +245,7 @@ export default function HomePage() {
       </section>
 
       {/* Split Banner */}
-      <section className="grid md:grid-cols-2 my-20">
+      <section className="relative grid md:grid-cols-2 mt-20">
         <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-200 flex items-end p-8 lg:p-12">
           <div className="relative z-10">
             <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2 block">Freediving</span>
@@ -270,16 +272,31 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
+        {/* Wavy bottom */}
+        <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0] translate-y-[1px]">
+          <svg 
+            className="relative block w-full h-[60px] lg:h-[80px]" 
+            viewBox="0 0 1440 120" 
+            preserveAspectRatio="none"
+          >
+            <path 
+              d="M0,64 C288,120 576,0 720,64 C864,120 1152,0 1440,64 L1440,120 L0,120 Z" 
+              fill="white"
+            />
+          </svg>
+        </div>
       </section>
 
       {/* Sale */}
-      <section className="py-16">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <section className="py-12 lg:py-16">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
           <div className="flex justify-between items-end mb-10">
             <div className="flex flex-col">
-              <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Sale</span>
-              <h2 className="text-2xl lg:text-4xl font-bold tracking-tighter mb-2">Promo Spesial</h2>
-              <p className="text-neutral-500 text-sm lg:text-base max-w-md">Masker dan kacamata renang untuk visibilitas optimal.</p>
+              <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">Sale</span>
+              <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter mb-2">Promo <em is="highlighted-text" className="highlighted-text not-italic relative inline-block animated" data-style="scribble"><span className="relative z-10">Spesial</span><svg className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-2 left-0 w-full" viewBox="-347 -30.1947 694 96.19" stroke="#93c5fd" fill="none" role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeWidth={24} pathLength={1} d="M-335,35 C-280,35 -250,70 -200,25 C-150,-20 -120,60 -60,30 C0,0 50,55 120,35 C190,15 250,45 335,20"></path>
+    </svg></em></h2>
+              <p className="text-sm lg:text-base max-w-md">Masker dan kacamata renang untuk visibilitas optimal.</p>
             </div>
             <AnimatedButton asChild variant="outline" className="hidden sm:flex text-sm font-medium px-6 py-3">
               <Link 
@@ -292,7 +309,7 @@ export default function HomePage() {
             </AnimatedButton>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
             {featuredProducts.filter(p => p.badge === 'Sale').map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -314,11 +331,11 @@ export default function HomePage() {
         <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
           <div className="flex justify-between items-end mb-10">
             <div className="flex flex-col">
-              <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Semua Produk</span>
-              <h2 className="text-2xl lg:text-4xl font-bold tracking-tighter mb-2">Eksplor <em is="highlighted-text" className="highlighted-text not-italic relative inline-block animated" data-style="scribble"><span className="relative z-10">Lainnya</span><svg className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-3 left-0 w-full" viewBox="-347 -30.1947 694 96.19" stroke="#93c5fd" fill="none" role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">Semua Produk</span>
+              <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter mb-2">Eksplor <em is="highlighted-text" className="highlighted-text not-italic relative inline-block animated" data-style="scribble"><span className="relative z-10">Lainnya</span><svg className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-2 left-0 w-full" viewBox="-347 -30.1947 694 96.19" stroke="#93c5fd" fill="none" role="presentation" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <path strokeLinecap="round" strokeWidth={24} pathLength={1} d="M-335,35 C-280,35 -250,70 -200,25 C-150,-20 -120,60 -60,30 C0,0 50,55 120,35 C190,15 250,45 335,20"></path>
     </svg></em></h2>
-              <p className="text-neutral-500 text-sm lg:text-base max-w-md">Temukan perlengkapan diving untuk kebutuhan Anda.</p>
+              <p className="text-sm lg:text-base max-w-md">Temukan perlengkapan diving untuk kebutuhan Anda.</p>
             </div>
             <AnimatedButton asChild variant="outline" className="hidden sm:flex text-sm font-medium px-6 py-3">
               <Link 

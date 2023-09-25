@@ -144,7 +144,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[650px] lg:min-h-[740px] mb-20">
+      <section className="relative min-h-[650px] lg:min-h-[740px]">
         {/* Background Image - full width */}
         <div className="absolute inset-0 z-0">
           <img
@@ -182,6 +182,20 @@ export default function HomePage() {
             <div className="hidden lg:block" />
             </div>
           </div>
+        </div>
+
+        {/* Wavy bottom */}
+        <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0] translate-y-[1px] z-20">
+          <svg 
+            className="relative block w-full h-[60px] lg:h-[80px]" 
+            viewBox="0 0 1440 120" 
+            preserveAspectRatio="none"
+          >
+            <path 
+              d="M0,60 C20,40 20,80 40,60 C60,40 60,80 80,60 C100,40 100,80 120,60 C140,40 140,80 160,60 C180,40 180,80 200,60 C220,40 220,80 240,60 C260,40 260,80 280,60 C300,40 300,80 320,60 C340,40 340,80 360,60 C380,40 380,80 400,60 C420,40 420,80 440,60 C460,40 460,80 480,60 C500,40 500,80 520,60 C540,40 540,80 560,60 C580,40 580,80 600,60 C620,40 620,80 640,60 C660,40 660,80 680,60 C700,40 700,80 720,60 C740,40 740,80 760,60 C780,40 780,80 800,60 C820,40 820,80 840,60 C860,40 860,80 880,60 C900,40 900,80 920,60 C940,40 940,80 960,60 C980,40 980,80 1000,60 C1020,40 1020,80 1040,60 C1060,40 1060,80 1080,60 C1100,40 1100,80 1120,60 C1140,40 1140,80 1160,60 C1180,40 1180,80 1200,60 C1220,40 1220,80 1240,60 C1260,40 1260,80 1280,60 C1300,40 1300,80 1320,60 C1340,40 1340,80 1360,60 C1380,40 1380,80 1400,60 C1420,40 1420,80 1440,60 L1440,120 L0,120 Z" 
+              fill="white"
+            />
+          </svg>
         </div>
       </section>
 

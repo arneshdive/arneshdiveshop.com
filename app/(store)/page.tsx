@@ -135,7 +135,6 @@ export default function HomePage() {
   ];
 
   const valueProps = [
-    { icon: 'solar:delivery-linear', title: 'Gratis Ongkir', desc: 'Pembelian di atas Rp 500.000' },
     { icon: 'solar:verified-check-linear', title: 'Produk Original', desc: '100% kualitas terjamin' },
     { icon: 'solar:refresh-linear', title: 'Easy Return', desc: '14 hari pengembalian' },
     { icon: 'solar:chat-round-dots-linear', title: 'Support 24/7', desc: 'Siap membantu' },
@@ -429,17 +428,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Value Props */}
-      <section className="bg-neutral-100 py-16">
+      {/* USP / Value Props - overlaps the footer below it */}
+      <section className="relative z-10 bg-white rounded-b-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] -mb-16 lg:-mb-20 py-14 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-neutral-200">
             {valueProps.map((prop) => (
-              <div key={prop.title} className="text-center">
-                <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center">
-                  <Icon icon={prop.icon} className="w-8 h-8 text-neutral-700" />
-                </div>
-                <h4 className="font-semibold text-sm mb-1">{prop.title}</h4>
-                <p className="text-xs text-neutral-500">{prop.desc}</p>
+              <div key={prop.title} className="text-center px-6 py-6 sm:py-0">
+                <Icon icon={prop.icon} className="w-8 h-8 mx-auto mb-4 text-neutral-800" />
+                <h4 className="font-semibold text-base mb-1.5">{prop.title}</h4>
+                <p className="text-xs lg:text-sm text-neutral-500 max-w-[220px] mx-auto">{prop.desc}</p>
               </div>
             ))}
           </div>

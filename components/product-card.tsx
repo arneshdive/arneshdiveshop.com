@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Icon } from '@iconify/react';
 
 interface ProductCardProps {
   product: {

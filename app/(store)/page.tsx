@@ -6,14 +6,6 @@ import { ProductCard } from '@/components/product-card';
 import { AnimatedButton } from '@/components/ui/animated-button';
 
 export default function HomePage() {
-  const categories = [
-    { name: 'Masker', href: '/freediving?kategori=masker', icon: 'solar:swimming-linear' },
-    { name: 'Fin', href: '/freediving?kategori=fin', icon: 'solar:fin-linear' },
-    { name: 'Wetsuit', href: '/freediving?kategori=wetsuit', icon: 'solar:t-shirt-linear' },
-    { name: 'Sabuk', href: '/freediving?kategori=sabuk', icon: 'solar:belt-linear' },
-    { name: 'Aksesoris', href: '/aksesoris', icon: 'solar:box-linear' },
-  ];
-
   const featuredProducts = [
     {
       id: '1',

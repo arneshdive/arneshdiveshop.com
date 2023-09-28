@@ -12,7 +12,9 @@ export function Footer() {
     const el = footerRef.current;
     if (!el) return;
     const observer = new ResizeObserver((entries) => {
-      setHeight(entries[0].contentRect.height);
+      if (entries[0]) {
+        setHeight(entries[0].contentRect.height);
+      }
     });
     observer.observe(el);
     return () => observer.disconnect();

@@ -1,0 +1,137 @@
+export interface MockProduct {
+  id: string;
+  handle: string;
+  title: string;
+  vendor?: string;
+  price: string;
+  compareAtPrice?: string;
+  badge?: string;
+  image?: string;
+  secondaryImage?: string;
+}
+
+export const featuredProducts: MockProduct[] = [
+  {
+    id: '1',
+    handle: 'masker-freediving-pro',
+    title: 'Masker Freediving Pro',
+    vendor: 'Arnes',
+    price: 'Rp 850.000',
+    badge: 'Baru',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '2',
+    handle: 'fin-carbon-pro',
+    title: 'Fin Carbon Pro',
+    vendor: 'Arnes',
+    price: 'Rp 2.500.000',
+    badge: 'Baru',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '3',
+    handle: 'wetsuit-3mm-premium',
+    title: 'Wetsuit 3mm Premium',
+    vendor: 'Arnes',
+    price: 'Rp 1.800.000',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '4',
+    handle: 'snorkel-dry-top',
+    title: 'Snorkel Dry Top',
+    vendor: 'Arnes',
+    price: 'Rp 250.000',
+    compareAtPrice: 'Rp 320.000',
+    badge: 'Sale',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '5',
+    handle: 'sabuk-timah-premium',
+    title: 'Sabuk Timah Premium',
+    vendor: 'Arnes',
+    price: 'Rp 350.000',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '6',
+    handle: 'gloves-2mm',
+    title: 'Gloves 2mm',
+    vendor: 'Arnes',
+    price: 'Rp 280.000',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '7',
+    handle: 'fin-socks-3mm',
+    title: 'Fin Socks 3mm',
+    vendor: 'Arnes',
+    price: 'Rp 200.000',
+    badge: 'Baru',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '8',
+    handle: 'masker-low-volume',
+    title: 'Masker Low Volume',
+    vendor: 'Arnes',
+    price: 'Rp 650.000',
+    compareAtPrice: 'Rp 750.000',
+    badge: 'Sale',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '9',
+    handle: 'wetsuit-5mm',
+    title: 'Wetsuit 5mm Pro',
+    vendor: 'Arnes',
+    price: 'Rp 2.200.000',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '10',
+    handle: 'fin-fiberglass',
+    title: 'Fin Fiberglass',
+    vendor: 'Arnes',
+    price: 'Rp 1.900.000',
+    badge: 'Best Seller',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '11',
+    handle: 'dive-computer',
+    title: 'Dive Computer',
+    vendor: 'Arnes',
+    price: 'Rp 3.500.000',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+  {
+    id: '12',
+    handle: 'underwater-camera',
+    title: 'Underwater Camera',
+    vendor: 'Arnes',
+    price: 'Rp 4.200.000',
+    badge: 'Baru',
+    image: '/product-sample-1.webp',
+    secondaryImage: '/product-sample-2.webp',
+  },
+];
+
+export const valueProps = [
+  { icon: 'solar:verified-check-linear', title: 'Produk Original', desc: '100% kualitas terjamin' },
+  { icon: 'solar:refresh-linear', title: 'Easy Return', desc: '14 hari pengembalian' },
+  { icon: 'solar:chat-round-dots-linear', title: 'Support 24/7', desc: 'Siap membantu' },
+];

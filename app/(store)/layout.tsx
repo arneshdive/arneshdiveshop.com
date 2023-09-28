@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
@@ -6,14 +9,17 @@ export default function StoreLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isHomepage = pathname === '/';
+
   return (
     <div className="min-h-screen flex flex-col font-sans text-sm leading-relaxed">
       {/* Opaque, higher z-index than the fixed footer so it scrolls over and reveals it */}
       <div className="relative z-10 flex flex-col flex-1 bg-white">
         <Header />
 
-        {/* Main Content */}
-        <main className="flex-1">{children}</main>
+        {/* Main Content - add top padding on non-homepage pages to clear fixed header */}
+        <main className={`flex-1 ${isHomepage ? '' : 'pt-[72px]'}`}>{children}</main>
       </div>
 
       <Footer />

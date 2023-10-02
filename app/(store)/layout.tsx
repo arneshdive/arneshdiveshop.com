@@ -14,8 +14,8 @@ export default function StoreLayout({
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-sm leading-relaxed">
-      {/* Opaque, higher z-index than the fixed footer so it scrolls over and reveals it */}
-      <div className="relative z-10 flex flex-col flex-1 bg-white">
+      {/* Opaque, higher z-index than the sticky footer layers so it scrolls over and reveals them */}
+      <div className="relative z-20 flex flex-col flex-1 bg-white">
         <Header />
 
         {/* Main Content - add top padding on non-homepage pages to clear fixed header */}

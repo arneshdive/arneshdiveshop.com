@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductSection } from '@/components/product-section';
 import { WaveDivider } from '@/components/wave-divider';
 import { featuredProducts, valueProps } from '@/lib/data/mock-products';
@@ -35,12 +36,13 @@ export default function HomePage() {
                   Temukan perlengkapan freediving yang Anda butuhkan.
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <Link
-                    href="/freediving"
-                    className="border border-white/50 text-white px-8 py-4 text-sm uppercase tracking-wider hover:bg-white/10 transition-colors"
+                  <AnimatedButton
+                    asChild
+                    variant="white"
+                    className="px-8 py-4 text-sm uppercase tracking-wider"
                   >
-                    Lihat Koleksi
-                  </Link>
+                    <Link href="/freediving">Lihat Koleksi</Link>
+                  </AnimatedButton>
                 </div>
               </div>
               <div className="hidden lg:block" />

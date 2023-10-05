@@ -13,7 +13,7 @@ interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
   children: React.ReactNode;
   className?: string;
   asChild?: boolean;
-  variant?: "default" | "outline";
+  variant?: "default" | "outline" | "white";
 }
 
 const variantConfig = {
@@ -28,6 +28,12 @@ const variantConfig = {
     fill: "bg-primary",
     textInitial: "hsl(var(--primary))",
     textHover: "hsl(var(--primary-foreground))",
+  },
+  white: {
+    container: "bg-transparent border-white!",
+    fill: "bg-white",
+    textInitial: "white",
+    textHover: "hsl(var(--foreground))",
   },
 } as const;
 

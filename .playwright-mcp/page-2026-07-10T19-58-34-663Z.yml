@@ -1,0 +1,350 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - navigation [ref=e5]:
+          - generic [ref=e6]:
+            - link "ARNES DIVE" [ref=e7] [cursor=pointer]:
+              - /url: /
+            - generic [ref=e8]:
+              - link "Freediving" [ref=e9] [cursor=pointer]:
+                - /url: /freediving
+              - link "Scuba" [ref=e10] [cursor=pointer]:
+                - /url: /scuba
+              - link "Aksesoris" [ref=e11] [cursor=pointer]:
+                - /url: /aksesoris
+              - link "Sale" [ref=e12] [cursor=pointer]:
+                - /url: /sale
+          - generic [ref=e13]:
+            - link "Cari" [ref=e14] [cursor=pointer]:
+              - /url: /search
+            - link "Wishlist" [ref=e15] [cursor=pointer]:
+              - /url: /wishlist
+            - link "Keranjang" [ref=e16] [cursor=pointer]:
+              - /url: /cart
+              - generic [ref=e17]: "2"
+            - link "Akun" [ref=e18] [cursor=pointer]:
+              - /url: /account
+      - main [ref=e19]:
+        - generic [ref=e20]:
+          - img "Freediving" [ref=e22]
+          - generic [ref=e26]:
+            - generic [ref=e27]: Freediving & Scuba
+            - heading "Berjelajah di kedalaman" [level=1] [ref=e28]
+            - paragraph [ref=e29]: Temukan perlengkapan freediving yang Anda butuhkan.
+            - link "Lihat Koleksi" [ref=e31] [cursor=pointer]:
+              - /url: /freediving
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - generic [ref=e39]: Latest Products
+              - heading [level=2] [ref=e40]:
+                - text: Produk
+                - emphasis [ref=e41]: Terbaru
+              - paragraph [ref=e43]: Peralatan diving berkualitas untuk petualangan bawah laut.
+            - link "Lihat Semua" [ref=e47] [cursor=pointer]:
+              - /url: /freediving
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - generic [ref=e50]:
+                - generic [ref=e51]: Baru
+                - link "Masker Freediving Pro" [ref=e52] [cursor=pointer]:
+                  - /url: /produk/masker-freediving-pro
+                  - generic [ref=e53]:
+                    - img "Masker Freediving Pro" [ref=e55]
+                    - img "Masker Freediving Pro - alternate view" [ref=e57]
+                - button "Tambahkan" [ref=e58]
+              - generic [ref=e59]:
+                - link "Arnes" [ref=e60] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e61]: Masker Freediving Pro
+                - generic [ref=e62]: Rp 850.000
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - generic [ref=e66]: Baru
+                - link "Fin Carbon Pro" [ref=e67] [cursor=pointer]:
+                  - /url: /produk/fin-carbon-pro
+                  - generic [ref=e68]:
+                    - img "Fin Carbon Pro" [ref=e70]
+                    - img "Fin Carbon Pro - alternate view" [ref=e72]
+                - button "Tambahkan" [ref=e73]
+              - generic [ref=e74]:
+                - link "Arnes" [ref=e75] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e76]: Fin Carbon Pro
+                - generic [ref=e77]: Rp 2.500.000
+            - generic [ref=e79]:
+              - generic [ref=e80]:
+                - link "Wetsuit 3mm Premium" [ref=e81] [cursor=pointer]:
+                  - /url: /produk/wetsuit-3mm-premium
+                  - generic [ref=e82]:
+                    - img "Wetsuit 3mm Premium" [ref=e84]
+                    - img "Wetsuit 3mm Premium - alternate view" [ref=e86]
+                - button "Tambahkan" [ref=e87]
+              - generic [ref=e88]:
+                - link "Arnes" [ref=e89] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e90]: Wetsuit 3mm Premium
+                - generic [ref=e91]: Rp 1.800.000
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - generic [ref=e95]: Sale
+                - link "Snorkel Dry Top" [ref=e96] [cursor=pointer]:
+                  - /url: /produk/snorkel-dry-top
+                  - generic [ref=e97]:
+                    - img "Snorkel Dry Top" [ref=e99]
+                    - img "Snorkel Dry Top - alternate view" [ref=e101]
+                - button "Tambahkan" [ref=e102]
+              - generic [ref=e103]:
+                - link "Arnes" [ref=e104] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e105]: Snorkel Dry Top
+                - paragraph [ref=e107]: Rp 250.000 Rp 320.000
+        - generic [ref=e108]:
+          - generic [ref=e110]:
+            - generic [ref=e111]: Freediving
+            - heading "Koleksi Freediving" [level=3] [ref=e112]
+            - link "Lihat Koleksi" [ref=e113] [cursor=pointer]:
+              - /url: /freediving
+          - generic [ref=e115]:
+            - generic [ref=e116]: Scuba
+            - heading "Koleksi Scuba" [level=3] [ref=e117]
+            - link "Lihat Koleksi" [ref=e118] [cursor=pointer]:
+              - /url: /scuba
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - generic [ref=e126]: Sale
+              - heading [level=2] [ref=e127]:
+                - text: Promo
+                - emphasis [ref=e128]: Spesial
+              - paragraph [ref=e130]: Masker dan kacamata renang untuk visibilitas optimal.
+            - link "Lihat Semua" [ref=e134] [cursor=pointer]:
+              - /url: /sale
+          - generic [ref=e135]:
+            - generic [ref=e136]:
+              - generic [ref=e137]:
+                - generic [ref=e138]: Sale
+                - link "Snorkel Dry Top" [ref=e139] [cursor=pointer]:
+                  - /url: /produk/snorkel-dry-top
+                  - generic [ref=e140]:
+                    - img "Snorkel Dry Top" [ref=e142]
+                    - img "Snorkel Dry Top - alternate view" [ref=e144]
+                - button "Tambahkan" [ref=e145]
+              - generic [ref=e146]:
+                - link "Arnes" [ref=e147] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e148]: Snorkel Dry Top
+                - paragraph [ref=e150]: Rp 250.000 Rp 320.000
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - generic [ref=e153]: Sale
+                - link "Masker Low Volume" [ref=e154] [cursor=pointer]:
+                  - /url: /produk/masker-low-volume
+                  - generic [ref=e155]:
+                    - img "Masker Low Volume" [ref=e157]
+                    - img "Masker Low Volume - alternate view" [ref=e159]
+                - button "Tambahkan" [ref=e160]
+              - generic [ref=e161]:
+                - link "Arnes" [ref=e162] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e163]: Masker Low Volume
+                - paragraph [ref=e165]: Rp 650.000 Rp 750.000
+        - generic [ref=e167]:
+          - generic [ref=e168]:
+            - generic [ref=e169]:
+              - generic [ref=e170]: Semua Produk
+              - heading [level=2] [ref=e171]:
+                - text: Eksplor
+                - emphasis [ref=e172]: Lainnya
+              - paragraph [ref=e174]: Temukan perlengkapan diving untuk kebutuhan Anda.
+            - link "Lihat Semua" [ref=e178] [cursor=pointer]:
+              - /url: /freediving
+          - generic [ref=e179]:
+            - generic [ref=e180]:
+              - generic [ref=e181]:
+                - generic [ref=e182]: Baru
+                - link "Masker Freediving Pro" [ref=e183] [cursor=pointer]:
+                  - /url: /produk/masker-freediving-pro
+                  - generic [ref=e184]:
+                    - img "Masker Freediving Pro" [ref=e186]
+                    - img "Masker Freediving Pro - alternate view" [ref=e188]
+                - button "Tambahkan" [ref=e189]
+              - generic [ref=e190]:
+                - link "Arnes" [ref=e191] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e192]: Masker Freediving Pro
+                - generic [ref=e193]: Rp 850.000
+            - generic [ref=e195]:
+              - generic [ref=e196]:
+                - generic [ref=e197]: Baru
+                - link "Fin Carbon Pro" [ref=e198] [cursor=pointer]:
+                  - /url: /produk/fin-carbon-pro
+                  - generic [ref=e199]:
+                    - img "Fin Carbon Pro" [ref=e201]
+                    - img "Fin Carbon Pro - alternate view" [ref=e203]
+                - button "Tambahkan" [ref=e204]
+              - generic [ref=e205]:
+                - link "Arnes" [ref=e206] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e207]: Fin Carbon Pro
+                - generic [ref=e208]: Rp 2.500.000
+            - generic [ref=e210]:
+              - generic [ref=e211]:
+                - link "Wetsuit 3mm Premium" [ref=e212] [cursor=pointer]:
+                  - /url: /produk/wetsuit-3mm-premium
+                  - generic [ref=e213]:
+                    - img "Wetsuit 3mm Premium" [ref=e215]
+                    - img "Wetsuit 3mm Premium - alternate view" [ref=e217]
+                - button "Tambahkan" [ref=e218]
+              - generic [ref=e219]:
+                - link "Arnes" [ref=e220] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e221]: Wetsuit 3mm Premium
+                - generic [ref=e222]: Rp 1.800.000
+            - generic [ref=e224]:
+              - generic [ref=e225]:
+                - generic [ref=e226]: Sale
+                - link "Snorkel Dry Top" [ref=e227] [cursor=pointer]:
+                  - /url: /produk/snorkel-dry-top
+                  - generic [ref=e228]:
+                    - img "Snorkel Dry Top" [ref=e230]
+                    - img "Snorkel Dry Top - alternate view" [ref=e232]
+                - button "Tambahkan" [ref=e233]
+              - generic [ref=e234]:
+                - link "Arnes" [ref=e235] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e236]: Snorkel Dry Top
+                - paragraph [ref=e238]: Rp 250.000 Rp 320.000
+            - generic [ref=e239]:
+              - generic [ref=e240]:
+                - link "Sabuk Timah Premium" [ref=e241] [cursor=pointer]:
+                  - /url: /produk/sabuk-timah-premium
+                  - generic [ref=e242]:
+                    - img "Sabuk Timah Premium" [ref=e244]
+                    - img "Sabuk Timah Premium - alternate view" [ref=e246]
+                - button "Tambahkan" [ref=e247]
+              - generic [ref=e248]:
+                - link "Arnes" [ref=e249] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e250]: Sabuk Timah Premium
+                - generic [ref=e251]: Rp 350.000
+            - generic [ref=e253]:
+              - generic [ref=e254]:
+                - link "Gloves 2mm" [ref=e255] [cursor=pointer]:
+                  - /url: /produk/gloves-2mm
+                  - generic [ref=e256]:
+                    - img "Gloves 2mm" [ref=e258]
+                    - img "Gloves 2mm - alternate view" [ref=e260]
+                - button "Tambahkan" [ref=e261]
+              - generic [ref=e262]:
+                - link "Arnes" [ref=e263] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e264]: Gloves 2mm
+                - generic [ref=e265]: Rp 280.000
+            - generic [ref=e267]:
+              - generic [ref=e268]:
+                - generic [ref=e269]: Baru
+                - link "Fin Socks 3mm" [ref=e270] [cursor=pointer]:
+                  - /url: /produk/fin-socks-3mm
+                  - generic [ref=e271]:
+                    - img "Fin Socks 3mm" [ref=e273]
+                    - img "Fin Socks 3mm - alternate view" [ref=e275]
+                - button "Tambahkan" [ref=e276]
+              - generic [ref=e277]:
+                - link "Arnes" [ref=e278] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e279]: Fin Socks 3mm
+                - generic [ref=e280]: Rp 200.000
+            - generic [ref=e282]:
+              - generic [ref=e283]:
+                - generic [ref=e284]: Sale
+                - link "Masker Low Volume" [ref=e285] [cursor=pointer]:
+                  - /url: /produk/masker-low-volume
+                  - generic [ref=e286]:
+                    - img "Masker Low Volume" [ref=e288]
+                    - img "Masker Low Volume - alternate view" [ref=e290]
+                - button "Tambahkan" [ref=e291]
+              - generic [ref=e292]:
+                - link "Arnes" [ref=e293] [cursor=pointer]:
+                  - /url: /vendor/arnes
+                - paragraph [ref=e294]: Masker Low Volume
+                - paragraph [ref=e296]: Rp 650.000 Rp 750.000
+        - generic [ref=e298]:
+          - generic [ref=e299]:
+            - generic [ref=e300]:
+              - generic [ref=e301]: Passion, Freedom, Performance
+              - heading "Visit Our Feed" [level=2] [ref=e302]
+              - paragraph [ref=e303]: Flowers & Saints is an Australian streetwear brand built on purpose, not trends.
+              - paragraph [ref=e304]: Inspired by real moments and real people, these looks reflect modern Australian apparel — understated, confident, and designed to last.
+            - link "@arnesh.official" [ref=e305] [cursor=pointer]:
+              - /url: https://www.instagram.com/arnesh.official
+          - generic [ref=e306]:
+            - link [ref=e307] [cursor=pointer]:
+              - /url: https://www.instagram.com/p/DZhCEvySGyy/
+              - img "Instagram post" [ref=e308]
+            - link [ref=e309] [cursor=pointer]:
+              - /url: https://www.instagram.com/p/DZ48gW2EhBO/
+              - img "Instagram post" [ref=e310]
+            - link [ref=e311] [cursor=pointer]:
+              - /url: https://www.instagram.com/p/DaMfDOxyy6v/
+              - img "Instagram post" [ref=e312]
+            - link [ref=e313] [cursor=pointer]:
+              - /url: https://www.instagram.com/p/DZ_3EsyS7CZ/
+              - img "Instagram post" [ref=e314]
+        - generic [ref=e317]:
+          - generic [ref=e318]:
+            - heading "Produk Original" [level=4] [ref=e319]
+            - paragraph [ref=e320]: 100% kualitas terjamin
+          - generic [ref=e321]:
+            - heading "Easy Return" [level=4] [ref=e322]
+            - paragraph [ref=e323]: 14 hari pengembalian
+          - generic [ref=e324]:
+            - heading "Support 24/7" [level=4] [ref=e325]
+            - paragraph [ref=e326]: Siap membantu
+    - contentinfo [ref=e327]:
+      - generic [ref=e328]:
+        - generic [ref=e329]:
+          - generic [ref=e330]:
+            - heading "ARNES DIVE" [level=2] [ref=e331]: ARNESDIVE
+            - generic [ref=e332]:
+              - generic [ref=e333]:
+                - heading "Bantuan" [level=5] [ref=e334]
+                - list [ref=e335]:
+                  - listitem [ref=e336]:
+                    - link "FAQ" [ref=e337] [cursor=pointer]:
+                      - /url: /faq
+                  - listitem [ref=e338]:
+                    - link "Pengiriman" [ref=e339] [cursor=pointer]:
+                      - /url: /faq
+                  - listitem [ref=e340]:
+                    - link "Pengembalian" [ref=e341] [cursor=pointer]:
+                      - /url: /faq
+                  - listitem [ref=e342]:
+                    - link "Hubungi Kami" [ref=e343] [cursor=pointer]:
+                      - /url: /kontak
+              - generic [ref=e344]:
+                - heading "Tentang" [level=5] [ref=e345]
+                - list [ref=e346]:
+                  - listitem [ref=e347]:
+                    - link "Tentang Kami" [ref=e348] [cursor=pointer]:
+                      - /url: /tentang
+                  - listitem [ref=e349]:
+                    - link "Kebijakan Privasi" [ref=e350] [cursor=pointer]:
+                      - /url: /privasi
+                  - listitem [ref=e351]:
+                    - link "Syarat & Ketentuan" [ref=e352] [cursor=pointer]:
+                      - /url: /syarat
+          - generic [ref=e353]:
+            - link "+62 812-3456-7890" [ref=e354] [cursor=pointer]:
+              - /url: https://wa.me/6281234567890
+            - link "support@arnesdive.com" [ref=e355] [cursor=pointer]:
+              - /url: mailto:support@arnesdive.com
+            - generic [ref=e356]: "Senin – Jumat: 09:00 – 17:00 WIB"
+          - generic [ref=e357]:
+            - paragraph [ref=e358]: Dapatkan info produk & promo terbaru
+            - generic [ref=e359]:
+              - textbox "Email Anda" [ref=e360]
+              - button "Langganan" [ref=e361]
+        - generic [ref=e362]: © 2026 Arnes Dive Shop. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e368] [cursor=pointer]

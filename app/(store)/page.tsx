@@ -110,7 +110,7 @@ export default function HomePage() {
         headingPrefix="Eksplor"
         headingHighlight="Lainnya"
         description="Temukan perlengkapan diving untuk kebutuhan Anda."
-        ctaHref="/freediving"
+        ctaHref="/produk"
         products={featuredProducts.slice(0, 8)}
       />
 

@@ -99,8 +99,8 @@ export default function HomePage() {
         eyebrow="Sale"
         headingPrefix="Promo"
         headingHighlight="Spesial"
-        description="Masker dan kacamata renang untuk visibilitas optimal."
-        ctaHref="/sale"
+        description="Diskon spesial untuk produk terpilih."
+        ctaHref="/produk?category=sale"
         products={featuredProducts.filter((p) => p.badge === 'Sale')}
       />
 

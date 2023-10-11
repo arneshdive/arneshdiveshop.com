@@ -17,20 +17,20 @@ export function SearchResults({ products, total, sortBy }: SearchResultsProps) {
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sort', value);
-    router.push(`/search?${params.toString()}`);
+    router.push(`/produk?${params.toString()}`);
   };
 
   return (
     <div className="flex-1">
       {/* Header with count and sort */}
       <div className="flex justify-between items-center mb-6">
-        <p className="text-sm text-neutral-600">
+        <p className="text-base text-neutral-600">
           Menampilkan <span className="font-medium text-neutral-900">{total}</span> produk
         </p>
         <select
           value={sortBy}
           onChange={(e) => handleSortChange(e.target.value)}
-          className="border border-neutral-300 px-3 py-2 text-sm rounded focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          className="border border-neutral-300 px-4 py-2.5 text-base rounded focus:outline-none focus:ring-1 focus:ring-neutral-900"
         >
           <option value="newest">Urutkan: Terbaru</option>
           <option value="price-asc">Harga: Rendah ke Tinggi</option>

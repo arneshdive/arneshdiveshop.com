@@ -201,7 +201,7 @@ export function SearchFilters({
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block w-72 flex-shrink-0">
-        <div className="sticky top-40">
+        <div className="sticky top-24">
           <FilterContent
             filters={filters}
             categoryDistribution={categoryDistribution}

@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
+import { useCartStore } from '@/lib/store/cart';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
   const isHomepage = pathname === '/';
+  const itemCount = useCartStore((state) => state.getItemCount());
 
   useEffect(() => {
     const handleScroll = () => {
@@ -126,9 +128,11 @@ export function Header() {
             >
               <Icon icon="solar:bag-3-linear" className="w-6 h-6" />
               {/* Cart count badge */}
-              <span className={`absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] rounded-full flex items-center justify-center font-medium ${badgeBg}`}>
-                2
-              </span>
+              {itemCount > 0 && (
+                <span className={`absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] rounded-full flex items-center justify-center font-medium ${badgeBg}`}>
+                  {itemCount}
+                </span>
+              )}
             </Link>
             <Link
               href="/account"

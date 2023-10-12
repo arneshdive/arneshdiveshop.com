@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ParallaxShowcase } from '@/components/parallax-showcase';
 import { SearchFilters } from '@/components/search/search-filters';
 import { SearchResults } from '@/components/search/search-results';
 import {
@@ -142,6 +143,11 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
           />
           <SearchResults products={sortedProducts} total={total} sortBy={sortBy} />
         </div>
+      </div>
+
+      {/* Parallax Showcase */}
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-12 pb-16 lg:pb-24">
+        <ParallaxShowcase />
       </div>
     </>
   );

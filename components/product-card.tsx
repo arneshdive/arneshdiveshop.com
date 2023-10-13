@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useCartStore } from '@/lib/store/cart';
 
 interface ProductCardProps {
   product: {
@@ -17,6 +20,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const addItem = useCartStore((state) => state.addItem);
+
+  const handleAddToCart = () => {
+    addItem(product);
+  };
   return (
     <div className="product-card flex flex-col leading-none relative group bg-neutral-50 rounded-lg">
       {/* Media Section */}
@@ -68,6 +76,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="quick-add flex justify-center absolute bottom-0 left-0 right-0 z-10 pointer-events-none px-3 pb-3">
           <button
             type="button"
+            onClick={handleAddToCart}
             className="pointer-events-auto text-sm lg:text-base bg-neutral-900 text-white w-fit px-4 lg:px-6 py-2 font-medium rounded-md translate-y-[180%] group-hover:translate-y-[-8px] transition-transform duration-300 hover:bg-neutral-800"
           >
             Tambahkan

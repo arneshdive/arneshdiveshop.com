@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { OrderConfirmationCard } from '@/components/checkout/order-confirmation-card';
 import { useCartStore } from '@/lib/store/cart';
@@ -11,20 +11,23 @@ export function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const { items, clearCart } = useCartStore();
   const { data, reset } = useCheckoutStore();
-  const [hasCleared, setHasCleared] = useState(false);
+  const hasCleared = useRef(false);
 
   const orderId = searchParams.get('order_id') || `ARD-${new Date().getFullYear()}-0000`;
 
-  // Clear cart and checkout data on successful order
+  // Clear cart and checkout data on successful order - only once
   useEffect(() => {
-    if (!hasCleared) {
-      setHasCleared(true);
-      setTimeout(() => {
-        clearCart();
-        reset();
-      }, 1000);
-    }
-  }, [hasCleared, clearCart, reset]);
+    if (hasCleared.current) return;
+    hasCleared.current = true;
+    
+    // Defer clearing to after render
+    const timer = setTimeout(() => {
+      clearCart();
+      reset();
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [clearCart, reset]);
 
   const selectedMethod = shippingMethods.find((m) => m.id === data.shippingMethod);
   const subtotal = items.reduce((sum, item) => {

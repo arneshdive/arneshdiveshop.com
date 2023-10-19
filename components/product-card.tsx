@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/lib/store/cart';
@@ -21,10 +22,16 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const [added, setAdded] = useState(false);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     addItem(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
   };
+
   return (
     <div className="product-card flex flex-col leading-none relative group bg-neutral-50 rounded-lg">
       {/* Media Section */}
@@ -37,6 +44,13 @@ export function ProductCard({ product }: ProductCardProps) {
             }`}
           >
             {product.badge}
+          </span>
+        )}
+
+        {/* Added to cart badge */}
+        {added && (
+          <span className="absolute top-3 right-3 z-10 px-2 py-1 text-[10px] uppercase tracking-wider font-medium rounded bg-green-500 text-white">
+            Ditambahkan ✓
           </span>
         )}
 
@@ -72,14 +86,19 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </Link>
 
-        {/* Quick Add Button */}
+        {/* Quick Add Button - Always visible on mobile, hover on desktop */}
         <div className="quick-add flex justify-center absolute bottom-0 left-0 right-0 z-10 pointer-events-none px-3 pb-3">
           <button
             type="button"
             onClick={handleAddToCart}
-            className="pointer-events-auto text-sm lg:text-base bg-neutral-900 text-white w-fit px-4 lg:px-6 py-2 font-medium rounded-md translate-y-[180%] group-hover:translate-y-[-8px] transition-transform duration-300 hover:bg-neutral-800"
+            disabled={added}
+            className={`pointer-events-auto text-sm lg:text-base w-fit px-4 lg:px-6 py-2 font-medium rounded-md transition-all duration-300 ${
+              added
+                ? 'bg-green-500 text-white'
+                : 'bg-neutral-900 text-white hover:bg-neutral-800 translate-y-[180%] group-hover:translate-y-[-8px] sm:translate-y-[180%] sm:group-hover:translate-y-[-8px] translate-y-0 sm:translate-y-[180%]'
+            }`}
           >
-            Tambahkan
+            {added ? 'Ditambahkan ✓' : 'Tambahkan'}
           </button>
         </div>
       </div>

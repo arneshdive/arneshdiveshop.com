@@ -17,16 +17,16 @@ export function OrderSummaryCard() {
   const shippingCost = freeShipping ? 0 : (selectedMethod?.price || 0);
 
   return (
-    <div className="w-full lg:w-80 bg-white p-6 border border-neutral-200 h-fit sticky top-24">
-      <h2 className="font-semibold text-lg mb-6 pb-3 border-b border-neutral-200">Ringkasan Pesanan</h2>
+    <div className="bg-white rounded-2xl shadow-sm p-8 sticky top-24">
+      <h2 className="text-xl font-semibold tracking-tight mb-6">Pesanan Anda</h2>
 
       {/* Items */}
       <div className="space-y-4 mb-6">
         {items.map((item) => {
           const price = parseFloat(item.product.price.replace(/[^0-9]/g, ''));
           return (
-            <div key={item.id} className="flex gap-3">
-              <div className="w-16 h-20 bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-400 text-[10px] relative overflow-hidden flex-shrink-0">
+            <div key={item.id} className="flex gap-4">
+              <div className="w-16 h-20 bg-neutral-100 rounded-xl relative overflow-hidden flex-shrink-0">
                 {item.product.image ? (
                   <Image
                     src={item.product.image}
@@ -35,17 +35,19 @@ export function OrderSummaryCard() {
                     className="object-cover"
                   />
                 ) : (
-                  'Img'
+                  <div className="w-full h-full flex items-center justify-center text-neutral-300">
+                    <Icon icon="solar:box-linear" className="w-6 h-6" />
+                  </div>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm truncate">{item.product.title}</div>
+              <div className="flex-1 min-w-0 py-0.5">
+                <div className="font-medium text-sm leading-tight">{item.product.title}</div>
                 {item.selectedVariant && (
-                  <div className="text-xs text-neutral-500">
+                  <div className="text-xs text-neutral-400 mt-0.5">
                     {item.selectedVariant.color || item.selectedVariant.size}
                   </div>
                 )}
-                <div className="text-xs text-neutral-500">Qty: {item.quantity}</div>
+                <div className="text-xs text-neutral-400 mt-0.5">Qty: {item.quantity}</div>
               </div>
               <div className="font-medium text-sm">{formatPrice(price * item.quantity)}</div>
             </div>
@@ -54,31 +56,31 @@ export function OrderSummaryCard() {
       </div>
 
       {/* Totals */}
-      <div className="space-y-2 text-sm border-t border-neutral-200 pt-4">
-        <div className="flex justify-between">
+      <div className="border-t border-neutral-100 pt-6 space-y-3">
+        <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Subtotal</span>
           <span>{formatPrice(subtotal)}</span>
         </div>
         {promoDiscount > 0 && (
-          <div className="flex justify-between text-green-600">
+          <div className="flex justify-between text-sm text-green-600">
             <span>Diskon ({promoDiscount * 100}%)</span>
             <span>-{formatPrice(subtotal * promoDiscount)}</span>
           </div>
         )}
-        <div className="flex justify-between">
+        <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Ongkos Kirim</span>
-          <span>{freeShipping ? 'Gratis' : formatPrice(shippingCost)}</span>
+          <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : formatPrice(shippingCost)}</span>
         </div>
-        <div className="flex justify-between font-semibold text-lg pt-3 border-t border-neutral-200">
+        <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
           <span>Total</span>
           <span>{formatPrice(total + shippingCost)}</span>
         </div>
       </div>
 
       {/* Security Badge */}
-      <div className="mt-6 pt-4 border-t border-neutral-200 text-center text-xs text-neutral-500 flex items-center justify-center gap-1">
-        <Icon icon="solar:lock-linear" className="w-4 h-4" />
-        Transaksi Anda dilindungi
+      <div className="flex items-center justify-center gap-2 mt-6 pt-6 border-t border-neutral-100 text-xs text-neutral-400">
+        <Icon icon="solar:shield-check-linear" className="w-4 h-4" />
+        Transaksi aman & terenkripsi
       </div>
     </div>
   );

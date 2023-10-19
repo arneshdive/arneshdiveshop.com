@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Icon } from '@iconify/react';
+import { AnimatedButton } from '@/components/ui/animated-button';
 import { CheckoutProgress } from '@/components/checkout/checkout-progress';
 import { ContactForm } from '@/components/checkout/contact-form';
 import { ShippingAddressForm } from '@/components/checkout/shipping-address-form';
@@ -17,14 +19,6 @@ export default function CheckoutPage() {
   const { items } = useCartStore();
   const { data } = useCheckoutStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Redirect if cart is empty
-  if (items.length === 0 && typeof window !== 'undefined') {
-    // Only redirect on client side
-    if (!isSubmitting) {
-      // Don't redirect during render
-    }
-  }
 
   const validateForm = (): boolean => {
     if (!data.email || !isValidEmail(data.email)) return false;
@@ -45,16 +39,10 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
-    // TODO: Create order via API and get Midtrans snap token
-    // For now, redirect to success page with mock data
+    // Generate order ID
     const orderId = `ARD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
     
-    // In production, this would:
-    // 1. Create order in database
-    // 2. Get Midtrans snap token
-    // 3. Redirect to Midtrans payment page
-    
-    // For now, simulate redirect to success
+    // Redirect to success page
     setTimeout(() => {
       router.push(`/checkout/success?order_id=${orderId}`);
     }, 500);
@@ -62,56 +50,85 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-neutral-100">
-        <CheckoutProgress currentStep="information" />
-        <div className="max-w-6xl mx-auto px-4 py-12 text-center">
-          <h2 className="text-xl font-semibold mb-4">Keranjang Kosong</h2>
-          <p className="text-neutral-500 mb-6">Tambahkan produk ke keranjang untuk melanjutkan checkout.</p>
-          <Link
-            href="/produk"
-            className="inline-block bg-neutral-900 text-white px-8 py-3 text-sm uppercase tracking-wider hover:bg-neutral-800 transition-colors"
-          >
-            Mulai Belanja
-          </Link>
-        </div>
-      </div>
+      <>
+        {/* Hero */}
+        <section className="relative bg-neutral-100 pt-24 pb-12 lg:pt-32 lg:pb-16">
+          <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+            <div className="text-center">
+              <span className="inline-block text-xs uppercase tracking-widest text-neutral-500 mb-3">
+                Checkout
+              </span>
+              <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter mb-4">
+                Keranjang Kosong
+              </h1>
+              <p className="text-neutral-500 max-w-md mx-auto mb-8">
+                Tambahkan produk ke keranjang untuk melanjutkan checkout.
+              </p>
+              <AnimatedButton asChild className="px-8 py-4 text-sm uppercase tracking-wider">
+                <Link href="/produk">Mulai Belanja</Link>
+              </AnimatedButton>
+            </div>
+          </div>
+        </section>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <>
       {/* Progress */}
       <CheckoutProgress currentStep="information" />
 
-      {/* Checkout Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Forms */}
-          <div className="flex-1">
-            <ContactForm />
-            <ShippingAddressForm />
-            <ShippingMethodSelector />
-
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-neutral-900 text-white py-4 text-center text-xs uppercase tracking-wider hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'}
-            </button>
-            
-            <Link
-              href="/cart"
-              className="block mt-4 text-sm text-neutral-500 text-center hover:text-neutral-900 transition-colors"
-            >
-              ← Kembali ke Keranjang
-            </Link>
+      {/* Hero */}
+      <section className="relative bg-neutral-100 pt-12 pb-8">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="text-center">
+            <h1 className="text-3xl lg:text-5xl font-bold tracking-tighter mb-2">
+              Checkout
+            </h1>
+            <p className="text-neutral-500">
+              Lengkapi informasi untuk melanjutkan
+            </p>
           </div>
-
-          {/* Order Summary */}
-          <OrderSummaryCard />
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-12 lg:py-16">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Forms */}
+            <div className="flex-1">
+              <ContactForm />
+              <ShippingAddressForm />
+              <ShippingMethodSelector />
+
+              <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                <AnimatedButton
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="flex-1 py-4 text-sm uppercase tracking-wider"
+                >
+                  {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'}
+                </AnimatedButton>
+              </div>
+              
+              <Link
+                href="/cart"
+                className="inline-flex items-center gap-2 mt-6 text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+              >
+                <Icon icon="solar:arrow-left-linear" className="w-4 h-4" />
+                Kembali ke Keranjang
+              </Link>
+            </div>
+
+            {/* Order Summary */}
+            <div className="lg:w-[380px]">
+              <OrderSummaryCard />
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

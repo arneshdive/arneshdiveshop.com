@@ -146,7 +146,9 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
       </div>
 
       {/* Parallax Showcase */}
-      <ParallaxShowcase />
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-12 pb-12 lg:pb-20">
+        <ParallaxShowcase />
+      </div>
     </>
   );
 }

@@ -26,7 +26,7 @@ export function OrderSummaryCard() {
           const price = parseFloat(item.product.price.replace(/[^0-9]/g, ''));
           return (
             <div key={item.id} className="flex gap-4">
-              <div className="w-16 h-20 bg-neutral-100 rounded-xl relative overflow-hidden flex-shrink-0">
+              <div className="w-14 h-14 bg-neutral-100 rounded-xl relative overflow-hidden flex-shrink-0">
                 {item.product.image ? (
                   <Image
                     src={item.product.image}

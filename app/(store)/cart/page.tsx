@@ -13,19 +13,19 @@ export default function CartPage() {
   return (
     <>
       {/* Title Section - Full width, no container */}
-      <section className="bg-neutral-100 pt-24 pb-8 lg:pt-32 lg:pb-12">
+      <section className="pt-12 lg:pt-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="flex items-end justify-between">
             <div>
               <span className="inline-block text-xs uppercase tracking-widest text-neutral-500 mb-3">
                 Belanja
               </span>
-              <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter">
+              <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter">
                 Keranjang Anda
               </h1>
             </div>
             {items.length > 0 && (
-              <AnimatedButton asChild variant="outline" className="hidden sm:flex px-6 py-3 text-sm uppercase tracking-wider">
+              <AnimatedButton asChild variant="outline" className="hidden sm:flex px-6 py-3 text-sm">
                 <Link href="/produk">
                   Lanjut Belanja
                 </Link>

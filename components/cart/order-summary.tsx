@@ -37,7 +37,7 @@ export function OrderSummary() {
   };
 
   return (
-    <div className="bg-neutral-100 p-8 sticky top-24">
+    <div className="bg-neutral-100 p-8 sticky top-24 rounded-2xl">
       <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
 
       {/* Free shipping progress */}

@@ -19,7 +19,7 @@ export function CartItem({ item }: CartItemProps) {
       {/* Product Image - blend like product card */}
       <Link
         href={`/produk/${item.product.handle}`}
-        className="w-28 h-36 lg:w-32 lg:h-40 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg"
+        className="w-32 h-32 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg"
       >
         {item.product.image ? (
           <Image
@@ -38,6 +38,11 @@ export function CartItem({ item }: CartItemProps) {
       {/* Product Info */}
       <div className="flex-1 flex flex-col justify-between py-1">
         <div>
+          {item.product.vendor && (
+            <p className="text-xs uppercase tracking-widest text-neutral-400 mb-1">
+              {item.product.vendor}
+            </p>
+          )}
           <Link 
             href={`/produk/${item.product.handle}`} 
             className="text-lg font-medium tracking-tight hover:text-neutral-600 transition-colors"

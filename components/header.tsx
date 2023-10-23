@@ -106,7 +106,7 @@ export function Header() {
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSearchOpen(true)}
               className={`p-2 rounded-full transition-all ${iconColor}`}
@@ -114,13 +114,6 @@ export function Header() {
             >
               <Icon icon="solar:magnifer-linear" className="w-6 h-6" />
             </button>
-            <Link
-              href="/wishlist"
-              className={`p-2 rounded-full transition-all ${iconColor}`}
-              aria-label="Wishlist"
-            >
-              <Icon icon="solar:heart-linear" className="w-6 h-6" />
-            </Link>
             <Link
               href="/cart"
               className={`p-2 rounded-full transition-all relative ${iconColor}`}

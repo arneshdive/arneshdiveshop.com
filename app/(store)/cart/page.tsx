@@ -5,6 +5,8 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { CartItem } from '@/components/cart/cart-item';
 import { OrderSummary } from '@/components/cart/order-summary';
 import { EmptyCart } from '@/components/cart/empty-cart';
+import { RecentlyViewed } from '@/components/recently-viewed';
+import { USPSection } from '@/components/usp-section';
 import { useCartStore } from '@/lib/store/cart';
 
 export default function CartPage() {
@@ -25,7 +27,7 @@ export default function CartPage() {
               </h1>
             </div>
             {items.length > 0 && (
-              <AnimatedButton asChild variant="outline" className="hidden sm:flex px-6 py-3 text-sm">
+              <AnimatedButton asChild variant="outline" className="hidden sm:flex px-6 py-3 text-base">
                 <Link href="/produk">
                   Lanjut Belanja
                 </Link>
@@ -41,7 +43,7 @@ export default function CartPage() {
           {items.length === 0 ? (
             <EmptyCart />
           ) : (
-            <div className="flex flex-col lg:flex-row gap-12">
+            <div className="flex flex-col lg:flex-row gap-16">
               {/* Cart Items */}
               <div className="flex-1">
                 {items.map((item, index) => (
@@ -59,12 +61,30 @@ export default function CartPage() {
               </div>
 
               {/* Order Summary */}
-              <div className="lg:w-[380px]">
+              <div className="lg:w-[480px]">
                 <OrderSummary />
               </div>
             </div>
           )}
         </div>
+      </section>
+
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
+      {/* Recently Viewed */}
+      <RecentlyViewed />
+
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
+      {/* USP Section - overlaps the footer below it */}
+      <section className="relative z-10 -mb-16 lg:-mb-20">
+        <USPSection />
       </section>
     </>
   );

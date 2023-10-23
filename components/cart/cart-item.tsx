@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Minus, Plus, X } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { CartItem as CartItemType, useCartStore } from '@/lib/store/cart';
 import { formatPrice } from '@/lib/utils/validators';
@@ -15,11 +16,11 @@ export function CartItem({ item }: CartItemProps) {
   const price = parseFloat(item.product.price.replace(/[^0-9]/g, ''));
 
   return (
-    <div className="flex gap-6 py-6">
+    <div className="flex gap-6 py-8 group/item">
       {/* Product Image - blend like product card */}
       <Link
         href={`/produk/${item.product.handle}`}
-        className="w-32 h-32 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg"
+        className="w-32 h-32 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
       >
         {item.product.image ? (
           <Image
@@ -39,18 +40,19 @@ export function CartItem({ item }: CartItemProps) {
       <div className="flex-1 flex flex-col justify-between py-1">
         <div>
           {item.product.vendor && (
-            <p className="text-xs uppercase tracking-widest text-neutral-400 mb-1">
+            <p className="text-xs uppercase tracking-widest text-neutral-400 mb-1 cursor-default">
               {item.product.vendor}
             </p>
           )}
           <Link 
-            href={`/produk/${item.product.handle}`} 
-            className="text-lg font-medium tracking-tight hover:text-neutral-600 transition-colors"
+            href={`/produk/${item.product.handle}`}
+            className="text-lg font-medium tracking-tight relative inline-block cursor-pointer"
           >
-            {item.product.title}
+            <span className="transition-colors">{item.product.title}</span>
+            <span className="absolute left-0 bottom-0 w-0 h-px bg-neutral-900 transition-all duration-300 group-hover/item:w-full" />
           </Link>
           {item.selectedVariant && (
-            <p className="text-sm text-neutral-400 mt-1">
+            <p className="text-sm text-neutral-400 mt-1 cursor-default">
               {[
                 item.selectedVariant.color && `Warna: ${item.selectedVariant.color}`,
                 item.selectedVariant.size && `Ukuran: ${item.selectedVariant.size}`,
@@ -65,27 +67,33 @@ export function CartItem({ item }: CartItemProps) {
           {/* Quantity Controls */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-              className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                updateQuantity(item.id, item.quantity - 1);
+              }}
+              className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer"
               aria-label="Kurangi jumlah"
             >
-              <Icon icon="solar:minus-linear" className="w-4 h-4" />
+              <Minus className="w-4 h-4" />
             </button>
-            <span className="w-8 text-center font-medium">
+            <span className="w-8 text-center font-medium cursor-default">
               {item.quantity}
             </span>
             <button
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-100 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                updateQuantity(item.id, item.quantity + 1);
+              }}
+              className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer"
               aria-label="Tambah jumlah"
             >
-              <Icon icon="solar:add-linear" className="w-4 h-4" />
+              <Plus className="w-4 h-4" />
             </button>
           </div>
 
           {/* Price */}
           <div className="text-right">
-            <p className="text-lg font-semibold tracking-tight">
+            <p className="text-lg font-semibold tracking-tight cursor-default">
               {formatPrice(price * item.quantity)}
             </p>
           </div>
@@ -94,11 +102,14 @@ export function CartItem({ item }: CartItemProps) {
 
       {/* Remove Button */}
       <button
-        onClick={() => removeItem(item.id)}
-        className="self-start text-neutral-300 hover:text-red-500 transition-colors p-1"
+        onClick={(e) => {
+          e.preventDefault();
+          removeItem(item.id);
+        }}
+        className="self-start text-black hover:text-red-500 transition-colors p-1 cursor-pointer"
         aria-label="Hapus item"
       >
-        <Icon icon="solar:close-circle-linear" className="w-5 h-5" />
+        <X className="w-5 h-5" />
       </button>
     </div>
   );

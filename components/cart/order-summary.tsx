@@ -37,7 +37,7 @@ export function OrderSummary() {
   };
 
   return (
-    <div className="bg-neutral-100 p-8 sticky top-24 rounded-2xl">
+    <div className="bg-neutral-50 p-8 lg:p-12 sticky top-24 rounded-2xl">
       <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
 
       {/* Free shipping progress */}
@@ -144,7 +144,7 @@ export function OrderSummary() {
 
       {/* CTA */}
       <div className="mt-8">
-        <AnimatedButton asChild className="w-full py-4 text-sm uppercase tracking-wider">
+        <AnimatedButton asChild className="w-full py-4 text-base">
           <Link href="/checkout">
             Lanjut ke Checkout
           </Link>

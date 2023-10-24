@@ -4,6 +4,7 @@ import { ProductGallery } from '@/components/product-gallery';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductCard } from '@/components/product-card';
+import { USPSection } from '@/components/usp-section';
 
 // Mock data - will be replaced with real data fetching
 const mockProduct = {
@@ -117,11 +118,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Product Info */}
           <div className="w-full lg:w-2/5">
-            <div className="lg:sticky lg:top-24">
-              {/* Category Badge */}
-              <span className="inline-block bg-neutral-900 text-white text-[10px] uppercase tracking-widest px-3 py-1 mb-4">
-                {product.category}
-              </span>
+            <div className="lg:sticky lg:top-24 max-w-md">
+              {/* Vendor */}
+              {product.vendor && (
+                <p className="text-xs uppercase tracking-widest text-neutral-400 mb-2">
+                  {product.vendor}
+                </p>
+              )}
 
               {/* Title */}
               <h1 className="text-3xl lg:text-4xl font-bold tracking-tighter mb-3">
@@ -129,7 +132,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </h1>
 
               {/* Price */}
-              <p className="text-xl lg:text-2xl font-semibold mb-4">
+              <p className="text-xl lg:text-2xl font-semibold tracking-tight mb-6">
                 {product.compareAtPrice ? (
                   <>
                     <span className="text-red-500">{product.price}</span>{' '}
@@ -143,7 +146,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {/* Variant Selection */}
               {product.variants?.[0] && (
                 <div className="mb-6">
-                  <p className="text-xs uppercase tracking-widest text-neutral-600 font-medium mb-3">
+                  <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">
                     {product.variants[0].name}
                   </p>
                   <div className="flex flex-wrap gap-3">
@@ -162,20 +165,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Quantity */}
               <div className="mb-6">
-                <p className="text-xs uppercase tracking-widest text-neutral-600 font-medium mb-3">Jumlah</p>
+                <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">Jumlah</p>
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    className="w-12 h-12 border border-neutral-300 rounded-md text-lg hover:border-neutral-900 transition-colors flex items-center justify-center"
+                    className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors"
                   >
-                    −
+                    <span className="text-lg leading-none">−</span>
                   </button>
-                  <span className="w-12 text-center font-medium">1</span>
+                  <span className="w-8 text-center font-medium">1</span>
                   <button
                     type="button"
-                    className="w-12 h-12 border border-neutral-300 rounded-md text-lg hover:border-neutral-900 transition-colors flex items-center justify-center"
+                    className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors"
                   >
-                    +
+                    <span className="text-lg leading-none">+</span>
                   </button>
                 </div>
               </div>
@@ -188,16 +191,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Actions */}
               <div className="flex gap-3 mb-8">
-                <AnimatedButton className="flex-1" variant="default">
+                <AnimatedButton className="flex-1 h-[54px] text-base">
                   Tambah ke Keranjang
                 </AnimatedButton>
-                <button
-                  type="button"
-                  className="w-12 h-12 border border-neutral-300 rounded-md hover:border-neutral-900 transition-colors flex items-center justify-center"
-                  aria-label="Tambah ke Wishlist"
-                >
+                <AnimatedButton className="!w-[54px] !h-[54px] !p-0" variant="outline">
                   <Icon icon="solar:heart-linear" className="w-5 h-5" />
-                </button>
+                </AnimatedButton>
               </div>
 
               {/* Accordion */}
@@ -239,24 +238,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </section>
 
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
       {/* Related Products */}
-      <section className="py-12 lg:py-16 bg-neutral-50">
+      <section className="py-12 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="flex justify-between items-end mb-10">
-            <div>
-              <span className="text-[10px] lg:text-xs text-neutral-600 uppercase tracking-widest font-medium mb-2 block">
-                Related Products
-              </span>
-              <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter">
-                Produk Terkait
-              </h2>
-            </div>
-            <AnimatedButton asChild variant="outline" className="hidden sm:flex text-sm font-medium px-6 py-3">
-              <Link href="/freediving" className="inline-flex items-center gap-2.5">
-                Lihat Semua
-                <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
-              </Link>
-            </AnimatedButton>
+          <div className="mb-10">
+            <span className="text-[10px] lg:text-xs text-neutral-600 uppercase tracking-widest font-medium mb-2 block">
+              Related Products
+            </span>
+            <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter">
+              Produk Terkait
+            </h2>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
@@ -265,6 +261,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
+      {/* USP / Value Props - overlaps the footer */}
+      <section className="relative z-10 -mb-16 lg:-mb-20">
+        <USPSection />
       </section>
     </>
   );

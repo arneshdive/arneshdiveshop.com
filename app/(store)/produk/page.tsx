@@ -146,11 +146,21 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
         </div>
       </div>
 
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
       {/* Recently Viewed */}
       <RecentlyViewed />
 
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
       {/* USP / Value Props - overlaps the footer below it */}
-      <section className="relative z-10 bg-white rounded-b-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)] -mb-16 lg:-mb-20 py-14 lg:py-16">
+      <section className="relative z-10 bg-white rounded-b-[2.5rem] shadow-[0_30px_50px_-35px_rgba(0,0,0,0.35)] -mb-16 lg:-mb-20 py-14 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-neutral-200">
             {valueProps.map((prop) => (

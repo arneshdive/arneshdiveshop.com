@@ -13,8 +13,8 @@ export function ShippingMethodSelector() {
   const freeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-8 mb-6">
-      <h2 className="text-xl font-semibold tracking-tight mb-6">
+    <div className="pb-8">
+      <h2 className="text-lg font-semibold tracking-tight mb-6">
         Metode Pengiriman
       </h2>
       <div className="space-y-3">

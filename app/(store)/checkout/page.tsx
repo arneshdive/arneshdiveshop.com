@@ -10,6 +10,7 @@ import { ContactForm } from '@/components/checkout/contact-form';
 import { ShippingAddressForm } from '@/components/checkout/shipping-address-form';
 import { ShippingMethodSelector } from '@/components/checkout/shipping-method-selector';
 import { OrderSummaryCard } from '@/components/checkout/order-summary-card';
+import { USPSection } from '@/components/usp-section';
 import { useCartStore } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
@@ -24,10 +25,7 @@ export default function CheckoutPage() {
     if (!data.email || !isValidEmail(data.email)) return false;
     if (!data.phone || !isValidPhone(data.phone)) return false;
     if (!data.fullName.trim()) return false;
-    if (!data.address1.trim()) return false;
-    if (!data.city.trim()) return false;
-    if (!data.postalCode.trim()) return false;
-    if (!data.province) return false;
+    if (!data.hasMapLocation) return false; // Map selection is mandatory
     return true;
   };
 
@@ -65,7 +63,7 @@ export default function CheckoutPage() {
                 Tambahkan produk ke keranjang untuk melanjutkan checkout.
               </p>
               <AnimatedButton asChild className="px-8 py-4 text-sm uppercase tracking-wider">
-                <Link href="/produk">Mulai Belanja</Link>
+                <Link href="/produk">Mulai Belanja <Icon icon="solar:arrow-right-linear" className="w-4 h-4" /></Link>
               </AnimatedButton>
             </div>
           </div>
@@ -96,20 +94,20 @@ export default function CheckoutPage() {
       {/* Content */}
       <section className="py-12 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="flex flex-col lg:flex-row gap-12">
+          <div className="flex flex-col lg:flex-row gap-16">
             {/* Forms */}
             <div className="flex-1">
               <ContactForm />
               <ShippingAddressForm />
               <ShippingMethodSelector />
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <div className="mt-8">
                 <AnimatedButton
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="flex-1 py-4 text-sm uppercase tracking-wider"
+                  className="w-full py-4 text-base"
                 >
-                  {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'}
+                  {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'} <Icon icon="solar:arrow-right-linear" className="w-5 h-5" />
                 </AnimatedButton>
               </div>
               
@@ -123,11 +121,21 @@ export default function CheckoutPage() {
             </div>
 
             {/* Order Summary */}
-            <div className="lg:w-[380px]">
+            <div className="lg:w-[480px]">
               <OrderSummaryCard />
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
+      {/* USP Section - overlaps the footer below it */}
+      <section className="relative z-10 -mb-16 lg:-mb-20">
+        <USPSection />
       </section>
     </>
   );

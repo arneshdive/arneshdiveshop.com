@@ -7,8 +7,8 @@ export function ContactForm() {
   const { data, setField } = useCheckoutStore();
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-8 mb-6">
-      <h2 className="text-xl font-semibold tracking-tight mb-6">
+    <div className="pb-8 mb-8 border-b border-neutral-200">
+      <h2 className="text-lg font-semibold tracking-tight mb-6">
         Informasi Kontak
       </h2>
       <div className="grid sm:grid-cols-2 gap-6">

@@ -20,7 +20,7 @@ export function AccordionItem({ title, children, defaultOpen = false }: Accordio
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-4 flex justify-between items-center text-left"
       >
-        <span className="text-sm font-semibold">{title}</span>
+        <span className="text-base font-semibold">{title}</span>
         <Icon
           icon="solar:alt-arrow-down-linear"
           className={cn(
@@ -35,7 +35,7 @@ export function AccordionItem({ title, children, defaultOpen = false }: Accordio
           isOpen ? 'max-h-96 pb-4' : 'max-h-0'
         )}
       >
-        <div className="text-sm text-neutral-700 leading-relaxed">
+        <div className="text-base text-neutral-700 leading-relaxed">
           {children}
         </div>
       </div>

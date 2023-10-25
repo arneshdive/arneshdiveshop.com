@@ -12,6 +12,11 @@ export interface CheckoutData {
   province: string;
   notes: string;
   shippingMethod: 'jne-regular' | 'jne-yes' | 'sicepat-reg';
+  // Map-selected location
+  hasMapLocation: boolean;
+  formattedAddress: string;
+  lat: number | null;
+  lng: number | null;
 }
 
 interface CheckoutState {
@@ -35,6 +40,10 @@ const initialData: CheckoutData = {
   province: '',
   notes: '',
   shippingMethod: 'jne-regular',
+  hasMapLocation: false,
+  formattedAddress: '',
+  lat: null,
+  lng: null,
 };
 
 export const useCheckoutStore = create<CheckoutState & CheckoutActions>()(

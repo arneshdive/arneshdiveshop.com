@@ -8,6 +8,8 @@ export interface MockProduct {
   badge?: string;
   image?: string;
   secondaryImage?: string;
+  category?: 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
+  diveType?: 'freediving' | 'scuba' | 'both';
 }
 
 export const featuredProducts: MockProduct[] = [
@@ -20,6 +22,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Baru',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'masker',
+    diveType: 'freediving',
   },
   {
     id: '2',
@@ -30,6 +34,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Baru',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'fin',
+    diveType: 'freediving',
   },
   {
     id: '3',
@@ -39,6 +45,8 @@ export const featuredProducts: MockProduct[] = [
     price: 'Rp 1.800.000',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'wetsuit',
+    diveType: 'both',
   },
   {
     id: '4',
@@ -50,6 +58,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Sale',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'aksesoris',
+    diveType: 'freediving',
   },
   {
     id: '5',
@@ -59,6 +69,8 @@ export const featuredProducts: MockProduct[] = [
     price: 'Rp 350.000',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'sabuk-pemberat',
+    diveType: 'both',
   },
   {
     id: '6',
@@ -68,6 +80,8 @@ export const featuredProducts: MockProduct[] = [
     price: 'Rp 280.000',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'aksesoris',
+    diveType: 'both',
   },
   {
     id: '7',
@@ -78,6 +92,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Baru',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'aksesoris',
+    diveType: 'freediving',
   },
   {
     id: '8',
@@ -89,6 +105,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Sale',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'masker',
+    diveType: 'freediving',
   },
   {
     id: '9',
@@ -98,6 +116,8 @@ export const featuredProducts: MockProduct[] = [
     price: 'Rp 2.200.000',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'wetsuit',
+    diveType: 'scuba',
   },
   {
     id: '10',
@@ -108,6 +128,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Best Seller',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'fin',
+    diveType: 'freediving',
   },
   {
     id: '11',
@@ -117,6 +139,8 @@ export const featuredProducts: MockProduct[] = [
     price: 'Rp 3.500.000',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'aksesoris',
+    diveType: 'scuba',
   },
   {
     id: '12',
@@ -127,6 +151,8 @@ export const featuredProducts: MockProduct[] = [
     badge: 'Baru',
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
+    category: 'aksesoris',
+    diveType: 'both',
   },
 ];
 

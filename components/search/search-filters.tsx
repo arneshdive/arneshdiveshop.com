@@ -2,8 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
-import { CATEGORY_CONFIG, type CategoryKey, type SearchFilters } from '@/lib/data/search-utils';
-import { cn } from '@/lib/utils/cn';
+import { CATEGORY_CONFIG, DIVE_TYPE_CONFIG, type CategoryKey, type SearchFilters } from '@/lib/data/search-utils';
 
 interface SearchFiltersProps {
   filters: SearchFilters;
@@ -30,6 +29,7 @@ function FilterContent({
   hasActiveFilters,
 }: FilterContentProps) {
   const isCategoryActive = (key: CategoryKey) => filters.category === key;
+  const isDiveTypeActive = (key: string) => filters.diveType === key;
 
   return (
     <div className="space-y-8">
@@ -56,10 +56,7 @@ function FilterContent({
                     onChange={() => updateFilter('category', isCategoryActive(key) ? '' : key)}
                     className="accent-neutral-900 w-4 h-4"
                   />
-                  <span className={cn(
-                    'group-hover:text-neutral-900',
-                    key === 'sale' ? 'text-red-500' : 'text-neutral-600'
-                  )}>
+                  <span className="text-neutral-600 group-hover:text-neutral-900">
                     {cat.label}
                   </span>
                 </div>
@@ -73,6 +70,40 @@ function FilterContent({
               className="text-sm text-neutral-400 hover:text-neutral-600 underline"
             >
               Hapus filter kategori
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Dive Type Filter */}
+      <div>
+        <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
+          Tipe Diving
+        </h3>
+        <div className="space-y-3">
+          {Object.entries(DIVE_TYPE_CONFIG).map(([key, config]) => (
+            <label
+              key={key}
+              className="flex items-center gap-3 text-base cursor-pointer group"
+            >
+              <input
+                type="radio"
+                name="diveType"
+                checked={isDiveTypeActive(key)}
+                onChange={() => updateFilter('diveType', isDiveTypeActive(key) ? '' : key)}
+                className="accent-neutral-900 w-4 h-4"
+              />
+              <span className="text-neutral-600 group-hover:text-neutral-900">
+                {config.label}
+              </span>
+            </label>
+          ))}
+          {filters.diveType && (
+            <button
+              onClick={() => updateFilter('diveType', '')}
+              className="text-sm text-neutral-400 hover:text-neutral-600 underline"
+            >
+              Hapus filter tipe diving
             </button>
           )}
         </div>
@@ -153,7 +184,7 @@ export function SearchFilters({
 }: SearchFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const hasActiveFilters = filters.category || filters.priceMin || filters.priceMax || filters.brands?.length;
+  const hasActiveFilters = filters.category || filters.diveType || filters.priceMin || filters.priceMax || filters.brands?.length;
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -168,7 +199,6 @@ export function SearchFilters({
   const clearFilters = () => {
     const params = new URLSearchParams();
     if (filters.query) params.set('q', filters.query);
-    if (filters.category) params.set('category', filters.category);
     router.push(`/produk?${params.toString()}`);
   };
 

@@ -10,6 +10,15 @@ import { provinces } from '@/lib/constants/provinces';
 interface MapModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAddressSelect?: (address: {
+    address1: string;
+    city: string;
+    postalCode: string;
+    state: string;
+    formattedAddress?: string;
+    lat: number;
+    lng: number;
+  }) => void;
 }
 
 interface AddressComponents {
@@ -229,7 +238,7 @@ function MapContent({
   );
 }
 
-export function MapModal({ isOpen, onClose }: MapModalProps) {
+export function MapModal({ isOpen, onClose, onAddressSelect }: MapModalProps) {
   const { data, setField } = useCheckoutStore();
   const [mounted, setMounted] = useState(false);
 
@@ -248,18 +257,31 @@ export function MapModal({ isOpen, onClose }: MapModalProps) {
       
       const formattedAddress = parts.join(', ');
 
-      // Update all fields
-      setField('address1', address.street || '');
-      setField('city', address.city || '');
-      setField('postalCode', address.postalCode || '');
-      setField('province', address.province || '');
-      setField('hasMapLocation', true);
-      setField('formattedAddress', formattedAddress);
-      setField('lat', lat);
-      setField('lng', lng);
+      // If callback provided, use it (for address management)
+      if (onAddressSelect) {
+        onAddressSelect({
+          address1: address.street || '',
+          city: address.city || '',
+          postalCode: address.postalCode || '',
+          state: address.province || '',
+          formattedAddress,
+          lat,
+          lng,
+        });
+      } else {
+        // Default: update checkout store
+        setField('address1', address.street || '');
+        setField('city', address.city || '');
+        setField('postalCode', address.postalCode || '');
+        setField('province', address.province || '');
+        setField('hasMapLocation', true);
+        setField('formattedAddress', formattedAddress);
+        setField('lat', lat);
+        setField('lng', lng);
+      }
       onClose();
     },
-    [setField, onClose]
+    [setField, onClose, onAddressSelect]
   );
 
   if (!mounted || !isOpen) return null;

@@ -1,8 +1,11 @@
 import type { MockProduct } from './mock-products';
 
+export type CategoryKey = 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
+
 export interface SearchFilters {
   query: string;
-  category?: 'freediving' | 'scuba' | 'aksesoris' | 'sale';
+  category?: CategoryKey;
+  diveType?: 'freediving' | 'scuba' | 'both';
   priceMin?: number;
   priceMax?: number;
   brands?: string[];
@@ -11,25 +14,7 @@ export interface SearchFilters {
 export interface SearchResult {
   products: MockProduct[];
   total: number;
-  categoryDistribution: {
-    freediving: number;
-    scuba: number;
-    aksesoris: number;
-    sale: number;
-  };
-}
-
-// Mock category assignment based on product handle/title
-function inferCategory(product: MockProduct): 'freediving' | 'scuba' | 'aksesoris' | 'sale' {
-  if (product.badge === 'Sale') return 'sale';
-  const title = product.title.toLowerCase();
-  const handle = product.handle.toLowerCase();
-
-  if (title.includes('fin') || title.includes('masker') || title.includes('snorkel') || title.includes('wetsuit')) {
-    if (handle.includes('scuba') || title.includes('scuba')) return 'scuba';
-    return 'freediving';
-  }
-  return 'aksesoris';
+  categoryDistribution: Record<CategoryKey, number>;
 }
 
 // Parse price string to number (e.g., "Rp 850.000" -> 850000)
@@ -56,7 +41,14 @@ export function searchProducts(
 
   // Filter by category
   if (filters.category) {
-    filtered = filtered.filter((p) => inferCategory(p) === filters.category);
+    filtered = filtered.filter((p) => p.category === filters.category);
+  }
+
+  // Filter by dive type
+  if (filters.diveType) {
+    filtered = filtered.filter((p) => 
+      p.diveType === filters.diveType || p.diveType === 'both'
+    );
   }
 
   // Filter by price range
@@ -86,11 +78,12 @@ export function searchProducts(
       )
     : allProducts;
 
-  const categoryDistribution = {
-    freediving: baseFiltered.filter((p) => inferCategory(p) === 'freediving').length,
-    scuba: baseFiltered.filter((p) => inferCategory(p) === 'scuba').length,
-    aksesoris: baseFiltered.filter((p) => inferCategory(p) === 'aksesoris').length,
-    sale: baseFiltered.filter((p) => p.badge === 'Sale').length,
+  const categoryDistribution: Record<CategoryKey, number> = {
+    masker: baseFiltered.filter((p) => p.category === 'masker').length,
+    fin: baseFiltered.filter((p) => p.category === 'fin').length,
+    wetsuit: baseFiltered.filter((p) => p.category === 'wetsuit').length,
+    'sabuk-pemberat': baseFiltered.filter((p) => p.category === 'sabuk-pemberat').length,
+    aksesoris: baseFiltered.filter((p) => p.category === 'aksesoris').length,
   };
 
   return {
@@ -108,27 +101,16 @@ export function getAvailableBrands(products: MockProduct[]): string[] {
   return Array.from(brands).sort();
 }
 
-export const CATEGORY_CONFIG = {
-  freediving: {
-    label: 'Freediving',
-    gradient: 'from-cyan-900 to-cyan-700',
-    description: 'Peralatan freediving berkualitas tinggi untuk petualangan bawah laut.',
-  },
-  scuba: {
-    label: 'Scuba',
-    gradient: 'from-blue-900 to-blue-700',
-    description: 'Perlengkapan scuba diving profesional untuk eksplorasi laut dalam.',
-  },
-  aksesoris: {
-    label: 'Aksesoris',
-    gradient: 'from-slate-700 to-slate-500',
-    description: 'Aksesoris dan perlengkapan pendukung diving.',
-  },
-  sale: {
-    label: 'Sale',
-    gradient: 'from-red-700 to-red-500',
-    description: 'Diskon spesial untuk produk terpilih.',
-  },
-} as const;
+export const CATEGORY_CONFIG: Record<CategoryKey, { label: string; description: string; gradient: string }> = {
+  masker: { label: 'Masker', description: 'Koleksi masker freediving dan scuba berkualitas tinggi untuk visibilitas optimal.', gradient: 'from-blue-600 to-blue-500' },
+  fin: { label: 'Fin', description: 'Fin freediving dan scuba dengan berbagai pilihan material dan desain.', gradient: 'from-teal-600 to-teal-500' },
+  wetsuit: { label: 'Wetsuit', description: 'Wetsuit dan rashguard untuk kenyamanan dan perlindungan saat menyelam.', gradient: 'from-indigo-600 to-indigo-500' },
+  'sabuk-pemberat': { label: 'Sabuk Pemberat', description: 'Sabuk pemberat dan aksesoris pendukung untuk keseimbangan saat menyelam.', gradient: 'from-neutral-700 to-neutral-500' },
+  aksesoris: { label: 'Aksesoris', description: 'Berbagai aksesoris freediving dan scuba untuk melengkapi peralatan Anda.', gradient: 'from-neutral-700 to-neutral-500' },
+};
 
-export type CategoryKey = keyof typeof CATEGORY_CONFIG;
+export const DIVE_TYPE_CONFIG = {
+  freediving: { label: 'Freediving' },
+  scuba: { label: 'Scuba' },
+  both: { label: 'Freediving & Scuba' },
+} as const;

@@ -15,14 +15,14 @@ export default function CartPage() {
   return (
     <>
       {/* Title Section - Full width, no container */}
-      <section className="pt-12 lg:pt-16">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <section className="pt-8 lg:pt-16">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
           <div className="flex items-end justify-between">
             <div>
-              <span className="inline-block text-xs uppercase tracking-widest text-neutral-500 mb-3">
+              <span className="inline-block text-[10px] uppercase tracking-widest text-neutral-500 mb-2 lg:mb-3">
                 Belanja
               </span>
-              <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter">
+              <h1 className="text-3xl lg:text-5xl font-bold tracking-tighter">
                 Keranjang Anda
               </h1>
             </div>
@@ -38,12 +38,12 @@ export default function CartPage() {
       </section>
 
       {/* Cart Content */}
-      <section className="py-12 lg:py-16">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+      <section className="py-6 lg:py-16">
+        <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
           {items.length === 0 ? (
             <EmptyCart />
           ) : (
-            <div className="flex flex-col lg:flex-row gap-16">
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
               {/* Cart Items */}
               <div className="flex-1">
                 {items.map((item, index) => (
@@ -53,7 +53,7 @@ export default function CartPage() {
                 ))}
                 
                 {/* Mobile: Lanjut Belanja */}
-                <AnimatedButton asChild variant="outline" className="sm:hidden flex mt-8 px-6 py-3 text-sm uppercase tracking-wider">
+                <AnimatedButton asChild variant="outline" className="sm:hidden mt-6 px-6 py-3 text-base">
                   <Link href="/produk">
                     Lanjut Belanja
                   </Link>

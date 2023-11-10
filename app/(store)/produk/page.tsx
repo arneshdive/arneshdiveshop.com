@@ -103,7 +103,7 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
   // Build breadcrumb
   const breadcrumb = [
     { label: 'Beranda', href: '/' },
-    ...(category ? [{ label: CATEGORY_CONFIG[category].label, href: `/produk?category=${category}` }] : []),
+    ...(category && CATEGORY_CONFIG[category] ? [{ label: CATEGORY_CONFIG[category].label, href: `/produk?category=${category}` }] : []),
     ...(query ? [{ label: `"${query}"`, href: `/produk?q=${query}` }] : []),
   ];
 

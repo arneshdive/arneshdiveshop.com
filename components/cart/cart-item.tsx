@@ -16,11 +16,11 @@ export function CartItem({ item }: CartItemProps) {
   const price = parseFloat(item.product.price.replace(/[^0-9]/g, ''));
 
   return (
-    <div className="flex gap-6 py-8 group/item">
+    <div className="flex gap-4 lg:gap-6 py-6 lg:py-8 group/item">
       {/* Product Image - blend like product card */}
       <Link
         href={`/produk/${item.product.handle}`}
-        className="w-32 h-32 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
+        className="w-24 h-24 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
       >
         {item.product.image ? (
           <Image
@@ -31,28 +31,28 @@ export function CartItem({ item }: CartItemProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-300">
-            <Icon icon="solar:box-linear" className="w-8 h-8" />
+            <Icon icon="solar:box-linear" className="w-6 h-6 lg:w-8 lg:h-8" />
           </div>
         )}
       </Link>
 
       {/* Product Info */}
-      <div className="flex-1 flex flex-col justify-between py-1">
+      <div className="flex-1 flex flex-col justify-between py-0.5 lg:py-1">
         <div>
           {item.product.vendor && (
-            <p className="text-xs uppercase tracking-widest text-neutral-400 mb-1 cursor-default">
+            <p className="text-[10px] lg:text-xs uppercase tracking-widest text-neutral-400 mb-0.5 lg:mb-1 cursor-default">
               {item.product.vendor}
             </p>
           )}
           <Link 
             href={`/produk/${item.product.handle}`}
-            className="text-lg font-medium tracking-tight relative inline-block cursor-pointer"
+            className="text-base lg:text-lg font-medium tracking-tight relative inline-block cursor-pointer"
           >
             <span className="transition-colors">{item.product.title}</span>
             <span className="absolute left-0 bottom-0 w-0 h-px bg-neutral-900 transition-all duration-300 group-hover/item:w-full" />
           </Link>
           {item.selectedVariant && (
-            <p className="text-sm text-neutral-400 mt-1 cursor-default">
+            <p className="text-sm text-neutral-400 mt-0.5 lg:mt-1 cursor-default">
               {[
                 item.selectedVariant.color && `Warna: ${item.selectedVariant.color}`,
                 item.selectedVariant.size && `Ukuran: ${item.selectedVariant.size}`,
@@ -63,20 +63,20 @@ export function CartItem({ item }: CartItemProps) {
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-3 lg:mt-4">
           {/* Quantity Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 lg:gap-3">
             <button
               onClick={(e) => {
                 e.preventDefault();
                 updateQuantity(item.id, item.quantity - 1);
               }}
-              className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer"
+              className="w-8 h-8 lg:w-9 lg:h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer"
               aria-label="Kurangi jumlah"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </button>
-            <span className="w-8 text-center font-medium cursor-default">
+            <span className="w-6 lg:w-8 text-center text-sm lg:text-base font-medium cursor-default">
               {item.quantity}
             </span>
             <button
@@ -84,16 +84,16 @@ export function CartItem({ item }: CartItemProps) {
                 e.preventDefault();
                 updateQuantity(item.id, item.quantity + 1);
               }}
-              className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer"
+              className="w-8 h-8 lg:w-9 lg:h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer"
               aria-label="Tambah jumlah"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </button>
           </div>
 
           {/* Price */}
           <div className="text-right">
-            <p className="text-lg font-semibold tracking-tight cursor-default">
+            <p className="text-base lg:text-lg font-semibold tracking-tight cursor-default">
               {formatPrice(price * item.quantity)}
             </p>
           </div>
@@ -109,7 +109,7 @@ export function CartItem({ item }: CartItemProps) {
         className="self-start text-black hover:text-red-500 transition-colors p-1 cursor-pointer"
         aria-label="Hapus item"
       >
-        <X className="w-5 h-5" />
+        <X className="w-4 h-4 lg:w-5 lg:h-5" />
       </button>
     </div>
   );

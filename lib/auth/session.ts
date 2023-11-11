@@ -1,50 +1,48 @@
-import { cookies } from 'next/headers';
 import { SignJWT, jwtVerify } from 'jose';
-import { db, users } from '@/lib/db';
-import { eq } from 'drizzle-orm';
-import { compare, hash } from './password';
+import { cookies } from 'next/headers';
+import type { UserRole } from '@/lib/db/schema';
+
+export interface SessionPayload {
+  userId: string;
+  role: UserRole;
+}
 
 const SESSION_COOKIE_NAME = 'session';
-const SESSION_EXPIRY_DAYS = 7;
-const JWT_SECRET = () => new TextEncoder().encode(process.env.JWT_SECRET!);
+const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 days in seconds
 
-export interface SessionUser {
-  id: string;
-  email: string;
-  name: string | null;
-  role: 'customer' | 'admin' | 'super_admin';
+function getSecretKey(): Uint8Array {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret || secret.length < 32) {
+    throw new Error('SESSION_SECRET must be at least 32 characters');
+  }
+  return new TextEncoder().encode(secret);
 }
 
-export async function hashPassword(password: string): Promise<string> {
-  return hash(password);
-}
-
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return compare(password, hash);
-}
-
-export async function createSession(user: SessionUser): Promise<string> {
-  const token = await new SignJWT({ user })
+export async function createSession(payload: SessionPayload): Promise<string> {
+  const secretKey = getSecretKey();
+  const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime(`${SESSION_EXPIRY_DAYS}d`)
-    .sign(JWT_SECRET());
-
+    .setExpirationTime(`${SESSION_DURATION}s`)
+    .sign(secretKey);
   return token;
 }
 
-export async function getSession(): Promise<SessionUser | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!token) return null;
-
+export async function verifySession(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET());
-    return payload.user as SessionUser;
+    const secretKey = getSecretKey();
+    const { payload } = await jwtVerify(token, secretKey);
+    return payload as SessionPayload;
   } catch {
     return null;
   }
+}
+
+export async function getSession(): Promise<SessionPayload | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  if (!token) return null;
+  return verifySession(token);
 }
 
 export async function setSessionCookie(token: string): Promise<void> {
@@ -53,39 +51,12 @@ export async function setSessionCookie(token: string): Promise<void> {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: SESSION_EXPIRY_DAYS * 24 * 60 * 60,
+    maxAge: SESSION_DURATION,
     path: '/',
   });
 }
 
-export async function clearSession(): Promise<void> {
+export async function deleteSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE_NAME);
-}
-
-export async function login(email: string, password: string): Promise<SessionUser | null> {
-  const user = await db.query.users.findFirst({
-    where: eq(users.email, email),
-  });
-
-  if (!user || !user.password) return null;
-
-  const isValid = await verifyPassword(password, user.password);
-  if (!isValid) return null;
-
-  const sessionUser: SessionUser = {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
-
-  const token = await createSession(sessionUser);
-  await setSessionCookie(token);
-
-  return sessionUser;
-}
-
-export async function logout(): Promise<void> {
-  await clearSession();
 }

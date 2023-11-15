@@ -1,153 +1,136 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
 
-type Step = 'email' | 'otp' | 'profile';
+type Mode = 'login' | 'register';
+
+interface AuthForm {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+  confirmPassword: string;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+  name?: string;
+  phone?: string;
+  confirmPassword?: string;
+  general?: string;
+}
 
 function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [step, setStep] = useState<Step>('email');
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [otpError, setOtpError] = useState('');
-  const [countdown, setCountdown] = useState(0);
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [profileError, setProfileError] = useState('');
+  const [mode, setMode] = useState<Mode>('login');
+  const [form, setForm] = useState<AuthForm>({
+    email: '',
+    password: '',
+    name: '',
+    phone: '',
+    confirmPassword: '',
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-
-  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const redirectTo = searchParams.get('redirect') || '/account';
 
-  // Countdown timer
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [countdown]);
-
-  // Send OTP
-  const handleSendOtp = async () => {
-    setEmailError('');
-
-    if (!email.trim()) {
-      setEmailError('Email wajib diisi');
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      setEmailError('Format email tidak valid');
-      return;
-    }
-
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    setStep('otp');
-    setCountdown(60);
-    setTimeout(() => otpInputRefs.current[0]?.focus(), 100);
+  const updateForm = (field: keyof AuthForm, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined, general: undefined }));
   };
 
-  // Handle OTP input
-  const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
 
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1);
-    setOtp(newOtp);
-    setOtpError('');
-
-    if (value && index < 5) {
-      otpInputRefs.current[index + 1]?.focus();
+    if (!form.email.trim()) {
+      newErrors.email = 'Email wajib diisi';
+    } else if (!isValidEmail(form.email)) {
+      newErrors.email = 'Format email tidak valid';
     }
 
-    if (newOtp.every((digit) => digit) && newOtp.join('').length === 6) {
-      handleVerifyOtp(newOtp.join(''));
+    if (!form.password) {
+      newErrors.password = 'Password wajib diisi';
+    } else if (form.password.length < 8) {
+      newErrors.password = 'Password minimal 8 karakter';
     }
-  };
 
-  const handleOtpKeydown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      otpInputRefs.current[index - 1]?.focus();
-    }
-  };
+    if (mode === 'register') {
+      if (!form.name.trim()) {
+        newErrors.name = 'Nama wajib diisi';
+      }
 
-  const handleOtpPaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-    if (pastedData) {
-      const newOtp = pastedData.split('').concat(Array(6 - pastedData.length).fill(''));
-      setOtp(newOtp);
-      if (pastedData.length === 6) {
-        handleVerifyOtp(pastedData);
+      if (form.phone && !isValidPhone(form.phone)) {
+        newErrors.phone = 'Format nomor telepon tidak valid';
+      }
+
+      if (!form.confirmPassword) {
+        newErrors.confirmPassword = 'Konfirmasi password wajib diisi';
+      } else if (form.password !== form.confirmPassword) {
+        newErrors.confirmPassword = 'Password tidak cocok';
       }
     }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  // Verify OTP
-  const handleVerifyOtp = async (otpCode: string) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
     setIsLoading(true);
-    console.log('Verifying OTP:', otpCode);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setErrors({});
 
-    // Simulate: random new/existing user for demo
-    const userExists = Math.random() > 0.5;
+    try {
+      const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+      const body =
+        mode === 'login'
+          ? { email: form.email, password: form.password }
+          : {
+              email: form.email,
+              password: form.password,
+              name: form.name,
+              phone: form.phone || undefined,
+            };
 
-    setIsLoading(false);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-    if (userExists) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details) {
+          setErrors(data.details);
+        } else {
+          setErrors({ general: data.error || 'Terjadi kesalahan' });
+        }
+        return;
+      }
+
       router.push(redirectTo);
-    } else {
-      setStep('profile');
+      router.refresh();
+    } catch (error) {
+      console.error('Auth error:', error);
+      setErrors({ general: 'Terjadi kesalahan pada server' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Resend OTP
-  const handleResendOtp = async () => {
-    if (countdown > 0) return;
-
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    setCountdown(60);
-    setOtp(['', '', '', '', '', '']);
-    setOtpError('');
-    otpInputRefs.current[0]?.focus();
-  };
-
-  // Submit profile
-  const handleProfileSubmit = async () => {
-    setProfileError('');
-
-    if (!fullName.trim()) {
-      setProfileError('Nama lengkap wajib diisi');
-      return;
-    }
-
-    if (!phone.trim()) {
-      setProfileError('Nomor telepon wajib diisi');
-      return;
-    }
-
-    if (!isValidPhone(phone)) {
-      setProfileError('Format nomor telepon tidak valid');
-      return;
-    }
-
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    router.push(redirectTo);
+  const switchMode = () => {
+    setMode(mode === 'login' ? 'register' : 'login');
+    setErrors({});
   };
 
   return (
@@ -158,172 +141,190 @@ function AuthForm() {
           <span className="text-2xl font-bold tracking-tight">ARNES DIVE</span>
         </div>
 
-        {/* Email Step */}
-        {step === 'email' && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-neutral-500 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendOtp()}
-                placeholder="email@contoh.com"
-                autoFocus
-                className={cn(
-                  'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
-                  emailError
-                    ? 'border-red-300 focus:border-2 focus:border-red-500'
-                    : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
-                )}
-              />
-              {emailError && (
-                <p className="text-xs text-red-500 mt-2">{emailError}</p>
-              )}
-            </div>
+        {/* Mode Toggle */}
+        <div className="flex mb-6 bg-neutral-100 rounded-lg p-1">
+          <button
+            onClick={() => setMode('login')}
+            className={cn(
+              'flex-1 py-2 text-sm font-medium rounded-md transition-colors',
+              mode === 'login'
+                ? 'bg-white text-neutral-900 shadow-sm'
+                : 'text-neutral-500'
+            )}
+          >
+            Masuk
+          </button>
+          <button
+            onClick={() => setMode('register')}
+            className={cn(
+              'flex-1 py-2 text-sm font-medium rounded-md transition-colors',
+              mode === 'register'
+                ? 'bg-white text-neutral-900 shadow-sm'
+                : 'text-neutral-500'
+            )}
+          >
+            Daftar
+          </button>
+        </div>
 
-            <AnimatedButton
-              onClick={handleSendOtp}
-              disabled={isLoading}
-              className="w-full py-3 text-sm"
-            >
-              {isLoading ? 'Mengirim...' : 'Masuk / Daftar'}
-            </AnimatedButton>
-
-            <p className="text-xs text-neutral-400 text-center">
-              Dengan melanjutkan, Anda menyetujui{' '}
-              <a href="/syarat-ketentuan" className="text-neutral-600 hover:text-neutral-900 underline">
-                Syarat & Ketentuan
-              </a>
-              {' '}kami
-            </p>
-          </div>
-        )}
-
-        {/* OTP Step */}
-        {step === 'otp' && (
-          <div>
-            <p className="text-sm text-neutral-500 text-center mb-6">
-              Masukkan kode yang dikirim ke <span className="font-medium text-neutral-900">{email}</span>
-            </p>
-
-            <div className="flex justify-center gap-2 mb-4">
-              {otp.map((digit, index) => (
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Register-only fields */}
+          {mode === 'register' && (
+            <>
+              <div>
+                <label className="block text-sm text-neutral-500 mb-2">
+                  Nama Lengkap
+                </label>
                 <input
-                  key={index}
-                  ref={(el) => { otpInputRefs.current[index] = el; }}
                   type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(index, e.target.value)}
-                  onKeyDown={(e) => handleOtpKeydown(index, e)}
-                  onPaste={handleOtpPaste}
+                  value={form.name}
+                  onChange={(e) => updateForm('name', e.target.value)}
+                  placeholder="Nama lengkap Anda"
                   className={cn(
-                    'w-11 h-11 text-center text-lg font-medium bg-white border rounded-lg focus:outline-none transition-colors',
-                    otpError
+                    'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
+                    errors.name
                       ? 'border-red-300 focus:border-2 focus:border-red-500'
                       : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
                   )}
                 />
-              ))}
-            </div>
-
-            {otpError && (
-              <p className="text-xs text-red-500 text-center mb-4">{otpError}</p>
-            )}
-
-            {isLoading && (
-              <p className="text-xs text-neutral-500 text-center mb-4">Memverifikasi...</p>
-            )}
-
-            <div className="text-center mb-6">
-              <button
-                onClick={handleResendOtp}
-                disabled={countdown > 0 || isLoading}
-                className={cn(
-                  'text-sm transition-colors',
-                  countdown > 0 || isLoading
-                    ? 'text-neutral-400 cursor-not-allowed'
-                    : 'text-neutral-600 hover:text-neutral-900'
+                {errors.name && (
+                  <p className="text-xs text-red-500 mt-1">{errors.name}</p>
                 )}
-              >
-                {countdown > 0 ? `Kirim ulang dalam ${countdown}s` : 'Kirim Ulang Kode'}
-              </button>
-            </div>
+              </div>
 
-            <button
-              onClick={() => {
-                setStep('email');
-                setOtp(['', '', '', '', '', '']);
-                setOtpError('');
-              }}
-              className="w-full text-sm text-neutral-500 hover:text-neutral-900 transition-colors text-center"
-            >
-              <Icon icon="solar:arrow-left-linear" className="w-4 h-4 inline mr-1" />
-              Ganti Email
-            </button>
-          </div>
-        )}
+              <div>
+                <label className="block text-sm text-neutral-500 mb-2">
+                  Nomor Telepon <span className="text-neutral-400">(opsional)</span>
+                </label>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => updateForm('phone', e.target.value)}
+                  placeholder="08xxxxxxxxxx"
+                  className={cn(
+                    'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
+                    errors.phone
+                      ? 'border-red-300 focus:border-2 focus:border-red-500'
+                      : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
+                  )}
+                />
+                {errors.phone && (
+                  <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
+                )}
+              </div>
+            </>
+          )}
 
-        {/* Profile Step */}
-        {step === 'profile' && (
-          <div className="space-y-4">
-            <p className="text-sm text-neutral-500 text-center mb-2">
-              Lengkapi profil Anda untuk melanjutkan
-            </p>
-
-            <div>
-              <label className="block text-sm text-neutral-500 mb-2">
-                Nama Lengkap
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => {
-                  setFullName(e.target.value);
-                  setProfileError('');
-                }}
-                placeholder="Nama lengkap Anda"
-                autoFocus
-                className="w-full px-4 py-3 bg-white border border-neutral-300 rounded-lg text-sm focus:border-2 focus:border-neutral-900 focus:outline-none transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-neutral-500 mb-2">
-                Nomor Telepon
-              </label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                  setProfileError('');
-                }}
-                placeholder="08xxxxxxxxxx"
-                className="w-full px-4 py-3 bg-white border border-neutral-300 rounded-lg text-sm focus:border-2 focus:border-neutral-900 focus:outline-none transition-colors"
-              />
-            </div>
-
-            {profileError && (
-              <p className="text-xs text-red-500">{profileError}</p>
+          {/* Email */}
+          <div>
+            <label className="block text-sm text-neutral-500 mb-2">Email</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => updateForm('email', e.target.value)}
+              placeholder="email@contoh.com"
+              autoFocus={mode === 'login'}
+              className={cn(
+                'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
+                errors.email
+                  ? 'border-red-300 focus:border-2 focus:border-red-500'
+                  : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
+              )}
+            />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">{errors.email}</p>
             )}
-
-            <AnimatedButton
-              onClick={handleProfileSubmit}
-              disabled={isLoading}
-              className="w-full py-3 text-sm"
-            >
-              {isLoading ? 'Memproses...' : 'Selesai'}
-            </AnimatedButton>
           </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm text-neutral-500 mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => updateForm('password', e.target.value)}
+              placeholder="Masukkan password"
+              className={cn(
+                'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
+                errors.password
+                  ? 'border-red-300 focus:border-2 focus:border-red-500'
+                  : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
+              )}
+            />
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          {/* Confirm Password (register only) */}
+          {mode === 'register' && (
+            <div>
+              <label className="block text-sm text-neutral-500 mb-2">
+                Konfirmasi Password
+              </label>
+              <input
+                type="password"
+                value={form.confirmPassword}
+                onChange={(e) => updateForm('confirmPassword', e.target.value)}
+                placeholder="Ulangi password"
+                className={cn(
+                  'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
+                  errors.confirmPassword
+                    ? 'border-red-300 focus:border-2 focus:border-red-500'
+                    : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
+                )}
+              />
+              {errors.confirmPassword && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* General Error */}
+          {errors.general && (
+            <p className="text-sm text-red-500 text-center">{errors.general}</p>
+          )}
+
+          {/* Submit */}
+          <AnimatedButton
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3 text-sm"
+          >
+            {isLoading
+              ? 'Memproses...'
+              : mode === 'login'
+                ? 'Masuk'
+                : 'Daftar'}
+          </AnimatedButton>
+        </form>
+
+        {/* Forgot password placeholder */}
+        {mode === 'login' && (
+          <p className="text-xs text-center text-neutral-400 mt-4">
+            Lupa password?{' '}
+            <span className="text-neutral-600 cursor-not-allowed">
+              Fitur coming soon
+            </span>
+          </p>
         )}
+
+        {/* Terms */}
+        <p className="text-xs text-neutral-400 text-center mt-6">
+          Dengan melanjutkan, Anda menyetujui{' '}
+          <a
+            href="/syarat-ketentuan"
+            className="text-neutral-600 hover:text-neutral-900 underline"
+          >
+            Syarat & Ketentuan
+          </a>{' '}
+          kami
+        </p>
       </div>
     </div>
   );
@@ -331,11 +332,13 @@ function AuthForm() {
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-sm text-neutral-500">Loading...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-sm text-neutral-500">Loading...</div>
+        </div>
+      }
+    >
       <AuthForm />
     </Suspense>
   );

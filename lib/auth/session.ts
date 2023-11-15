@@ -11,9 +11,9 @@ const SESSION_COOKIE_NAME = 'session';
 const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 days in seconds
 
 function getSecretKey(): Uint8Array {
-  const secret = process.env.SESSION_SECRET;
+  const secret = process.env.JWT_SECRET;
   if (!secret || secret.length < 32) {
-    throw new Error('SESSION_SECRET must be at least 32 characters');
+    throw new Error('JWT_SECRET must be at least 32 characters');
   }
   return new TextEncoder().encode(secret);
 }

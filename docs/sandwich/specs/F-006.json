@@ -1,29 +1,34 @@
 {
   "featureId": "F-006",
-  "title": "Category management",
-  "module": "Products",
-  "description": "CRUD for categories with parent/child relationships, slug generation, sort order",
+  "title": "Product variants (size, color) with individual pricing",
+  "module": "Product Management",
+  "description": "Products support variants such as size and color, each with its own price.",
   "scope": {
     "inScope": [
-      "Category list view in admin",
-      "Category create/edit form",
-      "Parent category selection (hierarchy)",
-      "Automatic slug generation from name",
-      "Sort order field",
-      "Category delete with reassign option",
-      "ISR revalidation on category changes"
+      "Variant CRUD (size, color) attached to a product",
+      "Per-variant pricing (integer cents)"
     ],
     "outOfScope": [
-      "Category images",
-      "Category-specific attributes"
+      "Variant-level stock tracking"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Admin can create category with name, slug, parent, and sort order", "done": false },
-    { "id": "AC2", "text": "Slug auto-generated from name (editable)", "done": false },
-    { "id": "AC3", "text": "Parent category selection shows dropdown of existing categories", "done": false },
-    { "id": "AC4", "text": "Categories display in sort order on storefront navigation", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can add variants (size/color) to a product with their own price",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Customer can select a variant on the product detail page and see its price",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-001", "F-002"],
-  "source": { "file": "prd.md", "lines": "products-module" }
+  "dependsOn": [
+    "F-005"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "44"
+  }
 }

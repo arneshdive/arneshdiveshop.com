@@ -1,0 +1,40 @@
+{
+  "featureId": "F-021",
+  "title": "Homepage banner CRUD & display",
+  "module": "Banners",
+  "description": "Admin banner CRUD and active-banner display on the storefront homepage carousel.",
+  "scope": {
+    "inScope": [
+      "Banner CRUD for admin (image, link, display order, active/inactive)",
+      "Active banner display on the storefront homepage carousel"
+    ],
+    "outOfScope": [
+      "Per-user or geo-targeted banners"
+    ]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Admin can create, edit, delete, and reorder banners",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Admin can toggle a banner active/inactive",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "The homepage carousel shows only active banners in the configured order",
+      "done": false
+    }
+  ],
+  "dependsOn": [
+    "F-001",
+    "F-002"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "141-143"
+  }
+}

@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react';
 import { useCartStore } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { shippingMethods, FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
-import { formatPrice } from '@/lib/utils/validators';
+import { formatRupiah } from '@/lib/utils/format';
 
 export function OrderSummaryCard() {
   const { items, promoDiscount, getSubtotal, getTotal } = useCartStore();
@@ -25,7 +25,7 @@ export function OrderSummaryCard() {
       {!freeShipping && subtotal > 0 && (
         <div className="mb-6 p-4 bg-white rounded-xl">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-neutral-500">Gratis ongkir di atas {formatPrice(FREE_SHIPPING_THRESHOLD)}</span>
+            <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
           </div>
           <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
             <div 
@@ -34,7 +34,7 @@ export function OrderSummaryCard() {
             />
           </div>
           <p className="text-xs text-neutral-400 mt-2">
-            Tambah {formatPrice(remainingForFreeShipping)} lagi untuk gratis ongkir
+            Tambah {formatRupiah(remainingForFreeShipping)} lagi untuk gratis ongkir
           </p>
         </div>
       )}
@@ -66,7 +66,7 @@ export function OrderSummaryCard() {
                 )}
                 <p className="text-xs text-neutral-400">Qty: {item.quantity}</p>
               </div>
-              <p className="text-sm font-medium">{formatPrice(price * item.quantity)}</p>
+              <p className="text-sm font-medium">{formatRupiah(price * item.quantity)}</p>
             </div>
           );
         })}
@@ -76,21 +76,21 @@ export function OrderSummaryCard() {
       <div className="border-t border-neutral-100 pt-6 space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Subtotal</span>
-          <span>{formatPrice(subtotal)}</span>
+          <span>{formatRupiah(subtotal)}</span>
         </div>
         {promoDiscount > 0 && (
           <div className="flex justify-between text-sm text-green-600">
             <span>Diskon ({promoDiscount * 100}%)</span>
-            <span>-{formatPrice(subtotal * promoDiscount)}</span>
+            <span>-{formatRupiah(subtotal * promoDiscount)}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Ongkos Kirim</span>
-          <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : formatPrice(shippingCost)}</span>
+          <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : formatRupiah(shippingCost)}</span>
         </div>
         <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
           <span>Total</span>
-          <span>{formatPrice(total + shippingCost)}</span>
+          <span>{formatRupiah(total + shippingCost)}</span>
         </div>
       </div>
 

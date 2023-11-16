@@ -34,7 +34,7 @@ features/banners/
 
 | Layer | Technology |
 |-------|------------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict mode) |
 | Styling | Tailwind CSS v4 |
 | ORM | Drizzle ORM |

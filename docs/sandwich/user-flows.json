@@ -2,129 +2,196 @@
   "flows": [
     {
       "id": "UF-001",
-      "title": "Customer browses products and views details",
+      "title": "Customer registers a new account",
       "actor": "Customer",
-      "trigger": "Customer lands on homepage or navigates to category page",
+      "trigger": "Customer clicks 'Register' on the login page",
       "steps": [
-        "Customer views hero carousel with promotional banners",
-        "Customer browses featured products on homepage or navigates to category page",
-        "Customer clicks product card to view product detail page",
-        "System displays product with images, description, price, and variant options",
-        "Customer selects variant (if applicable) and adds to cart"
+        "Customer fills registration form (name, email, password, phone)",
+        "System validates inputs and checks for existing email",
+        "System creates account with 'unverified' status",
+        "System sends verification email with OTP link via Mailgun",
+        "Customer clicks verification link in email",
+        "System marks account as verified",
+        "System creates session and redirects to account page"
       ],
-      "outcome": "Product is added to cart, cart drawer shows updated contents",
+      "outcome": "Customer has a verified account and is logged in",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-002",
-      "title": "Customer registers account",
+      "title": "Customer logs in to their account",
       "actor": "Customer",
-      "trigger": "Customer clicks 'Register' from navigation or is prompted at checkout",
+      "trigger": "Customer clicks 'Login' and enters credentials",
       "steps": [
-        "Customer fills registration form with email, password, and name",
-        "System validates input and checks for existing email",
-        "System sends OTP to email for verification",
-        "Customer enters OTP code",
-        "System creates account and logs user in"
+        "Customer enters email and password",
+        "System validates credentials against stored hash",
+        "System creates secure HTTP-only session cookie",
+        "System redirects to previously requested page or homepage"
       ],
-      "outcome": "Customer account created and authenticated",
+      "outcome": "Customer is authenticated and can access protected features",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-003",
-      "title": "Customer places order with Midtrans payment",
+      "title": "Customer browses and searches products",
       "actor": "Customer",
-      "trigger": "Customer proceeds to checkout from cart",
+      "trigger": "Customer navigates to storefront homepage or search",
       "steps": [
-        "Customer reviews cart contents andProceeds to checkout",
-        "Customer enters or selects shipping address",
-        "System calculates shipping, tax, and applies any promo code",
-        "Customer confirms order and initiates payment",
-        "System creates order atomically (order + items + payment record)",
-        "System redirects to Midtrans Snap payment page",
-        "Customer completes payment via chosen method (GoPay, bank transfer, QRIS)",
-        "Midtrans sends webhook confirming payment",
-        "System updates order status to 'processing'",
-        "Customer sees order confirmation page"
+        "Customer views homepage with featured products and banners",
+        "Customer browses product categories from navigation",
+        "Customer uses search bar to find specific products",
+        "Customer applies filters (category, brand, price range)",
+        "Customer views product detail page with images and variants"
       ],
-      "outcome": "Order placed and payment confirmed, customer receives confirmation",
+      "outcome": "Customer finds products they want to purchase",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-004",
-      "title": "Customer manages their account",
+      "title": "Customer adds items to cart",
       "actor": "Customer",
-      "trigger": "Customer navigates to Account section",
+      "trigger": "Customer clicks 'Add to Cart' on product page",
       "steps": [
-        "Customer views account dashboard with order summary",
-        "Customer can navigate to orders, addresses, or settings",
-        "Customer views order history with status",
-        "Customer adds or edits shipping addresses",
-        "Customer updates profile information"
+        "Customer selects product variant (size, color) if applicable",
+        "Customer sets quantity",
+        "System checks product availability flag",
+        "System adds item to cart (creates cart if first item)",
+        "Cart totals update in real-time",
+        "Cart persists to database for logged-in users"
       ],
-      "outcome": "Customer can view and manage their account data",
+      "outcome": "Item is in customer's cart, ready for checkout",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-005",
-      "title": "Admin manages products",
-      "actor": "Admin",
-      "trigger": "Admin navigates to Products section in admin panel",
+      "title": "Guest customer completes checkout with auto-registration",
+      "actor": "Customer",
+      "trigger": "Customer clicks 'Checkout' from cart page",
       "steps": [
-        "Admin views product list with status and quick actions",
-        "Admin clicks 'Add Product' to create new product",
-        "Admin fills product details: name, slug, description, price, category, brand, images",
-        "Admin adds product variants if applicable",
-        "Admin sets product as active/inactive and featured status",
-        "System validates and creates product",
-        "Storefront pages are revalidated for ISR"
+        "Customer reviews cart items and totals",
+        "Customer enters contact information (name, email, phone)",
+        "Customer enters shipping address with Indonesia-specific fields",
+        "Customer reviews order summary with shipping cost",
+        "Customer clicks 'Pay with Midtrans'",
+        "Midtrans Snap popup opens with payment options",
+        "Customer completes payment (card, VA, e-wallet, QRIS)",
+        "Midtrans sends webhook confirmation to server",
+        "System auto-creates customer account using provided details",
+        "Order status updates to 'paid' and links to new customer account",
+        "Customer sees order confirmation page",
+        "System sends order confirmation email via Mailgun with account details"
       ],
-      "outcome": "Product created and visible on storefront (if active)",
+      "outcome": "Order is placed, customer has new account created automatically",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-006",
-      "title": "Admin processes orders",
-      "actor": "Admin",
-      "trigger": "Admin navigates to Orders section in admin panel",
+      "title": "Customer tracks order status",
+      "actor": "Customer",
+      "trigger": "Customer visits account order history",
       "steps": [
-        "Admin views order list with filters (status, date, customer)",
-        "Admin clicks order to view details",
-        "Admin reviews order items, customer info, and payment status",
-        "Admin updates order status (processing → shipped → delivered)",
-        "System records status change and timestamps"
+        "Customer logs into account",
+        "Customer navigates to 'My Orders'",
+        "Customer sees list of all orders with status badges",
+        "Customer clicks on specific order for details",
+        "Customer views order items, shipping address, payment info, and status timeline"
       ],
-      "outcome": "Order status updated, customer can track progress",
+      "outcome": "Customer knows the current status of their order",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-007",
-      "title": "Admin manages promotions",
+      "title": "Admin manages products",
       "actor": "Admin",
-      "trigger": "Admin navigates to Promotions section in admin panel",
+      "trigger": "Admin navigates to Products section in dashboard",
       "steps": [
-        "Admin views list of promo codes with usage stats",
-        "Admin creates new promo code with discount type, value, and conditions",
-        "Admin sets minimum order requirement and usage limits",
-        "Admin sets validity date range",
-        "System validates and creates promotion"
+        "Admin logs into admin dashboard",
+        "Admin views product list with status indicators",
+        "Admin clicks 'Add Product' or edits existing product",
+        "Admin fills product form (name, description, price, category, brand)",
+        "Admin uploads product images to Vercel Blob",
+        "Admin configures variants (size, color, individual pricing)",
+        "Admin sets product availability flag (available/unavailable)",
+        "Admin sets product as active/inactive",
+        "System saves product to database",
+        "Storefront product pages regenerate (ISR)"
       ],
-      "outcome": "Promo code available for customers at checkout",
+      "outcome": "Product is created or updated in catalog",
+      "needsUI": false,
       "confidence": "stated"
     },
     {
       "id": "UF-008",
-      "title": "Customer searches for products",
-      "actor": "Customer",
-      "trigger": "Customer enters search query in search bar",
+      "title": "Admin processes an order",
+      "actor": "Admin",
+      "trigger": "Admin views new order in order management",
       "steps": [
-        "Customer types search query",
-        "System performs full-text search on product names and descriptions",
-        "System displays matching products in search results page",
-        "Customer can filter or sort results",
-        "Customer clicks product to view details"
+        "Admin logs into admin dashboard",
+        "Admin views order list filtered by 'paid' status",
+        "Admin clicks on order to view details",
+        "Admin verifies items and shipping address",
+        "Admin updates order status to 'processing'",
+        "Admin prepares shipment",
+        "Admin enters tracking number and updates status to 'shipped'",
+        "System sends shipping notification email via Mailgun to customer"
       ],
-      "outcome": "Customer finds desired products via search",
+      "outcome": "Order moves through fulfillment pipeline",
+      "needsUI": false,
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-009",
+      "title": "Admin views sales dashboard",
+      "actor": "Admin",
+      "trigger": "Admin logs into admin dashboard homepage",
+      "steps": [
+        "Admin sees stats cards (total sales, orders, customers, revenue)",
+        "Admin views revenue chart by time period",
+        "Admin sees top-selling products list",
+        "Admin can filter date range for analytics"
+      ],
+      "outcome": "Admin has visibility into store performance",
+      "needsUI": false,
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-010",
+      "title": "Admin manages homepage banners",
+      "actor": "Admin",
+      "trigger": "Admin navigates to Banners section",
+      "steps": [
+        "Admin views current banners with preview images",
+        "Admin adds new banner (image, link, display order)",
+        "Admin edits or deletes existing banners",
+        "Admin sets banner active/inactive status",
+        "Storefront homepage updates with new banner configuration"
+      ],
+      "outcome": "Homepage carousel is updated",
+      "needsUI": false,
+      "confidence": "stated"
+    },
+    {
+      "id": "UF-011",
+      "title": "Customer resets forgotten password",
+      "actor": "Customer",
+      "trigger": "Customer clicks 'Forgot Password' on login page",
+      "steps": [
+        "Customer enters registered email address",
+        "System generates OTP and sends via Mailgun",
+        "Customer enters OTP from email",
+        "System verifies OTP is valid and not expired",
+        "Customer sets new password",
+        "System hashes and stores new password",
+        "System invalidates OTP and redirects to login"
+      ],
+      "outcome": "Customer can log in with new password",
+      "needsUI": false,
       "confidence": "stated"
     }
   ]

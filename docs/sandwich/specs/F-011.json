@@ -1,28 +1,56 @@
 {
   "featureId": "F-011",
-  "title": "Midtrans payment integration",
-  "module": "Payment",
-  "description": "Midtrans Snap integration with provider abstraction, transaction creation, redirect flow",
+  "title": "Multi-step checkout flow (guest checkout, auto-registration, confirmation)",
+  "module": "Checkout",
+  "description": "Contact → Shipping → Payment → Confirm checkout with Indonesia-specific address fields, guest checkout without prior registration, auto-registration of a customer account on order completion, order summary review, and confirmation page.",
   "scope": {
     "inScope": [
-      "PaymentProvider interface definition",
-      "Midtrans provider implementation",
-      "Transaction creation via Midtrans Snap API",
-      "Redirect URL handling",
-      "Sandbox vs production configuration",
-      "Error handling for failed transactions"
+      "Multi-step checkout: Contact → Shipping → Payment → Confirm",
+      "Indonesia-specific shipping address fields (province, city, postal code)",
+      "Guest checkout without prior registration",
+      "Auto-registration of a customer account on order completion using collected contact/shipping data, with duplicate-email lookup/linking",
+      "Order summary review before payment",
+      "Order confirmation page with order details"
     ],
     "outOfScope": [
-      "Webhook handling (separate feature)",
-      "Refund processing"
+      "Payment execution itself (separate Midtrans feature)",
+      "Saved-address reuse for guests"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "PaymentProvider interface defines createTransaction and verifyWebhook methods", "done": false },
-    { "id": "AC2", "text": "Midtrans provider creates Snap transaction successfully", "done": false },
-    { "id": "AC3", "text": "User redirected to Midtrans payment page", "done": false },
-    { "id": "AC4", "text": "Sandbox mode configurable via environment variable", "done": false }
+    {
+      "id": "AC1",
+      "text": "A guest can complete checkout without registering beforehand",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Shipping form validates Indonesia-specific fields (province, city, postal code)",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "On order completion, a customer account is auto-created from the checkout contact data",
+      "done": false
+    },
+    {
+      "id": "AC4",
+      "text": "If the guest's email already has an account, the order links to that existing account instead of creating a duplicate",
+      "done": false
+    },
+    {
+      "id": "AC5",
+      "text": "Customer sees an order confirmation page with order details after checkout",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-002", "F-008"],
-  "source": { "file": "prd.md", "lines": "payment-module" }
+  "dependsOn": [
+    "F-002",
+    "F-005",
+    "F-010"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "69-75"
+  }
 }

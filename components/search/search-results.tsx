@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ProductCard } from '@/components/product-card';
+import { ProductCard } from '@/components/product/product-card';
 import type { MockProduct } from '@/lib/data/mock-products';
 
 interface SearchResultsProps {

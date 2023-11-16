@@ -1,27 +1,41 @@
 {
   "featureId": "F-020",
-  "title": "SEO implementation",
-  "module": "SEO",
-  "description": "JSON-LD for products, sitemap, meta tags, Open Graph",
+  "title": "Promotions (promo code creation, management, application)",
+  "module": "Promotions",
+  "description": "Discount code creation/management by admin and application of a promo code to an order, including validity periods.",
   "scope": {
     "inScope": [
-      "JSON-LD structured data for products (Product, Offer schema)",
-      "Dynamic sitemap.ts generation",
-      "Per-page generateMetadata for title, description",
-      "Open Graph tags for social sharing",
-      "Canonical URLs"
+      "Promo code creation and management (admin)",
+      "Apply promo code to an order during checkout",
+      "Promotion validity periods"
     ],
     "outOfScope": [
-      "Schema validation tools",
-      "SEO dashboard"
+      "Automatic/rule-based promotions without a code"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Product pages have valid JSON-LD for Product schema", "done": false },
-    { "id": "AC2", "text": "Sitemap accessible at /sitemap.xml", "done": false },
-    { "id": "AC3", "text": "Each page has unique title and description", "done": false },
-    { "id": "AC4", "text": "Open Graph tags present for social sharing", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can create a promo code with a discount value and validity period",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Customer can apply a valid promo code at checkout and see the discount reflected in the order total",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "An expired or invalid promo code is rejected with a clear message",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-002", "F-008", "F-019"],
-  "source": { "file": "prd.md", "lines": "seo-module" }
+  "dependsOn": [
+    "F-001",
+    "F-011"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "131-134"
+  }
 }

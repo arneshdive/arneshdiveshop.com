@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import { ProductGallery } from '@/components/product-gallery';
+import { ProductGallery } from '@/components/product/product-gallery';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { AnimatedButton } from '@/components/ui/animated-button';
-import { ProductCard } from '@/components/product-card';
-import { USPSection } from '@/components/usp-section';
+import { ProductCard } from '@/components/product/product-card';
+import { USPSection } from '@/components/layout/usp-section';
 
 // Mock data - will be replaced with real data fetching
 const mockProduct = {

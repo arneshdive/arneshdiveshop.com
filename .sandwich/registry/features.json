@@ -1,71 +1,75 @@
 [
   {
     "id": "F-001",
-    "fingerprint": "project-foundation-nextjs",
-    "title": "Project foundation and infrastructure setup",
-    "description": "Initialize Next.js 15 project with TypeScript, Tailwind CSS v4, Drizzle ORM, PostgreSQL connection, and Vercel deployment config",
+    "fingerprint": "database schema connection setup|infrastructure",
+    "title": "Database schema & connection setup",
+    "description": "Drizzle ORM schema (users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens) and Neon Postgres connection. No lib/db exists yet — this is the foundation every other backend feature depends on.",
     "type": "infrastructure",
     "module": "Infrastructure",
     "confidence": "stated",
-    "lifecycle": "building",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
       "orphaned": false
     },
     "provenance": {
-      "file": "prd.md",
-      "lines": "tech-stack",
-      "briefHash": "04982ad507f26762"
+      "file": "technical-notes.md",
+      "lines": "28-29",
+      "briefHash": "80f05b81d486df94"
     },
     "dependsOn": [],
     "blocks": [
       "F-002",
-      "F-003",
-      "F-006"
+      "F-005",
+      "F-007",
+      "F-008",
+      "F-010",
+      "F-020",
+      "F-021"
     ],
     "blockedBy": [],
     "score": {
       "impact": {
         "score": 10,
         "factors": [
-          "Enables all other features"
+          "Every other backend feature reads/writes through this layer"
         ]
       },
       "effort": {
         "score": 3,
         "factors": [
-          "Standard Next.js setup"
+          "Schema already documented in SPEC.md, well-understood Drizzle setup"
         ]
       },
       "risk": {
-        "score": 2,
+        "score": 3,
         "factors": [
-          "Mature tooling"
+          "Neon serverless connection pooling needs verification under load"
         ]
       },
       "urgency": {
         "factor": 1.5,
-        "reason": "Blocks all development"
+        "reason": "Blocks nearly every other feature in the queue"
       },
-      "priority": 30,
+      "priority": 26,
       "formulaVersion": 1
     },
     "overrides": {},
     "specRef": "specs/F-001.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
     "id": "F-002",
-    "fingerprint": "database-schema-drizzle",
-    "title": "Database schema and migrations",
-    "description": "Define all tables using Drizzle ORM with pgEnum types for orders, payments, promotions, banners",
-    "type": "infrastructure",
-    "module": "Infrastructure",
+    "fingerprint": "core authentication registration login session rbac rate limiting|authentication",
+    "title": "Core authentication (registration, login, session, RBAC, rate limiting)",
+    "description": "Custom JWT session auth via jose: email/password registration with validation, secure login with HTTP-only cookie sessions, role-based access control (customer/admin/super_admin), and rate limiting on auth endpoints.",
+    "type": "feature",
+    "module": "Authentication",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -73,596 +77,66 @@
     },
     "provenance": {
       "file": "prd.md",
-      "lines": "database-schema",
-      "briefHash": "04982ad507f26762"
+      "lines": "29-34",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
       "F-001"
     ],
     "blocks": [
       "F-003",
-      "F-006",
-      "F-008"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 9,
-        "factors": [
-          "Required for all data models"
-        ]
-      },
-      "effort": {
-        "score": 4,
-        "factors": [
-          "Schema defined in SPEC"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Drizzle handles migrations"
-        ]
-      },
-      "urgency": {
-        "factor": 1.5,
-        "reason": "Blocks all data features"
-      },
-      "priority": 20,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-002.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-003",
-    "fingerprint": "auth-email-password-nextauth",
-    "title": "Email/password authentication",
-    "description": "Credential-based auth with NextAuth.js v5, password hashing, session management, middleware protection, RBAC",
-    "type": "feature",
-    "module": "Auth",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "auth-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-001",
-      "F-002"
-    ],
-    "blocks": [
       "F-004",
-      "F-005",
-      "F-012",
-      "F-014"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 9,
-        "factors": [
-          "Required for user features",
-          "Enables RBAC"
-        ]
-      },
-      "effort": {
-        "score": 5,
-        "factors": [
-          "NextAuth setup",
-          "Session management"
-        ]
-      },
-      "risk": {
-        "score": 3,
-        "factors": [
-          "Well-documented pattern"
-        ]
-      },
-      "urgency": {
-        "factor": 1.5,
-        "reason": "Blocks Orders and Customers"
-      },
-      "priority": 14,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-003.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-004",
-    "fingerprint": "auth-google-oauth",
-    "title": "Google OAuth integration",
-    "description": "Add Google OAuth provider to NextAuth.js for social login",
-    "type": "feature",
-    "module": "Auth",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "auth-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-003"
-    ],
-    "blocks": [],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 7,
-        "factors": [
-          "Improves UX",
-          "Reduces friction"
-        ]
-      },
-      "effort": {
-        "score": 2,
-        "factors": [
-          "Standard OAuth flow"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Common pattern"
-        ]
-      },
-      "urgency": {
-        "factor": 1,
-        "reason": "Nice to have"
-      },
-      "priority": 21,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-004.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-005",
-    "fingerprint": "auth-otp-mailgun",
-    "title": "OTP verification via Mailgun",
-    "description": "OTP generation, email sending via Mailgun, verification flow with 15-minute expiry",
-    "type": "feature",
-    "module": "Auth",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "auth-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-003"
-    ],
-    "blocks": [],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 7,
-        "factors": [
-          "Required for email verification"
-        ]
-      },
-      "effort": {
-        "score": 4,
-        "factors": [
-          "Mailgun API integration"
-        ]
-      },
-      "risk": {
-        "score": 3,
-        "factors": [
-          "External service dependency"
-        ]
-      },
-      "urgency": {
-        "factor": 1.2,
-        "reason": "Important for trust"
-      },
-      "priority": 11,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-005.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-006",
-    "fingerprint": "categories-hierarchy-crud",
-    "title": "Category management",
-    "description": "CRUD for categories with parent/child relationships, slug generation, sort order",
-    "type": "feature",
-    "module": "Products",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "products-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-001",
-      "F-002"
-    ],
-    "blocks": [
-      "F-008",
-      "F-019"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 8,
-        "factors": [
-          "Required for product organization"
-        ]
-      },
-      "effort": {
-        "score": 3,
-        "factors": [
-          "Simple CRUD"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Straightforward"
-        ]
-      },
-      "urgency": {
-        "factor": 1.2,
-        "reason": "Blocks products"
-      },
-      "priority": 19,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-006.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-007",
-    "fingerprint": "brands-crud",
-    "title": "Brand management",
-    "description": "CRUD for brands with slug generation",
-    "type": "feature",
-    "module": "Products",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "products-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-001",
-      "F-002"
-    ],
-    "blocks": [
-      "F-008"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 6,
-        "factors": [
-          "Nice to have"
-        ]
-      },
-      "effort": {
-        "score": 2,
-        "factors": [
-          "Simple CRUD"
-        ]
-      },
-      "risk": {
-        "score": 1,
-        "factors": [
-          "Very straightforward"
-        ]
-      },
-      "urgency": {
-        "factor": 1,
-        "reason": "Can be deferred"
-      },
-      "priority": 20,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-007.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-008",
-    "fingerprint": "products-crud-variants",
-    "title": "Product CRUD with variants",
-    "description": "Full product management with variants, pricing in cents, slug generation, featured flag, ISR revalidation",
-    "type": "feature",
-    "module": "Products",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "products-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-002",
-      "F-006",
-      "F-009"
-    ],
-    "blocks": [
       "F-010",
-      "F-012",
-      "F-019"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 10,
-        "factors": [
-          "Core business entity"
-        ]
-      },
-      "effort": {
-        "score": 6,
-        "factors": [
-          "Variants, images, ISR"
-        ]
-      },
-      "risk": {
-        "score": 3,
-        "factors": [
-          "Multi-step form"
-        ]
-      },
-      "urgency": {
-        "factor": 1.5,
-        "reason": "Blocks cart, orders"
-      },
-      "priority": 13,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-008.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-009",
-    "fingerprint": "vercel-blob-image-upload",
-    "title": "Image upload with Vercel Blob",
-    "description": "Image upload component using @vercel/blob, CDN-backed serving",
-    "type": "infrastructure",
-    "module": "Products",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "technical-notes.md",
-      "lines": "image-management",
-      "briefHash": "ad12ff058210bfcb"
-    },
-    "dependsOn": [
-      "F-001"
-    ],
-    "blocks": [
-      "F-008"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 8,
-        "factors": [
-          "Required for product images"
-        ]
-      },
-      "effort": {
-        "score": 3,
-        "factors": [
-          "Vercel Blob simple API"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Vercel native"
-        ]
-      },
-      "urgency": {
-        "factor": 1.2,
-        "reason": "Blocks product management"
-      },
-      "priority": 19,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-009.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-010",
-    "fingerprint": "cart-react-context-localstorage",
-    "title": "Client-side cart",
-    "description": "Cart context with add/remove/update items, variant support, localStorage persistence",
-    "type": "feature",
-    "module": "Cart",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "cart-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-001",
-      "F-002",
-      "F-008"
-    ],
-    "blocks": [
-      "F-012"
-    ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 8,
-        "factors": [
-          "Required for checkout"
-        ]
-      },
-      "effort": {
-        "score": 4,
-        "factors": [
-          "Context + localStorage"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Client-side only"
-        ]
-      },
-      "urgency": {
-        "factor": 1.2,
-        "reason": "Blocks checkout"
-      },
-      "priority": 14,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-010.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-011",
-    "fingerprint": "payment-midtrans-integration",
-    "title": "Midtrans payment integration",
-    "description": "Midtrans Snap integration with provider abstraction, transaction creation, redirect flow",
-    "type": "feature",
-    "module": "Payment",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "payment-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-002",
-      "F-008"
-    ],
-    "blocks": [
-      "F-012"
+      "F-011",
+      "F-014",
+      "F-017",
+      "F-018",
+      "F-019",
+      "F-021",
+      "F-022"
     ],
     "blockedBy": [],
     "score": {
       "impact": {
         "score": 9,
         "factors": [
-          "Core revenue feature"
+          "Gates every account-scoped and admin-scoped feature"
         ]
       },
       "effort": {
-        "score": 5,
+        "score": 6,
         "factors": [
-          "Midtrans API",
-          "Provider abstraction"
+          "JWT/jose session wiring, RBAC middleware, rate limiting all new"
         ]
       },
       "risk": {
         "score": 4,
         "factors": [
-          "External service",
-          "Webhook handling"
+          "Session/security correctness is high-stakes if done wrong"
         ]
       },
       "urgency": {
-        "factor": 1.2,
-        "reason": "Blocks order completion"
+        "factor": 1.5,
+        "reason": "Blocks checkout, admin dashboard, and account features"
       },
       "priority": 10,
       "formulaVersion": 1
     },
     "overrides": {},
-    "specRef": "specs/F-011.json",
+    "specRef": "specs/F-002.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
-    "id": "F-012",
-    "fingerprint": "orders-creation-atomic",
-    "title": "Order creation with atomic transaction",
-    "description": "Order creation with idempotency keys, atomic order+items+payment insert, status workflow",
+    "id": "F-003",
+    "fingerprint": "email verification otp for new accounts|authentication",
+    "title": "Email verification (OTP) for new accounts",
+    "description": "New accounts start unverified; system sends an OTP via Mailgun that the customer must confirm before full access.",
     "type": "feature",
-    "module": "Orders",
+    "module": "Authentication",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -670,119 +144,174 @@
     },
     "provenance": {
       "file": "prd.md",
-      "lines": "orders-module",
-      "briefHash": "04982ad507f26762"
+      "lines": "32",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
-      "F-003",
-      "F-008",
-      "F-010",
-      "F-011"
+      "F-002"
     ],
-    "blocks": [
-      "F-014",
-      "F-016"
-    ],
+    "blocks": [],
     "blockedBy": [],
     "score": {
       "impact": {
-        "score": 10,
+        "score": 6,
         "factors": [
-          "Core business transaction"
+          "Confirms real email ownership, stated requirement"
         ]
       },
       "effort": {
-        "score": 6,
+        "score": 4,
         "factors": [
-          "Atomic transaction logic"
+          "OTP generation/expiry + Mailgun send, moderate scope"
         ]
       },
       "risk": {
-        "score": 4,
+        "score": 3,
         "factors": [
-          "Transaction integrity"
+          "Well-understood OTP pattern"
         ]
       },
       "urgency": {
-        "factor": 1.5,
-        "reason": "Core e-commerce capability"
+        "factor": 1,
+        "reason": "Not on the checkout-conversion critical path"
       },
-      "priority": 11,
+      "priority": 8,
       "formulaVersion": 1
     },
     "overrides": {},
-    "specRef": "specs/F-012.json",
+    "specRef": "specs/F-003.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
-    "id": "F-013",
-    "fingerprint": "webhook-midtrans-handler",
-    "title": "Midtrans webhook handler",
-    "description": "Webhook endpoint with signature verification, order status update",
+    "id": "F-004",
+    "fingerprint": "forgot password reset flow otp|authentication",
+    "title": "Forgot password / reset flow (OTP)",
+    "description": "Customer requests a password reset, receives an OTP via Mailgun, and sets a new password after OTP verification.",
     "type": "feature",
-    "module": "Payment",
+    "module": "Authentication",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
       "orphaned": false
     },
     "provenance": {
-      "file": "technical-notes.md",
-      "lines": "webhook",
-      "briefHash": "ad12ff058210bfcb"
+      "file": "prd.md",
+      "lines": "31",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
-      "F-011"
+      "F-002"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Required account-recovery path, stated requirement"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "OTP generation/expiry + Mailgun send + password reset, moderate scope"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Well-understood OTP pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Not on the checkout-conversion critical path"
+      },
+      "priority": 8,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-004.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-005",
+    "fingerprint": "product crud images status availability featured|product management",
+    "title": "Product CRUD (images, status, availability, featured)",
+    "description": "Admin product create/update/delete with image upload to Vercel Blob, active/inactive status, availability flag (no stock quantity), and featured-product selection.",
+    "type": "feature",
+    "module": "Product Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "43-50",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-001"
     ],
     "blocks": [
-      "F-012"
+      "F-006",
+      "F-009",
+      "F-011",
+      "F-012",
+      "F-013",
+      "F-019"
     ],
     "blockedBy": [],
     "score": {
       "impact": {
         "score": 9,
         "factors": [
-          "Required for payment confirmation"
+          "Core catalog data everything else (cart, checkout, orders, search) reads from"
         ]
       },
       "effort": {
-        "score": 4,
+        "score": 6,
         "factors": [
-          "Signature verification"
+          "Vercel Blob upload integration plus full CRUD wiring to existing admin UI"
         ]
       },
       "risk": {
-        "score": 4,
+        "score": 3,
         "factors": [
-          "Webhook reliability"
+          "Well-understood CRUD pattern"
         ]
       },
       "urgency": {
-        "factor": 1.2,
-        "reason": "Required for order completion"
+        "factor": 1.5,
+        "reason": "Blocks variants, search, checkout, orders, dashboard"
       },
       "priority": 12,
       "formulaVersion": 1
     },
     "overrides": {},
-    "specRef": "specs/F-013.json",
+    "specRef": "specs/F-005.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
-    "id": "F-014",
-    "fingerprint": "customers-profile-addresses",
-    "title": "Customer profiles and addresses",
-    "description": "Customer management with addresses, order history, total spent tracking",
+    "id": "F-006",
+    "fingerprint": "product variants size color with individual pricing|product management",
+    "title": "Product variants (size, color) with individual pricing",
+    "description": "Products support variants such as size and color, each with its own price.",
     "type": "feature",
-    "module": "Customers",
+    "module": "Product Management",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -790,13 +319,185 @@
     },
     "provenance": {
       "file": "prd.md",
-      "lines": "customers-module",
-      "briefHash": "04982ad507f26762"
+      "lines": "44",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
-      "F-002",
-      "F-003",
-      "F-012"
+      "F-005"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Needed for products that come in sizes/colors"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "Variant table + pricing per variant, moderate admin UI wiring"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Well-understood pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Extends product CRUD, not independently blocking"
+      },
+      "priority": 6,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-006.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-007",
+    "fingerprint": "category management hierarchical|product management",
+    "title": "Category management (hierarchical)",
+    "description": "Admin CRUD for product categories with hierarchical structure.",
+    "type": "feature",
+    "module": "Product Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "45",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-001"
+    ],
+    "blocks": [
+      "F-009"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Needed for storefront navigation and filtering"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Hierarchical CRUD, moderate complexity"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Well-understood pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Feeds search/filtering but not itself on the conversion path"
+      },
+      "priority": 9,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-007.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-008",
+    "fingerprint": "brand management|product management",
+    "title": "Brand management",
+    "description": "Admin CRUD for product brands.",
+    "type": "feature",
+    "module": "Product Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "46",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-001"
+    ],
+    "blocks": [
+      "F-009"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 5,
+        "factors": [
+          "Needed for product filtering by brand"
+        ]
+      },
+      "effort": {
+        "score": 2,
+        "factors": [
+          "Flat CRUD, no hierarchy"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Trivial, well-understood pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Feeds search/filtering but not itself on the conversion path"
+      },
+      "priority": 15,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-008.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-009",
+    "fingerprint": "product search filtering|product management",
+    "title": "Product search & filtering",
+    "description": "Storefront product search with filters for category, brand, and price range.",
+    "type": "feature",
+    "module": "Product Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "47",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-005",
+      "F-007",
+      "F-008"
     ],
     "blocks": [],
     "blockedBy": [],
@@ -804,24 +505,328 @@
       "impact": {
         "score": 7,
         "factors": [
-          "Improves UX"
+          "Core product-discovery path for customers"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "Search UI already exists (components/search/), needs backend query wiring"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Well-understood query pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Important but not blocking other backend work"
+      },
+      "priority": 7,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-009.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-010",
+    "fingerprint": "serverside shopping cart persistence addremoveupdate realtime totals|shopping cart",
+    "title": "Server-side shopping cart (persistence, add/remove/update, real-time totals)",
+    "description": "Cart persisted to the database for logged-in users, add/remove/update items with quantity validation, real-time total calculation, synced with the existing Zustand client store.",
+    "type": "feature",
+    "module": "Shopping Cart",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "58-62",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002"
+    ],
+    "blocks": [
+      "F-011"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 8,
+        "factors": [
+          "Required before checkout can read a real cart"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "DB-backed cart plus API routes, moderate scope"
+        ]
+      },
+      "risk": {
+        "score": 4,
+        "factors": [
+          "Zustand client state must stay in sync with server cart (flagged risk in technical-notes.md)"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Directly blocks checkout"
+      },
+      "priority": 11,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-010.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-011",
+    "fingerprint": "multistep checkout flow guest checkout autoregistration confirmation|checkout",
+    "title": "Multi-step checkout flow (guest checkout, auto-registration, confirmation)",
+    "description": "Contact → Shipping → Payment → Confirm checkout with Indonesia-specific address fields, guest checkout without prior registration, auto-registration of a customer account on order completion, order summary review, and confirmation page.",
+    "type": "feature",
+    "module": "Checkout",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "69-75",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-005",
+      "F-010"
+    ],
+    "blocks": [
+      "F-012",
+      "F-013",
+      "F-020"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 9,
+        "factors": [
+          "The core conversion path for the whole store"
+        ]
+      },
+      "effort": {
+        "score": 7,
+        "factors": [
+          "Multi-step form, Indonesia address validation, and auto-registration logic all new"
+        ]
+      },
+      "risk": {
+        "score": 5,
+        "factors": [
+          "Auto-registration can create duplicate accounts if guest email already exists (flagged risk in technical-notes.md)"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Blocks payment and order creation"
+      },
+      "priority": 7,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-011.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-012",
+    "fingerprint": "midtrans payment integration snap va ewallets qris webhook idempotency|payment",
+    "title": "Midtrans payment integration (Snap, VA, e-wallets, QRIS, webhook, idempotency)",
+    "description": "Midtrans Snap checkout supporting cards, bank transfer (VA), e-wallets (GoPay/OVO/ShopeePay), and QRIS, behind a PaymentProvider interface; signature-verified webhook handler; payment status tracking; idempotency keys to prevent duplicate charges.",
+    "type": "feature",
+    "module": "Payment",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "82-90",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-005",
+      "F-011"
+    ],
+    "blocks": [
+      "F-013"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 10,
+        "factors": [
+          "Revenue-critical, required by client for Indonesian market"
+        ]
+      },
+      "effort": {
+        "score": 7,
+        "factors": [
+          "External gateway integration, multiple payment methods, webhook signature verification"
+        ]
+      },
+      "risk": {
+        "score": 6,
+        "factors": [
+          "Midtrans sandbox may not match production behavior exactly (flagged risk in technical-notes.md)",
+          "Payment correctness failures are high-stakes"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "No revenue can be collected without it"
+      },
+      "priority": 6,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-012.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-013",
+    "fingerprint": "order creation from cart atomic transaction|order management",
+    "title": "Order creation from cart (atomic transaction)",
+    "description": "Order + orderItems + payment record created atomically in a single DB transaction on checkout completion, with an idempotency key to prevent duplicate orders from double form-submits.",
+    "type": "feature",
+    "module": "Order Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "98",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-005",
+      "F-011",
+      "F-012"
+    ],
+    "blocks": [
+      "F-014",
+      "F-017",
+      "F-019",
+      "F-022"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 9,
+        "factors": [
+          "Central write path that order management, customer accounts, dashboard, and email all depend on"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "Transactional pattern is well-documented in technical-notes.md"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Well-understood DB transaction pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1.5,
+        "reason": "Blocks order management, customer accounts, dashboard, and email"
+      },
+      "priority": 14,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-013.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-014",
+    "fingerprint": "admin order list detail view|order management",
+    "title": "Admin order list & detail view",
+    "description": "Admin order list with filtering (status, date range, search) and order detail view with customer info, items, and payment.",
+    "type": "feature",
+    "module": "Order Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "99-100",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-013"
+    ],
+    "blocks": [
+      "F-015",
+      "F-016"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Required for admin to fulfill any order"
         ]
       },
       "effort": {
         "score": 4,
         "factors": [
-          "CRUD operations"
+          "Admin UI already exists (app/admin/orders/), needs route handlers + TanStack Query wiring"
         ]
       },
       "risk": {
         "score": 2,
         "factors": [
-          "Standard CRUD"
+          "Well-understood CRUD/list pattern"
         ]
       },
       "urgency": {
         "factor": 1,
-        "reason": "Enhances experience"
+        "reason": "Depends on orders existing first"
       },
       "priority": 10,
       "formulaVersion": 1
@@ -829,18 +834,18 @@
     "overrides": {},
     "specRef": "specs/F-014.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
     "id": "F-015",
-    "fingerprint": "admin-dashboard-stats",
-    "title": "Admin dashboard with statistics",
-    "description": "Dashboard with sales stats, chart visualization, TanStack Query",
+    "fingerprint": "order status updates audit trail|order management",
+    "title": "Order status updates & audit trail",
+    "description": "Admin updates order status through the fulfillment workflow (processing, shipped, delivered, cancelled) with an audit trail of changes.",
     "type": "feature",
-    "module": "Dashboard",
+    "module": "Order Management",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -848,229 +853,57 @@
     },
     "provenance": {
       "file": "prd.md",
-      "lines": "dashboard-module",
-      "briefHash": "04982ad507f26762"
+      "lines": "101-102",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
-      "F-002",
-      "F-003"
-    ],
-    "blocks": [],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 6,
-        "factors": [
-          "Business insights"
-        ]
-      },
-      "effort": {
-        "score": 4,
-        "factors": [
-          "Chart library integration"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Standard admin pattern"
-        ]
-      },
-      "urgency": {
-        "factor": 0.8,
-        "reason": "Not critical for MVP"
-      },
-      "priority": 7,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-015.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-016",
-    "fingerprint": "promotions-codes-crud",
-    "title": "Promo code management",
-    "description": "Promo codes with percentage/fixed discounts, limits, validity periods",
-    "type": "feature",
-    "module": "Promotions",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "promotions-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-002",
-      "F-012"
-    ],
-    "blocks": [],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 6,
-        "factors": [
-          "Marketing tool"
-        ]
-      },
-      "effort": {
-        "score": 3,
-        "factors": [
-          "Standard CRUD"
-        ]
-      },
-      "risk": {
-        "score": 2,
-        "factors": [
-          "Well-understood"
-        ]
-      },
-      "urgency": {
-        "factor": 0.8,
-        "reason": "Can be deferred"
-      },
-      "priority": 9,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-016.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-017",
-    "fingerprint": "banners-crud-carousel",
-    "title": "Banner management and hero carousel",
-    "description": "Banner CRUD with positions, sorting, hero carousel component",
-    "type": "feature",
-    "module": "Banners",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "banners-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-001",
-      "F-002"
+      "F-014"
     ],
     "blocks": [
-      "F-019"
+      "F-022"
     ],
-    "blockedBy": [],
-    "score": {
-      "impact": {
-        "score": 6,
-        "factors": [
-          "Homepage appeal"
-        ]
-      },
-      "effort": {
-        "score": 3,
-        "factors": [
-          "Simple CRUD"
-        ]
-      },
-      "risk": {
-        "score": 1,
-        "factors": [
-          "Straightforward"
-        ]
-      },
-      "urgency": {
-        "factor": 1,
-        "reason": "Used in homepage"
-      },
-      "priority": 13,
-      "formulaVersion": 1
-    },
-    "overrides": {},
-    "specRef": "specs/F-017.json",
-    "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
-  },
-  {
-    "id": "F-018",
-    "fingerprint": "search-fulltext-products",
-    "title": "Product search",
-    "description": "Full-text search on products with results page",
-    "type": "feature",
-    "module": "Search",
-    "confidence": "stated",
-    "lifecycle": "proposed",
-    "flags": {
-      "needsReanalysis": false,
-      "stale": false,
-      "orphaned": false
-    },
-    "provenance": {
-      "file": "prd.md",
-      "lines": "search-module",
-      "briefHash": "04982ad507f26762"
-    },
-    "dependsOn": [
-      "F-002",
-      "F-008"
-    ],
-    "blocks": [],
     "blockedBy": [],
     "score": {
       "impact": {
         "score": 7,
         "factors": [
-          "Product discoverability"
+          "Required for order fulfillment workflow"
         ]
       },
       "effort": {
         "score": 3,
         "factors": [
-          "PostgreSQL full-text"
+          "Status enum transition + audit log table, small scope"
         ]
       },
       "risk": {
         "score": 2,
         "factors": [
-          "Built-in capability"
+          "Well-understood state-machine pattern"
         ]
       },
       "urgency": {
         "factor": 1,
-        "reason": "Important but not blocking"
+        "reason": "Needed for fulfillment but not itself conversion-blocking"
       },
       "priority": 14,
       "formulaVersion": 1
     },
     "overrides": {},
-    "specRef": "specs/F-018.json",
+    "specRef": "specs/F-015.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
-    "id": "F-019",
-    "fingerprint": "home-hero-products-navigation",
-    "title": "Storefront homepage",
-    "description": "Homepage with hero carousel, featured products, category navigation, ISR",
+    "id": "F-016",
+    "fingerprint": "export orders to csvexcel|order management",
+    "title": "Export orders to CSV/Excel",
+    "description": "Admin exports the filtered order list to CSV or Excel.",
     "type": "feature",
-    "module": "Home",
+    "module": "Order Management",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1078,57 +911,171 @@
     },
     "provenance": {
       "file": "prd.md",
-      "lines": "home-module",
-      "briefHash": "04982ad507f26762"
+      "lines": "103",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
-      "F-006",
-      "F-008",
+      "F-014"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 4,
+        "factors": [
+          "Nice-to-have reporting convenience, not core to fulfillment"
+        ]
+      },
+      "effort": {
+        "score": 2,
+        "factors": [
+          "Small, self-contained export utility"
+        ]
+      },
+      "risk": {
+        "score": 1,
+        "factors": [
+          "Trivial, no external dependencies"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Not urgent relative to core order flow"
+      },
+      "priority": 11,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-016.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-017",
+    "fingerprint": "customer account profile order history saved addresses|customer management",
+    "title": "Customer account (profile, order history, saved addresses)",
+    "description": "Customer-facing account pages: profile management, order history view, and saved addresses management.",
+    "type": "feature",
+    "module": "Customer Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "111-113",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-013"
+    ],
+    "blocks": [
+      "F-018"
+    ],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 7,
+        "factors": [
+          "Core self-service surface for returning customers"
+        ]
+      },
+      "effort": {
+        "score": 4,
+        "factors": [
+          "Account UI already exists (app/(store)/account/), needs data wiring"
+        ]
+      },
+      "risk": {
+        "score": 2,
+        "factors": [
+          "Well-understood CRUD pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 1,
+        "reason": "Depends on auth and orders existing first"
+      },
+      "priority": 10,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-017.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-018",
+    "fingerprint": "admin customer list with purchase history|customer management",
+    "title": "Admin customer list with purchase history",
+    "description": "Admin-facing customer list showing each customer's purchase history.",
+    "type": "feature",
+    "module": "Customer Management",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "114",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-002",
       "F-017"
     ],
     "blocks": [],
     "blockedBy": [],
     "score": {
       "impact": {
-        "score": 8,
+        "score": 6,
         "factors": [
-          "First touchpoint"
+          "Useful for admin customer support and insight"
         ]
       },
       "effort": {
         "score": 3,
         "factors": [
-          "Component assembly"
+          "Admin UI already exists (app/admin/customers/), needs data wiring"
         ]
       },
       "risk": {
         "score": 2,
         "factors": [
-          "Wireframes defined"
+          "Well-understood list/detail pattern"
         ]
       },
       "urgency": {
         "factor": 1,
-        "reason": "Important for launch"
+        "reason": "Not on the conversion-critical path"
       },
-      "priority": 16,
+      "priority": 12,
       "formulaVersion": 1
     },
     "overrides": {},
-    "specRef": "specs/F-019.json",
+    "specRef": "specs/F-018.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   },
   {
-    "id": "F-020",
-    "fingerprint": "seo-jsonld-sitemap-meta",
-    "title": "SEO implementation",
-    "description": "JSON-LD for products, sitemap, meta tags, Open Graph",
+    "id": "F-019",
+    "fingerprint": "admin dashboard sales metrics revenue chart topselling products|admin dashboard",
+    "title": "Admin dashboard (sales metrics, revenue chart, top-selling products)",
+    "description": "Dashboard with sales metrics and charts, revenue reporting by period, and top-selling products analytics.",
     "type": "feature",
-    "module": "SEO",
+    "module": "Admin Dashboard",
     "confidence": "stated",
-    "lifecycle": "proposed",
+    "lifecycle": "queued",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1136,13 +1083,185 @@
     },
     "provenance": {
       "file": "prd.md",
-      "lines": "seo-module",
-      "briefHash": "04982ad507f26762"
+      "lines": "121-124",
+      "briefHash": "eb06fa6cdd8def75"
     },
     "dependsOn": [
       "F-002",
-      "F-008",
-      "F-019"
+      "F-005",
+      "F-013"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 6,
+        "factors": [
+          "Valuable business visibility but not required for the store to function"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "Dashboard UI already exists, needs aggregation queries"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Aggregation queries are well-understood but need to stay performant"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Depends on orders/products data existing, not itself blocking"
+      },
+      "priority": 5,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-019.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-020",
+    "fingerprint": "promotions promo code creation management application|promotions",
+    "title": "Promotions (promo code creation, management, application)",
+    "description": "Discount code creation/management by admin and application of a promo code to an order, including validity periods.",
+    "type": "feature",
+    "module": "Promotions",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "131-134",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-011"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 5,
+        "factors": [
+          "Marketing lever but no storefront UI exists yet for it (module status: planned)"
+        ]
+      },
+      "effort": {
+        "score": 5,
+        "factors": [
+          "New table plus admin CRUD plus checkout-side apply logic"
+        ]
+      },
+      "risk": {
+        "score": 3,
+        "factors": [
+          "Well-understood discount-code pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Planned module with no existing UI, lowest client-stated urgency of the checkout-adjacent work"
+      },
+      "priority": 4,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-020.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-021",
+    "fingerprint": "homepage banner crud display|banners",
+    "title": "Homepage banner CRUD & display",
+    "description": "Admin banner CRUD and active-banner display on the storefront homepage carousel.",
+    "type": "feature",
+    "module": "Banners",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "141-143",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-001",
+      "F-002"
+    ],
+    "blocks": [],
+    "blockedBy": [],
+    "score": {
+      "impact": {
+        "score": 4,
+        "factors": [
+          "Homepage merchandising, not core transaction path"
+        ]
+      },
+      "effort": {
+        "score": 2,
+        "factors": [
+          "Small, self-contained CRUD; admin/storefront UI already exists"
+        ]
+      },
+      "risk": {
+        "score": 1,
+        "factors": [
+          "Trivial, well-understood pattern"
+        ]
+      },
+      "urgency": {
+        "factor": 0.8,
+        "reason": "Low urgency, no dependents"
+      },
+      "priority": 11,
+      "formulaVersion": 1
+    },
+    "overrides": {},
+    "specRef": "specs/F-021.json",
+    "commits": [],
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "F-022",
+    "fingerprint": "transactional email notifications mailgun|email notifications",
+    "title": "Transactional email notifications (Mailgun)",
+    "description": "Order confirmation, payment received, order shipped (with tracking), welcome, and password reset emails sent via Mailgun.",
+    "type": "feature",
+    "module": "Email Notifications",
+    "confidence": "stated",
+    "lifecycle": "queued",
+    "flags": {
+      "needsReanalysis": false,
+      "stale": false,
+      "orphaned": false
+    },
+    "provenance": {
+      "file": "prd.md",
+      "lines": "150-155",
+      "briefHash": "eb06fa6cdd8def75"
+    },
+    "dependsOn": [
+      "F-002",
+      "F-013",
+      "F-015"
     ],
     "blocks": [],
     "blockedBy": [],
@@ -1150,32 +1269,32 @@
       "impact": {
         "score": 7,
         "factors": [
-          "Organic traffic"
+          "Required for order/account trust and communication"
         ]
       },
       "effort": {
         "score": 4,
         "factors": [
-          "JSON-LD schemas"
+          "One Mailgun integration point reused across five templates"
         ]
       },
       "risk": {
-        "score": 2,
+        "score": 4,
         "factors": [
-          "Documented patterns"
+          "Mailgun deliverability to Indonesian ISPs needs verification (flagged risk in technical-notes.md)"
         ]
       },
       "urgency": {
-        "factor": 0.8,
-        "reason": "Important for growth"
+        "factor": 1.2,
+        "reason": "Needed soon after checkout/orders/status-updates are live, but not itself blocking"
       },
-      "priority": 8,
+      "priority": 9,
       "formulaVersion": 1
     },
     "overrides": {},
-    "specRef": "specs/F-020.json",
+    "specRef": "specs/F-022.json",
     "commits": [],
-    "createdAt": "2026-07-05T20:30:00.000Z",
-    "updatedAt": "2026-07-05T20:30:00.000Z"
+    "createdAt": "2026-07-12T10:21:30.000Z",
+    "updatedAt": "2026-07-12T10:21:30.000Z"
   }
 ]

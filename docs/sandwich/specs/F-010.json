@@ -1,32 +1,42 @@
 {
   "featureId": "F-010",
-  "title": "Client-side cart",
-  "module": "Cart",
-  "description": "Cart context with add/remove/update items, variant support, localStorage persistence",
+  "title": "Server-side shopping cart (persistence, add/remove/update, real-time totals)",
+  "module": "Shopping Cart",
+  "description": "Cart persisted to the database for logged-in users, add/remove/update items with quantity validation, real-time total calculation, synced with the existing Zustand client store.",
   "scope": {
     "inScope": [
-      "Cart context provider with React Context",
-      "useReducer for cart state management",
-      "Add item to cart (with variant selection)",
-      "Remove item from cart",
-      "Update item quantity",
-      "localStorage persistence",
-      "Cart total calculation",
-      "Cart drawer component"
+      "Server-side cart storage for logged-in users",
+      "Cart persistence across sessions",
+      "Add/remove/update cart items with quantity validation",
+      "Real-time cart total calculation"
     ],
     "outOfScope": [
-      "Server-side cart sync",
-      "Cart sharing",
-      "Saved for later"
+      "Guest cart persistence beyond the client-side Zustand store"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "User can add product to cart from PDP", "done": false },
-    { "id": "AC2", "text": "Cart persists across page refreshes via localStorage", "done": false },
-    { "id": "AC3", "text": "User can update quantity in cart drawer", "done": false },
-    { "id": "AC4", "text": "User can remove item from cart", "done": false },
-    { "id": "AC5", "text": "Cart total shows sum of all items", "done": false }
+    {
+      "id": "AC1",
+      "text": "A logged-in customer's cart persists across sessions",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Adding, removing, and updating quantity all reflect correctly in the cart total",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Quantity cannot be set below 1 or above a sane validated max",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-001", "F-002", "F-008"],
-  "source": { "file": "prd.md", "lines": "cart-module" }
+  "dependsOn": [
+    "F-001",
+    "F-002"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "58-62"
+  }
 }

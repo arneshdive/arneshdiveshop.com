@@ -1,27 +1,43 @@
 {
   "featureId": "F-013",
-  "title": "Midtrans webhook handler",
-  "module": "Payment",
-  "description": "Webhook endpoint with signature verification, order status update",
+  "title": "Order creation from cart (atomic transaction)",
+  "module": "Order Management",
+  "description": "Order + orderItems + payment record created atomically in a single DB transaction on checkout completion, with an idempotency key to prevent duplicate orders from double form-submits.",
   "scope": {
     "inScope": [
-      "Webhook endpoint at /api/payment/webhook",
-      "Signature verification using Midtrans server key",
-      "Order status mapping from Midtrans status",
-      "Atomic payment + order status update",
-      "Error logging for failed webhooks"
+      "Order creation from cart contents in a single DB transaction (order + orderItems + payment record)",
+      "Idempotency key to prevent duplicate orders from double form-submits",
+      "Order number format ORD-YYYYMMDD-XXXX",
+      "Initial order status: pending_payment"
     ],
     "outOfScope": [
-      "Retry mechanism for failed webhooks",
-      "Webhook dashboard"
+      "Order editing after creation (handled by status-update feature)"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Webhook endpoint accepts POST from Midtrans", "done": false },
-    { "id": "AC2", "text": "Signature verified before processing", "done": false },
-    { "id": "AC3", "text": "Payment status updated in database", "done": false },
-    { "id": "AC4", "text": "Order status updated to 'processing' on successful payment", "done": false }
+    {
+      "id": "AC1",
+      "text": "Completing checkout creates exactly one order with its items and payment record, even under a double-submit",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Order numbers follow the ORD-YYYYMMDD-XXXX format",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "A failed transaction leaves no partial order/items/payment rows behind",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-011"],
-  "source": { "file": "technical-notes.md", "lines": "webhook" }
+  "dependsOn": [
+    "F-005",
+    "F-011",
+    "F-012"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "98"
+  }
 }

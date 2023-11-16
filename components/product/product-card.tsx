@@ -4,18 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/lib/store/cart';
+import type { MockProduct } from '@/lib/data/mock-products';
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    handle: string;
-    title: string;
-    vendor?: string;
-    price: string;
-    compareAtPrice?: string;
-    image?: string;
-    secondaryImage?: string;
-    badge?: string;
+  product: MockProduct & {
     swatches?: { name: string; handle: string; image: string }[];
   };
 }

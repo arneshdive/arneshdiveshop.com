@@ -12,12 +12,3 @@ export function isValidPhone(phone: string): boolean {
 export function isValidPostalCode(code: string): boolean {
   return /^\d{5}$/.test(code);
 }
-
-export function formatPrice(amount: number): string {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}

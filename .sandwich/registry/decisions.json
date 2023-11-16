@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "D-001",
+    "title": "Model guest auto-registration as part of Checkout, not a separate Authentication feature",
+    "status": "accepted",
+    "context": "prd.md lists 'Auto-registration from guest checkout' under both the Authentication module and the Checkout module's flow (UF-005). Modeling it twice would double-count effort and create a fake dependency cycle.",
+    "decision": "F-011 (Multi-step checkout flow) owns auto-registration end-to-end. F-002 (core auth) provides the underlying account-creation primitives F-011 calls into.",
+    "at": "2026-07-12T10:21:30.000Z"
+  },
+  {
+    "id": "D-002",
+    "title": "Combine Midtrans Snap, webhook, and payment-status tracking into one Payment feature",
+    "status": "accepted",
+    "context": "prd.md's Payment module lists Snap integration, per-method support, webhook handling, status tracking, and idempotency as separate bullets, but technical-notes.md frames them as one PaymentProvider abstraction.",
+    "decision": "Kept as a single feature (F-012) since splitting would fragment an interface that has to be built and tested as one unit (webhook signature verification directly gates status updates).",
+    "at": "2026-07-12T10:21:30.000Z"
+  }
+]

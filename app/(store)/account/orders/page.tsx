@@ -6,7 +6,8 @@ import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { mockOrders, statusConfig, formatRupiah, formatDate, type OrderStatus } from '@/lib/data/mock-account';
+import { mockOrders, statusConfig, type OrderStatus } from '@/lib/data/mock-account';
+import { formatRupiah, formatDate } from '@/lib/utils/format';
 
 const statusFilters: { label: string; status?: OrderStatus }[] = [
   { label: 'Semua' },

@@ -1,20 +1,12 @@
 {
   "schemaVersion": 1,
-  "name": "Arne's Dive Shop",
+  "name": "Arne's Dive Shop E-Commerce Platform",
   "briefHashes": {
-    "prd": "04982ad507f26762",
-    "userFlows": "e42b18c15a3e5c14",
-    "technicalNotes": "ad12ff058210bfcb",
-    "clientQuestions": "02a7301d23de00e0"
+    "prd": "eb06fa6cdd8def75",
+    "userFlows": "167ae8f0183ae863",
+    "technicalNotes": "80f05b81d486df94",
+    "clientQuestions": "7d9b3a777e26ae00"
   },
-  "gates": {
-    "briefApproved": {
-      "passed": false
-    },
-    "queueApproved": {
-      "passed": false
-    }
-  },
-  "createdAt": "2026-07-05T20:30:00.000Z",
-  "updatedAt": "2026-07-05T20:30:00.000Z"
+  "createdAt": "2026-07-12T10:21:30.000Z",
+  "updatedAt": "2026-07-12T10:21:30.000Z"
 }

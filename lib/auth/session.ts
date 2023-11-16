@@ -5,6 +5,7 @@ import type { UserRole } from '@/lib/db/schema';
 export interface SessionPayload {
   userId: string;
   role: UserRole;
+  [key: string]: unknown;
 }
 
 const SESSION_COOKIE_NAME = 'session';

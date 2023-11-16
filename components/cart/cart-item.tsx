@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Minus, Plus, X } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { CartItem as CartItemType, useCartStore } from '@/lib/store/cart';
-import { formatPrice } from '@/lib/utils/validators';
+import { formatRupiah } from '@/lib/utils/format';
 
 interface CartItemProps {
   item: CartItemType;
@@ -94,7 +94,7 @@ export function CartItem({ item }: CartItemProps) {
           {/* Price */}
           <div className="text-right">
             <p className="text-base lg:text-lg font-semibold tracking-tight cursor-default">
-              {formatPrice(price * item.quantity)}
+              {formatRupiah(price * item.quantity)}
             </p>
           </div>
         </div>

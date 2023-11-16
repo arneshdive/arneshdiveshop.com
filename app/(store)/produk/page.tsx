@@ -10,7 +10,7 @@ import {
   type CategoryKey,
 } from '@/lib/data/search-utils';
 import { featuredProducts, valueProps } from '@/lib/data/mock-products';
-import { RecentlyViewed } from '@/components/recently-viewed';
+import { RecentlyViewed } from '@/components/product/recently-viewed';
 
 interface ProdukPageProps {
   searchParams: Promise<{
@@ -128,8 +128,10 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
       {/* Banner */}
       <section className={`bg-gradient-to-r ${banner.gradient} text-white py-12 lg:py-16 px-4 mt-4`}>
         <div className="max-w-[1440px] mx-auto">
-          <h1 className="text-3xl lg:text-4xl font-semibold mb-2">{banner.title}</h1>
-          <p className="text-white/80 max-w-xl">{banner.description}</p>
+          <h1 className="text-3xl lg:text-5xl font-bold tracking-tight leading-tight mb-3 drop-shadow-sm">
+            {banner.title}
+          </h1>
+          <p className="text-white/90 text-base lg:text-lg max-w-xl leading-relaxed">{banner.description}</p>
         </div>
       </section>
 

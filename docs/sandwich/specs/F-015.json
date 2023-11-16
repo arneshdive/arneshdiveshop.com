@@ -1,26 +1,34 @@
 {
   "featureId": "F-015",
-  "title": "Admin dashboard with statistics",
-  "module": "Dashboard",
-  "description": "Dashboard with sales stats, chart visualization, TanStack Query",
+  "title": "Order status updates & audit trail",
+  "module": "Order Management",
+  "description": "Admin updates order status through the fulfillment workflow (processing, shipped, delivered, cancelled) with an audit trail of changes.",
   "scope": {
     "inScope": [
-      "Sales statistics cards (total, today, this month)",
-      "Order count by status",
-      "Revenue chart (7-day or 30-day)",
-      "TanStack Query for data fetching",
-      "Real-time updates"
+      "Order status transitions: pending_payment → processing → shipped → delivered (plus cancelled)",
+      "Audit trail recording each status change"
     ],
     "outOfScope": [
-      "Custom date range filters",
-      "Export reports"
+      "Automated status transitions triggered by carrier tracking webhooks (not stated)"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Dashboard displays total revenue and order count", "done": false },
-    { "id": "AC2", "text": "Chart shows revenue trend over 7 days", "done": false },
-    { "id": "AC3", "text": "Data fetched via TanStack Query with caching", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can move an order through processing → shipped → delivered",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Every status change is recorded in an audit trail with who/when",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-002", "F-003"],
-  "source": { "file": "prd.md", "lines": "dashboard-module" }
+  "dependsOn": [
+    "F-014"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "101-102"
+  }
 }

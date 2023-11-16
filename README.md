@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arne's Dive Shop
+
+Freediving/scuba e-commerce platform. Storefront (ISR + Server Components) and admin dashboard (CSR + TanStack Query) built on Next.js 16.
+
+Status: frontend UI is complete (storefront + admin), backend is not yet built — no database connection, auth, payment, or admin CRUD. See `docs/RFP-COMPLETION.md` for the detailed scope of what's left.
+
+## Stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Drizzle ORM + PostgreSQL (planned) · Zod · Midtrans (planned) · Radix UI · TanStack Query v5 (admin) · Zustand (cart)
 
 ## Getting Started
 
-First, run the development server:
+Package manager is pnpm — don't use npm/yarn (see `pnpm-workspace.yaml`).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm dev      # start dev server (localhost:3000)
+pnpm build    # production build
+pnpm start    # run production build
+pnpm lint     # eslint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `app/` — routes: `(store)/` is the customer-facing storefront, `admin/` is the admin dashboard, `auth/` is login/register.
+- `components/` — organized by feature domain (`cart/`, `checkout/`, `admin/`, `product/`, `layout/`, `ui/` for primitives).
+- `lib/data/` — mock data standing in for the database until the backend is built.
+- `lib/utils/format.ts` — shared money/date formatting; see the doc comments there for which formatter to use.
+- `docs/superpowers/specs/` and `docs/superpowers/plans/` — per-page design specs and implementation plans from past build sessions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `CLAUDE.md` for the full architecture and current-state notes.

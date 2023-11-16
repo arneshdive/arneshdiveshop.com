@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
-import { ProductSection } from '@/components/product-section';
-import { WaveDivider } from '@/components/wave-divider';
-import { USPSection } from '@/components/usp-section';
+import { ProductSection } from '@/components/product/product-section';
+import { WaveDivider } from '@/components/layout/wave-divider';
+import { USPSection } from '@/components/layout/usp-section';
 import { featuredProducts } from '@/lib/data/mock-products';
 
 export const revalidate = 60;

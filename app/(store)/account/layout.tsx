@@ -1,5 +1,5 @@
 import { AccountSidebar } from '@/components/account/account-sidebar';
-import { USPSection } from '@/components/usp-section';
+import { USPSection } from '@/components/layout/usp-section';
 
 export default function AccountLayout({
   children,

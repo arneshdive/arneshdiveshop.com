@@ -1,0 +1,55 @@
+{
+  "featureId": "F-022",
+  "title": "Transactional email notifications (Mailgun)",
+  "module": "Email Notifications",
+  "description": "Order confirmation, payment received, order shipped (with tracking), welcome, and password reset emails sent via Mailgun.",
+  "scope": {
+    "inScope": [
+      "Order confirmation email",
+      "Payment received email",
+      "Order shipped email with tracking number",
+      "Welcome email for new registrations",
+      "Password reset email"
+    ],
+    "outOfScope": [
+      "SMS notifications",
+      "Push notifications"
+    ]
+  },
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Customer receives an order confirmation email after checkout completes",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Customer receives a payment-received email when payment is confirmed",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Customer receives a shipped email containing the tracking number when status moves to shipped",
+      "done": false
+    },
+    {
+      "id": "AC4",
+      "text": "New registrants receive a welcome email",
+      "done": false
+    },
+    {
+      "id": "AC5",
+      "text": "Password reset emails are sent via Mailgun (delivery already covered by F-004's OTP send)",
+      "done": false
+    }
+  ],
+  "dependsOn": [
+    "F-002",
+    "F-013",
+    "F-015"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "150-155"
+  }
+}

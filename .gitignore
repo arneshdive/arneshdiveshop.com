@@ -45,3 +45,6 @@ next-env.d.ts
 
 # vitest
 vitest.config.ts.timestamp-*
+
+# playwright mcp debug output
+/.playwright-mcp/

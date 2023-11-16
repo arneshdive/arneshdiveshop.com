@@ -3,7 +3,7 @@
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { useCartStore } from '@/lib/store/cart';
 import { shippingMethods, FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
-import { formatPrice } from '@/lib/utils/validators';
+import { formatRupiah } from '@/lib/utils/format';
 import { Icon } from '@iconify/react';
 
 export function ShippingMethodSelector() {
@@ -55,7 +55,7 @@ export function ShippingMethodSelector() {
               {freeShipping ? (
                 <span className="font-semibold text-green-600">Gratis</span>
               ) : (
-                <span className="font-semibold">{formatPrice(method.price)}</span>
+                <span className="font-semibold">{formatRupiah(method.price)}</span>
               )}
             </div>
           </label>
@@ -65,7 +65,7 @@ export function ShippingMethodSelector() {
       {freeShipping && (
         <div className="flex items-center gap-2 mt-4 text-sm text-green-600">
           <Icon icon="solar:check-circle-bold" className="w-4 h-4" />
-          Gratis ongkir untuk pesanan di atas {formatPrice(FREE_SHIPPING_THRESHOLD)}
+          Gratis ongkir untuk pesanan di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}
         </div>
       )}
     </div>

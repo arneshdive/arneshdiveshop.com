@@ -1,4 +1,4 @@
-import { ProductCard } from '@/components/product-card';
+import { ProductCard } from '@/components/product/product-card';
 import { featuredProducts } from '@/lib/data/mock-products';
 
 export function RecentlyViewed() {

@@ -1,25 +1,39 @@
 {
   "featureId": "F-007",
-  "title": "Brand management",
-  "module": "Products",
-  "description": "CRUD for brands with slug generation",
+  "title": "Category management (hierarchical)",
+  "module": "Product Management",
+  "description": "Admin CRUD for product categories with hierarchical structure.",
   "scope": {
     "inScope": [
-      "Brand list view in admin",
-      "Brand create/edit form",
-      "Automatic slug generation from name",
-      "Brand delete"
+      "Category CRUD",
+      "Hierarchical parent/child structure"
     ],
     "outOfScope": [
-      "Brand images/logos",
-      "Brand descriptions"
+      "Category-level custom landing pages"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Admin can create brand with name and slug", "done": false },
-    { "id": "AC2", "text": "Slug auto-generated from name (editable)", "done": false },
-    { "id": "AC3", "text": "Brands available in product form dropdown", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can create, edit, and delete categories",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Categories can be nested under a parent category",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Storefront navigation reflects the category hierarchy",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-001", "F-002"],
-  "source": { "file": "prd.md", "lines": "products-module" }
+  "dependsOn": [
+    "F-001"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "45"
+  }
 }

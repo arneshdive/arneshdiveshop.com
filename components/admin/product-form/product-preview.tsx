@@ -1,5 +1,6 @@
 import { Icon } from '@iconify/react';
 import type { VariantOption } from '@/lib/hooks/use-product-form';
+import { formatCurrencyInput } from '@/lib/utils/format';
 
 interface ProductPreviewProps {
   name: string;
@@ -24,10 +25,7 @@ export function ProductPreview({
   stockStatus,
   variantOptions,
 }: ProductPreviewProps) {
-  const formatPrice = (val: string) => {
-    if (!val) return 'Rp 0';
-    return `Rp ${parseInt(val).toLocaleString('id-ID')}`;
-  };
+  const formatPrice = (val: string) => (val ? `Rp ${formatCurrencyInput(val)}` : 'Rp 0');
 
   const hasVariants = variantOptions.length > 0 && variantOptions.some(opt => opt.name && opt.values.some(v => v));
 

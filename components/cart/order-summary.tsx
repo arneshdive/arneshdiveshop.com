@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useCartStore } from '@/lib/store/cart';
-import { formatPrice } from '@/lib/utils/validators';
+import { formatRupiah } from '@/lib/utils/format';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
 import { AnimatedButton } from '@/components/ui/animated-button';
 
@@ -59,7 +59,7 @@ export function OrderSummary() {
         {!freeShipping && subtotal > 0 && (
           <div className="mb-6 p-4 bg-white rounded-xl">
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-neutral-500">Gratis ongkir di atas {formatPrice(FREE_SHIPPING_THRESHOLD)}</span>
+              <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
             </div>
             <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
               <div 
@@ -68,7 +68,7 @@ export function OrderSummary() {
               />
             </div>
             <p className="text-xs text-neutral-400 mt-2">
-              Tambah {formatPrice(remainingForFreeShipping)} lagi untuk gratis ongkir
+              Tambah {formatRupiah(remainingForFreeShipping)} lagi untuk gratis ongkir
             </p>
           </div>
         )}
@@ -139,12 +139,12 @@ export function OrderSummary() {
         <div className="border-t border-neutral-100 pt-6 space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-neutral-500">Subtotal</span>
-            <span>{formatPrice(subtotal)}</span>
+            <span>{formatRupiah(subtotal)}</span>
           </div>
           {promoDiscount > 0 && (
             <div className="flex justify-between text-sm text-green-600">
               <span>Diskon</span>
-              <span>-{formatPrice(subtotal * promoDiscount)}</span>
+              <span>-{formatRupiah(subtotal * promoDiscount)}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
@@ -153,7 +153,7 @@ export function OrderSummary() {
           </div>
           <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
             <span>Total</span>
-            <span>{formatPrice(total)}</span>
+            <span>{formatRupiah(total)}</span>
           </div>
         </div>
 
@@ -182,7 +182,7 @@ export function OrderSummary() {
           <div className="px-4 pt-3 pb-2 flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               <span className="text-sm text-neutral-500">Total</span>
-              <span className="text-lg font-semibold tracking-tight">{formatPrice(total)}</span>
+              <span className="text-lg font-semibold tracking-tight">{formatRupiah(total)}</span>
             </div>
             <div className="flex items-center gap-1 text-neutral-400">
               <span className="text-xs">Detail</span>
@@ -226,7 +226,7 @@ export function OrderSummary() {
               {!freeShipping && subtotal > 0 && (
                 <div className="mb-6 p-4 bg-neutral-50 rounded-xl">
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-neutral-500">Gratis ongkir di atas {formatPrice(FREE_SHIPPING_THRESHOLD)}</span>
+                    <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
                   </div>
                   <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
                     <div 
@@ -235,7 +235,7 @@ export function OrderSummary() {
                     />
                   </div>
                   <p className="text-xs text-neutral-400 mt-2">
-                    Tambah {formatPrice(remainingForFreeShipping)} lagi untuk gratis ongkir
+                    Tambah {formatRupiah(remainingForFreeShipping)} lagi untuk gratis ongkir
                   </p>
                 </div>
               )}
@@ -284,12 +284,12 @@ export function OrderSummary() {
               <div className="border-t border-neutral-100 pt-6 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatRupiah(subtotal)}</span>
                 </div>
                 {promoDiscount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Diskon</span>
-                    <span>-{formatPrice(subtotal * promoDiscount)}</span>
+                    <span>-{formatRupiah(subtotal * promoDiscount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
@@ -298,7 +298,7 @@ export function OrderSummary() {
                 </div>
                 <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
                   <span>Total</span>
-                  <span>{formatPrice(total)}</span>
+                  <span>{formatRupiah(total)}</span>
                 </div>
               </div>
 

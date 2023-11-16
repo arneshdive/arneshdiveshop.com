@@ -1,28 +1,34 @@
 {
   "featureId": "F-016",
-  "title": "Promo code management",
-  "module": "Promotions",
-  "description": "Promo codes with percentage/fixed discounts, limits, validity periods",
+  "title": "Export orders to CSV/Excel",
+  "module": "Order Management",
+  "description": "Admin exports the filtered order list to CSV or Excel.",
   "scope": {
     "inScope": [
-      "Promo code CRUD",
-      "Percentage or fixed amount discount types",
-      "Minimum order requirement",
-      "Usage limits and tracking",
-      "Validity date range",
-      "Promo application at checkout"
+      "Export the current (filtered) order list to CSV",
+      "Export to Excel format"
     ],
     "outOfScope": [
-      "Auto-applied promotions",
-      "Stackable promo codes"
+      "Scheduled/automated exports"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Admin can create promo code with code, type, value, and conditions", "done": false },
-    { "id": "AC2", "text": "Promo codes expire after end date", "done": false },
-    { "id": "AC3", "text": "Usage count incremented on each use", "done": false },
-    { "id": "AC4", "text": "Customer can apply promo code at checkout", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can export the currently filtered order list to a CSV file",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Admin can export to an Excel file",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-002", "F-012"],
-  "source": { "file": "prd.md", "lines": "promotions-module" }
+  "dependsOn": [
+    "F-014"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "103"
+  }
 }

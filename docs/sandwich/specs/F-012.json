@@ -1,32 +1,50 @@
 {
   "featureId": "F-012",
-  "title": "Order creation with atomic transaction",
-  "module": "Orders",
-  "description": "Order creation with idempotency keys, atomic order+items+payment insert, status workflow",
+  "title": "Midtrans payment integration (Snap, VA, e-wallets, QRIS, webhook, idempotency)",
+  "module": "Payment",
+  "description": "Midtrans Snap checkout supporting cards, bank transfer (VA), e-wallets (GoPay/OVO/ShopeePay), and QRIS, behind a PaymentProvider interface; signature-verified webhook handler; payment status tracking; idempotency keys to prevent duplicate charges.",
   "scope": {
     "inScope": [
-      "Order creation Server Action",
-      "Atomic transaction: order + items + payment record",
-      "Idempotency key generation and validation",
-      "Order number generation",
-      "Order status enum and workflow",
-      "Order confirmation email via Mailgun",
-      "Order history for customers",
-      "Admin order list with filters"
+      "Midtrans Snap integration for checkout",
+      "Support for credit/debit cards, bank transfer (VA), e-wallets (GoPay, OVO, ShopeePay), QRIS",
+      "PaymentProvider interface abstracting Midtrans (swappable for Stripe/Xendit later)",
+      "Webhook handler with signature verification before updating order status",
+      "Payment status tracking (pending, paid, failed, expired)",
+      "Idempotency keys to prevent duplicate charges"
     ],
     "outOfScope": [
-      "Order refunds",
-      "Order cancellation by customer"
+      "Any payment provider other than Midtrans",
+      "Refund/partial-refund flows (not stated)"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Order created with all items in single atomic transaction", "done": false },
-    { "id": "AC2", "text": "Duplicate submission prevented by idempotency key", "done": false },
-    { "id": "AC3", "text": "Order number auto-generated with format ORD-XXXXX", "done": false },
-    { "id": "AC4", "text": "Customer receives order confirmation email", "done": false },
-    { "id": "AC5", "text": "Customer can view order history in account", "done": false },
-    { "id": "AC6", "text": "Admin can view and filter orders", "done": false }
+    {
+      "id": "AC1",
+      "text": "Customer can pay via Midtrans Snap using at least one card, VA, e-wallet, and QRIS method",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Webhook handler rejects requests with an invalid Midtrans signature",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "A verified webhook updates the order's payment status correctly",
+      "done": false
+    },
+    {
+      "id": "AC4",
+      "text": "Submitting the same order twice does not create duplicate charges",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-003", "F-008", "F-010", "F-011"],
-  "source": { "file": "prd.md", "lines": "orders-module" }
+  "dependsOn": [
+    "F-005",
+    "F-011"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "82-90"
+  }
 }

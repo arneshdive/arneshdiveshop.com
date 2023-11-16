@@ -1,33 +1,40 @@
 {
   "featureId": "F-003",
-  "title": "Email/password authentication",
-  "module": "Auth",
-  "description": "Credential-based auth with NextAuth.js v5, password hashing, session management, middleware protection, RBAC",
+  "title": "Email verification (OTP) for new accounts",
+  "module": "Authentication",
+  "description": "New accounts start unverified; system sends an OTP via Mailgun that the customer must confirm before full access.",
   "scope": {
     "inScope": [
-      "NextAuth.js v5 configuration",
-      "Credentials provider setup",
-      "Password hashing with bcrypt or similar",
-      "Session management with JWT or database sessions",
-      "Middleware for protected routes",
-      "Role-based access control (customer, admin, super_admin)",
-      "Login/register forms",
-      "Auth state in React context"
+      "Generate OTP on registration and send verification email via Mailgun",
+      "Verify OTP and mark account status as verified",
+      "OTP expiry handling"
     ],
     "outOfScope": [
-      "Google OAuth",
-      "OTP verification",
-      "Password reset flow"
+      "SMS-based verification"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "User can register with email and password", "done": false },
-    { "id": "AC2", "text": "User can login with email and password", "done": false },
-    { "id": "AC3", "text": "Passwords are hashed before storage", "done": false },
-    { "id": "AC4", "text": "Session persists across page refreshes", "done": false },
-    { "id": "AC5", "text": "Admin routes protected from non-admin users", "done": false },
-    { "id": "AC6", "text": "Customer routes protected from unauthenticated users", "done": false }
+    {
+      "id": "AC1",
+      "text": "A newly registered account starts in 'unverified' status",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Customer receives a verification email with OTP/link after registering",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Clicking/submitting a valid, unexpired OTP marks the account verified",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-001", "F-002"],
-  "source": { "file": "prd.md", "lines": "auth-module" }
+  "dependsOn": [
+    "F-002"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "32"
+  }
 }

@@ -1,31 +1,45 @@
 {
   "featureId": "F-001",
-  "title": "Project foundation and infrastructure setup",
+  "title": "Database schema & connection setup",
   "module": "Infrastructure",
-  "description": "Initialize Next.js 15 project with TypeScript, Tailwind CSS v4, Drizzle ORM, PostgreSQL connection, and Vercel deployment config",
+  "description": "Drizzle ORM schema (users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens) and Neon Postgres connection. No lib/db exists yet — this is the foundation every other backend feature depends on.",
   "scope": {
     "inScope": [
-      "Next.js 15 project initialization with App Router",
-      "TypeScript strict mode configuration",
-      "Tailwind CSS v4 setup",
-      "Drizzle ORM configuration",
-      "PostgreSQL database connection",
-      "Vercel deployment configuration",
-      "Environment variables setup",
-      "Basic folder structure per SPEC.md"
+      "Drizzle schema definitions for all tables listed in technical-notes.md (users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens)",
+      "Neon Postgres connection setup (lib/db)",
+      "Initial Drizzle migration generation and run against Neon",
+      "priceCents stored as integer on all money-bearing columns"
     ],
     "outOfScope": [
-      "Feature implementation",
-      "Database schema"
+      "Seed data / fixtures",
+      "Read replicas or connection pooling beyond default Neon serverless driver behavior"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Next.js 15 project runs successfully on localhost:3000", "done": true },
-    { "id": "AC2", "text": "TypeScript strict mode enabled with no compilation errors", "done": true },
-    { "id": "AC3", "text": "Tailwind CSS v4 working with sample component", "done": true },
-    { "id": "AC4", "text": "Drizzle ORM connected to PostgreSQL database", "done": true },
-    { "id": "AC5", "text": "Project deploys successfully to Vercel preview", "done": false }
+    {
+      "id": "AC1",
+      "text": "lib/db exists with a working Drizzle client connected to Neon",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Schema covers every table named in technical-notes.md architecture notes",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Drizzle migrations run cleanly against a fresh Neon database with `drizzle-kit push` or `migrate`",
+      "done": false
+    },
+    {
+      "id": "AC4",
+      "text": "All price/money columns are integer (cents), never float",
+      "done": false
+    }
   ],
   "dependsOn": [],
-  "source": { "file": "prd.md", "lines": "tech-stack" }
+  "source": {
+    "file": "technical-notes.md",
+    "lines": "28-29"
+  }
 }

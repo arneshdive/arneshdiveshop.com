@@ -1,0 +1,26 @@
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-001","summary":"New feature: Database schema & connection setup"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-002","summary":"New feature: Core authentication (registration, login, session, RBAC, rate limiting)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-003","summary":"New feature: Email verification (OTP) for new accounts"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-004","summary":"New feature: Forgot password / reset flow (OTP)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-005","summary":"New feature: Product CRUD (images, status, availability, featured)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-006","summary":"New feature: Product variants (size, color) with individual pricing"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-007","summary":"New feature: Category management (hierarchical)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-008","summary":"New feature: Brand management"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-009","summary":"New feature: Product search & filtering"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-010","summary":"New feature: Server-side shopping cart (persistence, add/remove/update, real-time totals)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-011","summary":"New feature: Multi-step checkout flow (guest checkout, auto-registration, confirmation)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-012","summary":"New feature: Midtrans payment integration (Snap, VA, e-wallets, QRIS, webhook, idempotency)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-013","summary":"New feature: Order creation from cart (atomic transaction)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-014","summary":"New feature: Admin order list & detail view"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-015","summary":"New feature: Order status updates & audit trail"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-016","summary":"New feature: Export orders to CSV/Excel"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-017","summary":"New feature: Customer account (profile, order history, saved addresses)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-018","summary":"New feature: Admin customer list with purchase history"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-019","summary":"New feature: Admin dashboard (sales metrics, revenue chart, top-selling products)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-020","summary":"New feature: Promotions (promo code creation, management, application)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-021","summary":"New feature: Homepage banner CRUD & display"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"feature-added","target":"F-022","summary":"New feature: Transactional email notifications (Mailgun)"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"decision-recorded","target":"D-001","summary":"Decision recorded: D-001"}
+{"ts":"2026-07-12T10:21:30.000Z","actor":"system","type":"decision-recorded","target":"D-002","summary":"Decision recorded: D-002"}
+{"ts":"2026-07-12T11:00:00.000Z","actor":"agent","type":"feature-completed","target":"F-001","summary":"Database schema & connection setup - verified working"}
+{"ts":"2026-07-12T11:00:00.000Z","actor":"agent","type":"feature-completed","target":"F-002","summary":"Core authentication (registration, login, session, RBAC, rate limiting) - implemented and tested"}

@@ -7,62 +7,7 @@ import { Plus } from 'lucide-react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Select } from '@/components/admin/input';
 import { categories, brands, diveTypes } from '@/lib/constants/product-options';
-
-// Mock data - will be replaced with real data from DB
-const products = [
-  {
-    id: '1',
-    name: 'Cressi F1 Freediving Mask',
-    slug: 'cressi-f1-freediving-mask',
-    price: 450000,
-    compareAtPrice: 550000,
-    category: 'masker',
-    brand: 'cressi',
-    diveType: 'freediving',
-    image: '/images/placeholder-product.jpg',
-    isActive: true,
-    stockStatus: 'in_stock' as const,
-  },
-  {
-    id: '2',
-    name: 'Mares Avanti Quattro Fins',
-    slug: 'mares-avanti-quattro-fins',
-    price: 1200000,
-    compareAtPrice: null,
-    category: 'fin',
-    brand: 'mares',
-    diveType: 'scuba',
-    image: '/images/placeholder-product.jpg',
-    isActive: true,
-    stockStatus: 'in_stock' as const,
-  },
-  {
-    id: '3',
-    name: 'Apeks RK3 Fins',
-    slug: 'apeks-rk3-fins',
-    price: 890000,
-    compareAtPrice: 1100000,
-    category: 'fin',
-    brand: 'mares',
-    diveType: 'both',
-    image: '/images/placeholder-product.jpg',
-    isActive: true,
-    stockStatus: 'out_of_stock' as const,
-  },
-  {
-    id: '4',
-    name: 'Scubapro Hydros Pro BCD',
-    slug: 'scubapro-hydros-pro-bcd',
-    price: 8500000,
-    compareAtPrice: null,
-    category: 'wetsuit',
-    brand: 'beuchat',
-    diveType: 'scuba',
-    image: '/images/placeholder-product.jpg',
-    isActive: false,
-    stockStatus: 'in_stock' as const,
-  },
-];
+import { featuredProducts as products } from '@/lib/data/mock-products';
 
 // Filter state type
 type FilterState = {
@@ -73,15 +18,8 @@ type FilterState = {
   stock: string;
 };
 
-function formatPrice(cents: number): string {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(cents);
-}
-
-function getLabelById(items: { id: string; name: string }[], id: string): string {
+function getLabelById(items: { id: string; name: string }[], id: string | undefined): string {
+  if (!id) return '-';
   return items.find(item => item.id === id)?.name || id;
 }
 
@@ -209,15 +147,15 @@ export default function ProductsPage() {
                 )}
               </div>
               <h3 className="text-base font-medium tracking-tight text-neutral-900 truncate">
-                {product.name}
+                {product.title}
               </h3>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-sm text-neutral-700">
-                  {formatPrice(product.price)}
+                  {product.price}
                 </span>
                 {product.compareAtPrice && (
                   <span className="text-sm text-neutral-400 line-through">
-                    {formatPrice(product.compareAtPrice)}
+                    {product.compareAtPrice}
                   </span>
                 )}
               </div>

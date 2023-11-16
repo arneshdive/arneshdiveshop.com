@@ -1,35 +1,33 @@
 {
   "featureId": "F-008",
-  "title": "Product CRUD with variants",
-  "module": "Products",
-  "description": "Full product management with variants, pricing in cents, slug generation, featured flag, ISR revalidation",
+  "title": "Brand management",
+  "module": "Product Management",
+  "description": "Admin CRUD for product brands.",
   "scope": {
     "inScope": [
-      "Product list view with filters (category, brand, status)",
-      "Product create/edit form",
-      "Product variants management (add, edit, remove)",
-      "Image upload via Vercel Blob",
-      "Price input in dollars, storage in cents",
-      "Automatic slug generation from name",
-      "Featured product flag",
-      "Active/inactive toggle",
-      "ISR revalidation on product changes",
-      "Product detail page for storefront"
+      "Brand CRUD"
     ],
     "outOfScope": [
-      "Inventory tracking",
-      "Product reviews",
-      "Related products"
+      "Brand landing pages"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Admin can create product with name, slug, description, price, category, brand, images", "done": false },
-    { "id": "AC2", "text": "Admin can add variants with name, options, and optional price override", "done": false },
-    { "id": "AC3", "text": "Images upload to Vercel Blob and display in product gallery", "done": false },
-    { "id": "AC4", "text": "Price stored as cents, displayed as dollars in UI", "done": false },
-    { "id": "AC5", "text": "Featured products display on homepage", "done": false },
-    { "id": "AC6", "text": "Inactive products hidden from storefront", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can create, edit, and delete brands",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Products can be assigned a brand",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-002", "F-006", "F-009"],
-  "source": { "file": "prd.md", "lines": "products-module" }
+  "dependsOn": [
+    "F-001"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "46"
+  }
 }

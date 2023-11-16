@@ -8,6 +8,7 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { shippingMethods } from '@/lib/constants/shipping';
+import { formatRupiah } from '@/lib/utils/format';
 
 export function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -39,9 +40,6 @@ export function CheckoutSuccessContent() {
   const fullAddress = [data.address1, data.address2, data.city, data.province, data.postalCode]
     .filter(Boolean)
     .join(', ');
-
-  const formatPrice = (amount: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
   return (
     <>
@@ -121,15 +119,15 @@ export function CheckoutSuccessContent() {
               <div className="mt-6 pt-6 border-t border-neutral-100 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">Subtotal</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatRupiah(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">Ongkos Kirim</span>
-                  <span>{formatPrice(selectedMethod?.price || 0)}</span>
+                  <span>{formatRupiah(selectedMethod?.price || 0)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-semibold pt-3 border-t border-neutral-100">
                   <span>Total</span>
-                  <span>{formatPrice(subtotal + (selectedMethod?.price || 0))}</span>
+                  <span>{formatRupiah(subtotal + (selectedMethod?.price || 0))}</span>
                 </div>
               </div>
             </div>

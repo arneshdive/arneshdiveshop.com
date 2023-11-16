@@ -1,29 +1,41 @@
 {
   "featureId": "F-014",
-  "title": "Customer profiles and addresses",
-  "module": "Customers",
-  "description": "Customer management with addresses, order history, total spent tracking",
+  "title": "Admin order list & detail view",
+  "module": "Order Management",
+  "description": "Admin order list with filtering (status, date range, search) and order detail view with customer info, items, and payment.",
   "scope": {
     "inScope": [
-      "Customer profile auto-created on registration",
-      "Profile edit (name, phone)",
-      "Address management (add, edit, delete)",
-      "Default address selection",
-      "Total spent tracking",
-      "Order history display"
+      "Order list with filtering by status, date range, and search",
+      "Order detail view showing customer info, items, and payment",
+      "Served via Route Handlers (HTTP) for the admin's TanStack Query layer"
     ],
     "outOfScope": [
-      "Customer segmentation",
-      "Loyalty points"
+      "Order status changes (separate feature)"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Customer profile created automatically on registration", "done": false },
-    { "id": "AC2", "text": "Customer can add multiple addresses", "done": false },
-    { "id": "AC3", "text": "Customer can set default address", "done": false },
-    { "id": "AC4", "text": "Total spent updated after each order", "done": false },
-    { "id": "AC5", "text": "Customer can view order history with status", "done": false }
+    {
+      "id": "AC1",
+      "text": "Admin can filter the order list by status and date range",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Admin can search orders",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Admin can open an order and see customer info, line items, and payment details",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-002", "F-003", "F-012"],
-  "source": { "file": "prd.md", "lines": "customers-module" }
+  "dependsOn": [
+    "F-002",
+    "F-013"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "99-100"
+  }
 }

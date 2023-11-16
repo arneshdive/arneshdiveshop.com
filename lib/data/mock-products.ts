@@ -10,6 +10,12 @@ export interface MockProduct {
   secondaryImage?: string;
   category?: 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
   diveType?: 'freediving' | 'scuba' | 'both';
+  // Admin-only fields (catalog management, not shown on the storefront) —
+  // optional since most consumers of MockProduct are storefront-only mock
+  // objects that never populate them.
+  brand?: 'mares' | 'cressi' | 'beuchat' | 'salvimar';
+  isActive?: boolean;
+  stockStatus?: 'in_stock' | 'out_of_stock';
 }
 
 export const featuredProducts: MockProduct[] = [
@@ -24,6 +30,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'masker',
     diveType: 'freediving',
+    brand: 'cressi',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '2',
@@ -36,6 +45,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'fin',
     diveType: 'freediving',
+    brand: 'mares',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '3',
@@ -47,6 +59,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'wetsuit',
     diveType: 'both',
+    brand: 'beuchat',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '4',
@@ -60,6 +75,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
     diveType: 'freediving',
+    brand: 'cressi',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '5',
@@ -71,6 +89,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'sabuk-pemberat',
     diveType: 'both',
+    brand: 'mares',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '6',
@@ -82,6 +103,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
     diveType: 'both',
+    brand: 'salvimar',
+    isActive: true,
+    stockStatus: 'out_of_stock',
   },
   {
     id: '7',
@@ -94,6 +118,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
     diveType: 'freediving',
+    brand: 'cressi',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '8',
@@ -107,6 +134,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'masker',
     diveType: 'freediving',
+    brand: 'mares',
+    isActive: false,
+    stockStatus: 'in_stock',
   },
   {
     id: '9',
@@ -118,6 +148,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'wetsuit',
     diveType: 'scuba',
+    brand: 'beuchat',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '10',
@@ -130,6 +163,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'fin',
     diveType: 'freediving',
+    brand: 'mares',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '11',
@@ -141,6 +177,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
     diveType: 'scuba',
+    brand: 'salvimar',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
   {
     id: '12',
@@ -153,6 +192,9 @@ export const featuredProducts: MockProduct[] = [
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
     diveType: 'both',
+    brand: 'cressi',
+    isActive: true,
+    stockStatus: 'in_stock',
   },
 ];
 

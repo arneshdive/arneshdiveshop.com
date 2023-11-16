@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { formatRupiah } from '@/lib/utils/format';
 
 interface OrderConfirmationCardProps {
   orderId: string;
@@ -98,15 +99,15 @@ export function OrderConfirmationCard({
             <div className="bg-neutral-100 p-4 mt-4">
               <div className="flex justify-between text-sm mb-1">
                 <span>Subtotal</span>
-                <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal)}</span>
+                <span>{formatRupiah(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm mb-2">
                 <span>Ongkos Kirim</span>
-                <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(shippingCost)}</span>
+                <span>{formatRupiah(shippingCost)}</span>
               </div>
               <div className="flex justify-between font-semibold text-lg pt-2 border-t border-neutral-300">
                 <span>Total</span>
-                <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(total)}</span>
+                <span>{formatRupiah(total)}</span>
               </div>
             </div>
           </div>

@@ -1,0 +1,5 @@
+# sandwich: registry/ is the committed source of truth — do not ignore it.
+# Everything below is a regenerable projection or debug output.
+impact-analysis.md
+views/
+.plan-context.json

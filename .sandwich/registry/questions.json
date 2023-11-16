@@ -1,18 +1,1 @@
-[
-  {
-    "id": "Q1",
-    "text": "What shipping calculation method should be used for domestic orders? And for overseas shipping, which regions/carriers should be supported?",
-    "priority": 1,
-    "status": "open",
-    "unblocks": [
-      "F-012"
-    ]
-  },
-  {
-    "id": "Q2",
-    "text": "Which analytics platform should be integrated (Google Analytics 4, Hotjar, Mixpanel, etc.)?",
-    "priority": 3,
-    "status": "open",
-    "unblocks": []
-  }
-]
+[]

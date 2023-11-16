@@ -10,7 +10,7 @@ import { ContactForm } from '@/components/checkout/contact-form';
 import { ShippingAddressForm } from '@/components/checkout/shipping-address-form';
 import { ShippingMethodSelector } from '@/components/checkout/shipping-method-selector';
 import { OrderSummaryCard } from '@/components/checkout/order-summary-card';
-import { USPSection } from '@/components/usp-section';
+import { USPSection } from '@/components/layout/usp-section';
 import { useCartStore } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { isValidEmail, isValidPhone } from '@/lib/utils/validators';

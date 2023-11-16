@@ -1,7 +1,5 @@
-import type { orderStatusEnum, paymentStatusEnum } from '@/lib/db/schema';
-
-export type OrderStatus = typeof orderStatusEnum.enumValues[number];
-export type PaymentStatus = typeof paymentStatusEnum.enumValues[number];
+export type OrderStatus = 'pending_payment' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
 
 export interface MockOrderItem {
   id: string;
@@ -10,6 +8,7 @@ export interface MockOrderItem {
   quantity: number;
   priceCents: number;
   image?: string;
+  variant?: { color?: string; size?: string };
 }
 
 export interface MockOrder {

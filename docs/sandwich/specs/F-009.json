@@ -1,28 +1,38 @@
 {
   "featureId": "F-009",
-  "title": "Image upload with Vercel Blob",
-  "module": "Products",
-  "description": "Image upload component using @vercel/blob, CDN-backed serving",
+  "title": "Product search & filtering",
+  "module": "Product Management",
+  "description": "Storefront product search with filters for category, brand, and price range.",
   "scope": {
     "inScope": [
-      "Vercel Blob client setup",
-      "Image upload component with drag-and-drop",
-      "Image preview before upload",
-      "Multiple image support",
-      "Image deletion",
-      "Error handling for failed uploads"
+      "Full-text/keyword product search",
+      "Filter by category, brand, and price range",
+      "Wire existing components/search/search-results.tsx to real queries"
     ],
     "outOfScope": [
-      "Image cropping/editing",
-      "Image optimization (handled by Vercel)"
+      "Search-as-you-type autocomplete (not stated)",
+      "Search analytics"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "User can upload images via drag-and-drop or file picker", "done": false },
-    { "id": "AC2", "text": "Images stored in Vercel Blob with unique filenames", "done": false },
-    { "id": "AC3", "text": "Images served via Vercel CDN", "done": false },
-    { "id": "AC4", "text": "User can remove uploaded images", "done": false }
+    {
+      "id": "AC1",
+      "text": "Customer can search products by keyword and see matching results",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Customer can filter results by category, brand, and price range",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-001"],
-  "source": { "file": "technical-notes.md", "lines": "image-management" }
+  "dependsOn": [
+    "F-005",
+    "F-007",
+    "F-008"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "47"
+  }
 }

@@ -9,7 +9,6 @@ const registerSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100),
   email: z.string().email('Format email tidak valid'),
   password: z.string().min(8, 'Password minimal 8 karakter'),
-  phone: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -29,7 +28,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, password, phone } = result.data;
+    const { name, email, password } = result.data;
+    // Note: phone is accepted but not stored in users table
+    // Customer profile with phone can be created later during checkout
 
     // Check if email already exists
     const existingUser = await db.query.users.findFirst({

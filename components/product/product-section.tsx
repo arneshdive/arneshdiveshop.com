@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import { ProductCard } from '@/components/product-card';
+import { ProductCard } from '@/components/product/product-card';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import type { MockProduct } from '@/lib/data/mock-products';
 

@@ -1,20 +1,19 @@
-import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from '@neondatabase/serverless';
 import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL;
-
-export type Database = NeonHttpDatabase<typeof schema>;
-
-let db: Database;
-
-if (connectionString) {
-  const sql = neon(connectionString);
-  db = drizzle(sql, { schema });
-} else {
-  // Create a dummy db for build time type checking
-  db = undefined as unknown as Database;
+// Ensure DATABASE_URL is available
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set');
 }
 
-export { db };
+// Create a Neon connection pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+// Create the Drizzle client with full schema
+export const db = drizzle(pool, { schema });
+
+// Re-export schema for convenience
 export * from './schema';

@@ -1,27 +1,43 @@
 {
   "featureId": "F-019",
-  "title": "Storefront homepage",
-  "module": "Home",
-  "description": "Homepage with hero carousel, featured products, category navigation, ISR",
+  "title": "Admin dashboard (sales metrics, revenue chart, top-selling products)",
+  "module": "Admin Dashboard",
+  "description": "Dashboard with sales metrics and charts, revenue reporting by period, and top-selling products analytics.",
   "scope": {
     "inScope": [
-      "Hero section with banner carousel",
-      "Featured products grid",
-      "Category navigation section",
-      "ISR with hourly revalidation",
-      "Mobile-responsive layout per wireframes"
+      "Stats cards: total sales, orders, customers, revenue",
+      "Revenue chart by time period",
+      "Top-selling products list",
+      "Date range filter for analytics"
     ],
     "outOfScope": [
-      "Newsletter signup",
-      "Blog section"
+      "Exportable/scheduled reports beyond the CSV export in Order Management"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "Hero carousel displays active banners", "done": false },
-    { "id": "AC2", "text": "Featured products grid shows products with isFeatured=true", "done": false },
-    { "id": "AC3", "text": "Categories display in navigation", "done": false },
-    { "id": "AC4", "text": "Page revalidates every hour for ISR", "done": false }
+    {
+      "id": "AC1",
+      "text": "Dashboard shows current totals for sales, orders, customers, and revenue",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "Admin can view a revenue chart filtered by date range",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Admin can see the top-selling products for the selected period",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-006", "F-008", "F-017"],
-  "source": { "file": "prd.md", "lines": "home-module" }
+  "dependsOn": [
+    "F-002",
+    "F-005",
+    "F-013"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "121-124"
+  }
 }

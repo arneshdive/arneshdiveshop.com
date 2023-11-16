@@ -1,4 +1,5 @@
 import { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { formatCurrencyInput } from '@/lib/utils/format';
 
 const baseInputStyles = `
   w-full px-4 py-2.5 text-sm 
@@ -138,19 +139,13 @@ interface CurrencyInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   onChange: (value: string) => void;
 }
 
-function formatCurrency(value: string | number): string {
-  const num = typeof value === 'string' ? value.replace(/\D/g, '') : String(value);
-  if (!num) return '';
-  return parseInt(num, 10).toLocaleString('id-ID');
-}
-
 function parseCurrency(value: string): string {
   return value.replace(/\D/g, '');
 }
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
   ({ label, className = '', value, onChange, ...props }, ref) => {
-    const displayValue = formatCurrency(value);
+    const displayValue = formatCurrencyInput(value);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const parsed = parseCurrency(e.target.value);

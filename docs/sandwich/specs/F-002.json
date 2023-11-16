@@ -1,34 +1,49 @@
 {
   "featureId": "F-002",
-  "title": "Database schema and migrations",
-  "module": "Infrastructure",
-  "description": "Define all tables using Drizzle ORM with pgEnum types for orders, payments, promotions, banners",
+  "title": "Core authentication (registration, login, session, RBAC, rate limiting)",
+  "module": "Authentication",
+  "description": "Custom JWT session auth via jose: email/password registration with validation, secure login with HTTP-only cookie sessions, role-based access control (customer/admin/super_admin), and rate limiting on auth endpoints.",
   "scope": {
     "inScope": [
-      "Users table with role enum",
-      "Categories table with parent/child hierarchy",
-      "Brands table",
-      "Products and product_variants tables",
-      "Customers and addresses tables",
-      "Orders and order_items tables",
-      "Payments table with status enum",
-      "Promotions table with type enum",
-      "Banners table with position enum",
-      "Sessions and accounts tables for Auth.js",
-      "pgEnum definitions for all status/type fields",
-      "Drizzle migrations setup"
+      "Email/password registration with validation (name, email, password, phone)",
+      "Login with credential verification against stored password hash (lib/auth/password.ts)",
+      "HTTP-only cookie session using jose JWT, containing user ID and role",
+      "Role-based access control: customer, admin, super_admin",
+      "Rate limiting on auth endpoints (register, login)"
     ],
     "outOfScope": [
-      "Seed data",
-      "Query functions"
+      "Email verification (separate feature)",
+      "Forgot password flow (separate feature)",
+      "OAuth/social login (not in brief)"
     ]
   },
   "acceptanceCriteria": [
-    { "id": "AC1", "text": "All tables from SPEC.md schema created in database", "done": false },
-    { "id": "AC2", "text": "All pgEnum types defined and applied", "done": false },
-    { "id": "AC3", "text": "Foreign key relationships established correctly", "done": false },
-    { "id": "AC4", "text": "Drizzle migrations can be run with drizzle-kit push", "done": false }
+    {
+      "id": "AC1",
+      "text": "A customer can register with email/password and receive a session",
+      "done": false
+    },
+    {
+      "id": "AC2",
+      "text": "A customer can log in and receive an HTTP-only JWT session cookie",
+      "done": false
+    },
+    {
+      "id": "AC3",
+      "text": "Admin-only routes reject requests from a customer-role session",
+      "done": false
+    },
+    {
+      "id": "AC4",
+      "text": "Repeated failed login attempts are rate-limited",
+      "done": false
+    }
   ],
-  "dependsOn": ["F-001"],
-  "source": { "file": "prd.md", "lines": "database-schema" }
+  "dependsOn": [
+    "F-001"
+  ],
+  "source": {
+    "file": "prd.md",
+    "lines": "29-34"
+  }
 }

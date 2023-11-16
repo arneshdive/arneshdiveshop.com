@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
-import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
+import { isValidEmail } from '@/lib/utils/validators';
 
 type Mode = 'login' | 'register';
 
@@ -12,7 +12,6 @@ interface AuthForm {
   email: string;
   password: string;
   name: string;
-  phone: string;
   confirmPassword: string;
 }
 
@@ -20,7 +19,6 @@ interface FormErrors {
   email?: string;
   password?: string;
   name?: string;
-  phone?: string;
   confirmPassword?: string;
   general?: string;
 }
@@ -33,7 +31,6 @@ function AuthForm() {
     email: '',
     password: '',
     name: '',
-    phone: '',
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -66,10 +63,6 @@ function AuthForm() {
         newErrors.name = 'Nama wajib diisi';
       }
 
-      if (form.phone && !isValidPhone(form.phone)) {
-        newErrors.phone = 'Format nomor telepon tidak valid';
-      }
-
       if (!form.confirmPassword) {
         newErrors.confirmPassword = 'Konfirmasi password wajib diisi';
       } else if (form.password !== form.confirmPassword) {
@@ -98,7 +91,6 @@ function AuthForm() {
               email: form.email,
               password: form.password,
               name: form.name,
-              phone: form.phone || undefined,
             };
 
       const response = await fetch(endpoint, {
@@ -126,11 +118,6 @@ function AuthForm() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const switchMode = () => {
-    setMode(mode === 'login' ? 'register' : 'login');
-    setErrors({});
   };
 
   return (
@@ -171,49 +158,26 @@ function AuthForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Register-only fields */}
           {mode === 'register' && (
-            <>
-              <div>
-                <label className="block text-sm text-neutral-500 mb-2">
-                  Nama Lengkap
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => updateForm('name', e.target.value)}
-                  placeholder="Nama lengkap Anda"
-                  className={cn(
-                    'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
-                    errors.name
-                      ? 'border-red-300 focus:border-2 focus:border-red-500'
-                      : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
-                  )}
-                />
-                {errors.name && (
-                  <p className="text-xs text-red-500 mt-1">{errors.name}</p>
+            <div>
+              <label className="block text-sm text-neutral-500 mb-2">
+                Nama Lengkap
+              </label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => updateForm('name', e.target.value)}
+                placeholder="Nama lengkap Anda"
+                className={cn(
+                  'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
+                  errors.name
+                    ? 'border-red-300 focus:border-2 focus:border-red-500'
+                    : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
                 )}
-              </div>
-
-              <div>
-                <label className="block text-sm text-neutral-500 mb-2">
-                  Nomor Telepon <span className="text-neutral-400">(opsional)</span>
-                </label>
-                <input
-                  type="tel"
-                  value={form.phone}
-                  onChange={(e) => updateForm('phone', e.target.value)}
-                  placeholder="08xxxxxxxxxx"
-                  className={cn(
-                    'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
-                    errors.phone
-                      ? 'border-red-300 focus:border-2 focus:border-red-500'
-                      : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
-                  )}
-                />
-                {errors.phone && (
-                  <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
-                )}
-              </div>
-            </>
+              />
+              {errors.name && (
+                <p className="text-xs text-red-500 mt-1">{errors.name}</p>
+              )}
+            </div>
           )}
 
           {/* Email */}

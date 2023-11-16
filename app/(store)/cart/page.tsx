@@ -5,8 +5,8 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { CartItem } from '@/components/cart/cart-item';
 import { OrderSummary } from '@/components/cart/order-summary';
 import { EmptyCart } from '@/components/cart/empty-cart';
-import { RecentlyViewed } from '@/components/recently-viewed';
-import { USPSection } from '@/components/usp-section';
+import { RecentlyViewed } from '@/components/product/recently-viewed';
+import { USPSection } from '@/components/layout/usp-section';
 import { useCartStore } from '@/lib/store/cart';
 
 export default function CartPage() {

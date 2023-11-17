@@ -8,6 +8,7 @@ import { Icon } from '@iconify/react';
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'solar:chart-2-linear' },
   { href: '/admin/products', label: 'Produk', icon: 'solar:box-linear' },
+  { href: '/admin/categories', label: 'Kategori', icon: 'solar:folder-linear' },
   { href: '/admin/brands', label: 'Merek', icon: 'solar:tag-linear' },
   { href: '/admin/orders', label: 'Pesanan', icon: 'solar:document-text-linear' },
   { href: '/admin/customers', label: 'Pelanggan', icon: 'solar:users-group-rounded-linear' },

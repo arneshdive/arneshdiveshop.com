@@ -126,12 +126,10 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
       </div>
 
       {/* Banner */}
-      <section className={`bg-gradient-to-r ${banner.gradient} text-white py-12 lg:py-16 px-4 mt-4`}>
+      <section className={`bg-gradient-to-r ${banner.gradient} text-white py-12 lg:py-16 px-4 lg:px-12 mt-4`}>
         <div className="max-w-[1440px] mx-auto">
-          <h1 className="text-3xl lg:text-5xl font-bold tracking-tight leading-tight mb-3 drop-shadow-sm">
-            {banner.title}
-          </h1>
-          <p className="text-white/90 text-base lg:text-lg max-w-xl leading-relaxed">{banner.description}</p>
+          <h1 className="text-2xl lg:text-4xl font-bold tracking-tight mb-2">{banner.title}</h1>
+          <p className="text-white/80 max-w-xl">{banner.description}</p>
         </div>
       </section>
 

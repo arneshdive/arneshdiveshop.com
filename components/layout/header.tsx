@@ -6,11 +6,17 @@ import { usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
 import { useCartStore } from '@/lib/store/cart';
+import type { Category } from '@/lib/db/schema';
+
+interface CategoryWithChildren extends Category {
+  children: CategoryWithChildren[];
+}
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [categories, setCategories] = useState<CategoryWithChildren[]>([]);
   const pathname = usePathname();
   const isHomepage = pathname === '/';
   const itemCount = useCartStore((state) => state.getItemCount());
@@ -18,6 +24,14 @@ export function Header() {
   // Wait for mount to avoid hydration mismatch with persisted cart
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Fetch categories for navigation
+  useEffect(() => {
+    fetch('/api/categories')
+      .then((res) => res.json())
+      .then((data) => setCategories(data.categories || []))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -59,12 +73,6 @@ export function Header() {
       : 'text-white/80 hover:text-white hover:bg-white/10'
     : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100';
 
-  const saleColor = isHomepage
-    ? scrolled
-      ? 'text-red-500 hover:text-red-600'
-      : 'text-red-400 hover:text-red-300'
-    : 'text-red-500 hover:text-red-600';
-
   const badgeBg = isHomepage
     ? scrolled
       ? 'bg-neutral-900 text-white'
@@ -96,18 +104,15 @@ export function Header() {
 
             {/* Desktop Nav Links */}
             <div className="hidden lg:flex gap-6">
-              <Link href="/produk?category=freediving" className={`text-base tracking-wide transition-colors ${linkColor}`}>
-                Freediving
-              </Link>
-              <Link href="/produk?category=scuba" className={`text-base tracking-wide transition-colors ${linkColor}`}>
-                Scuba
-              </Link>
-              <Link href="/produk?category=aksesoris" className={`text-base tracking-wide transition-colors ${linkColor}`}>
-                Aksesoris
-              </Link>
-              <Link href="/produk?category=sale" className={`text-base tracking-wide font-medium transition-colors ${saleColor}`}>
-                Sale
-              </Link>
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/produk?category=${cat.slug}`}
+                  className={`text-base tracking-wide transition-colors ${linkColor}`}
+                >
+                  {cat.name}
+                </Link>
+              ))}
             </div>
           </div>
 

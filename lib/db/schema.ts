@@ -105,6 +105,7 @@ export const products = pgTable('products', {
   images: jsonb('images').$type<string[]>().default([]),
   isActive: boolean('is_active').default(true).notNull(), // Sole availability flag (no stock qty tracking)
   isFeatured: boolean('is_featured').default(false),
+  deletedAt: timestamp('deleted_at'), // For soft-delete
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 export interface VariantOption {
   id: string;
@@ -70,13 +70,38 @@ export function useProductForm() {
     }));
   }, [hasVariants, variantOptions, formData.sku]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      const newImages = Array.from(files).map(() => '/placeholder-product.jpg');
-      setImages([...images, ...newImages]);
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+
+    try {
+      // Upload each file to Vercel Blob
+      for (const file of Array.from(files)) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          console.error('Upload failed:', error);
+          continue;
+        }
+
+        const { url } = await response.json();
+        setImages((prev) => [...prev, url]);
+      }
+    } finally {
+      setIsUploading(false);
     }
-  };
+  }, []);
 
   const removeImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
@@ -128,5 +153,6 @@ export function useProductForm() {
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
+    isUploading,
   };
 }

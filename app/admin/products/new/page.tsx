@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatedButton } from '@/components/ui/animated-button';
@@ -12,6 +13,7 @@ import { useProductForm } from '@/lib/hooks/use-product-form';
 
 export default function NewProductPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     formData,
     setFormData,
@@ -27,12 +29,57 @@ export default function NewProductPage() {
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
+    isUploading,
   } = useProductForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form data:', { ...formData, images, hasVariants, variantOptions, variants: generatedVariants });
-    router.push('/admin/products');
+    
+    if (isSubmitting || isUploading) return;
+    setIsSubmitting(true);
+
+    // Convert price strings to cents
+    const priceCents = formData.price 
+      ? Math.round(parseFloat(formData.price.replace(/[^\d.]/g, '')) * 100)
+      : 0;
+    const compareAtPriceCents = formData.salePrice
+      ? Math.round(parseFloat(formData.salePrice.replace(/[^\d.]/g, '')) * 100)
+      : null;
+
+    const payload = {
+      name: formData.name,
+      description: formData.description || undefined,
+      sku: formData.sku || undefined,
+      priceCents,
+      compareAtPriceCents,
+      categoryId: formData.category,
+      brandId: formData.brand || null,
+      images,
+      isActive: formData.isActive,
+      isFeatured: false, // Can be toggled later from product list
+    };
+
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Failed to create product:', error);
+        alert(error.error || 'Gagal menyimpan produk');
+        setIsSubmitting(false);
+        return;
+      }
+
+      router.push('/admin/products');
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert('Terjadi kesalahan saat menyimpan produk');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -84,8 +131,8 @@ export default function NewProductPage() {
               </Link>
             </AnimatedButton>
             <AnimatedButton asChild className="flex-1 !px-0 !h-12">
-              <button type="submit" form="product-form">
-                <span className="text-sm font-medium tracking-wide">Simpan</span>
+              <button type="submit" form="product-form" disabled={isSubmitting || isUploading}>
+                <span className="text-sm font-medium tracking-wide">{isSubmitting ? 'Menyimpan...' : 'Simpan'}</span>
               </button>
             </AnimatedButton>
           </div>

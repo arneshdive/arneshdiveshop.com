@@ -23,7 +23,7 @@ const updateProductSchema = z.object({
 
 // GET /api/products/[id] - Get single product
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -94,17 +94,20 @@ export async function PATCH(
 
     // Check SKU uniqueness if being updated
     if (updates.sku !== undefined && updates.sku !== product.sku) {
-      const existingSku = await db.query.products.findFirst({
-        where: and(
-          eq(products.sku, updates.sku),
-          sql`${products.id} != ${id}`
-        ),
-      });
-      if (existingSku && !existingSku.deletedAt) {
-        return NextResponse.json(
-          { error: 'SKU sudah digunakan', details: { sku: 'SKU sudah digunakan' } },
-          { status: 409 }
-        );
+      const skuValue = updates.sku;
+      if (skuValue) {
+        const existingSku = await db.query.products.findFirst({
+          where: and(
+            eq(products.sku, skuValue),
+            sql`${products.id} != ${id}`
+          ),
+        });
+        if (existingSku && !existingSku.deletedAt) {
+          return NextResponse.json(
+            { error: 'SKU sudah digunakan', details: { sku: 'SKU sudah digunakan' } },
+            { status: 409 }
+          );
+        }
       }
     }
 
@@ -134,7 +137,7 @@ export async function PATCH(
 
 // DELETE /api/products/[id] - Soft delete product
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

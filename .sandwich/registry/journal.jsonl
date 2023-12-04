@@ -25,3 +25,4 @@
 {"ts":"2026-07-12T11:00:00.000Z","actor":"agent","type":"feature-completed","target":"F-001","summary":"Database schema & connection setup - verified working"}
 {"ts":"2026-07-12T11:00:00.000Z","actor":"agent","type":"feature-completed","target":"F-002","summary":"Core authentication (registration, login, session, RBAC, rate limiting) - implemented and tested"}
 {"ts":"2026-07-12T11:02:00.000Z","actor":"agent","type":"feature-completed","target":"F-008","summary":"Brand management (CRUD) - implemented and tested"}
+{"ts":"2026-07-12T11:12:00.000Z","actor":"agent","type":"feature-completed","target":"F-007","summary":"Category management (hierarchical) - implemented and tested"}

@@ -25,8 +25,8 @@ SPEC.md prescribes vertical slice architecture where each feature is self-contai
 ### No API routes exist currently
 All backend work is greenfield. The app/(store) and app/admin directories have complete UI but no app/api directory. Need to create all API routes from scratch. Consider using Next.js server actions for mutations (per SPEC.md) and route handlers for queries.
 
-### Database schema required
-No lib/db directory exists. SPEC.md documents schema but file not created. Tables needed: users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens. Drizzle migrations need to be generated and run against Neon.
+### Database schema implemented
+Drizzle ORM schema is implemented in lib/db/schema.ts with all 13 tables: users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens. Neon Postgres connection configured via @neondatabase/serverless. Migration files generated in lib/db/migrations/. Tables are active in the production Neon database.
 
 ### ISR for Storefront, CSR for Admin
 Spec calls for Incremental Static Regeneration for storefront pages (products, categories) for performance. Admin dashboard uses client-side rendering with TanStack Query for real-time data. This split architecture is appropriate for the use case.

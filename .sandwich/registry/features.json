@@ -3,11 +3,11 @@
     "id": "F-001",
     "fingerprint": "database schema connection setup|infrastructure",
     "title": "Database schema & connection setup",
-    "description": "Drizzle ORM schema (users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens) and Neon Postgres connection. No lib/db exists yet — this is the foundation every other backend feature depends on.",
+    "description": "Drizzle ORM schema with all 13 tables (users, customers, addresses, categories, brands, products, product_variants, orders, order_items, payments, promotions, banners, verification_tokens) connected to Neon Postgres. Schema implemented, migrations generated, all tables active in production database.",
     "type": "infrastructure",
     "module": "Infrastructure",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -59,7 +59,7 @@
     "specRef": "specs/F-001.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T12:12:44.348Z"
   },
   {
     "id": "F-002",
@@ -69,7 +69,7 @@
     "type": "feature",
     "module": "Authentication",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -248,7 +248,7 @@
     "type": "feature",
     "module": "Product Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -299,9 +299,22 @@
     },
     "overrides": {},
     "specRef": "specs/F-005.json",
-    "commits": [],
+    "commits": [
+      "9d3caf6",
+      "f2ed68b",
+      "54c1c44",
+      "c5306f1",
+      "3d4e16a",
+      "e89e0e2",
+      "e9cec00",
+      "da7a466",
+      "5cd060c",
+      "843065e",
+      "8d0a188",
+      "5a19448"
+    ],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T12:42:00.000Z"
   },
   {
     "id": "F-006",

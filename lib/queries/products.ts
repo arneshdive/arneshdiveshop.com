@@ -1,4 +1,4 @@
-import { db, products, categories, brands } from '@/lib/db';
+import { db, products } from '@/lib/db';
 import { eq, isNull, desc, ilike, and, SQL, sql } from 'drizzle-orm';
 
 export interface ProductFilters {

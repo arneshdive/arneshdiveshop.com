@@ -74,11 +74,6 @@ async function toggleProduct(id: string, field: 'isActive' | 'isFeatured', value
   if (!response.ok) throw new Error('Failed to toggle product');
 }
 
-function getLabelById(items: { id: string; name: string }[], id: string | undefined): string {
-  if (!id) return '-';
-  return items.find(item => item.id === id)?.name || id;
-}
-
 export default function ProductsPage() {
   const queryClient = useQueryClient();
   

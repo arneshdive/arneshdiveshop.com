@@ -50,6 +50,8 @@ async function updateProduct(id: string, data: Record<string, unknown>): Promise
   return response.json();
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();

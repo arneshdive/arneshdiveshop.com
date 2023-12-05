@@ -74,6 +74,8 @@ async function toggleProduct(id: string, field: 'isActive' | 'isFeatured', value
   if (!response.ok) throw new Error('Failed to toggle product');
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function ProductsPage() {
   const queryClient = useQueryClient();
   

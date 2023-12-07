@@ -6,20 +6,18 @@ import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { isValidEmail } from '@/lib/utils/validators';
 
-type Mode = 'login' | 'register';
+type Mode = 'login' | 'register' | 'verify-email';
 
 interface AuthForm {
   email: string;
-  password: string;
   name: string;
-  confirmPassword: string;
+  otp: string;
 }
 
 interface FormErrors {
   email?: string;
-  password?: string;
   name?: string;
-  confirmPassword?: string;
+  otp?: string;
   general?: string;
 }
 
@@ -29,12 +27,13 @@ function AuthForm() {
   const [mode, setMode] = useState<Mode>('login');
   const [form, setForm] = useState<AuthForm>({
     email: '',
-    password: '',
     name: '',
-    confirmPassword: '',
+    otp: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [otpExpires, setOtpExpires] = useState(15);
+  const [verifyEmail, setVerifyEmail] = useState('');
 
   const redirectTo = searchParams.get('redirect') || '/account';
 
@@ -52,21 +51,17 @@ function AuthForm() {
       newErrors.email = 'Format email tidak valid';
     }
 
-    if (!form.password) {
-      newErrors.password = 'Password wajib diisi';
-    } else if (form.password.length < 8) {
-      newErrors.password = 'Password minimal 8 karakter';
-    }
-
     if (mode === 'register') {
       if (!form.name.trim()) {
         newErrors.name = 'Nama wajib diisi';
       }
+    }
 
-      if (!form.confirmPassword) {
-        newErrors.confirmPassword = 'Konfirmasi password wajib diisi';
-      } else if (form.password !== form.confirmPassword) {
-        newErrors.confirmPassword = 'Password tidak cocok';
+    if (mode === 'verify-email') {
+      if (!form.otp.trim()) {
+        newErrors.otp = 'Kode OTP wajib diisi';
+      } else if (form.otp.length !== 6) {
+        newErrors.otp = 'Kode OTP harus 6 digit';
       }
     }
 
@@ -83,35 +78,59 @@ function AuthForm() {
     setErrors({});
 
     try {
-      const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
-      const body =
-        mode === 'login'
-          ? { email: form.email, password: form.password }
-          : {
-              email: form.email,
-              password: form.password,
-              name: form.name,
-            };
+      if (mode === 'login' || mode === 'register') {
+        const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+        const body = mode === 'login'
+          ? { email: form.email }
+          : { email: form.email, name: form.name };
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        if (data.details) {
-          setErrors(data.details);
-        } else {
-          setErrors({ general: data.error || 'Terjadi kesalahan' });
+        if (!response.ok) {
+          if (data.details) {
+            setErrors(data.details);
+          } else {
+            setErrors({ general: data.error || 'Terjadi kesalahan' });
+          }
+          return;
         }
-        return;
-      }
 
-      router.push(redirectTo);
-      router.refresh();
+        // After login/register, go to verify email
+        setVerifyEmail(form.email.toLowerCase());
+        setOtpExpires(data.expires || 15);
+        setMode('verify-email');
+        setForm((prev) => ({ ...prev, otp: '' }));
+      } else if (mode === 'verify-email') {
+        const response = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: verifyEmail,
+            otp: form.otp,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (data.details) {
+            setErrors(data.details);
+          } else {
+            setErrors({ general: data.error || 'Terjadi kesalahan' });
+          }
+          return;
+        }
+
+        // Success - redirect to account
+        router.push(redirectTo);
+        router.refresh();
+      }
     } catch (error) {
       console.error('Auth error:', error);
       setErrors({ general: 'Terjadi kesalahan pada server' });
@@ -120,6 +139,114 @@ function AuthForm() {
     }
   };
 
+  const handleBackToLogin = () => {
+    setMode('login');
+    setErrors({});
+    setForm({ email: '', name: '', otp: '' });
+  };
+
+  // Verify Email Form
+  if (mode === 'verify-email') {
+    return (
+      <div className="min-h-screen flex items-center justify-center py-8 px-4">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="text-center mb-8">
+            <span className="text-2xl font-bold tracking-tight">ARNES DIVE</span>
+          </div>
+
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h2 className="text-lg font-medium text-neutral-900">Verifikasi Email</h2>
+            <p className="text-sm text-neutral-500 mt-1">
+              Masukkan kode OTP yang dikirim ke <strong>{verifyEmail}</strong>
+            </p>
+            <p className="text-xs text-neutral-400 mt-1">
+              Kode berlaku {otpExpires} menit
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* OTP */}
+            <div>
+              <label className="block text-sm text-neutral-500 mb-2">Kode OTP</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="\d{6}"
+                maxLength={6}
+                value={form.otp}
+                onChange={(e) => updateForm('otp', e.target.value.replace(/\D/g, ''))}
+                placeholder="Masukkan 6 digit kode OTP"
+                autoFocus
+                className={cn(
+                  'w-full px-4 py-3 bg-white border rounded-lg text-sm text-center tracking-widest font-mono focus:outline-none transition-colors',
+                  errors.otp
+                    ? 'border-red-300 focus:border-2 focus:border-red-500'
+                    : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
+                )}
+              />
+              {errors.otp && (
+                <p className="text-xs text-red-500 mt-1">{errors.otp}</p>
+              )}
+            </div>
+
+            {/* General Error */}
+            {errors.general && (
+              <p className="text-sm text-red-500 text-center">{errors.general}</p>
+            )}
+
+            {/* Submit */}
+            <AnimatedButton
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 text-sm"
+            >
+              {isLoading ? 'Memproses...' : 'Verifikasi'}
+            </AnimatedButton>
+          </form>
+
+          {/* Resend OTP */}
+          <button
+            onClick={async () => {
+              setIsLoading(true);
+              try {
+                const response = await fetch('/api/auth/send-verification', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: verifyEmail }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                  setErrors({ general: 'Kode OTP baru telah dikirim' });
+                } else {
+                  setErrors({ general: data.error || 'Gagal mengirim ulang' });
+                }
+              } catch {
+                setErrors({ general: 'Terjadi kesalahan' });
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className="w-full text-center text-sm text-neutral-600 hover:text-neutral-900 mt-4"
+          >
+            Kirim ulang kode OTP
+          </button>
+
+          {/* Back to login */}
+          <button
+            onClick={handleBackToLogin}
+            className="w-full text-center text-sm text-neutral-600 hover:text-neutral-900 mt-2"
+          >
+            ← Kembali ke login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Login / Register Form
   return (
     <div className="min-h-screen flex items-center justify-center py-8 px-4">
       <div className="w-full max-w-sm">
@@ -201,57 +328,12 @@ function AuthForm() {
             )}
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm text-neutral-500 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => updateForm('password', e.target.value)}
-              placeholder="Masukkan password"
-              className={cn(
-                'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
-                errors.password
-                  ? 'border-red-300 focus:border-2 focus:border-red-500'
-                  : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
-              )}
-            />
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">{errors.password}</p>
-            )}
-          </div>
-
-          {/* Confirm Password (register only) */}
-          {mode === 'register' && (
-            <div>
-              <label className="block text-sm text-neutral-500 mb-2">
-                Konfirmasi Password
-              </label>
-              <input
-                type="password"
-                value={form.confirmPassword}
-                onChange={(e) => updateForm('confirmPassword', e.target.value)}
-                placeholder="Ulangi password"
-                className={cn(
-                  'w-full px-4 py-3 bg-white border rounded-lg text-sm focus:outline-none transition-colors',
-                  errors.confirmPassword
-                    ? 'border-red-300 focus:border-2 focus:border-red-500'
-                    : 'border-neutral-300 focus:border-2 focus:border-neutral-900'
-                )}
-              />
-              {errors.confirmPassword && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* General Error */}
+          {/* General Error / Success */}
           {errors.general && (
-            <p className="text-sm text-red-500 text-center">{errors.general}</p>
+            <p className={cn(
+              'text-sm text-center',
+              errors.general.includes('berhasil') ? 'text-green-600' : 'text-red-500'
+            )}>{errors.general}</p>
           )}
 
           {/* Submit */}
@@ -267,16 +349,6 @@ function AuthForm() {
                 : 'Daftar'}
           </AnimatedButton>
         </form>
-
-        {/* Forgot password placeholder */}
-        {mode === 'login' && (
-          <p className="text-xs text-center text-neutral-400 mt-4">
-            Lupa password?{' '}
-            <span className="text-neutral-600 cursor-not-allowed">
-              Fitur coming soon
-            </span>
-          </p>
-        )}
 
         {/* Terms */}
         <p className="text-xs text-neutral-400 text-center mt-6">

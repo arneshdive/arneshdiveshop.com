@@ -42,6 +42,8 @@ export const bannerPositionEnum = pgEnum('banner_position', [
 
 export const userRoleEnum = pgEnum('user_role', ['customer', 'admin', 'super_admin']);
 
+export const divingTypeEnum = pgEnum('diving_type', ['freediving', 'scuba']);
+
 // ============================================================================
 // Users & Authentication
 // ============================================================================
@@ -51,6 +53,7 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   name: text('name'),
   password: text('password'), // Hashed password for credentials auth
+  emailVerified: timestamp('email_verified'),
   role: userRoleEnum('role').default('customer').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -71,8 +74,6 @@ export const categories = pgTable('categories', {
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   description: text('description'),
-  parentId: text('parent_id').references((): any => categories.id),
-  sortOrder: integer('sort_order').default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -93,7 +94,7 @@ export const products = pgTable('products', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
-  sku: text('sku').unique(),
+  sku: text('sku'),
   description: text('description'),
   priceCents: integer('price_cents').notNull(), // All prices stored as cents (integer)
   compareAtPriceCents: integer('compare_at_price_cents'), // Original price for sales
@@ -102,9 +103,12 @@ export const products = pgTable('products', {
     .references(() => categories.id)
     .notNull(),
   brandId: text('brand_id').references(() => brands.id),
+  divingTypes: divingTypeEnum('diving_types').array().notNull(), // ['freediving', 'scuba'] or just one
   images: jsonb('images').$type<string[]>().default([]),
   isActive: boolean('is_active').default(true).notNull(), // Sole availability flag (no stock qty tracking)
   isFeatured: boolean('is_featured').default(false),
+  isNewArrival: boolean('is_new_arrival').default(false).notNull(),
+  isOnSale: boolean('is_on_sale').default(false).notNull(),
   deletedAt: timestamp('deleted_at'), // For soft-delete
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -115,7 +119,7 @@ export const productVariants = pgTable('product_variants', {
   productId: text('product_id')
     .references(() => products.id, { onDelete: 'cascade' })
     .notNull(),
-  sku: text('sku').unique(),
+  sku: text('sku'),
   name: text('name').notNull(), // e.g., "Red / Large"
   options: jsonb('options').$type<Record<string, string>>().notNull(), // e.g., { color: 'red', size: 'L' }
   priceCents: integer('price_cents'), // Null means use product base price
@@ -156,6 +160,60 @@ export const addresses = pgTable('addresses', {
   country: text('country').notNull().default('Indonesia'),
   isDefault: boolean('is_default').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================================================
+// Cart
+// ============================================================================
+
+export const carts = pgTable('carts', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').references(() => users.id),
+  guestId: text('guest_id'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const cartItems = pgTable('cart_items', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  cartId: text('cart_id')
+    .references(() => carts.id, { onDelete: 'cascade' })
+    .notNull(),
+  productId: text('product_id')
+    .references(() => products.id)
+    .notNull(),
+  variantId: text('variant_id').references(() => productVariants.id),
+  quantity: integer('quantity').notNull().default(1),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const checkoutSessions = pgTable('checkout_sessions', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id').references(() => users.id),
+  guestId: text('guest_id'),
+  cartId: text('cart_id').references(() => carts.id),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  fullName: text('full_name').notNull(),
+  address1: text('address1').notNull(),
+  address2: text('address2'),
+  city: text('city').notNull(),
+  province: text('province').notNull(),
+  postalCode: text('postal_code').notNull(),
+  country: text('country').notNull().default('Indonesia'),
+  notes: text('notes'),
+  lat: text('lat'),
+  lng: text('lng'),
+  formattedAddress: text('formatted_address'),
+  shippingMethod: text('shipping_method'),
+  subtotalCents: integer('subtotal_cents'),
+  shippingCents: integer('shipping_cents'),
+  totalCents: integer('total_cents'),
+  status: text('status').notNull().default('pending'),
+  expiresAt: timestamp('expires_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // ============================================================================
@@ -202,6 +260,17 @@ export const orderItems = pgTable('order_items', {
   name: text('name').notNull(), // Snapshot of product name at time of order
   quantity: integer('quantity').notNull(),
   priceCents: integer('price_cents').notNull(), // Snapshot of price at time of order
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const orderStatusHistory = pgTable('order_status_history', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  orderId: text('order_id')
+    .references(() => orders.id, { onDelete: 'cascade' })
+    .notNull(),
+  status: orderStatusEnum('status').notNull(),
+  note: text('note'),
+  changedBy: text('changed_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -271,6 +340,34 @@ export const banners = pgTable('banners', {
 });
 
 // ============================================================================
+// Shop Settings
+// ============================================================================
+
+export const shopSettings = pgTable('shop_settings', {
+  id: text('id').primaryKey().default('default'),
+  // Shop info
+  storeName: text('store_name').notNull().default("Arne's Dive Shop"),
+  email: text('email').notNull().default('support@arnesdive.com'),
+  phone: text('phone').notNull().default('+62 812-3456-7890'),
+  whatsapp: text('whatsapp').notNull().default('6281234567890'),
+  businessHours: text('business_hours').notNull().default('Senin – Jumat: 09:00 – 17:00 WIB'),
+  about: text('about'),
+  // Address (from map picker)
+  addressFormatted: text('address_formatted'),
+  addressLat: text('address_lat'),
+  addressLng: text('address_lng'),
+  // Social media
+  instagram: text('instagram'),
+  tiktok: text('tiktok'),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export type ShopSettings = typeof shopSettings.$inferSelect;
+export type NewShopSettings = typeof shopSettings.$inferInsert;
+
+// ============================================================================
 // Relations
 // ============================================================================
 
@@ -281,15 +378,7 @@ export const usersRelations = relations(users, ({ one }) => ({
   }),
 }));
 
-export const categoriesRelations = relations(categories, ({ one, many }) => ({
-  parent: one(categories, {
-    fields: [categories.parentId],
-    references: [categories.id],
-    relationName: 'subcategory',
-  }),
-  subcategories: many(categories, {
-    relationName: 'subcategory',
-  }),
+export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));
 
@@ -356,10 +445,51 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   }),
 }));
 
+export const orderStatusHistoryRelations = relations(orderStatusHistory, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderStatusHistory.orderId],
+    references: [orders.id],
+  }),
+  changedByUser: one(users, {
+    fields: [orderStatusHistory.changedBy],
+    references: [users.id],
+  }),
+}));
+
 export const paymentsRelations = relations(payments, ({ one }) => ({
   order: one(orders, {
     fields: [payments.orderId],
     references: [orders.id],
+  }),
+}));
+
+export const cartsRelations = relations(carts, ({ many }) => ({
+  items: many(cartItems),
+}));
+
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  cart: one(carts, {
+    fields: [cartItems.cartId],
+    references: [carts.id],
+  }),
+  product: one(products, {
+    fields: [cartItems.productId],
+    references: [products.id],
+  }),
+  variant: one(productVariants, {
+    fields: [cartItems.variantId],
+    references: [productVariants.id],
+  }),
+}));
+
+export const checkoutSessionsRelations = relations(checkoutSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [checkoutSessions.userId],
+    references: [users.id],
+  }),
+  cart: one(carts, {
+    fields: [checkoutSessions.cartId],
+    references: [carts.id],
   }),
 }));
 
@@ -397,6 +527,9 @@ export type NewOrder = typeof orders.$inferInsert;
 export type OrderItem = typeof orderItems.$inferSelect;
 export type NewOrderItem = typeof orderItems.$inferInsert;
 
+export type OrderStatusHistory = typeof orderStatusHistory.$inferSelect;
+export type NewOrderStatusHistory = typeof orderStatusHistory.$inferInsert;
+
 export type Payment = typeof payments.$inferSelect;
 export type NewPayment = typeof payments.$inferInsert;
 
@@ -406,9 +539,19 @@ export type NewPromotion = typeof promotions.$inferInsert;
 export type Banner = typeof banners.$inferSelect;
 export type NewBanner = typeof banners.$inferInsert;
 
+export type Cart = typeof carts.$inferSelect;
+export type NewCart = typeof carts.$inferInsert;
+
+export type CartItem = typeof cartItems.$inferSelect;
+export type NewCartItem = typeof cartItems.$inferInsert;
+
+export type CheckoutSession = typeof checkoutSessions.$inferSelect;
+export type NewCheckoutSession = typeof checkoutSessions.$inferInsert;
+
 // Enum type exports
 export type OrderStatus = (typeof orderStatusEnum.enumValues)[number];
 export type PaymentStatus = (typeof paymentStatusEnum.enumValues)[number];
 export type PromotionType = (typeof promotionTypeEnum.enumValues)[number];
 export type BannerPosition = (typeof bannerPositionEnum.enumValues)[number];
 export type UserRole = (typeof userRoleEnum.enumValues)[number];
+export type DivingType = (typeof divingTypeEnum.enumValues)[number];

@@ -31,7 +31,8 @@ interface SettingsMapModalProps {
   initialAddress?: string;
 }
 
-const DEFAULT_CENTER: L.LatLngExpression = [-6.2088, 106.8456]; // Jakarta
+const DEFAULT_CENTER_LAT = -6.2088;
+const DEFAULT_CENTER_LNG = 106.8456; // Jakarta
 const DEFAULT_ZOOM = 12;
 
 // Component to handle map events and marker dragging
@@ -184,7 +185,7 @@ function MapContent({
       {/* Map */}
       <div className="flex-1 relative">
         <MapContainer
-          center={position}
+          center={[DEFAULT_CENTER_LAT, DEFAULT_CENTER_LNG]}
           zoom={DEFAULT_ZOOM}
           style={{ width: '100%', height: '100%' }}
           className="z-0"
@@ -242,7 +243,7 @@ export function SettingsMapModal({
     if (initialLat && initialLng) {
       return L.latLng(parseFloat(initialLat), parseFloat(initialLng));
     }
-    return L.latLng(DEFAULT_CENTER[0], DEFAULT_CENTER[1]);
+    return L.latLng(DEFAULT_CENTER_LAT, DEFAULT_CENTER_LNG);
   });
 
   useEffect(() => {

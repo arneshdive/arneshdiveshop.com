@@ -109,6 +109,7 @@ export const products = pgTable('products', {
   isFeatured: boolean('is_featured').default(false),
   isNewArrival: boolean('is_new_arrival').default(false).notNull(),
   isOnSale: boolean('is_on_sale').default(false).notNull(),
+  weightGrams: integer('weight_grams').default(500), // Product weight in grams, default 500g
   deletedAt: timestamp('deleted_at'), // For soft-delete
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

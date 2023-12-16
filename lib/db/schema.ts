@@ -29,6 +29,26 @@ export const paymentStatusEnum = pgEnum('payment_status', [
   'expired',
 ]);
 
+// ============================================================================
+// RajaOngkir Cache
+// ============================================================================
+
+export const rajaongkirProvinces = pgTable('rajaongkir_provinces', {
+  id: text('id').primaryKey(), // RajaOngkir province_id (numeric as string)
+  name: text('name').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const rajaongkirCities = pgTable('rajaongkir_cities', {
+  id: text('id').primaryKey(), // RajaOngkir city_id (numeric as string)
+  name: text('name').notNull(),
+  type: text('type').notNull(), // "Kabupaten" or "Kota"
+  provinceId: text('province_id').notNull(),
+  province: text('province').notNull(),
+  postalCode: text('postal_code'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const promotionTypeEnum = pgEnum('promotion_type', [
   'percentage',
   'fixed_cents',
@@ -207,6 +227,7 @@ export const checkoutSessions = pgTable('checkout_sessions', {
   lat: text('lat'),
   lng: text('lng'),
   formattedAddress: text('formatted_address'),
+  rajaongkirCityId: text('rajaongkir_city_id'), // Matched from customer address
   shippingMethod: text('shipping_method'),
   subtotalCents: integer('subtotal_cents'),
   shippingCents: integer('shipping_cents'),
@@ -357,6 +378,7 @@ export const shopSettings = pgTable('shop_settings', {
   addressFormatted: text('address_formatted'),
   addressLat: text('address_lat'),
   addressLng: text('address_lng'),
+  rajaongkirCityId: text('rajaongkir_city_id'), // Cached when address updated
   // Social media
   instagram: text('instagram'),
   tiktok: text('tiktok'),
@@ -494,6 +516,13 @@ export const checkoutSessionsRelations = relations(checkoutSessions, ({ one }) =
   }),
 }));
 
+export const rajaongkirCitiesRelations = relations(rajaongkirCities, ({ one }) => ({
+  province: one(rajaongkirProvinces, {
+    fields: [rajaongkirCities.provinceId],
+    references: [rajaongkirProvinces.id],
+  }),
+}));
+
 // ============================================================================
 // Type Exports
 // ============================================================================
@@ -548,6 +577,12 @@ export type NewCartItem = typeof cartItems.$inferInsert;
 
 export type CheckoutSession = typeof checkoutSessions.$inferSelect;
 export type NewCheckoutSession = typeof checkoutSessions.$inferInsert;
+
+export type RajaongkirProvince = typeof rajaongkirProvinces.$inferSelect;
+export type NewRajaongkirProvince = typeof rajaongkirProvinces.$inferInsert;
+
+export type RajaongkirCity = typeof rajaongkirCities.$inferSelect;
+export type NewRajaongkirCity = typeof rajaongkirCities.$inferInsert;
 
 // Enum type exports
 export type OrderStatus = (typeof orderStatusEnum.enumValues)[number];

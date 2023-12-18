@@ -113,7 +113,12 @@ export const rajaongkirClient = {
       throw new Error(`RajaOngkir error: ${data.rajaongkir.status.description}`);
     }
 
-    return data.rajaongkir.results[0];
+    const result = data.rajaongkir.results[0];
+    if (!result) {
+      throw new Error(`No shipping rates found for ${query.courier}`);
+    }
+
+    return result;
   },
 
   /**

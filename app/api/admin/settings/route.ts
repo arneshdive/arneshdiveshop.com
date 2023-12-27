@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
 import { shopSettings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -54,6 +55,9 @@ export async function PUT(request: Request) {
       })
       .where(eq(shopSettings.id, 'default'))
       .returning();
+
+    // Revalidate cached settings so footer shows updated data
+    revalidatePath('/', 'layout');
 
     if (updated.length === 0) {
       // Create if doesn't exist

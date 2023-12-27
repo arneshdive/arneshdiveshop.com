@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { getPublicShopSettings } from '@/lib/queries/settings';
 
 const paymentBadges = [
   { label: 'Visa', icon: 'logos:visa' },
@@ -9,8 +10,9 @@ const paymentBadges = [
 
 const paymentTextBadges = ['QRIS', 'Transfer Bank'];
 
-export function Footer() {
+export async function Footer() {
   const year = new Date().getFullYear();
+  const settings = await getPublicShopSettings();
 
   return (
     <>
@@ -48,18 +50,18 @@ export function Footer() {
             {/* Contact */}
             <div className="flex flex-col justify-end gap-2 lg:pl-8 lg:border-l border-neutral-800">
               <a
-                href="https://wa.me/6281234567890"
+                href={`https://wa.me/${settings.whatsapp}`}
                 className="text-lg lg:text-xl font-medium text-neutral-200 underline underline-offset-4 hover:text-white transition-colors"
               >
-                +62 812-3456-7890
+                {settings.phone}
               </a>
               <a
-                href="mailto:support@arnesdive.com"
+                href={`mailto:${settings.email}`}
                 className="text-lg lg:text-xl font-medium text-neutral-200 underline underline-offset-4 hover:text-white transition-colors"
               >
-                support@arnesdive.com
+                {settings.email}
               </a>
-              <span className="text-sm text-neutral-500 mt-2">Senin – Jumat: 09:00 – 17:00 WIB</span>
+              <span className="text-sm text-neutral-500 mt-2">{settings.businessHours}</span>
             </div>
 
             {/* Newsletter */}

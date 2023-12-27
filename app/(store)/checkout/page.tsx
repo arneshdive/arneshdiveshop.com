@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
@@ -11,15 +11,29 @@ import { ShippingAddressForm } from '@/components/checkout/shipping-address-form
 import { ShippingMethodSelector } from '@/components/checkout/shipping-method-selector';
 import { OrderSummaryCard } from '@/components/checkout/order-summary-card';
 import { USPSection } from '@/components/layout/usp-section';
-import { useCartStore } from '@/lib/store/cart';
+import { useCartStore, useCartSync } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
+import { loadSnapScript, openSnapPayment, type SnapResult, type SnapError } from '@/lib/utils/midtrans-snap';
 
 export default function CheckoutPage() {
   const router = useRouter();
+  
+  // Sync cart on mount
+  useCartSync();
+  
   const { items } = useCartStore();
-  const { data } = useCheckoutStore();
+  const { data, setField } = useCheckoutStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [snapLoaded, setSnapLoaded] = useState(false);
+
+  // Preload Snap.js script
+  useEffect(() => {
+    loadSnapScript()
+      .then(() => setSnapLoaded(true))
+      .catch((err) => console.error('Failed to load Snap.js:', err));
+  }, []);
 
   const validateForm = (): boolean => {
     if (!data.email || !isValidEmail(data.email)) return false;
@@ -29,6 +43,85 @@ export default function CheckoutPage() {
     return true;
   };
 
+  // Create checkout session when form is valid
+  const createCheckoutSession = useCallback(async () => {
+    if (!validateForm() || data.checkoutSessionId) return;
+
+    setIsCreatingSession(true);
+    try {
+      const response = await fetch('/api/checkout/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          phone: data.phone,
+          fullName: data.fullName,
+          address1: data.address1,
+          address2: data.address2,
+          city: data.city,
+          province: data.province,
+          postalCode: data.postalCode,
+          lat: data.lat?.toString(),
+          lng: data.lng?.toString(),
+          formattedAddress: data.formattedAddress,
+          notes: data.notes,
+          shippingMethod: data.shippingMethod,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create checkout session');
+      }
+
+      const result = await response.json();
+      setField('checkoutSessionId', result.checkoutSession.id);
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      // Don't show alert here, will be handled on submit
+    } finally {
+      setIsCreatingSession(false);
+    }
+  }, [data, setField]);
+
+  // Update shipping method on the server
+  const updateShippingMethod = useCallback(async (shippingMethod: typeof data.shippingMethod) => {
+    if (!data.checkoutSessionId) return;
+
+    try {
+      const response = await fetch('/api/checkout/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shippingMethod }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update shipping method');
+      }
+    } catch (error) {
+      console.error('Error updating shipping method:', error);
+    }
+  }, [data.checkoutSessionId]);
+
+  // Auto-create session when form becomes valid
+  useEffect(() => {
+    if (validateForm() && !data.checkoutSessionId && !isCreatingSession) {
+      createCheckoutSession();
+    }
+  }, [data.email, data.phone, data.fullName, data.hasMapLocation, data.checkoutSessionId]);
+
+  // Track previous shipping method to detect changes
+  const [prevShippingMethod, setPrevShippingMethod] = useState(data.shippingMethod);
+  
+  // Update shipping method on server when it changes
+  useEffect(() => {
+    if (data.checkoutSessionId && data.shippingMethod !== prevShippingMethod) {
+      setPrevShippingMethod(data.shippingMethod);
+      updateShippingMethod(data.shippingMethod);
+    }
+  }, [data.shippingMethod, data.checkoutSessionId, prevShippingMethod, updateShippingMethod]);
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       alert('Mohon lengkapi semua data yang diperlukan');
@@ -37,13 +130,94 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
-    // Generate order ID
-    const orderId = `ARD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
-    
-    // Redirect to success page
-    setTimeout(() => {
-      router.push(`/checkout/success?order_id=${orderId}`);
-    }, 500);
+    try {
+      // Ensure we have a checkout session
+      let sessionId = data.checkoutSessionId;
+      if (!sessionId) {
+        // Create session if not exists
+        const createResponse = await fetch('/api/checkout/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: data.email,
+            phone: data.phone,
+            fullName: data.fullName,
+            address1: data.address1,
+            address2: data.address2,
+            city: data.city,
+            province: data.province,
+            postalCode: data.postalCode,
+            lat: data.lat?.toString(),
+            lng: data.lng?.toString(),
+            formattedAddress: data.formattedAddress,
+            notes: data.notes,
+            shippingMethod: data.shippingMethod,
+          }),
+        });
+
+        if (!createResponse.ok) {
+          const error = await createResponse.json();
+          throw new Error(error.error || 'Failed to create checkout session');
+        }
+
+        const createResult = await createResponse.json();
+        sessionId = createResult.checkoutSession.id;
+        setField('checkoutSessionId', sessionId);
+      }
+
+      // Ensure shipping method is updated
+      await fetch('/api/checkout/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shippingMethod: data.shippingMethod }),
+      });
+
+      // Create payment transaction
+      const paymentResponse = await fetch('/api/payments/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkoutSessionId: sessionId }),
+      });
+
+      if (!paymentResponse.ok) {
+        const error = await paymentResponse.json();
+        throw new Error(error.error || 'Failed to create payment transaction');
+      }
+
+      const paymentResult = await paymentResponse.json();
+      const { snapToken, orderId } = paymentResult.data;
+
+      // Ensure Snap.js is loaded
+      if (!snapLoaded) {
+        await loadSnapScript();
+      }
+
+      // Open Midtrans Snap payment
+      openSnapPayment(snapToken, {
+        onSuccess: (_result: SnapResult) => {
+          // Payment successful
+          router.push(`/checkout/success?order_id=${orderId}`);
+        },
+        onPending: (_result: SnapResult) => {
+          // Payment pending (e.g., VA waiting)
+          router.push(`/checkout/success?order_id=${orderId}&status=pending`);
+        },
+        onError: (error: SnapError) => {
+          console.error('Payment error:', error);
+          alert('Pembayaran gagal, silakan coba lagi');
+          setIsSubmitting(false);
+        },
+        onClose: () => {
+          // User closed the popup without finishing
+          alert('Anda menutup popup pembayaran. Anda dapat mencoba lagi.');
+          setIsSubmitting(false);
+        },
+      });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert(error instanceof Error ? error.message : 'Terjadi kesalahan, silakan coba lagi');
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0) {
@@ -99,15 +273,19 @@ export default function CheckoutPage() {
             <div className="flex-1">
               <ContactForm />
               <ShippingAddressForm />
-              <ShippingMethodSelector />
+              <ShippingMethodSelector checkoutSessionId={data.checkoutSessionId} />
 
               <div className="mt-8">
                 <AnimatedButton
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isCreatingSession}
                   className="w-full py-4 text-base"
                 >
-                  {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'} <Icon icon="solar:arrow-right-linear" className="w-5 h-5" />
+                  {isCreatingSession 
+                    ? 'Menyiapkan checkout...' 
+                    : isSubmitting 
+                      ? 'Memproses pembayaran...' 
+                      : 'Lanjut ke Pembayaran'} <Icon icon="solar:arrow-right-linear" className="w-5 h-5" />
                 </AnimatedButton>
               </div>
               

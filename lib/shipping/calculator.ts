@@ -40,30 +40,6 @@ function formatEtd(etd: string): string {
 }
 
 /**
- * Get fallback shipping rates when RajaOngkir is unavailable
- */
-export function getFallbackRates(): ShippingRate[] {
-  return [
-    {
-      courier: 'jne',
-      service: 'REG',
-      name: 'JNE Reguler',
-      description: 'Layanan Reguler',
-      costCents: 250000, // Rp 25.000
-      etd: '3-5 hari',
-    },
-    {
-      courier: 'jne',
-      service: 'YES',
-      name: 'JNE YES',
-      description: 'Yakin Esok Sampai',
-      costCents: 450000, // Rp 45.000
-      etd: '1-2 hari',
-    },
-  ];
-}
-
-/**
  * Calculate shipping rates from RajaOngkir
  */
 export async function calculateShippingRates(
@@ -71,18 +47,18 @@ export async function calculateShippingRates(
   items: CartItemForShipping[]
 ): Promise<{ rates: ShippingRate[]; weight: number; error?: string }> {
   const weight = calculateTotalWeight(items);
-  
+
   // Minimum weight for RajaOngkir is 1 gram
   const weightForApi = Math.max(weight, 1);
 
   // Get shop origin
   const originCityId = await getShopOriginCityId();
-  
+
   if (!originCityId) {
     return {
-      rates: getFallbackRates(),
+      rates: [],
       weight,
-      error: 'Shop origin not configured. Using fallback rates.',
+      error: 'Alamat toko belum dikonfigurasi. Silakan hubungi admin.',
     };
   }
 
@@ -114,13 +90,21 @@ export async function calculateShippingRates(
     // Sort by cost (cheapest first)
     rates.sort((a, b) => a.costCents - b.costCents);
 
+    if (rates.length === 0) {
+      return {
+        rates: [],
+        weight,
+        error: 'Tidak ada kurir tersedia untuk alamat ini.',
+      };
+    }
+
     return { rates, weight };
   } catch (error) {
     console.error('Failed to calculate shipping rates:', error);
     return {
-      rates: getFallbackRates(),
+      rates: [],
       weight,
-      error: error instanceof Error ? error.message : 'Failed to get shipping rates',
+      error: error instanceof Error ? error.message : 'Gagal menghitung ongkos kirim.',
     };
   }
 }

@@ -6,8 +6,8 @@ import { eq, desc } from 'drizzle-orm';
 const createBrandSchema = z.object({
   name: z.string().min(1, 'Nama merek wajib diisi').max(100),
   slug: z.string().min(1, 'Slug wajib diisi').max(100).regex(/^[a-z0-9-]+$/, 'Slug hanya boleh huruf kecil, angka, dan tanda hubung'),
-  description: z.string().max(500).optional(),
-  logoUrl: z.string().url().optional().or(z.literal('')),
+  description: z.string().max(500).nullable().optional(),
+  logoUrl: z.string().url('URL tidak valid').nullable().optional().or(z.literal('')),
 });
 
 // GET /api/brands - List all brands

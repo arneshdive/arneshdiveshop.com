@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, products, categories, brands } from '@/lib/db';
 import { eq } from 'drizzle-orm';
@@ -11,14 +12,16 @@ const createProductSchema = z.object({
   slug: z.string().max(200).optional(),
   sku: z.string().max(100).optional(),
   description: z.string().max(5000).optional(),
-  priceCents: z.number().int().min(0, 'Harga tidak boleh negatif'),
+  priceCents: z.number().int().min(0).optional(),
   compareAtPriceCents: z.number().int().min(0).optional().nullable(),
   costPriceCents: z.number().int().min(0).optional().nullable(),
   categoryId: z.string().min(1, 'Kategori wajib dipilih'),
   brandId: z.string().optional().nullable(),
-  images: z.array(z.string().url()).max(10).default([]),
+  divingTypes: z.array(z.enum(['freediving', 'scuba'])).min(1, 'Pilih minimal satu tipe diving'),
+  images: z.array(z.string()).min(1, 'Minimal 1 gambar wajib diupload'),
   isActive: z.boolean().default(true),
-  isFeatured: z.boolean().default(false),
+  isNewArrival: z.boolean().default(false),
+  isOnSale: z.boolean().default(false),
 });
 
 // GET /api/products - List all products
@@ -29,12 +32,14 @@ export async function GET(request: NextRequest) {
     const filters = {
       category: searchParams.get('category') || undefined,
       brand: searchParams.get('brand') || undefined,
+      divingType: searchParams.get('divingType') || undefined,
       isActive: searchParams.get('isActive') === 'true' 
         ? true 
         : searchParams.get('isActive') === 'false' 
           ? false 
           : undefined,
-      isFeatured: searchParams.get('isFeatured') === 'true' ? true : undefined,
+      isNewArrival: searchParams.get('isNewArrival') === 'true' ? true : undefined,
+      isOnSale: searchParams.get('isOnSale') === 'true' ? true : undefined,
       search: searchParams.get('search') || undefined,
     };
 
@@ -80,19 +85,6 @@ export async function POST(request: NextRequest) {
     const existingSlugs = await getExistingSlugs();
     const slug = generateUniqueSlug(baseSlug, existingSlugs);
 
-    // Check if SKU already exists
-    if (rest.sku) {
-      const existingSku = await db.query.products.findFirst({
-        where: eq(products.sku, rest.sku),
-      });
-      if (existingSku && !existingSku.deletedAt) {
-        return NextResponse.json(
-          { error: 'SKU sudah digunakan', details: { sku: 'SKU sudah digunakan' } },
-          { status: 409 }
-        );
-      }
-    }
-
     // Verify category exists
     const category = await db.query.categories.findFirst({
       where: eq(categories.id, categoryId),
@@ -124,17 +116,22 @@ export async function POST(request: NextRequest) {
       categoryId,
       brandId: brandId || null,
       ...rest,
+      priceCents: rest.priceCents || 0,
     }).returning();
 
     if (!newProduct) {
       throw new Error('Failed to create product');
     }
 
+    // Revalidate storefront pages
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+
     return NextResponse.json({ product: newProduct }, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json(
-      { error: 'Terjadi kesalahan pada server' },
+      { error: 'Terjadi kesalahan pada server', details: error instanceof Error ? error.message : undefined },
       { status: 500 }
     );
   }

@@ -1,16 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Input, Textarea } from '@/components/admin/input';
 
-// Dynamically import the map modal with SSR disabled
-const SettingsMapModal = dynamic(
-  () => import('@/components/admin/settings-map-modal').then(mod => mod.SettingsMapModal),
-  { ssr: false }
-);
+interface RajaongkirCity {
+  id: string;
+  name: string;
+  type: string;
+  province: string;
+}
 
 interface ShopSettingsData {
   storeName: string;
@@ -19,9 +19,8 @@ interface ShopSettingsData {
   whatsapp: string;
   businessHours: string;
   about: string;
-  addressFormatted: string | null;
-  addressLat: string | null;
-  addressLng: string | null;
+  rajaongkirCityId: string | null;
+  rajaongkirCityName: string | null;
   instagram: string | null;
   tiktok: string | null;
 }
@@ -34,15 +33,17 @@ export default function SettingsPage() {
     whatsapp: '',
     businessHours: '',
     about: '',
-    addressFormatted: null,
-    addressLat: null,
-    addressLng: null,
+    rajaongkirCityId: null,
+    rajaongkirCityName: null,
     instagram: null,
     tiktok: null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [cities, setCities] = useState<RajaongkirCity[]>([]);
+  const [isLoadingCities, setIsLoadingCities] = useState(false);
+  const [citySearch, setCitySearch] = useState('');
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
 
   // Fetch settings on mount
   useEffect(() => {
@@ -58,12 +59,14 @@ export default function SettingsPage() {
             whatsapp: data.whatsapp || '',
             businessHours: data.businessHours || '',
             about: data.about || '',
-            addressFormatted: data.addressFormatted || null,
-            addressLat: data.addressLat || null,
-            addressLng: data.addressLng || null,
+            rajaongkirCityId: data.rajaongkirCityId || null,
+            rajaongkirCityName: data.rajaongkirCityName || null,
             instagram: data.instagram || '',
             tiktok: data.tiktok || '',
           });
+          if (data.rajaongkirCityName) {
+            setCitySearch(data.rajaongkirCityName);
+          }
         }
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -73,6 +76,37 @@ export default function SettingsPage() {
     }
     fetchSettings();
   }, []);
+
+  // Fetch cities from local cache
+  const fetchCities = async (search: string) => {
+    if (!search.trim()) {
+      setCities([]);
+      return;
+    }
+    
+    setIsLoadingCities(true);
+    try {
+      const response = await fetch(`/api/shipping/cities?search=${encodeURIComponent(search)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCities(data.cities || []);
+      }
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    } finally {
+      setIsLoadingCities(false);
+    }
+  };
+
+  // Debounced city search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (showCityDropdown) {
+        fetchCities(citySearch);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [citySearch, showCityDropdown]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +118,6 @@ export default function SettingsPage() {
         body: JSON.stringify(settings),
       });
       if (response.ok) {
-        // Show success feedback
         const button = document.querySelector('button[type="submit"]');
         if (button) {
           button.textContent = 'Tersimpan!';
@@ -100,17 +133,14 @@ export default function SettingsPage() {
     }
   };
 
-  const handleAddressSelect = (address: {
-    addressFormatted: string;
-    addressLat: string;
-    addressLng: string;
-  }) => {
+  const handleCitySelect = (city: RajaongkirCity) => {
     setSettings(prev => ({
       ...prev,
-      addressFormatted: address.addressFormatted,
-      addressLat: address.addressLat,
-      addressLng: address.addressLng,
+      rajaongkirCityId: city.id,
+      rajaongkirCityName: `${city.type} ${city.name}, ${city.province}`,
     }));
+    setCitySearch(`${city.type} ${city.name}, ${city.province}`);
+    setShowCityDropdown(false);
   };
 
   if (isLoading) {
@@ -176,13 +206,28 @@ export default function SettingsPage() {
             />
           </div>
 
-          {/* Address with Map Picker */}
-          <div>
+          <Textarea
+            label="Tentang toko"
+            value={settings.about || ''}
+            onChange={(e) => setSettings({ ...settings, about: e.target.value })}
+            placeholder="Deskripsi singkat tentang toko Anda"
+            rows={3}
+          />
+        </div>
+
+        {/* Shipping Origin */}
+        <div className="bg-white rounded-xl p-6 space-y-4">
+          <h2 className="text-base font-medium tracking-tight text-neutral-900">Lokasi Pengiriman</h2>
+          <p className="text-sm text-neutral-500">
+            Pilih kota asal pengiriman untuk menghitung ongkos kirim
+          </p>
+
+          <div className="relative">
             <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Alamat Toko
+              Kota Asal
             </label>
             
-            {settings.addressFormatted ? (
+            {settings.rajaongkirCityId ? (
               <div className="space-y-3">
                 <div className="p-4 bg-neutral-50 rounded-xl">
                   <div className="flex items-start gap-3">
@@ -191,52 +236,65 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium leading-relaxed">
-                        {settings.addressFormatted}
+                        {settings.rajaongkirCityName}
                       </p>
-                      {settings.addressLat && settings.addressLng && (
-                        <p className="text-xs text-neutral-400 mt-1 font-mono">
-                          {parseFloat(settings.addressLat).toFixed(6)}, {parseFloat(settings.addressLng).toFixed(6)}
-                        </p>
-                      )}
+                      <p className="text-xs text-neutral-400 mt-1 font-mono">
+                        ID: {settings.rajaongkirCityId}
+                      </p>
                     </div>
                   </div>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setIsMapOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                  onClick={() => {
+                    setSettings(prev => ({ ...prev, rajaongkirCityId: null, rajaongkirCityName: null }));
+                    setCitySearch('');
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
                 >
-                  <Icon icon="solar:pen-linear" className="w-4 h-4" />
-                  Ubah Lokasi
+                  <Icon icon="solar:trash-bin-trash-linear" className="w-4 h-4" />
+                  Hapus Lokasi
                 </button>
               </div>
             ) : (
-              <div className="py-8 text-center border-2 border-dashed border-neutral-200 rounded-xl">
-                <div className="w-12 h-12 mx-auto mb-3 bg-neutral-100 rounded-full flex items-center justify-center">
-                  <Icon icon="solar:map-point-linear" className="w-6 h-6 text-neutral-400" />
+              <div className="relative">
+                <div className="relative">
+                  <Icon icon="solar:magnifer-linear" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                  <input
+                    type="text"
+                    value={citySearch}
+                    onChange={(e) => {
+                      setCitySearch(e.target.value);
+                      setShowCityDropdown(true);
+                    }}
+                    onFocus={() => setShowCityDropdown(true)}
+                    placeholder="Cari kota atau kabupaten..."
+                    className="w-full pl-12 pr-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+                  />
+                  {isLoadingCities && (
+                    <Icon icon="solar:spinner" className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-neutral-400" />
+                  )}
                 </div>
-                <p className="text-sm text-neutral-500 mb-3">
-                  Tentukan lokasi toko Anda di peta
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsMapOpen(true)}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors"
-                >
-                  <Icon icon="solar:map-point-linear" className="w-5 h-5" />
-                  Pilih di Peta
-                </button>
+
+                {/* City Dropdown */}
+                {showCityDropdown && cities.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-neutral-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                    {cities.map((city) => (
+                      <button
+                        key={city.id}
+                        type="button"
+                        onClick={() => handleCitySelect(city)}
+                        className="w-full px-4 py-3 text-left text-sm hover:bg-neutral-50 border-b border-neutral-100 last:border-0"
+                      >
+                        <p className="font-medium text-neutral-900">{city.type} {city.name}</p>
+                        <p className="text-xs text-neutral-500">{city.province}</p>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
-
-          <Textarea
-            label="Tentang toko"
-            value={settings.about || ''}
-            onChange={(e) => setSettings({ ...settings, about: e.target.value })}
-            placeholder="Deskripsi singkat tentang toko Anda"
-            rows={3}
-          />
         </div>
 
         {/* Social Media */}
@@ -259,16 +317,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </form>
-
-      {/* Map Modal */}
-      <SettingsMapModal
-        isOpen={isMapOpen}
-        onClose={() => setIsMapOpen(false)}
-        onAddressSelect={handleAddressSelect}
-        initialLat={settings.addressLat || undefined}
-        initialLng={settings.addressLng || undefined}
-        initialAddress={settings.addressFormatted || undefined}
-      />
     </div>
   );
 }

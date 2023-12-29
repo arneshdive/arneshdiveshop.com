@@ -1,29 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Icon } from '@iconify/react';
-import { Plus } from 'lucide-react';
+import { Plus, Loader } from 'lucide-react';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { useCategories } from '@/lib/hooks/use-categories';
 import type { Category } from '@/lib/db/schema';
-
-interface CategoryWithChildren extends Category {
-  children: CategoryWithChildren[];
-}
 
 interface CategoryFormData {
   name: string;
   slug: string;
   description: string;
-  parentId: string;
-  sortOrder: number;
 }
 
 const emptyForm: CategoryFormData = {
   name: '',
   slug: '',
   description: '',
-  parentId: '',
-  sortOrder: 0,
 };
 
 function generateSlug(name: string): string {
@@ -34,51 +27,16 @@ function generateSlug(name: string): string {
 }
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [tree, setTree] = useState<CategoryWithChildren[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { categories, isLoading, createCategory, updateCategory, deleteCategory, isCreating, isUpdating } = useCategories();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [form, setForm] = useState<CategoryFormData>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSaving, setIsSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/categories');
-      const data = await response.json();
-      if (response.ok) {
-        setCategories(data.flat || []);
-        setTree(data.categories || []);
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggleExpand = (id: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
-  const openCreateModal = (parentId?: string) => {
+  const openCreateModal = () => {
     setEditingCategory(null);
-    setForm({ ...emptyForm, parentId: parentId || '' });
+    setForm(emptyForm);
     setErrors({});
     setIsModalOpen(true);
   };
@@ -89,8 +47,6 @@ export default function CategoriesPage() {
       name: category.name,
       slug: category.slug,
       description: category.description || '',
-      parentId: category.parentId || '',
-      sortOrder: category.sortOrder ?? 0,
     });
     setErrors({});
     setIsModalOpen(true);
@@ -118,143 +74,42 @@ export default function CategoriesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    setIsSaving(true);
 
-    try {
-      const url = editingCategory
-        ? `/api/categories/${editingCategory.id}`
-        : '/api/categories';
-      const method = editingCategory ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    if (editingCategory) {
+      updateCategory(
+        {
+          id: editingCategory.id,
+          data: {
+            name: form.name,
+            slug: form.slug,
+            description: form.description || null,
+          },
+        },
+        {
+          onSuccess: () => closeModal(),
+          onError: (error) => setErrors({ general: error.message }),
+        }
+      );
+    } else {
+      createCategory(
+        {
           name: form.name,
           slug: form.slug,
           description: form.description || null,
-          parentId: form.parentId || null,
-          sortOrder: form.sortOrder,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.details) {
-          setErrors(data.details);
-        } else {
-          setErrors({ general: data.error || 'Terjadi kesalahan' });
+        },
+        {
+          onSuccess: () => closeModal(),
+          onError: (error) => setErrors({ general: error.message }),
         }
-        return;
-      }
-
-      await fetchCategories();
-      closeModal();
-    } catch (error) {
-      console.error('Error saving category:', error);
-      setErrors({ general: 'Terjadi kesalahan pada server' });
-    } finally {
-      setIsSaving(false);
+      );
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || 'Gagal menghapus kategori');
-        return;
-      }
-
-      await fetchCategories();
-      setDeleteConfirm(null);
-    } catch (error) {
-      console.error('Error deleting category:', error);
-      alert('Terjadi kesalahan pada server');
-    }
-  };
-
-  const getCategoryPath = (parentId: string | null, path: string[] = []): string[] => {
-    if (!parentId) return path;
-    const parent = categories.find((c) => c.id === parentId);
-    if (!parent) return path;
-    return getCategoryPath(parent.parentId, [parent.name, ...path]);
-  };
-
-  // Recursive tree renderer
-  const renderCategory = (category: CategoryWithChildren, depth = 0) => {
-    const hasChildren = category.children && category.children.length > 0;
-    const isExpanded = expandedIds.has(category.id);
-
-    return (
-      <div key={category.id}>
-        <div
-          className={`flex items-center gap-2 px-4 py-3 hover:bg-neutral-50 transition-colors ${depth > 0 ? 'ml-8' : ''}`}
-        >
-          {hasChildren ? (
-            <button
-              onClick={() => toggleExpand(category.id)}
-              className="w-6 h-6 flex items-center justify-center text-neutral-400 hover:text-neutral-600"
-            >
-              <Icon
-                icon={isExpanded ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
-                className="w-4 h-4"
-              />
-            </button>
-          ) : (
-            <div className="w-6" />
-          )}
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-neutral-900">{category.name}</span>
-              <code className="text-xs text-neutral-500 bg-neutral-100 px-1.5 py-0.5 rounded">
-                {category.slug}
-              </code>
-            </div>
-            {category.description && (
-              <p className="text-sm text-neutral-500 truncate mt-0.5">{category.description}</p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => openCreateModal(category.id)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
-              title="Tambah subkategori"
-            >
-              <Icon icon="solar:add-circle-linear" className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => openEditModal(category)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
-              title="Edit"
-            >
-              <Icon icon="solar:pen-linear" className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setDeleteConfirm(category.id)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-              title="Hapus"
-            >
-              <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {hasChildren && isExpanded && (
-          <div className="border-l border-neutral-100 ml-7">
-            {category.children.map((child) => renderCategory(child, depth + 1))}
-          </div>
-        )}
-      </div>
-    );
+  const handleDelete = (id: string) => {
+    deleteCategory(id, {
+      onSuccess: () => setDeleteConfirm(null),
+      onError: (error) => alert(error.message),
+    });
   };
 
   return (
@@ -263,49 +118,98 @@ export default function CategoriesPage() {
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Kategori</h1>
-          <p className="text-sm text-neutral-500 mt-1">Kelola kategori produk dengan struktur hierarki</p>
+          <p className="text-sm text-neutral-500 mt-1">Kelola kategori produk toko Anda</p>
         </div>
-        <AnimatedButton onClick={() => openCreateModal()} className="px-6 py-3">
-          <Plus className="w-4 h-4" />
-          <span className="text-sm font-medium tracking-wide">Tambah Kategori</span>
-        </AnimatedButton>
+        {categories.length > 0 && (
+          <AnimatedButton onClick={openCreateModal} size="xs">
+            <Plus className="w-4 h-4" />
+            <span className="text-sm font-medium tracking-wide">Tambah Kategori</span>
+          </AnimatedButton>
+        )}
       </div>
 
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-16">
-          <Icon icon="solar:spinner-linear" className="w-8 h-8 text-neutral-400 animate-spin" />
+          <Loader className="w-8 h-8 text-neutral-400 animate-spin" />
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && categories.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mb-4">
             <Icon icon="solar:folder-linear" className="w-8 h-8 text-neutral-400" />
           </div>
           <p className="text-neutral-600 font-medium tracking-tight mb-1">Belum ada kategori</p>
           <p className="text-sm text-neutral-500 mb-6">
             Mulai tambahkan kategori untuk produk Anda
           </p>
-          <AnimatedButton onClick={() => openCreateModal()} className="px-6 py-3">
+          <AnimatedButton onClick={openCreateModal} size="xs">
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium tracking-wide">Tambah Kategori</span>
           </AnimatedButton>
         </div>
       )}
 
-      {/* Category Tree */}
-      {!isLoading && tree.length > 0 && (
+      {/* Category List */}
+      {!isLoading && categories.length > 0 && (
         <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-            <div className="w-6" />
-            <span className="flex-1">Nama Kategori</span>
-            <span>Aksi</span>
-          </div>
-          <div className="divide-y divide-neutral-100">
-            {tree.map((category) => renderCategory(category))}
-          </div>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-neutral-100">
+                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  Kategori
+                </th>
+                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  Slug
+                </th>
+                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
+                  Deskripsi
+                </th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  Aksi
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100">
+              {categories.map((category) => (
+                <tr key={category.id} className="hover:bg-neutral-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-neutral-900">{category.name}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <code className="text-sm text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
+                      {category.slug}
+                    </code>
+                  </td>
+                  <td className="px-6 py-4 hidden md:table-cell">
+                    <span className="text-sm text-neutral-500 line-clamp-1">
+                      {category.description || '-'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => openEditModal(category)}
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                        aria-label="Edit kategori"
+                      >
+                        <Icon icon="solar:pen-linear" className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(category.id)}
+                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        aria-label="Hapus kategori"
+                      >
+                        <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -343,46 +247,17 @@ export default function CategoriesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1.5">
-                  Slug <span className="text-red-500">*</span>
+                  Slug
                 </label>
                 <input
                   type="text"
                   value={form.slug}
-                  onChange={(e) => {
-                    setForm((prev) => ({ ...prev, slug: e.target.value }));
-                    setErrors((prev) => {
-                      const { slug: _, ...rest } = prev;
-                      return rest;
-                    });
-                  }}
-                  placeholder="nama-kategori"
-                  className="w-full px-4 py-2.5 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent font-mono"
+                  disabled
+                  className="w-full px-4 py-2.5 text-sm bg-neutral-100 border border-neutral-200 rounded-xl text-neutral-500 font-mono cursor-not-allowed"
                 />
-                {errors.slug && <p className="text-xs text-red-500 mt-1">{errors.slug}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1.5">
-                  Kategori Induk
-                </label>
-                <select
-                  value={form.parentId}
-                  onChange={(e) => setForm((prev) => ({ ...prev, parentId: e.target.value }))}
-                  className="w-full px-4 py-2.5 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                >
-                  <option value="">Tidak ada (kategori utama)</option>
-                  {categories
-                    .filter((c) => !editingCategory || c.id !== editingCategory.id)
-                    .map((c) => {
-                      const path = getCategoryPath(c.parentId);
-                      const label = path.length > 0 ? `${path.join(' > ')} > ${c.name}` : c.name;
-                      return (
-                        <option key={c.id} value={c.id}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                </select>
+                <p className="text-xs text-neutral-500 mt-1">
+                  Slug dibuat otomatis dari nama kategori
+                </p>
               </div>
 
               <div>
@@ -398,20 +273,6 @@ export default function CategoriesPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-1.5">
-                  Urutan
-                </label>
-                <input
-                  type="number"
-                  value={form.sortOrder}
-                  onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: parseInt(e.target.value) || 0 }))}
-                  min="0"
-                  className="w-full px-4 py-2.5 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                />
-                <p className="text-xs text-neutral-500 mt-1">Urutan tampil, angka lebih rendah ditampilkan lebih dulu</p>
-              </div>
-
               {errors.general && <p className="text-sm text-red-500">{errors.general}</p>}
 
               <div className="flex justify-end gap-3 pt-4">
@@ -424,10 +285,10 @@ export default function CategoriesPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSaving}
+                  disabled={isCreating || isUpdating}
                   className="px-6 py-2.5 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {isSaving ? 'Menyimpan...' : editingCategory ? 'Simpan Perubahan' : 'Tambah Kategori'}
+                  {isCreating || isUpdating ? 'Menyimpan...' : editingCategory ? 'Simpan Perubahan' : 'Tambah Kategori'}
                 </button>
               </div>
             </form>
@@ -446,7 +307,7 @@ export default function CategoriesPage() {
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-2">Hapus Kategori?</h3>
               <p className="text-sm text-neutral-500 mb-6">
-                Tindakan ini tidak dapat dibatalkan. Kategori dengan subkategori atau produk tidak dapat dihapus.
+                Tindakan ini tidak dapat dibatalkan. Kategori dengan produk terkait tidak dapat dihapus.
               </p>
               <div className="flex justify-center gap-3">
                 <button

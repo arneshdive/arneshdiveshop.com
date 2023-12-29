@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db, categories } from '@/lib/db';
+import { db, categories, products } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 
 const updateCategorySchema = z.object({
   name: z.string().min(1, 'Nama kategori wajib diisi').max(100).optional(),
   slug: z.string().min(1, 'Slug wajib diisi').max(100).regex(/^[a-z0-9-]+$/, 'Slug hanya boleh huruf kecil, angka, dan tanda hubung').optional(),
   description: z.string().max(500).optional().nullable(),
-  parentId: z.string().optional().nullable(),
-  sortOrder: z.number().int().min(0).optional(),
 });
 
 type Params = Promise<{ id: string }>;
@@ -60,17 +58,16 @@ export async function PUT(
       );
     }
 
-    // Check if category exists
-    const existingCategory = await db.query.categories.findFirst({
+    const existing = await db.query.categories.findFirst({
       where: eq(categories.id, id),
     });
 
-    if (!existingCategory) {
+    if (!existing) {
       return NextResponse.json({ error: 'Kategori tidak ditemukan' }, { status: 404 });
     }
 
     // If slug is being updated, check for duplicates
-    if (result.data.slug && result.data.slug !== existingCategory.slug) {
+    if (result.data.slug && result.data.slug !== existing.slug) {
       const slugExists = await db.query.categories.findFirst({
         where: eq(categories.slug, result.data.slug),
       });
@@ -82,38 +79,13 @@ export async function PUT(
       }
     }
 
-    // If parentId is provided, verify it's not creating a circular reference
-    if (result.data.parentId) {
-      if (result.data.parentId === id) {
-        return NextResponse.json(
-          { error: 'Kategori tidak dapat menjadi induk dari dirinya sendiri' },
-          { status: 400 }
-        );
-      }
-      // Could add more circular reference checks for deeper hierarchies
-      const parent = await db.query.categories.findFirst({
-        where: eq(categories.id, result.data.parentId),
-      });
-      if (!parent) {
-        return NextResponse.json(
-          { error: 'Kategori induk tidak ditemukan' },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Update category
-    const [updatedCategory] = await db
+    const [updated] = await db
       .update(categories)
       .set(result.data)
       .where(eq(categories.id, id))
       .returning();
 
-    if (!updatedCategory) {
-      throw new Error('Failed to update category');
-    }
-
-    return NextResponse.json({ category: updatedCategory });
+    return NextResponse.json({ category: updated });
   } catch (error) {
     console.error('Error updating category:', error);
     return NextResponse.json(
@@ -131,42 +103,26 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Check if category exists
-    const existingCategory = await db.query.categories.findFirst({
+    const existing = await db.query.categories.findFirst({
       where: eq(categories.id, id),
     });
 
-    if (!existingCategory) {
+    if (!existing) {
       return NextResponse.json({ error: 'Kategori tidak ditemukan' }, { status: 404 });
     }
 
-    // Check if category has children
-    const children = await db.query.categories.findMany({
-      where: eq(categories.parentId, id),
-      limit: 1,
-    });
-
-    if (children.length > 0) {
-      return NextResponse.json(
-        { error: 'Tidak dapat menghapus kategori yang memiliki subkategori' },
-        { status: 400 }
-      );
-    }
-
     // Check if category has products
-    const productsWithCategory = await db.query.products.findMany({
-      where: (products, { eq }) => eq(products.categoryId, id),
-      limit: 1,
+    const hasProducts = await db.query.products.findFirst({
+      where: eq(products.categoryId, id),
     });
 
-    if (productsWithCategory.length > 0) {
+    if (hasProducts) {
       return NextResponse.json(
         { error: 'Tidak dapat menghapus kategori yang memiliki produk terkait' },
         { status: 400 }
       );
     }
 
-    // Delete category
     await db.delete(categories).where(eq(categories.id, id));
 
     return NextResponse.json({ success: true });

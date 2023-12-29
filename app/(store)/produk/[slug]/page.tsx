@@ -1,47 +1,9 @@
 import Link from 'next/link';
-import { Icon } from '@iconify/react';
 import { ProductGallery } from '@/components/product/product-gallery';
-import { Accordion, AccordionItem } from '@/components/ui/accordion';
-import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductCard } from '@/components/product/product-card';
+import { ProductInfo } from '@/components/product/product-info';
 import { USPSection } from '@/components/layout/usp-section';
-
-// Mock data - will be replaced with real data fetching
-const mockProduct = {
-  id: '1',
-  handle: 'masker-freediving-pro',
-  title: 'Masker Freediving Pro',
-  category: 'Freediving',
-  vendor: 'Arnes',
-  price: 'Rp 850.000',
-  compareAtPrice: undefined,
-  description: 'Masker freediving profesional dengan volume rendah untuk penglihatan maksimal di bawah air. Lensa tempered glass dan skirt silicone premium untuk kenyamanan. Cocok untuk freediving dan snorkeling.',
-  specifications: {
-    'Volume': '110ml',
-    'Lensa': 'Tempered Glass',
-    'Skirt': 'Silicone Premium',
-    'Warna': 'Hitam, Biru, Clear',
-    'Garansi': '1 Tahun',
-  },
-  images: [
-    '/product-sample-1.webp',
-    '/product-sample-2.webp',
-    '/product-sample-1.webp',
-    '/product-sample-2.webp',
-  ],
-  variants: [
-    {
-      name: 'Warna',
-      options: [
-        { label: 'Hitam', value: 'hitam' },
-        { label: 'Biru', value: 'biru' },
-        { label: 'Clear', value: 'clear' },
-      ],
-    },
-  ],
-  stock: 15,
-  badge: 'Baru',
-};
+import { getProductBySlug } from '@/lib/queries/products';
 
 const relatedProducts = [
   {
@@ -91,9 +53,47 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug: _slug } = await params;
-  // TODO: Fetch product by slug
-  const product = mockProduct;
+  const { slug } = await params;
+  
+  // Fetch product by slug
+  const product = await getProductBySlug(slug);
+  
+  // If no product found, show error
+  if (!product) {
+    return (
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold mb-4">Produk tidak ditemukan</h1>
+          <Link href="/produk" className="text-neutral-600 hover:text-neutral-900">
+            Kembali ke katalog
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  
+  // Prepare variants for the client component
+  const variants = (product.variants || []).map(v => ({
+    id: v.id,
+    name: v.name,
+    options: v.options,
+    priceCents: v.priceCents,
+    isActive: v.isActive,
+  }));
+  
+  // Prepare product data for ProductInfo
+  const productData = {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    sku: product.sku,
+    priceCents: product.priceCents,
+    compareAtPriceCents: product.compareAtPriceCents,
+    isActive: product.isActive,
+    category: product.category,
+    brand: product.brand,
+    divingTypes: product.divingTypes,
+  };
 
   return (
     <>
@@ -102,9 +102,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <nav className="text-xs text-neutral-600">
           <Link href="/" className="hover:text-neutral-900 transition-colors">Beranda</Link>
           <span className="mx-2">/</span>
-          <Link href="/freediving" className="hover:text-neutral-900 transition-colors">Freediving</Link>
+          <Link href="/produk" className="hover:text-neutral-900 transition-colors">Produk</Link>
+          {product.category && (
+            <>
+              <span className="mx-2">/</span>
+              <Link href={`/kategori/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">
+                {product.category.name}
+              </Link>
+            </>
+          )}
           <span className="mx-2">/</span>
-          <span className="text-neutral-900 font-medium">{product.title}</span>
+          <span className="text-neutral-900 font-medium">{product.name}</span>
         </nav>
       </div>
 
@@ -113,127 +121,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Gallery */}
           <div className="w-full lg:w-3/5">
-            <ProductGallery images={product.images} productTitle={product.title} />
+            <ProductGallery images={product.images || []} productTitle={product.name} />
           </div>
 
           {/* Product Info */}
           <div className="w-full lg:w-2/5">
-            <div className="lg:sticky lg:top-24 max-w-md">
-              {/* Vendor */}
-              {product.vendor && (
-                <p className="text-xs uppercase tracking-widest text-neutral-400 mb-2">
-                  {product.vendor}
-                </p>
-              )}
-
-              {/* Title */}
-              <h1 className="text-3xl lg:text-4xl font-bold tracking-tighter mb-3">
-                {product.title}
-              </h1>
-
-              {/* Price */}
-              <p className="text-xl lg:text-2xl font-semibold tracking-tight mb-6">
-                {product.compareAtPrice ? (
-                  <>
-                    <span className="text-red-500">{product.price}</span>{' '}
-                    <s className="text-neutral-400 font-normal">{product.compareAtPrice}</s>
-                  </>
-                ) : (
-                  product.price
-                )}
-              </p>
-
-              {/* Variant Selection */}
-              {product.variants?.[0] && (
-                <div className="mb-6">
-                  <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">
-                    {product.variants[0].name}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {product.variants[0].options.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className="min-w-[48px] h-12 px-4 rounded-md border border-neutral-300 text-sm font-medium hover:border-neutral-900 transition-colors"
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quantity */}
-              <div className="mb-6">
-                <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">Jumlah</p>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors"
-                  >
-                    <span className="text-lg leading-none">−</span>
-                  </button>
-                  <span className="w-8 text-center font-medium">1</span>
-                  <button
-                    type="button"
-                    className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors"
-                  >
-                    <span className="text-lg leading-none">+</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Stock Status */}
-              <p className="text-sm text-green-600 mb-6 flex items-center gap-2">
-                <Icon icon="solar:check-circle-linear" className="w-4 h-4" />
-                Stok tersedia ({product.stock} unit)
-              </p>
-
-              {/* Actions */}
-              <div className="flex gap-3 mb-8">
-                <AnimatedButton className="flex-1 h-[54px] text-base">
-                  Tambah ke Keranjang
-                </AnimatedButton>
-                <AnimatedButton className="!w-[54px] !h-[54px] !p-0" variant="outline">
-                  <Icon icon="solar:heart-linear" className="w-5 h-5" />
-                </AnimatedButton>
-              </div>
-
-              {/* Accordion */}
-              <Accordion>
-                <AccordionItem title="Deskripsi" defaultOpen>
-                  <p className="leading-relaxed">{product.description}</p>
-                </AccordionItem>
-                <AccordionItem title="Spesifikasi">
-                  <table className="w-full">
-                    <tbody>
-                      {Object.entries(product.specifications).map(([key, value]) => (
-                        <tr key={key}>
-                          <td className="py-1.5 text-neutral-500 w-1/3">{key}</td>
-                          <td className="py-1.5">{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </AccordionItem>
-                <AccordionItem title="Pengiriman">
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2">
-                      <Icon icon="solar:check-circle-linear" className="w-4 h-4 text-green-600 mt-0.5" />
-                      Gratis ongkir untuk pembelian di atas Rp 500.000
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Icon icon="solar:check-circle-linear" className="w-4 h-4 text-green-600 mt-0.5" />
-                      Pengiriman 1-3 hari kerja (Jabodetabek)
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Icon icon="solar:check-circle-linear" className="w-4 h-4 text-green-600 mt-0.5" />
-                      Pengiriman 3-7 hari kerja (Luar Jabodetabek)
-                    </li>
-                  </ul>
-                </AccordionItem>
-              </Accordion>
-            </div>
+            <ProductInfo product={productData} variants={variants} />
           </div>
         </div>
       </section>

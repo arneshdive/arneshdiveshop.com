@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, products } from '@/lib/db';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { getSession } from '@/lib/auth/session';
 import { slugify, generateUniqueSlug } from '@/lib/utils/slugify';
 import { getProductById, getExistingSlugs } from '@/lib/queries/products';
@@ -16,9 +17,12 @@ const updateProductSchema = z.object({
   costPriceCents: z.number().int().min(0).optional().nullable(),
   categoryId: z.string().min(1).optional(),
   brandId: z.string().optional().nullable(),
+  divingTypes: z.array(z.enum(['freediving', 'scuba'])).min(1, 'Pilih minimal satu tipe diving').optional(),
   images: z.array(z.string().url()).max(10).optional(),
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  isNewArrival: z.boolean().optional(),
+  isOnSale: z.boolean().optional(),
 });
 
 // GET /api/products/[id] - Get single product
@@ -92,25 +96,6 @@ export async function PATCH(
       updates.slug = generateUniqueSlug(baseSlug, existingSlugs);
     }
 
-    // Check SKU uniqueness if being updated
-    if (updates.sku !== undefined && updates.sku !== product.sku) {
-      const skuValue = updates.sku;
-      if (skuValue) {
-        const existingSku = await db.query.products.findFirst({
-          where: and(
-            eq(products.sku, skuValue),
-            sql`${products.id} != ${id}`
-          ),
-        });
-        if (existingSku && !existingSku.deletedAt) {
-          return NextResponse.json(
-            { error: 'SKU sudah digunakan', details: { sku: 'SKU sudah digunakan' } },
-            { status: 409 }
-          );
-        }
-      }
-    }
-
     // Update product
     const [updatedProduct] = await db
       .update(products)
@@ -124,6 +109,11 @@ export async function PATCH(
     if (!updatedProduct) {
       throw new Error('Failed to update product');
     }
+
+    // Revalidate storefront pages
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+    revalidatePath(`/produk/${updatedProduct.slug}`, 'page');
 
     return NextResponse.json({ product: updatedProduct });
   } catch (error) {

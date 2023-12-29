@@ -1,9 +1,65 @@
 import { Icon } from '@iconify/react';
 import { formatRupiah, formatDate } from '@/lib/utils/format';
 import { orderStatusConfig } from '@/lib/constants/order-status';
-import type { MockOrder } from '@/lib/data/mock-orders';
+import type { OrderStatus } from '@/lib/db/schema';
 
-export function OrderDetail({ order }: { order: MockOrder | null }) {
+type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
+
+// API Order type from admin orders page
+interface ApiOrder {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  subtotalCents: number;
+  shippingCents: number;
+  taxCents: number;
+  discountCents: number;
+  totalCents: number;
+  createdAt: string;
+  updatedAt: string;
+  shippingFirstName: string;
+  shippingLastName: string;
+  shippingPhone: string | null;
+  shippingAddress1: string;
+  shippingAddress2: string | null;
+  shippingCity: string;
+  shippingState: string | null;
+  shippingPostalCode: string;
+  shippingCountry: string;
+  notes: string | null;
+  customer: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string | null;
+  };
+  items: Array<{
+    id: string;
+    productId: string;
+    variantId: string | null;
+    name: string;
+    quantity: number;
+    priceCents: number;
+    product: {
+      id: string;
+      name: string;
+      slug: string;
+      images: string[] | null;
+    };
+    variant: { id: string; name: string } | null;
+  }>;
+  payments: Array<{
+    id: string;
+    status: PaymentStatus;
+    amountCents: number;
+    provider: string;
+    paymentMethod: string | null;
+    paidAt: string | null;
+  }>;
+}
+
+export function OrderDetail({ order, onStatusUpdate: _onStatusUpdate }: { order: ApiOrder | null; onStatusUpdate?: () => void }) {
   if (!order) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center py-16">
@@ -54,22 +110,22 @@ export function OrderDetail({ order }: { order: MockOrder | null }) {
           <div className="flex gap-4">
             <div className="flex flex-col items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                order.payment.status === 'paid' ? 'bg-neutral-900' : 'bg-neutral-200'
+                order.payments[0]?.status === 'paid' ? 'bg-neutral-900' : 'bg-neutral-200'
               }`}>
                 <Icon icon="solar:wallet-money-linear" className={`w-4 h-4 ${
-                  order.payment.status === 'paid' ? 'text-white' : 'text-neutral-400'
+                  order.payments[0]?.status === 'paid' ? 'text-white' : 'text-neutral-400'
                 }`} />
               </div>
               <div className={`w-px h-8 ${
-                order.payment.status === 'paid' && ['shipped', 'delivered'].includes(order.status) ? 'bg-neutral-300' : 'bg-neutral-200'
+                order.payments[0]?.status === 'paid' && ['shipped', 'delivered'].includes(order.status) ? 'bg-neutral-300' : 'bg-neutral-200'
               }`} />
             </div>
             <div className="flex-1 pb-6">
-              <p className={`font-medium tracking-tight ${order.payment.status === 'paid' ? 'text-neutral-900' : 'text-neutral-400'}`}>
+              <p className={`font-medium tracking-tight ${order.payments[0]?.status === 'paid' ? 'text-neutral-900' : 'text-neutral-400'}`}>
                 Pembayaran Dikonfirmasi
               </p>
               <p className="text-sm text-neutral-500 mt-0.5">
-                {order.payment.paidAt ? formatDate(order.payment.paidAt) : 'Menunggu pembayaran'}
+                {order.payments[0]?.paidAt ? formatDate(order.payments[0].paidAt) : 'Menunggu pembayaran'}
               </p>
             </div>
           </div>
@@ -78,10 +134,10 @@ export function OrderDetail({ order }: { order: MockOrder | null }) {
           <div className="flex gap-4">
             <div className="flex flex-col items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                order.payment.status === 'paid' && !['pending_payment'].includes(order.status) ? 'bg-neutral-900' : 'bg-neutral-200'
+                order.payments[0]?.status === 'paid' && !['pending_payment'].includes(order.status) ? 'bg-neutral-900' : 'bg-neutral-200'
               }`}>
                 <Icon icon="solar:box-linear" className={`w-4 h-4 ${
-                  order.payment.status === 'paid' && !['pending_payment'].includes(order.status) ? 'text-white' : 'text-neutral-400'
+                  order.payments[0]?.status === 'paid' && !['pending_payment'].includes(order.status) ? 'text-white' : 'text-neutral-400'
                 }`} />
               </div>
               <div className={`w-px h-8 ${
@@ -90,12 +146,12 @@ export function OrderDetail({ order }: { order: MockOrder | null }) {
             </div>
             <div className="flex-1 pb-6">
               <p className={`font-medium tracking-tight ${
-                order.payment.status === 'paid' && !['pending_payment', 'cancelled', 'refunded'].includes(order.status) ? 'text-neutral-900' : 'text-neutral-400'
+                order.payments[0]?.status === 'paid' && !['pending_payment', 'cancelled', 'refunded'].includes(order.status) ? 'text-neutral-900' : 'text-neutral-400'
               }`}>
                 Sedang Dikemas
               </p>
               <p className="text-sm text-neutral-500 mt-0.5">
-                {order.payment.status === 'paid' && !['pending_payment', 'cancelled', 'refunded'].includes(order.status)
+                {order.payments[0]?.status === 'paid' && !['pending_payment', 'cancelled', 'refunded'].includes(order.status)
                   ? 'Pesanan sedang disiapkan'
                   : 'Menunggu konfirmasi pembayaran'}
               </p>
@@ -162,7 +218,7 @@ export function OrderDetail({ order }: { order: MockOrder | null }) {
         {/* Customer */}
         <div className="bg-neutral-50 rounded-2xl p-5">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">Pelanggan</h3>
-          <p className="font-medium tracking-tight text-neutral-900">{order.customer.name}</p>
+          <p className="font-medium tracking-tight text-neutral-900">{order.customer.firstName} {order.customer.lastName}</p>
           <div className="mt-3 space-y-1.5">
             <div className="flex items-center gap-2 text-sm text-neutral-600">
               <Icon icon="solar:letter-linear" className="w-4 h-4 text-neutral-400" />
@@ -183,22 +239,22 @@ export function OrderDetail({ order }: { order: MockOrder | null }) {
           <div className="flex items-center justify-between">
             <span className="text-sm text-neutral-500">Status</span>
             <span className={`text-sm font-medium ${
-              order.payment.status === 'paid' ? 'text-green-600' :
-              order.payment.status === 'expired' || order.payment.status === 'failed' ? 'text-red-600' : 'text-amber-600'
+              order.payments[0]?.status === 'paid' ? 'text-green-600' :
+              order.payments[0]?.status === 'expired' || order.payments[0]?.status === 'failed' ? 'text-red-600' : 'text-amber-600'
             }`}>
-              {order.payment.status === 'paid' ? 'Dibayar' : order.payment.status === 'expired' ? 'Kadaluarsa' : order.payment.status === 'failed' ? 'Gagal' : 'Menunggu'}
+              {order.payments[0]?.status === 'paid' ? 'Dibayar' : order.payments[0]?.status === 'expired' ? 'Kadaluarsa' : order.payments[0]?.status === 'failed' ? 'Gagal' : 'Menunggu'}
             </span>
           </div>
           <div className="flex items-center justify-between mt-2">
             <span className="text-sm text-neutral-500">Metode</span>
             <span className="text-sm text-neutral-700 capitalize">
-              {order.payment.paymentMethod?.replace('_', ' ') || '-'}
+              {order.payments[0]?.paymentMethod?.replace('_', ' ') || '-'}
             </span>
           </div>
-          {order.payment.paidAt && (
+          {order.payments[0]?.paidAt && (
             <div className="flex items-center justify-between mt-2">
               <span className="text-sm text-neutral-500">Tanggal</span>
-              <span className="text-sm text-neutral-700">{formatDate(order.payment.paidAt)}</span>
+              <span className="text-sm text-neutral-700">{formatDate(order.payments[0].paidAt)}</span>
             </div>
           )}
         </div>
@@ -207,15 +263,15 @@ export function OrderDetail({ order }: { order: MockOrder | null }) {
       {/* Shipping Address */}
       <div className="bg-neutral-50 rounded-2xl p-5 mb-6">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">Alamat Pengiriman</h3>
-        <p className="font-medium tracking-tight text-neutral-900">{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
+        <p className="font-medium tracking-tight text-neutral-900">{order.shippingFirstName} {order.shippingLastName}</p>
         <p className="text-sm text-neutral-600 mt-2">
-          {order.shippingAddress.address1}{order.shippingAddress.address2 && `, ${order.shippingAddress.address2}`}
+          {order.shippingAddress1}{order.shippingAddress2 && `, ${order.shippingAddress2}`}
         </p>
         <p className="text-sm text-neutral-600">
-          {order.shippingAddress.city}{order.shippingAddress.state && `, ${order.shippingAddress.state}`} {order.shippingAddress.postalCode}
+          {order.shippingCity}{order.shippingState && `, ${order.shippingState}`} {order.shippingPostalCode}
         </p>
-        {order.shippingAddress.phone && (
-          <p className="text-sm text-neutral-600 mt-2">{order.shippingAddress.phone}</p>
+        {order.shippingPhone && (
+          <p className="text-sm text-neutral-600 mt-2">{order.shippingPhone}</p>
         )}
       </div>
 

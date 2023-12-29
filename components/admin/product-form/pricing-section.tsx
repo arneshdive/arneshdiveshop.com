@@ -1,4 +1,4 @@
-import { Input, Select, CurrencyInput } from '@/components/admin/input';
+import { Input, CurrencyInput } from '@/components/admin/input';
 import type { ProductFormData } from '@/lib/hooks/use-product-form';
 
 interface PricingSectionProps {
@@ -9,7 +9,7 @@ interface PricingSectionProps {
 export function PricingSection({ formData, setFormData }: PricingSectionProps) {
   return (
     <div className="bg-white rounded-xl p-6 space-y-4">
-      <h2 className="text-base font-medium tracking-tight text-neutral-900">Harga</h2>
+      <h2 className="text-base font-medium tracking-tight text-neutral-900">Harga & SKU</h2>
 
       <div className="grid sm:grid-cols-3 gap-4">
         <Input
@@ -32,15 +32,7 @@ export function PricingSection({ formData, setFormData }: PricingSectionProps) {
           placeholder="Kosongkan jika tidak ada"
         />
       </div>
-
-      <Select
-        label="Ketersediaan"
-        value={formData.stockStatus}
-        onChange={(e) => setFormData({ ...formData, stockStatus: e.target.value as 'in_stock' | 'out_of_stock' })}
-      >
-        <option value="in_stock">Tersedia</option>
-        <option value="out_of_stock">Habis</option>
-      </Select>
+      <p className="text-xs text-neutral-500">SKU wajib diisi untuk produk tanpa varian</p>
     </div>
   );
 }

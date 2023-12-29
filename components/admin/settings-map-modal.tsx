@@ -25,6 +25,8 @@ interface SettingsMapModalProps {
     addressFormatted: string;
     addressLat: string;
     addressLng: string;
+    city?: string;
+    province?: string;
   }) => void;
   initialLat?: string;
   initialLng?: string;
@@ -63,6 +65,12 @@ function MapController({
   return null;
 }
 
+interface GeocodeResult {
+  display_name: string;
+  city?: string;
+  province?: string;
+}
+
 // Nominatim geocoding functions
 async function searchAddress(query: string): Promise<{ lat: number; lon: number; display_name: string }[]> {
   const response = await fetch(
@@ -71,22 +79,43 @@ async function searchAddress(query: string): Promise<{ lat: number; lon: number;
   return response.json();
 }
 
-async function reverseGeocode(lat: number, lng: number): Promise<string> {
+async function reverseGeocode(lat: number, lng: number): Promise<GeocodeResult> {
   const response = await fetch(
     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
   );
   const data = await response.json();
-  return data.display_name || '';
+  
+  const address = data.address || {};
+  
+  // Extract city - try multiple field names used in Indonesia
+  const city = address.city || address.town || address.municipality || address.county || address.village || '';
+  
+  // Extract province - usually 'state' in Nominatim for Indonesian provinces
+  const province = address.state || '';
+  
+  return {
+    display_name: data.display_name || '',
+    city,
+    province,
+  };
 }
 
 function MapContent({
   position,
   setPosition,
   setAddressInput,
+  cityInput,
+  setCityInput,
+  provinceInput,
+  setProvinceInput,
 }: {
   position: L.LatLng;
   setPosition: (pos: L.LatLng) => void;
   setAddressInput: (address: string) => void;
+  cityInput: string;
+  setCityInput: (city: string) => void;
+  provinceInput: string;
+  setProvinceInput: (province: string) => void;
 }) {
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<{ lat: number; lon: number; display_name: string }[]>([]);
@@ -97,9 +126,11 @@ function MapContent({
   const handleReverseGeocode = useCallback(async (lat: number, lng: number) => {
     setIsLoading(true);
     try {
-      const address = await reverseGeocode(lat, lng);
-      setSearchInput(address);
-      setAddressInput(address);
+      const result = await reverseGeocode(lat, lng);
+      setSearchInput(result.display_name);
+      setAddressInput(result.display_name);
+      setCityInput(result.city || '');
+      setProvinceInput(result.province || '');
     } catch (error) {
       console.error('Reverse geocoding error:', error);
     } finally {
@@ -237,6 +268,8 @@ export function SettingsMapModal({
 }: SettingsMapModalProps) {
   const [mounted, setMounted] = useState(false);
   const [addressInput, setAddressInput] = useState(initialAddress || '');
+  const [cityInput, setCityInput] = useState('');
+  const [provinceInput, setProvinceInput] = useState('');
   
   // Initialize position from props or default
   const [position, setPosition] = useState<L.LatLng>(() => {
@@ -265,6 +298,8 @@ export function SettingsMapModal({
       addressFormatted: addressInput,
       addressLat: position.lat.toString(),
       addressLng: position.lng.toString(),
+      city: cityInput || undefined,
+      province: provinceInput || undefined,
     });
     onClose();
   };
@@ -298,6 +333,10 @@ export function SettingsMapModal({
             position={position}
             setPosition={setPosition}
             setAddressInput={setAddressInput}
+            cityInput={cityInput}
+            setCityInput={setCityInput}
+            provinceInput={provinceInput}
+            setProvinceInput={setProvinceInput}
           />
         </div>
 

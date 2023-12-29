@@ -4,106 +4,141 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductSection } from '@/components/product/product-section';
 import { WaveDivider } from '@/components/layout/wave-divider';
 import { USPSection } from '@/components/layout/usp-section';
-import { featuredProducts } from '@/lib/data/mock-products';
+import { HeroBannerCarousel } from '@/components/store/hero-banner-carousel';
+import { getProducts } from '@/lib/queries/products';
+import { db, banners } from '@/lib/db';
+import { eq, and } from 'drizzle-orm';
+import type { MockProduct } from '@/lib/data/mock-products';
 
-export const revalidate = 60;
+// Convert DB product to MockProduct format for ProductSection
+function toMockProduct(product: any): MockProduct {
+  const badge = product.isNewArrival 
+    ? 'New Arrival' 
+    : product.isOnSale 
+      ? 'Sale' 
+      : undefined;
+  
+  // Calculate price range from variants
+  // Note: priceCents fields store whole Rupiah amounts (not actual cents)
+  const variantPrices = (product.variants || [])
+    .filter((v: any) => v.isActive && v.priceCents !== null)
+    .map((v: any) => v.priceCents);
+  
+  let priceDisplay: string;
+  
+  if (variantPrices.length > 0) {
+    // Variants have their own prices - show range or single price
+    const minPrice = Math.min(...variantPrices);
+    const maxPrice = Math.max(...variantPrices);
+    
+    // Use base price as minimum if it's lower than variant prices
+    const effectiveMin = product.priceCents ? Math.min(product.priceCents, minPrice) : minPrice;
+    const effectiveMax = Math.max(minPrice, product.priceCents || 0, maxPrice);
+    
+    if (effectiveMin === effectiveMax) {
+      priceDisplay = `Rp ${effectiveMin.toLocaleString('id-ID')}`;
+    } else {
+      priceDisplay = `Rp ${effectiveMin.toLocaleString('id-ID')} - Rp ${effectiveMax.toLocaleString('id-ID')}`;
+    }
+  } else {
+    // No variant prices - use base price
+    priceDisplay = product.priceCents ? `Rp ${product.priceCents.toLocaleString('id-ID')}` : 'Rp 0';
+  }
+      
+  return {
+    id: product.id,
+    handle: product.slug,
+    title: product.name,
+    vendor: product.brand?.name,
+    price: priceDisplay,
+    compareAtPrice: product.compareAtPriceCents 
+      ? `Rp ${product.compareAtPriceCents.toLocaleString('id-ID')}` 
+      : undefined,
+    badge,
+    image: product.images?.[0] || undefined,
+    secondaryImage: product.images?.[1] || undefined,
+  };
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch new arrival products
+  const newArrivals = await getProducts({ isActive: true, isNewArrival: true });
+  const newArrivalProducts: MockProduct[] = newArrivals.slice(0, 4).map(toMockProduct);
+  
+  // Fetch on sale products
+  const onSaleProducts = await getProducts({ isActive: true, isOnSale: true });
+  const saleProducts: MockProduct[] = onSaleProducts.slice(0, 4).map(toMockProduct);
+  
+  // Fetch all latest products for the "explore" section
+  const allProducts = await getProducts({ isActive: true });
+  const latestProducts: MockProduct[] = allProducts.slice(0, 8).map(toMockProduct);
+  
+  // Fetch hero banners from DB
+  const heroBanners = await db.query.banners.findMany({
+    where: and(
+      eq(banners.position, 'hero'),
+      eq(banners.isActive, true)
+    ),
+    orderBy: (banners, { asc }) => [asc(banners.sortOrder)],
+  });
+
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative min-h-[650px] lg:min-h-[740px]">
-        {/* Background Image - full width */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/hero-image.webp"
-            alt="Freediving"
-            className="w-full h-full object-cover"
-          />
-        </div>
+      {/* Hero Section - Dynamic Banner Carousel */}
+      <HeroBannerCarousel banners={heroBanners} />
 
-        {/* Content */}
-        <div className="absolute inset-0 z-10 flex items-center">
-          <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12">
-            <div className="grid lg:grid-cols-2 min-h-[650px] lg:min-h-[740px] items-center gap-8 lg:gap-12">
-              <div className="py-12 lg:py-0">
-                <span className="inline-block text-xs uppercase tracking-widest text-white/70 mb-4">
-                  Freediving & Scuba
-                </span>
-                <h1 className="text-4xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tighter">
-                  Berjelajah di kedalaman
-                </h1>
-                <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed">
-                  Temukan perlengkapan freediving yang Anda butuhkan.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <AnimatedButton
-                    asChild
-                    variant="white"
-                    className="px-8 py-4 text-sm uppercase tracking-wider"
-                  >
-                    <Link href="/freediving">Lihat Koleksi</Link>
-                  </AnimatedButton>
-                </div>
-              </div>
-              <div className="hidden lg:block" />
-            </div>
-          </div>
-        </div>
+      {/* New Arrivals */}
+      {newArrivalProducts.length > 0 && (
+        <ProductSection
+          eyebrow="New Arrivals"
+          headingPrefix="Produk"
+          headingHighlight="Terbaru"
+          description="Peralatan diving terbaru untuk petualangan bawah laut."
+          ctaHref="/produk?newArrival=true"
+          products={newArrivalProducts}
+        />
+      )}
 
-        <WaveDivider className="z-20" />
-      </section>
-
-      {/* Latest Products */}
-      <ProductSection
-        eyebrow="Latest Products"
-        headingPrefix="Produk"
-        headingHighlight="Terbaru"
-        description="Peralatan diving berkualitas untuk petualangan bawah laut."
-        ctaHref="/freediving"
-        products={featuredProducts.slice(0, 4)}
-      />
-
-      {/* Split Banner */}
+      {/* Split Banner - Diving Types */}
       <section className="relative grid md:grid-cols-2 mt-20">
         <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-200 flex items-end p-8 lg:p-12">
           <div className="relative z-10">
             <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2 block">Freediving</span>
             <h3 className="text-2xl lg:text-3xl font-semibold mb-4">Koleksi Freediving</h3>
-            <Link
-              href="/freediving"
-              className="inline-flex items-center gap-2 bg-white px-6 py-3 text-sm uppercase tracking-wider hover:bg-neutral-100 transition-colors"
-            >
-              Lihat Koleksi
-              <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
-            </Link>
+            <AnimatedButton asChild variant="white">
+              <Link href="/produk?divingType=freediving">
+                Lihat Koleksi
+                <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
+              </Link>
+            </AnimatedButton>
           </div>
         </div>
         <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-300 flex items-end p-8 lg:p-12">
           <div className="relative z-10">
             <span className="text-xs uppercase tracking-widest text-neutral-600 mb-2 block">Scuba</span>
             <h3 className="text-2xl lg:text-3xl font-semibold mb-4">Koleksi Scuba</h3>
-            <Link
-              href="/scuba"
-              className="inline-flex items-center gap-2 bg-white px-6 py-3 text-sm uppercase tracking-wider hover:bg-neutral-100 transition-colors"
-            >
-              Lihat Koleksi
-              <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
-            </Link>
+            <AnimatedButton asChild variant="white">
+              <Link href="/produk?divingType=scuba">
+                Lihat Koleksi
+                <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
+              </Link>
+            </AnimatedButton>
           </div>
         </div>
         <WaveDivider />
       </section>
 
-      {/* Sale */}
-      <ProductSection
-        eyebrow="Sale"
-        headingPrefix="Promo"
-        headingHighlight="Spesial"
-        description="Diskon spesial untuk produk terpilih."
-        ctaHref="/produk?category=sale"
-        products={featuredProducts.filter((p) => p.badge === 'Sale')}
-      />
+      {/* On Sale */}
+      {saleProducts.length > 0 && (
+        <ProductSection
+          eyebrow="Sale"
+          headingPrefix="Promo"
+          headingHighlight="Spesial"
+          description="Diskon spesial untuk produk terpilih."
+          ctaHref="/produk?onSale=true"
+          products={saleProducts}
+        />
+      )}
 
       {/* All Products */}
       <ProductSection
@@ -112,7 +147,7 @@ export default function HomePage() {
         headingHighlight="Lainnya"
         description="Temukan perlengkapan diving untuk kebutuhan Anda."
         ctaHref="/produk"
-        products={featuredProducts.slice(0, 8)}
+        products={latestProducts.slice(0, 8)}
       />
 
       {/* Community - Instagram Feed */}

@@ -1,16 +1,228 @@
-import { db, products } from '@/lib/db';
-import { eq, isNull, desc, ilike, and, SQL, sql } from 'drizzle-orm';
+import { db, products, productVariants, categories, brands } from '@/lib/db';
+import { eq, isNull, desc, ilike, and, SQL, sql, or, gte, lte, between } from 'drizzle-orm';
 
 export interface ProductFilters {
-  category?: string;
-  brand?: string;
+  category?: string;        // Category ID or slug
+  brand?: string;           // Brand ID or slug
+  divingType?: string;      // 'freediving' or 'scuba'
   isActive?: boolean;
+  isNewArrival?: boolean;
+  isOnSale?: boolean;
   isFeatured?: boolean;
-  search?: string;
+  search?: string;          // Keyword search (name and description)
+  minPrice?: number;        // Price in cents
+  maxPrice?: number;        // Price in cents
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * Resolve category filter to ID (handles both ID and slug)
+ */
+async function resolveCategoryId(categoryFilter: string): Promise<string | null> {
+  // Check if it's a valid UUID format (ID)
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryFilter);
+  
+  if (isUuid) {
+    return categoryFilter;
+  }
+  
+  // Otherwise, look up by slug
+  const category = await db.query.categories.findFirst({
+    where: eq(categories.slug, categoryFilter),
+  });
+  
+  return category?.id || null;
+}
+
+/**
+ * Resolve brand filter to ID (handles both ID and slug)
+ */
+async function resolveBrandId(brandFilter: string): Promise<string | null> {
+  // Check if it's a valid UUID format (ID)
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(brandFilter);
+  
+  if (isUuid) {
+    return brandFilter;
+  }
+  
+  // Otherwise, look up by slug
+  const brand = await db.query.brands.findFirst({
+    where: eq(brands.slug, brandFilter),
+  });
+  
+  return brand?.id || null;
+}
+
+/**
+ * Search products with filters (excluding soft-deleted)
+ * For storefront: only returns active products by default
+ */
+export async function searchProducts(filters?: ProductFilters) {
+  const conditions: SQL[] = [isNull(products.deletedAt)];
+  
+  // For storefront, default to active products only
+  if (filters?.isActive === undefined) {
+    conditions.push(eq(products.isActive, true));
+  } else if (filters.isActive !== undefined) {
+    conditions.push(eq(products.isActive, filters.isActive));
+  }
+  
+  // Keyword search - search in both name and description (case-insensitive)
+  if (filters?.search) {
+    const searchTerm = `%${filters.search}%`;
+    conditions.push(
+      or(
+        ilike(products.name, searchTerm),
+        ilike(products.description, searchTerm)
+      )!
+    );
+  }
+  
+  // Category filter (supports both ID and slug)
+  if (filters?.category) {
+    const categoryId = await resolveCategoryId(filters.category);
+    if (categoryId) {
+      conditions.push(eq(products.categoryId, categoryId));
+    }
+  }
+  
+  // Brand filter (supports both ID and slug)
+  if (filters?.brand) {
+    const brandId = await resolveBrandId(filters.brand);
+    if (brandId) {
+      conditions.push(eq(products.brandId, brandId));
+    }
+  }
+  
+  // Featured filter
+  if (filters?.isFeatured !== undefined) {
+    conditions.push(eq(products.isFeatured, filters.isFeatured));
+  }
+  
+  // Diving type filter (array contains)
+  if (filters?.divingType) {
+    conditions.push(sql`${products.divingTypes} @> ARRAY[${filters.divingType}]::diving_type[]`);
+  }
+  
+  // New arrival filter
+  if (filters?.isNewArrival !== undefined) {
+    conditions.push(eq(products.isNewArrival, filters.isNewArrival));
+  }
+  
+  // On sale filter
+  if (filters?.isOnSale !== undefined) {
+    conditions.push(eq(products.isOnSale, filters.isOnSale));
+  }
+  
+  // Price range filters
+  if (filters?.minPrice !== undefined && filters?.maxPrice !== undefined) {
+    conditions.push(between(products.priceCents, filters.minPrice, filters.maxPrice));
+  } else if (filters?.minPrice !== undefined) {
+    conditions.push(gte(products.priceCents, filters.minPrice));
+  } else if (filters?.maxPrice !== undefined) {
+    conditions.push(lte(products.priceCents, filters.maxPrice));
+  }
+  
+  // Build query with pagination
+  const limit = filters?.limit || 50;
+  const offset = filters?.offset || 0;
+  
+  const results = await db.query.products.findMany({
+    where: and(...conditions),
+    with: {
+      category: true,
+      brand: true,
+      variants: true,
+    },
+    orderBy: [desc(products.createdAt)],
+    limit,
+    offset,
+  });
+  
+  return results;
+}
+
+/**
+ * Get count of products matching filters
+ */
+export async function searchProductsCount(filters?: ProductFilters): Promise<number> {
+  const conditions: SQL[] = [isNull(products.deletedAt)];
+  
+  // For storefront, default to active products only
+  if (filters?.isActive === undefined) {
+    conditions.push(eq(products.isActive, true));
+  } else if (filters.isActive !== undefined) {
+    conditions.push(eq(products.isActive, filters.isActive));
+  }
+  
+  // Keyword search
+  if (filters?.search) {
+    const searchTerm = `%${filters.search}%`;
+    conditions.push(
+      or(
+        ilike(products.name, searchTerm),
+        ilike(products.description, searchTerm)
+      )!
+    );
+  }
+  
+  // Category filter
+  if (filters?.category) {
+    const categoryId = await resolveCategoryId(filters.category);
+    if (categoryId) {
+      conditions.push(eq(products.categoryId, categoryId));
+    }
+  }
+  
+  // Brand filter
+  if (filters?.brand) {
+    const brandId = await resolveBrandId(filters.brand);
+    if (brandId) {
+      conditions.push(eq(products.brandId, brandId));
+    }
+  }
+  
+  // Featured filter
+  if (filters?.isFeatured !== undefined) {
+    conditions.push(eq(products.isFeatured, filters.isFeatured));
+  }
+  
+  // Diving type filter (array contains)
+  if (filters?.divingType) {
+    conditions.push(sql`${products.divingTypes} @> ARRAY[${filters.divingType}]::diving_type[]`);
+  }
+  
+  // New arrival filter
+  if (filters?.isNewArrival !== undefined) {
+    conditions.push(eq(products.isNewArrival, filters.isNewArrival));
+  }
+  
+  // On sale filter
+  if (filters?.isOnSale !== undefined) {
+    conditions.push(eq(products.isOnSale, filters.isOnSale));
+  }
+  
+  // Price range filters
+  if (filters?.minPrice !== undefined && filters?.maxPrice !== undefined) {
+    conditions.push(between(products.priceCents, filters.minPrice, filters.maxPrice));
+  } else if (filters?.minPrice !== undefined) {
+    conditions.push(gte(products.priceCents, filters.minPrice));
+  } else if (filters?.maxPrice !== undefined) {
+    conditions.push(lte(products.priceCents, filters.maxPrice));
+  }
+  
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(and(...conditions));
+  
+  return Number(result[0]?.count || 0);
 }
 
 /**
  * Get all products (excluding soft-deleted)
+ * @deprecated Use searchProducts for storefront
  */
 export async function getProducts(filters?: ProductFilters) {
   const conditions: SQL[] = [isNull(products.deletedAt)];
@@ -27,6 +239,12 @@ export async function getProducts(filters?: ProductFilters) {
   if (filters?.isFeatured !== undefined) {
     conditions.push(eq(products.isFeatured, filters.isFeatured));
   }
+  if (filters?.isNewArrival !== undefined) {
+    conditions.push(eq(products.isNewArrival, filters.isNewArrival));
+  }
+  if (filters?.isOnSale !== undefined) {
+    conditions.push(eq(products.isOnSale, filters.isOnSale));
+  }
   if (filters?.search) {
     conditions.push(ilike(products.name, `%${filters.search}%`));
   }
@@ -36,6 +254,7 @@ export async function getProducts(filters?: ProductFilters) {
     with: {
       category: true,
       brand: true,
+      variants: true,
     },
     orderBy: [desc(products.createdAt)],
   });
@@ -53,6 +272,7 @@ export async function getProductById(id: string) {
     with: {
       category: true,
       brand: true,
+      variants: true,
     },
   });
 }
@@ -69,6 +289,9 @@ export async function getProductBySlug(slug: string) {
     with: {
       category: true,
       brand: true,
+      variants: {
+        where: eq(productVariants.isActive, true),
+      },
     },
   });
 }

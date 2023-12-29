@@ -1,15 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import { Plus } from 'lucide-react';
+import { Plus, Loader } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Select } from '@/components/admin/input';
-import { categories, brands } from '@/lib/constants/product-options';
+import { categories } from '@/lib/constants/product-options';
 
 // Types
+type Brand = {
+  id: string;
+  name: string;
+};
+
 type Product = {
   id: string;
   name: string;
@@ -20,13 +27,16 @@ type Product = {
   compareAtPriceCents: number | null;
   categoryId: string;
   brandId: string | null;
+  divingTypes: string[];
   images: string[];
   isActive: boolean;
-  isFeatured: boolean;
+  isNewArrival: boolean;
+  isOnSale: boolean;
   createdAt: string;
   updatedAt: string;
   category: { id: string; name: string } | null;
   brand: { id: string; name: string } | null;
+  variants: { id: string; name: string; priceCents: number | null; isActive: boolean }[];
 };
 
 type FilterState = {
@@ -41,7 +51,29 @@ function formatPrice(cents: number): string {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0,
-  }).format(cents / 100);
+    }).format(cents / 100);
+}
+
+// Get price display - shows range for products with variants
+function getPriceDisplay(product: Product): { main: string; compare?: string } {
+  const activeVariants = (product.variants || []).filter(v => v.isActive && v.priceCents);
+  
+  if (activeVariants.length === 0) {
+    return {
+      main: formatPrice(product.priceCents),
+      compare: product.compareAtPriceCents ? formatPrice(product.compareAtPriceCents) : undefined,
+    };
+  }
+  
+  const prices = activeVariants.map(v => v.priceCents!);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  
+  if (minPrice === maxPrice) {
+    return { main: formatPrice(minPrice) };
+  }
+  
+  return { main: `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}` };
 }
 
 // Fetch products from API
@@ -56,6 +88,13 @@ async function fetchProducts(filters: FilterState): Promise<{ products: Product[
   return response.json();
 }
 
+// Fetch brands from API
+async function fetchBrands(): Promise<{ brands: Brand[] }> {
+  const response = await fetch('/api/brands');
+  if (!response.ok) throw new Error('Failed to fetch brands');
+  return response.json();
+}
+
 // Delete product mutation
 async function deleteProduct(id: string): Promise<void> {
   const response = await fetch(`/api/products/${id}`, {
@@ -64,19 +103,10 @@ async function deleteProduct(id: string): Promise<void> {
   if (!response.ok) throw new Error('Failed to delete product');
 }
 
-// Toggle product status mutation
-async function toggleProduct(id: string, field: 'isActive' | 'isFeatured', value: boolean): Promise<void> {
-  const response = await fetch(`/api/products/${id}/toggle`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ field, value }),
-  });
-  if (!response.ok) throw new Error('Failed to toggle product');
-}
-
 export const dynamic = 'force-dynamic';
 
 export default function ProductsPage() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   
   const [filters, setFilters] = useState<FilterState>({
@@ -84,6 +114,13 @@ export default function ProductsPage() {
     brand: '',
     status: '',
   });
+
+  // Fetch brands for filter dropdown
+  const { data: brandsData } = useQuery({
+    queryKey: ['brands'],
+    queryFn: fetchBrands,
+  });
+  const brands = brandsData?.brands ?? [];
 
   // Fetch products
   const { data, isLoading, error } = useQuery({
@@ -94,15 +131,6 @@ export default function ProductsPage() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-    },
-  });
-
-  // Toggle mutation
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, field, value }: { id: string; field: 'isActive' | 'isFeatured'; value: boolean }) =>
-      toggleProduct(id, field, value),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
     },
@@ -120,10 +148,6 @@ export default function ProductsPage() {
     }
   };
 
-  const handleToggleActive = (id: string, currentValue: boolean) => {
-    toggleMutation.mutate({ id, field: 'isActive', value: !currentValue });
-  };
-
   const products = data?.products ?? [];
 
   return (
@@ -134,11 +158,9 @@ export default function ProductsPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Produk</h1>
           <p className="text-sm text-neutral-500 mt-1">Kelola katalog produk toko Anda</p>
         </div>
-        <AnimatedButton asChild className="px-6 py-3">
-          <Link href="/admin/products/new" className="flex items-center gap-2 whitespace-nowrap">
-            <Plus className="w-4 h-4" />
-            <span className="text-sm font-medium tracking-wide">Tambah Produk</span>
-          </Link>
+        <AnimatedButton onClick={() => router.push('/admin/products/new')} size="xs">
+          <Plus className="w-4 h-4" />
+          Tambah Produk
         </AnimatedButton>
       </div>
 
@@ -184,11 +206,8 @@ export default function ProductsPage() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Icon icon="solar:box-linear" className="w-8 h-8 text-neutral-400" />
-          </div>
-          <p className="text-neutral-500">Memuat produk...</p>
+        <div className="flex items-center justify-center py-16">
+          <Loader className="w-8 h-8 text-neutral-400 animate-spin" />
         </div>
       )}
 
@@ -238,62 +257,54 @@ export default function ProductsPage() {
                       Nonaktif
                     </span>
                   )}
+                  {product.isNewArrival && (
+                    <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
+                      New
+                    </span>
+                  )}
+                  {product.isOnSale && (
+                    <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-red-100 text-red-700 rounded-full">
+                      Sale
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-base font-medium tracking-tight text-neutral-900 truncate">
                   {product.name}
                 </h3>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-sm text-neutral-700">
-                    {formatPrice(product.priceCents)}
+                    {getPriceDisplay(product).main}
                   </span>
-                  {product.compareAtPriceCents && (
+                  {getPriceDisplay(product).compare && (
                     <span className="text-sm text-neutral-400 line-through">
-                      {formatPrice(product.compareAtPriceCents)}
+                      {getPriceDisplay(product).compare}
                     </span>
                   )}
                 </div>
               </div>
 
               {/* Availability & Actions */}
-              <div className="hidden sm:flex items-center gap-6">
-                <div className="text-right">
-                  <p className="text-xs text-neutral-500 mb-0.5">Status</p>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleToggleActive(product.id, product.isActive);
-                    }}
-                    className={`text-sm px-2 py-0.5 rounded transition-colors ${
-                      product.isActive 
-                        ? 'text-green-600 hover:bg-green-50' 
-                        : 'text-neutral-500 hover:bg-neutral-100'
-                    }`}
-                  >
-                    {product.isActive ? 'Aktif' : 'Nonaktif'}
-                  </button>
-                </div>
-                <div className="flex gap-1">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Navigate to edit page (handled by link)
-                    }}
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-900 hover:bg-neutral-100 transition-colors"
-                    aria-label="Edit produk"
-                  >
-                    <Icon icon="solar:pen-linear" className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleDelete(product.id);
-                    }}
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-900 hover:text-red-600 hover:bg-red-50 transition-colors"
-                    aria-label="Hapus produk"
-                  >
-                    <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
-                  </button>
-                </div>
+              <div className="hidden sm:flex items-center gap-1">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // Navigate to edit page (handled by link)
+                  }}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-900 hover:bg-neutral-100 transition-colors"
+                  aria-label="Edit produk"
+                >
+                  <Icon icon="solar:pen-linear" className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDelete(product.id);
+                  }}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-900 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  aria-label="Hapus produk"
+                >
+                  <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
+                </button>
               </div>
 
               {/* Mobile Arrow */}
@@ -305,21 +316,15 @@ export default function ProductsPage() {
 
       {/* Empty State */}
       {!isLoading && !error && products.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-4">
-            <Icon icon="solar:box-linear" className="w-8 h-8 text-neutral-400" />
-          </div>
-          <p className="text-neutral-600 font-medium tracking-tight mb-1">Belum ada produk</p>
-          <p className="text-sm text-neutral-500 mb-6">
-            Mulai tambahkan produk ke katalog toko Anda
-          </p>
-          <AnimatedButton asChild className="px-6 py-3">
-            <Link href="/admin/products/new" className="flex items-center gap-2 whitespace-nowrap">
-              <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium tracking-wide">Tambah Produk</span>
-            </Link>
-          </AnimatedButton>
-        </div>
+        <EmptyState
+          icon="solar:box-linear"
+          title="Belum ada produk"
+          description="Mulai tambahkan produk ke katalog toko Anda"
+          ctaLabel="Tambah Produk"
+          onClick={() => router.push('/admin/products/new')}
+          ctaIcon={<Plus className="w-4 h-4" />}
+          size="xs"
+        />
       )}
     </div>
   );

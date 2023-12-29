@@ -1,3 +1,6 @@
+'use client';
+
+import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import type { VariantOption } from '@/lib/hooks/use-product-form';
 import { formatCurrencyInput } from '@/lib/utils/format';
@@ -10,7 +13,6 @@ interface ProductPreviewProps {
   brand: string;
   description: string;
   isActive: boolean;
-  stockStatus: 'in_stock' | 'out_of_stock';
   images: string[];
   variantOptions: VariantOption[];
 }
@@ -22,7 +24,7 @@ export function ProductPreview({
   brand,
   description,
   isActive,
-  stockStatus,
+  images,
   variantOptions,
 }: ProductPreviewProps) {
   const formatPrice = (val: string) => (val ? `Rp ${formatCurrencyInput(val)}` : 'Rp 0');
@@ -38,8 +40,20 @@ export function ProductPreview({
 
         <div className="p-4">
           {/* Image Gallery */}
-          <div className="aspect-square bg-neutral-100 rounded-lg flex items-center justify-center text-neutral-900 relative overflow-hidden mb-3">
-            <Icon icon="solar:gallery-minimalistic-linear" className="w-10 h-10" />
+          <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden relative mb-3">
+            {images.length > 0 ? (
+              <Image
+                src={images[0]!}
+                alt={name || 'Product preview'}
+                fill
+                className="object-cover"
+                sizes="320px"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+                <Icon icon="solar:gallery-minimalistic-linear" className="w-10 h-10" />
+              </div>
+            )}
             {!isActive && (
               <span className="absolute top-2 left-2 px-2 py-0.5 text-[10px] uppercase tracking-wider bg-neutral-200 text-neutral-600 rounded">
                 Nonaktif
@@ -54,14 +68,26 @@ export function ProductPreview({
 
           {/* Thumbnail strip */}
           <div className="flex gap-2 mb-4">
-            {[1, 2, 3, 4].map((i) => (
+            {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
-                className={`w-12 h-12 rounded flex-shrink-0 flex items-center justify-center text-neutral-900 text-[10px] ${
-                  i === 1 ? 'border border-neutral-900' : 'border border-neutral-200'
+                className={`w-12 h-12 rounded flex-shrink-0 overflow-hidden ${
+                  i === 0 ? 'border border-neutral-900' : 'border border-neutral-200'
                 }`}
               >
-                {i}
+                {images[i] ? (
+                  <Image
+                    src={images[i]}
+                    alt={`Thumbnail ${i + 1}`}
+                    width={48}
+                    height={48}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-neutral-300 text-[10px]">
+                    {i + 1}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -113,12 +139,6 @@ export function ProductPreview({
               ))}
             </div>
           )}
-
-          {/* Stock Status */}
-          <p className={`text-xs flex items-center gap-1.5 mb-4 ${stockStatus === 'in_stock' ? 'text-green-600' : 'text-red-500'}`}>
-            <Icon icon={stockStatus === 'in_stock' ? 'solar:check-circle-linear' : 'solar:close-circle-linear'} className="w-4 h-4" />
-            {stockStatus === 'in_stock' ? 'Stok tersedia' : 'Stok habis'}
-          </p>
 
           {/* Description Accordion */}
           <div className="border-t border-neutral-200">

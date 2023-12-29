@@ -126,7 +126,7 @@
     "specRef": "specs/F-002.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-003",
@@ -136,7 +136,7 @@
     "type": "feature",
     "module": "Authentication",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -182,7 +182,7 @@
     "specRef": "specs/F-003.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-004",
@@ -192,7 +192,7 @@
     "type": "feature",
     "module": "Authentication",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -238,7 +238,7 @@
     "specRef": "specs/F-004.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-005",
@@ -324,7 +324,7 @@
     "type": "feature",
     "module": "Product Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -370,17 +370,17 @@
     "specRef": "specs/F-006.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-007",
     "fingerprint": "category management hierarchical|product management",
     "title": "Category management (hierarchical)",
-    "description": "Admin CRUD for product categories with hierarchical structure.",
+    "description": "Admin CRUD for product categories with hierarchical structure. API routes at /api/categories support full CRUD with parent-child relationships. Admin page at /admin/categories displays hierarchical tree with expand/collapse. Storefront header navigation shows categories with dropdown menus for subcategories.",
     "type": "feature",
     "module": "Product Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -428,7 +428,7 @@
     "specRef": "specs/F-007.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T14:30:00.000Z"
   },
   {
     "id": "F-008",
@@ -438,7 +438,7 @@
     "type": "feature",
     "module": "Product Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -486,13 +486,13 @@
     "specRef": "specs/F-008.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-009",
     "fingerprint": "product search filtering|product management",
     "title": "Product search & filtering",
-    "description": "Storefront product search with filters for category, brand, and price range.",
+    "description": "MISSING: No search API found. Storefront product search with filters for category, brand, and price range.",
     "type": "feature",
     "module": "Product Management",
     "confidence": "stated",
@@ -544,7 +544,7 @@
     "specRef": "specs/F-009.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-010",
@@ -554,7 +554,7 @@
     "type": "feature",
     "module": "Shopping Cart",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -603,17 +603,17 @@
     "specRef": "specs/F-010.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-011",
     "fingerprint": "multistep checkout flow guest checkout autoregistration confirmation|checkout",
     "title": "Multi-step checkout flow (guest checkout, auto-registration, confirmation)",
-    "description": "Contact → Shipping → Payment → Confirm checkout with Indonesia-specific address fields, guest checkout without prior registration, auto-registration of a customer account on order completion, order summary review, and confirmation page.",
+    "description": "PARTIAL: Checkout UI exists at app/(store)/checkout/ but NO API route found. Missing: checkout API to process cart, create order, handle payment. Contact → Shipping → Payment → Confirm checkout with guest checkout and auto-registration.",
     "type": "feature",
     "module": "Checkout",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "partial",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -665,13 +665,13 @@
     "specRef": "specs/F-011.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-012",
     "fingerprint": "midtrans payment integration snap va ewallets qris webhook idempotency|payment",
     "title": "Midtrans payment integration (Snap, VA, e-wallets, QRIS, webhook, idempotency)",
-    "description": "Midtrans Snap checkout supporting cards, bank transfer (VA), e-wallets (GoPay/OVO/ShopeePay), and QRIS, behind a PaymentProvider interface; signature-verified webhook handler; payment status tracking; idempotency keys to prevent duplicate charges.",
+    "description": "MISSING: No Midtrans integration found. No payment API routes, no webhook handlers. Midtrans Snap checkout supporting cards, VA, e-wallets, QRIS.",
     "type": "feature",
     "module": "Payment",
     "confidence": "stated",
@@ -725,13 +725,13 @@
     "specRef": "specs/F-012.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-013",
     "fingerprint": "order creation from cart atomic transaction|order management",
     "title": "Order creation from cart (atomic transaction)",
-    "description": "Order + orderItems + payment record created atomically in a single DB transaction on checkout completion, with an idempotency key to prevent duplicate orders from double form-submits.",
+    "description": "MISSING: No orders API found. Order + orderItems + payment record created atomically on checkout completion.",
     "type": "feature",
     "module": "Order Management",
     "confidence": "stated",
@@ -788,7 +788,7 @@
     "specRef": "specs/F-013.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-014",
@@ -798,7 +798,7 @@
     "type": "feature",
     "module": "Order Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -848,13 +848,13 @@
     "specRef": "specs/F-014.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-015",
     "fingerprint": "order status updates audit trail|order management",
     "title": "Order status updates & audit trail",
-    "description": "Admin updates order status through the fulfillment workflow (processing, shipped, delivered, cancelled) with an audit trail of changes.",
+    "description": "MISSING: No order status API found. Admin updates order status through fulfillment workflow with audit trail.",
     "type": "feature",
     "module": "Order Management",
     "confidence": "stated",
@@ -906,13 +906,13 @@
     "specRef": "specs/F-015.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-016",
     "fingerprint": "export orders to csvexcel|order management",
     "title": "Export orders to CSV/Excel",
-    "description": "Admin exports the filtered order list to CSV or Excel.",
+    "description": "MISSING: No export functionality found. Admin exports filtered order list to CSV or Excel.",
     "type": "feature",
     "module": "Order Management",
     "confidence": "stated",
@@ -962,7 +962,7 @@
     "specRef": "specs/F-016.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-017",
@@ -972,7 +972,7 @@
     "type": "feature",
     "module": "Customer Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1021,7 +1021,7 @@
     "specRef": "specs/F-017.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-018",
@@ -1031,7 +1031,7 @@
     "type": "feature",
     "module": "Customer Management",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1078,7 +1078,7 @@
     "specRef": "specs/F-018.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-019",
@@ -1088,7 +1088,7 @@
     "type": "feature",
     "module": "Admin Dashboard",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1136,13 +1136,13 @@
     "specRef": "specs/F-019.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-020",
     "fingerprint": "promotions promo code creation management application|promotions",
     "title": "Promotions (promo code creation, management, application)",
-    "description": "Discount code creation/management by admin and application of a promo code to an order, including validity periods.",
+    "description": "MISSING: No promotions API or admin page found. Discount code creation/management and application to orders.",
     "type": "feature",
     "module": "Promotions",
     "confidence": "stated",
@@ -1193,7 +1193,7 @@
     "specRef": "specs/F-020.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-021",
@@ -1203,7 +1203,7 @@
     "type": "feature",
     "module": "Banners",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1250,7 +1250,7 @@
     "specRef": "specs/F-021.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   },
   {
     "id": "F-022",
@@ -1260,7 +1260,7 @@
     "type": "feature",
     "module": "Email Notifications",
     "confidence": "stated",
-    "lifecycle": "queued",
+    "lifecycle": "complete",
     "flags": {
       "needsReanalysis": false,
       "stale": false,
@@ -1308,6 +1308,6 @@
     "specRef": "specs/F-022.json",
     "commits": [],
     "createdAt": "2026-07-12T10:21:30.000Z",
-    "updatedAt": "2026-07-12T10:21:30.000Z"
+    "updatedAt": "2026-07-12T21:30:00.000Z"
   }
 ]

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { BasicInfoSection } from '@/components/admin/product-form/basic-info-section';
@@ -10,7 +9,7 @@ import { PricingSection } from '@/components/admin/product-form/pricing-section'
 import { VariantsSection } from '@/components/admin/product-form/variants-section';
 import { ImagesSection } from '@/components/admin/product-form/images-section';
 import { ProductPreview } from '@/components/admin/product-form/product-preview';
-import { useProductForm } from '@/lib/hooks/use-product-form';
+import { useProductForm, type SavedVariant } from '@/lib/hooks/use-product-form';
 
 type Product = {
   id: string;
@@ -22,11 +21,14 @@ type Product = {
   compareAtPriceCents: number | null;
   categoryId: string;
   brandId: string | null;
+  divingTypes: string[];
   images: string[];
   isActive: boolean;
-  isFeatured: boolean;
+  isNewArrival: boolean;
+  isOnSale: boolean;
   category: { id: string; name: string } | null;
   brand: { id: string; name: string } | null;
+  variants: SavedVariant[];
 };
 
 // Fetch single product
@@ -50,6 +52,16 @@ async function updateProduct(id: string, data: Record<string, unknown>): Promise
   return response.json();
 }
 
+// Helper to extract error message from API response
+async function getErrorMessage(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+    return data.error || data.message || 'Terjadi kesalahan';
+  } catch {
+    return 'Terjadi kesalahan';
+  }
+}
+
 export const dynamic = 'force-dynamic';
 
 export default function EditProductPage() {
@@ -67,15 +79,14 @@ export default function EditProductPage() {
     hasVariants,
     setHasVariants,
     variantOptions,
-    generatedVariants,
-    handleImageUpload,
-    removeImage,
+    editableVariants,
     addVariantOption,
     removeVariantOption,
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
-    isUploading,
+    updateEditableVariant,
+    loadSavedVariants,
   } = useProductForm();
 
   // Fetch product data
@@ -90,7 +101,6 @@ export default function EditProductPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
-      router.push('/admin/products');
     },
   });
 
@@ -103,22 +113,26 @@ export default function EditProductPage() {
         description: product.description || '',
         category: product.categoryId,
         brand: product.brandId || '',
-        diveType: '',
         price: (product.priceCents / 100).toString(),
         salePrice: product.compareAtPriceCents ? (product.compareAtPriceCents / 100).toString() : '',
         sku: product.sku || '',
-        weight: '',
-        stockStatus: 'in_stock',
         isActive: product.isActive,
+        divingTypes: product.divingTypes as ('freediving' | 'scuba')[] || [],
+        isNewArrival: product.isNewArrival,
+        isOnSale: product.isOnSale,
       });
       setImages(product.images);
+      // Load existing variants
+      if (product.variants && product.variants.length > 0) {
+        loadSavedVariants(product.variants);
+      }
     }
-  }, [data, setFormData, setImages]);
+  }, [data, setFormData, setImages, loadSavedVariants]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (isSubmitting || isUploading) return;
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     // Convert price strings to cents
@@ -137,12 +151,73 @@ export default function EditProductPage() {
       compareAtPriceCents,
       categoryId: formData.category,
       brandId: formData.brand || null,
+      divingTypes: formData.divingTypes,
       images,
       isActive: formData.isActive,
+      isNewArrival: formData.isNewArrival,
+      isOnSale: formData.isOnSale,
     };
 
     try {
+      // Update product
       await updateMutation.mutateAsync(payload);
+      
+      // Handle variants if enabled
+      if (hasVariants && editableVariants.length > 0 && variantOptions.length > 0) {
+        const variantErrors: string[] = [];
+        
+        // Build options map for each variant
+        const variantPromises = editableVariants.map(async (variant) => {
+          // Build options object from variantOptions
+          const options: Record<string, string> = {};
+          const nameParts = variant.name.split(' / ');
+          variantOptions.forEach((opt, idx) => {
+            if (nameParts[idx]) {
+              options[opt.name] = nameParts[idx]!;
+            }
+          });
+          
+          const variantData = {
+            name: variant.name,
+            sku: variant.sku || null,
+            options,
+            priceCents: variant.price ? Math.round(parseFloat(variant.price) * 100) : null,
+            isActive: variant.isActive,
+          };
+          
+          if (variant.isNew || variant.id.startsWith('new-')) {
+            // Create new variant
+            const response = await fetch(`/api/products/${productId}/variants`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(variantData),
+            });
+            if (!response.ok) {
+              const errorMsg = await getErrorMessage(response);
+              variantErrors.push(`${variant.name}: ${errorMsg}`);
+            }
+          } else {
+            // Update existing variant
+            const response = await fetch(`/api/products/${productId}/variants/${variant.id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(variantData),
+            });
+            if (!response.ok) {
+              const errorMsg = await getErrorMessage(response);
+              variantErrors.push(`${variant.name}: ${errorMsg}`);
+            }
+          }
+        });
+        
+        await Promise.all(variantPromises);
+        
+        if (variantErrors.length > 0) {
+          alert(`Produk berhasil diupdate, tapi beberapa varian gagal:\n${variantErrors.join('\n')}`);
+        }
+      }
+      
+      router.push('/admin/products');
     } catch (error) {
       console.error('Submit error:', error);
       alert('Terjadi kesalahan saat menyimpan produk');
@@ -166,8 +241,8 @@ export default function EditProductPage() {
       <div className="max-w-7xl">
         <div className="text-center py-16">
           <p className="text-red-600 mb-4">Produk tidak ditemukan</p>
-          <AnimatedButton asChild variant="outline">
-            <Link href="/admin/products">Kembali ke Daftar Produk</Link>
+          <AnimatedButton onClick={() => router.push('/admin/products')} variant="outline" size="xs">
+            Kembali ke Daftar Produk
           </AnimatedButton>
         </div>
       </div>
@@ -194,18 +269,19 @@ export default function EditProductPage() {
               hasVariants={hasVariants}
               setHasVariants={setHasVariants}
               variantOptions={variantOptions}
-              generatedVariants={generatedVariants}
+              editableVariants={editableVariants}
               addVariantOption={addVariantOption}
               removeVariantOption={removeVariantOption}
               updateVariantOption={updateVariantOption}
               addVariantValue={addVariantValue}
               removeVariantValue={removeVariantValue}
+              updateEditableVariant={updateEditableVariant}
+              isLocked={true}
             />
 
             <ImagesSection
               images={images}
-              handleImageUpload={handleImageUpload}
-              removeImage={removeImage}
+              setImages={setImages}
             />
 
             <button type="submit" className="hidden" />
@@ -217,15 +293,17 @@ export default function EditProductPage() {
           <div className="sticky top-24 space-y-4">
             {/* Actions */}
             <div className="flex gap-3">
-              <AnimatedButton asChild variant="outline" className="flex-1 !px-0 !h-12">
-                <Link href="/admin/products">
-                  <span className="text-sm font-medium tracking-wide">Batal</span>
-                </Link>
+              <AnimatedButton onClick={() => router.push('/admin/products')} variant="outline" size="xs" className="flex-1">
+                Batal
               </AnimatedButton>
-              <AnimatedButton asChild className="flex-1 !px-0 !h-12">
-                <button type="submit" form="product-form" disabled={isSubmitting || isUploading}>
-                  <span className="text-sm font-medium tracking-wide">{isSubmitting ? 'Menyimpan...' : 'Simpan'}</span>
-                </button>
+              <AnimatedButton
+                type="submit"
+                form="product-form"
+                size="xs"
+                className="flex-1"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Menyimpan...' : 'Simpan'}
               </AnimatedButton>
             </div>
 
@@ -238,7 +316,6 @@ export default function EditProductPage() {
               brand={formData.brand}
               description={formData.description}
               isActive={formData.isActive}
-              stockStatus={formData.stockStatus}
               images={images}
               variantOptions={variantOptions}
             />

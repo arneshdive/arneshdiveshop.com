@@ -18,17 +18,17 @@
     {
       "id": "AC1",
       "text": "A logged-in customer's cart persists across sessions",
-      "done": false
+      "done": true
     },
     {
       "id": "AC2",
       "text": "Adding, removing, and updating quantity all reflect correctly in the cart total",
-      "done": false
+      "done": true
     },
     {
       "id": "AC3",
       "text": "Quantity cannot be set below 1 or above a sane validated max",
-      "done": false
+      "done": true
     }
   ],
   "dependsOn": [

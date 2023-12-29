@@ -6,7 +6,7 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import React, { useRef } from "react";
+import React, { useRef, isValidElement } from "react";
 import { cn } from "@/lib/utils/cn";
 
 interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -14,6 +14,7 @@ interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
   className?: string;
   asChild?: boolean;
   variant?: "default" | "outline" | "white";
+  size?: "default" | "sm" | "xs";
 }
 
 const variantConfig = {
@@ -37,11 +38,18 @@ const variantConfig = {
   },
 } as const;
 
+const sizeConfig = {
+  default: "px-8 py-3.5 text-base",
+  sm: "px-6 py-3",
+  xs: "px-4 py-2 text-sm",
+} as const;
+
 export function AnimatedButton({
   children,
   className = "",
   asChild = false,
   variant = "default",
+  size = "default",
   ...props
 }: AnimatedButtonProps) {
   const bgControls = useAnimation();
@@ -129,8 +137,9 @@ export function AnimatedButton({
   };
 
   const baseClassName = cn(
-    "group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap px-8 py-3.5",
+    "group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap w-fit",
     config.container,
+    sizeConfig[size],
     className,
   );
 
@@ -145,7 +154,7 @@ export function AnimatedButton({
         }}
         animate={bgControls}
         className={cn(
-          "absolute -inset-x-[20%] top-0 z-0 h-[150%] w-[140%]",
+          "absolute -inset-x-[20%] top-0 h-[150%] w-[140%] pointer-events-none",
           config.fill,
         )}
       />
@@ -161,12 +170,41 @@ export function AnimatedButton({
     </>
   );
 
-  // If asChild is true, render as a wrapper div instead of button
-  if (asChild) {
+  // If asChild is true, render child with styles applied directly
+  if (asChild && isValidElement(children)) {
+    const child = children as React.ReactElement<any>;
+    
     return (
-      <motion.div {...motionProps} {...eventHandlers} className={baseClassName}>
-        {content}
-      </motion.div>
+      <span
+        className={cn(
+          "group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap w-fit",
+          config.container,
+          sizeConfig[size],
+          className,
+        )}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <motion.div
+          initial={{
+            y: "100%",
+            borderTopLeftRadius: "50%",
+            borderTopRightRadius: "50%",
+          }}
+          animate={bgControls}
+          className={cn(
+            "absolute -inset-x-[20%] top-0 h-[150%] w-[140%] pointer-events-none",
+            config.fill,
+          )}
+        />
+        <motion.span
+          initial={{ color: config.textInitial }}
+          animate={textControls}
+          className="relative z-10 flex items-center justify-center gap-2.5 whitespace-nowrap"
+        >
+          {child.props.children}
+        </motion.span>
+      </span>
     );
   }
 

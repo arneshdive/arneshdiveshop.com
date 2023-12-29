@@ -4,10 +4,20 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/lib/store/cart';
-import type { MockProduct } from '@/lib/data/mock-products';
 
 interface ProductCardProps {
-  product: MockProduct & {
+  product: {
+    id: string;
+    handle: string;
+    title: string;
+    vendor?: string;
+    price: string;
+    priceRangeMin?: number;
+    priceRangeMax?: number;
+    compareAtPrice?: string;
+    badge?: string;
+    image?: string;
+    secondaryImage?: string;
     swatches?: { name: string; handle: string; image: string }[];
   };
 }
@@ -16,12 +26,22 @@ export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const [added, setAdded] = useState(false);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product);
+    
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    
+    // Use product ID - the cart store will handle API call for logged-in users
+    const result = await addItem(product.id);
+    
+    if (result.success) {
+      setTimeout(() => setAdded(false), 2000);
+    } else {
+      setAdded(false);
+      // Could show error toast here
+      console.error('Failed to add item:', result.error);
+    }
   };
 
   return (

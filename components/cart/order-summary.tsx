@@ -8,15 +8,32 @@ import { formatRupiah } from '@/lib/utils/format';
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
 import { AnimatedButton } from '@/components/ui/animated-button';
 
+// Note: FREE_SHIPPING_THRESHOLD is in Rupiah, and cart uses cents (same value)
+// So we can use it directly since 1 Rupiah = 100 cents conceptually, but actually
+// the system treats priceCents as the actual Rupiah value (e.g., 850000 means Rp 850.000)
+// For consistency, we'll treat the threshold as-is
+
 export function OrderSummary() {
-  const { items, promoCode, promoDiscount, applyPromo, clearPromo, getSubtotal, getTotal } = useCartStore();
+  const { 
+    items, 
+    promoCode, 
+    promoDiscountCents, 
+    applyPromo, 
+    clearPromo, 
+    getSubtotalCents, 
+    getTotalCents,
+    lastError,
+  } = useCartStore();
+  
   const [promoInput, setPromoInput] = useState(promoCode || '');
   const [promoError, setPromoError] = useState('');
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-  const subtotal = getSubtotal();
-  const total = getTotal();
-  const freeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
+  
+  const subtotalCents = getSubtotalCents();
+  const totalCents = getTotalCents();
+  const freeShipping = subtotalCents >= FREE_SHIPPING_THRESHOLD;
+  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotalCents;
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -30,16 +47,21 @@ export function OrderSummary() {
     };
   }, [isMobileDrawerOpen]);
 
-  const handleApplyPromo = () => {
+  const handleApplyPromo = async () => {
     if (!promoInput.trim()) {
       setPromoError('Masukkan kode promo');
       return;
     }
-    const success = applyPromo(promoInput);
-    if (success) {
-      setPromoError('');
-    } else {
-      setPromoError('Kode promo tidak valid');
+    
+    setIsApplyingPromo(true);
+    setPromoError('');
+    
+    const result = await applyPromo(promoInput);
+    
+    setIsApplyingPromo(false);
+    
+    if (!result.success) {
+      setPromoError(result.error || 'Kode promo tidak valid');
     }
   };
 
@@ -49,6 +71,11 @@ export function OrderSummary() {
     setPromoError('');
   };
 
+  // Get image URL for an item
+  const getItemImage = (item: typeof items[0]) => {
+    return item.product.images?.[0] || null;
+  };
+
   return (
     <>
       {/* Desktop Sidebar Card */}
@@ -56,7 +83,7 @@ export function OrderSummary() {
         <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
 
         {/* Free shipping progress */}
-        {!freeShipping && subtotal > 0 && (
+        {!freeShipping && subtotalCents > 0 && (
           <div className="mb-6 p-4 bg-white rounded-xl">
             <div className="flex justify-between text-sm mb-2">
               <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
@@ -64,7 +91,7 @@ export function OrderSummary() {
             <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-neutral-900 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
+                style={{ width: `${Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
               />
             </div>
             <p className="text-xs text-neutral-400 mt-2">
@@ -75,24 +102,33 @@ export function OrderSummary() {
 
         {/* Items */}
         <div className="space-y-4 mb-6">
-          {items.map((item) => (
-            <div key={item.id} className="flex gap-4 items-center">
-              <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0">
-                {item.product.image && (
-                  <img 
-                    src={item.product.image} 
-                    alt={item.product.title}
-                    className="w-full h-full object-cover"
-                  />
-                )}
+          {items.map((item) => {
+            const image = getItemImage(item);
+            const priceCents = item.variant?.priceCents ?? item.product.priceCents;
+            
+            return (
+              <div key={item.id} className="flex gap-4 items-center">
+                <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0">
+                  {image ? (
+                    <img 
+                      src={image} 
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-neutral-300">
+                      <Icon icon="solar:box-linear" className="w-5 h-5" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{item.product.name}</p>
+                  <p className="text-xs text-neutral-400">Qty: {item.quantity}</p>
+                </div>
+                <p className="text-sm font-medium">{formatRupiah(priceCents * item.quantity)}</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{item.product.title}</p>
-                <p className="text-xs text-neutral-400">Qty: {item.quantity}</p>
-              </div>
-              <p className="text-sm font-medium">{item.product.price}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Promo Code */}
@@ -118,20 +154,24 @@ export function OrderSummary() {
                 type="text"
                 value={promoInput}
                 onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                 placeholder="Masukkan kode"
-                className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+                disabled={isApplyingPromo}
+                className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors disabled:opacity-50"
               />
               <button
                 onClick={handleApplyPromo}
-                className="px-5 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors"
+                disabled={isApplyingPromo}
+                className="px-5 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors disabled:opacity-50"
               >
-                Pakai
+                {isApplyingPromo ? 'Memeriksa...' : 'Pakai'}
               </button>
             </div>
           )}
           {promoError && <p className="text-xs text-red-500 mt-2">{promoError}</p>}
-          {promoDiscount > 0 && (
-            <p className="text-xs text-green-600 mt-2">Diskon {promoDiscount * 100}% diterapkan!</p>
+          {lastError && <p className="text-xs text-red-500 mt-2">{lastError}</p>}
+          {promoDiscountCents > 0 && (
+            <p className="text-xs text-green-600 mt-2">Diskon {formatRupiah(promoDiscountCents)} diterapkan!</p>
           )}
         </div>
 
@@ -139,12 +179,12 @@ export function OrderSummary() {
         <div className="border-t border-neutral-100 pt-6 space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-neutral-500">Subtotal</span>
-            <span>{formatRupiah(subtotal)}</span>
+            <span>{formatRupiah(subtotalCents)}</span>
           </div>
-          {promoDiscount > 0 && (
+          {promoDiscountCents > 0 && (
             <div className="flex justify-between text-sm text-green-600">
               <span>Diskon</span>
-              <span>-{formatRupiah(subtotal * promoDiscount)}</span>
+              <span>-{formatRupiah(promoDiscountCents)}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
@@ -153,7 +193,7 @@ export function OrderSummary() {
           </div>
           <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
             <span>Total</span>
-            <span>{formatRupiah(total)}</span>
+            <span>{formatRupiah(totalCents)}</span>
           </div>
         </div>
 
@@ -182,7 +222,7 @@ export function OrderSummary() {
           <div className="px-4 pt-3 pb-2 flex items-center justify-between">
             <div className="flex items-baseline gap-2">
               <span className="text-sm text-neutral-500">Total</span>
-              <span className="text-lg font-semibold tracking-tight">{formatRupiah(total)}</span>
+              <span className="text-lg font-semibold tracking-tight">{formatRupiah(totalCents)}</span>
             </div>
             <div className="flex items-center gap-1 text-neutral-400">
               <span className="text-xs">Detail</span>
@@ -223,7 +263,7 @@ export function OrderSummary() {
 
             <div className="p-6">
               {/* Free shipping progress */}
-              {!freeShipping && subtotal > 0 && (
+              {!freeShipping && subtotalCents > 0 && (
                 <div className="mb-6 p-4 bg-neutral-50 rounded-xl">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
@@ -231,7 +271,7 @@ export function OrderSummary() {
                   <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-neutral-900 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
+                      style={{ width: `${Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
                     />
                   </div>
                   <p className="text-xs text-neutral-400 mt-2">
@@ -263,20 +303,24 @@ export function OrderSummary() {
                       type="text"
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
                       placeholder="Masukkan kode"
-                      className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+                      disabled={isApplyingPromo}
+                      className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors disabled:opacity-50"
                     />
                     <button
                       onClick={handleApplyPromo}
-                      className="px-5 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors"
+                      disabled={isApplyingPromo}
+                      className="px-5 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors disabled:opacity-50"
                     >
-                      Pakai
+                      {isApplyingPromo ? 'Memeriksa...' : 'Pakai'}
                     </button>
                   </div>
                 )}
                 {promoError && <p className="text-xs text-red-500 mt-2">{promoError}</p>}
-                {promoDiscount > 0 && (
-                  <p className="text-xs text-green-600 mt-2">Diskon {promoDiscount * 100}% diterapkan!</p>
+                {lastError && <p className="text-xs text-red-500 mt-2">{lastError}</p>}
+                {promoDiscountCents > 0 && (
+                  <p className="text-xs text-green-600 mt-2">Diskon {formatRupiah(promoDiscountCents)} diterapkan!</p>
                 )}
               </div>
 
@@ -284,12 +328,12 @@ export function OrderSummary() {
               <div className="border-t border-neutral-100 pt-6 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">Subtotal</span>
-                  <span>{formatRupiah(subtotal)}</span>
+                  <span>{formatRupiah(subtotalCents)}</span>
                 </div>
-                {promoDiscount > 0 && (
+                {promoDiscountCents > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Diskon</span>
-                    <span>-{formatRupiah(subtotal * promoDiscount)}</span>
+                    <span>-{formatRupiah(promoDiscountCents)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
@@ -298,7 +342,7 @@ export function OrderSummary() {
                 </div>
                 <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
                   <span>Total</span>
-                  <span>{formatRupiah(total)}</span>
+                  <span>{formatRupiah(totalCents)}</span>
                 </div>
               </div>
 
@@ -320,7 +364,6 @@ export function OrderSummary() {
           </div>
         </div>
       )}
-
     </>
   );
 }

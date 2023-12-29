@@ -2,105 +2,107 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
-import { CATEGORY_CONFIG, DIVE_TYPE_CONFIG, type CategoryKey, type SearchFilters } from '@/lib/data/search-utils';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+}
+
+interface Brand {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+}
 
 interface SearchFiltersProps {
-  filters: SearchFilters;
-  categoryDistribution: Record<CategoryKey, number>;
-  availableBrands: string[];
+  categories: Category[];
+  brands: Brand[];
+  categoryDistribution: Record<string, number>;
+  brandDistribution: Record<string, number>;
+  selectedCategory?: string;
+  selectedBrand?: string;
+  selectedDivingType?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  query?: string;
   totalResults: number;
 }
 
 interface FilterContentProps {
-  filters: SearchFilters;
-  categoryDistribution: Record<CategoryKey, number>;
-  availableBrands: string[];
+  categories: Category[];
+  brands: Brand[];
+  categoryDistribution: Record<string, number>;
+  brandDistribution: Record<string, number>;
+  selectedCategory?: string;
+  selectedBrand?: string;
+  selectedDivingType?: string;
+  minPrice?: string;
+  maxPrice?: string;
   updateFilter: (key: string, value: string) => void;
   clearFilters: () => void;
   hasActiveFilters: boolean;
 }
 
 function FilterContent({
-  filters,
+  categories,
+  brands,
   categoryDistribution,
-  availableBrands,
+  brandDistribution,
+  selectedCategory,
+  selectedBrand,
+  selectedDivingType,
+  minPrice,
+  maxPrice,
   updateFilter,
   clearFilters,
   hasActiveFilters,
 }: FilterContentProps) {
-  const isCategoryActive = (key: CategoryKey) => filters.category === key;
-  const isDiveTypeActive = (key: string) => filters.diveType === key;
-
   return (
     <div className="space-y-8">
-      {/* Category Filter */}
-      <div>
-        <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
-          Kategori
-        </h3>
-        <div className="space-y-3">
-          {(Object.keys(CATEGORY_CONFIG) as CategoryKey[]).map((key) => {
-            const cat = CATEGORY_CONFIG[key];
-            const count = categoryDistribution[key];
-            if (count === 0) return null;
-            return (
-              <label
-                key={key}
-                className="flex items-center justify-between gap-3 text-base cursor-pointer group"
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="category"
-                    checked={isCategoryActive(key)}
-                    onChange={() => updateFilter('category', isCategoryActive(key) ? '' : key)}
-                    className="accent-neutral-900 w-4 h-4"
-                  />
-                  <span className="text-neutral-600 group-hover:text-neutral-900">
-                    {cat.label}
-                  </span>
-                </div>
-                <span className="text-neutral-400 text-sm">{count}</span>
-              </label>
-            );
-          })}
-          {filters.category && (
-            <button
-              onClick={() => updateFilter('category', '')}
-              className="text-sm text-neutral-400 hover:text-neutral-600 underline"
-            >
-              Hapus filter kategori
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Dive Type Filter */}
+      {/* Diving Type Filter */}
       <div>
         <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
           Tipe Diving
         </h3>
         <div className="space-y-3">
-          {Object.entries(DIVE_TYPE_CONFIG).map(([key, config]) => (
-            <label
-              key={key}
-              className="flex items-center gap-3 text-base cursor-pointer group"
-            >
+          <label
+            className="flex items-center justify-between gap-3 text-base cursor-pointer group"
+          >
+            <div className="flex items-center gap-3">
               <input
                 type="radio"
-                name="diveType"
-                checked={isDiveTypeActive(key)}
-                onChange={() => updateFilter('diveType', isDiveTypeActive(key) ? '' : key)}
+                name="divingType"
+                checked={selectedDivingType === 'freediving'}
+                onChange={() => updateFilter('divingType', selectedDivingType === 'freediving' ? '' : 'freediving')}
                 className="accent-neutral-900 w-4 h-4"
               />
               <span className="text-neutral-600 group-hover:text-neutral-900">
-                {config.label}
+                Freediving
               </span>
-            </label>
-          ))}
-          {filters.diveType && (
+            </div>
+          </label>
+          <label
+            className="flex items-center justify-between gap-3 text-base cursor-pointer group"
+          >
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="divingType"
+                checked={selectedDivingType === 'scuba'}
+                onChange={() => updateFilter('divingType', selectedDivingType === 'scuba' ? '' : 'scuba')}
+                className="accent-neutral-900 w-4 h-4"
+              />
+              <span className="text-neutral-600 group-hover:text-neutral-900">
+                Scuba
+              </span>
+            </div>
+          </label>
+          {selectedDivingType && (
             <button
-              onClick={() => updateFilter('diveType', '')}
+              onClick={() => updateFilter('divingType', '')}
               className="text-sm text-neutral-400 hover:text-neutral-600 underline"
             >
               Hapus filter tipe diving
@@ -108,6 +110,94 @@ function FilterContent({
           )}
         </div>
       </div>
+
+      {/* Category Filter */}
+      {categories.length > 0 && (
+        <div>
+          <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
+            Kategori
+          </h3>
+          <div className="space-y-3">
+            {categories.map((category) => {
+              const count = categoryDistribution[category.id] || 0;
+              const isSelected = selectedCategory === category.id || selectedCategory === category.slug;
+              if (count === 0) return null;
+              return (
+                <label
+                  key={category.id}
+                  className="flex items-center justify-between gap-3 text-base cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="category"
+                      checked={isSelected}
+                      onChange={() => updateFilter('category', isSelected ? '' : category.slug)}
+                      className="accent-neutral-900 w-4 h-4"
+                    />
+                    <span className="text-neutral-600 group-hover:text-neutral-900">
+                      {category.name}
+                    </span>
+                  </div>
+                  <span className="text-neutral-400 text-sm">{count}</span>
+                </label>
+              );
+            })}
+            {selectedCategory && (
+              <button
+                onClick={() => updateFilter('category', '')}
+                className="text-sm text-neutral-400 hover:text-neutral-600 underline"
+              >
+                Hapus filter kategori
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Brand Filter */}
+      {brands.length > 0 && (
+        <div>
+          <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
+            Merek
+          </h3>
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {brands.map((brand) => {
+              const count = brandDistribution[brand.id] || 0;
+              const isSelected = selectedBrand === brand.id || selectedBrand === brand.slug;
+              if (count === 0) return null;
+              return (
+                <label
+                  key={brand.id}
+                  className="flex items-center justify-between gap-3 text-base cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="brand"
+                      checked={isSelected}
+                      onChange={() => updateFilter('brand', isSelected ? '' : brand.slug)}
+                      className="accent-neutral-900 w-4 h-4"
+                    />
+                    <span className="text-neutral-600 group-hover:text-neutral-900">
+                      {brand.name}
+                    </span>
+                  </div>
+                  <span className="text-neutral-400 text-sm">{count}</span>
+                </label>
+              );
+            })}
+            {selectedBrand && (
+              <button
+                onClick={() => updateFilter('brand', '')}
+                className="text-sm text-neutral-400 hover:text-neutral-600 underline"
+              >
+                Hapus filter merek
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Price Filter */}
       <div>
@@ -118,51 +208,20 @@ function FilterContent({
           <input
             type="number"
             placeholder="Min"
-            value={filters.priceMin || ''}
-            onChange={(e) => updateFilter('priceMin', e.target.value || '')}
+            value={minPrice || ''}
+            onChange={(e) => updateFilter('minPrice', e.target.value || '')}
             className="w-28 px-3 py-2 border border-neutral-300 rounded text-base focus:outline-none focus:ring-1 focus:ring-neutral-900"
           />
           <span className="text-neutral-400">—</span>
           <input
             type="number"
             placeholder="Max"
-            value={filters.priceMax || ''}
-            onChange={(e) => updateFilter('priceMax', e.target.value || '')}
+            value={maxPrice || ''}
+            onChange={(e) => updateFilter('maxPrice', e.target.value || '')}
             className="w-28 px-3 py-2 border border-neutral-300 rounded text-base focus:outline-none focus:ring-1 focus:ring-neutral-900"
           />
         </div>
       </div>
-
-      {/* Brand Filter */}
-      {availableBrands.length > 0 && (
-        <div>
-          <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
-            Merek
-          </h3>
-          <div className="space-y-3">
-            {availableBrands.map((brand) => (
-              <label
-                key={brand}
-                className="flex items-center gap-3 text-base text-neutral-600 cursor-pointer hover:text-neutral-900"
-              >
-                <input
-                  type="checkbox"
-                  checked={filters.brands?.includes(brand) || false}
-                  onChange={(e) => {
-                    const currentBrands = filters.brands || [];
-                    const newBrands = e.target.checked
-                      ? [...currentBrands, brand]
-                      : currentBrands.filter((b) => b !== brand);
-                    updateFilter('brands', newBrands.length > 0 ? newBrands.join(',') : '');
-                  }}
-                  className="accent-neutral-900 w-4 h-4"
-                />
-                {brand}
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Clear All */}
       {hasActiveFilters && (
@@ -178,13 +237,20 @@ function FilterContent({
 }
 
 export function SearchFilters({
-  filters,
+  categories,
+  brands,
   categoryDistribution,
-  availableBrands,
+  brandDistribution,
+  selectedCategory,
+  selectedBrand,
+  selectedDivingType,
+  minPrice,
+  maxPrice,
+  query,
 }: SearchFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const hasActiveFilters = filters.category || filters.diveType || filters.priceMin || filters.priceMax || filters.brands?.length;
+  const hasActiveFilters = selectedCategory || selectedBrand || selectedDivingType || minPrice || maxPrice;
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -198,7 +264,7 @@ export function SearchFilters({
 
   const clearFilters = () => {
     const params = new URLSearchParams();
-    if (filters.query) params.set('q', filters.query);
+    if (query) params.set('q', query);
     router.push(`/produk?${params.toString()}`);
   };
 
@@ -218,9 +284,15 @@ export function SearchFilters({
           </summary>
           <div className="p-4 pt-0 border-t border-neutral-200 mt-3">
             <FilterContent
-              filters={filters}
+              categories={categories}
+              brands={brands}
               categoryDistribution={categoryDistribution}
-              availableBrands={availableBrands}
+              brandDistribution={brandDistribution}
+              selectedCategory={selectedCategory}
+              selectedBrand={selectedBrand}
+              selectedDivingType={selectedDivingType}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
               updateFilter={updateFilter}
               clearFilters={clearFilters}
               hasActiveFilters={!!hasActiveFilters}
@@ -233,9 +305,15 @@ export function SearchFilters({
       <aside className="hidden lg:block w-72 flex-shrink-0">
         <div className="sticky top-24">
           <FilterContent
-            filters={filters}
+            categories={categories}
+            brands={brands}
             categoryDistribution={categoryDistribution}
-            availableBrands={availableBrands}
+            brandDistribution={brandDistribution}
+            selectedCategory={selectedCategory}
+            selectedBrand={selectedBrand}
+            selectedDivingType={selectedDivingType}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
             updateFilter={updateFilter}
             clearFilters={clearFilters}
             hasActiveFilters={!!hasActiveFilters}

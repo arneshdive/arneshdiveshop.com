@@ -378,7 +378,11 @@ export const shopSettings = pgTable('shop_settings', {
   addressFormatted: text('address_formatted'),
   addressLat: text('address_lat'),
   addressLng: text('address_lng'),
-  rajaongkirCityId: text('rajaongkir_city_id'), // Cached when address updated
+  addressCity: text('address_city'),
+  addressProvince: text('address_province'),
+  // Shipping origin
+  rajaongkirCityId: text('rajaongkir_city_id'),
+  rajaongkirCityName: text('rajaongkir_city_name'), // Human readable: "Kota Denpasar, Bali"
   // Social media
   instagram: text('instagram'),
   tiktok: text('tiktok'),

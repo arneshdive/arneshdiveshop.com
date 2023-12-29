@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db, users, type NewUser } from '@/lib/db';
-import { hash } from '@/lib/auth/password';
-import { createSession, setSessionCookie } from '@/lib/auth/session';
 import { eq } from 'drizzle-orm';
+import { generateOtp, storeOtp, getOtpExpiryMinutes } from '@/lib/auth/otp';
+import { sendVerificationEmail } from '@/lib/email';
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100),
   email: z.string().email('Format email tidak valid'),
-  password: z.string().min(8, 'Password minimal 8 karakter'),
 });
 
 export async function POST(request: NextRequest) {
@@ -28,9 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, password } = result.data;
-    // Note: phone is accepted but not stored in users table
-    // Customer profile with phone can be created later during checkout
+    const { name, email } = result.data;
 
     // Check if email already exists
     const existingUser = await db.query.users.findFirst({
@@ -38,20 +35,35 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
+      // If user exists but not verified, resend OTP
+      if (!existingUser.emailVerified) {
+        const otp = generateOtp();
+        await storeOtp(email, otp);
+        await sendVerificationEmail(email, otp, getOtpExpiryMinutes());
+        
+        return NextResponse.json({ 
+          success: true,
+          message: 'Email sudah terdaftar tapi belum diverifikasi. Kode OTP baru telah dikirim.',
+          user: {
+            id: existingUser.id,
+            email: existingUser.email,
+            name: existingUser.name,
+            role: existingUser.role,
+            emailVerified: existingUser.emailVerified,
+          },
+        }, { status: 200 });
+      }
+      
       return NextResponse.json(
         { error: 'Email sudah terdaftar' },
         { status: 409 }
       );
     }
 
-    // Hash password
-    const passwordHash = await hash(password);
-
-    // Create user
+    // Create user (emailVerified is null = unverified)
     const [newUser] = await db.insert(users).values({
       name,
       email: email.toLowerCase(),
-      password: passwordHash,
       role: 'customer',
     } as NewUser).returning();
 
@@ -59,17 +71,28 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to create user');
     }
 
-    // Create session
-    const token = await createSession({
-      userId: newUser.id,
-      role: newUser.role,
-    });
+    // Generate OTP and send verification email
+    const otp = generateOtp();
+    await storeOtp(email, otp);
+    const emailResult = await sendVerificationEmail(email, otp, getOtpExpiryMinutes());
 
-    await setSessionCookie(token);
+    if (!emailResult.success) {
+      console.error('Failed to send verification email during registration');
+    }
 
-    // Return user without password
-    const { password: _, ...userWithoutPassword } = newUser;
-    return NextResponse.json({ user: userWithoutPassword }, { status: 201 });
+    return NextResponse.json({ 
+      success: true,
+      message: 'Registrasi berhasil. Silakan cek email untuk kode verifikasi.',
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+        emailVerified: newUser.emailVerified,
+        createdAt: newUser.createdAt,
+        updatedAt: newUser.updatedAt,
+      },
+    }, { status: 201 });
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(

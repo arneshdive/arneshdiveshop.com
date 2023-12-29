@@ -37,22 +37,23 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
 
+    const updateData = {
+      storeName: body.storeName,
+      email: body.email,
+      phone: body.phone,
+      whatsapp: body.whatsapp,
+      businessHours: body.businessHours,
+      about: body.about,
+      rajaongkirCityId: body.rajaongkirCityId || null,
+      rajaongkirCityName: body.rajaongkirCityName || null,
+      instagram: body.instagram,
+      tiktok: body.tiktok,
+      updatedAt: new Date(),
+    };
+
     const updated = await db
       .update(shopSettings)
-      .set({
-        storeName: body.storeName,
-        email: body.email,
-        phone: body.phone,
-        whatsapp: body.whatsapp,
-        businessHours: body.businessHours,
-        about: body.about,
-        addressFormatted: body.addressFormatted,
-        addressLat: body.addressLat,
-        addressLng: body.addressLng,
-        instagram: body.instagram,
-        tiktok: body.tiktok,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(shopSettings.id, 'default'))
       .returning();
 
@@ -65,7 +66,7 @@ export async function PUT(request: Request) {
         .insert(shopSettings)
         .values({
           id: 'default',
-          ...body,
+          ...updateData,
         })
         .returning();
       return NextResponse.json(created[0]);

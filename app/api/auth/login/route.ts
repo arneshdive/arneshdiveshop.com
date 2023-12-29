@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db, users } from '@/lib/db';
-import { compare } from '@/lib/auth/password';
-import { createSession, setSessionCookie } from '@/lib/auth/session';
+import { generateOtp, storeOtp, getOtpExpiryMinutes } from '@/lib/auth/otp';
+import { sendVerificationEmail } from '@/lib/email';
 import {
   checkRateLimit,
   recordFailedAttempt,
@@ -13,7 +13,6 @@ import { eq } from 'drizzle-orm';
 
 const loginSchema = z.object({
   email: z.string().email('Format email tidak valid'),
-  password: z.string().min(1, 'Password wajib diisi'),
 });
 
 function getClientIp(request: NextRequest): string {
@@ -46,53 +45,39 @@ export async function POST(request: NextRequest) {
     if (!result.success) {
       recordFailedAttempt(clientIp);
       return NextResponse.json(
-        { error: 'Email atau password salah' },
-        { status: 401, headers: getRateLimitHeaders(rateLimitResult) }
+        { error: 'Format email tidak valid' },
+        { status: 400, headers: getRateLimitHeaders(rateLimitResult) }
       );
     }
 
-    const { email, password } = result.data;
+    const { email } = result.data;
+    const normalizedEmail = email.toLowerCase();
 
     // Find user
     const user = await db.query.users.findFirst({
-      where: eq(users.email, email.toLowerCase()),
+      where: eq(users.email, normalizedEmail),
     });
 
-    if (!user || !user.password) {
-      recordFailedAttempt(clientIp);
-      return NextResponse.json(
-        { error: 'Email atau password salah' },
-        { status: 401, headers: getRateLimitHeaders(rateLimitResult) }
-      );
+    // Always return success to prevent email enumeration
+    // But only send email if user exists
+    if (user) {
+      // Generate OTP and send
+      const otp = generateOtp();
+      await storeOtp(normalizedEmail, otp);
+      await sendVerificationEmail(normalizedEmail, otp, getOtpExpiryMinutes());
     }
 
-    // Verify password
-    const isValid = await compare(password, user.password);
-    if (!isValid) {
-      recordFailedAttempt(clientIp);
-      return NextResponse.json(
-        { error: 'Email atau password salah' },
-        { status: 401, headers: getRateLimitHeaders(rateLimitResult) }
-      );
-    }
-
-    // Clear rate limit on successful login
+    // Clear rate limit on successful request
     clearAttempts(clientIp);
 
-    // Create session
-    const token = await createSession({
-      userId: user.id,
-      role: user.role,
-    });
-
-    await setSessionCookie(token);
-
-    // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
-    const newRateLimitResult = checkRateLimit(clientIp);
     return NextResponse.json(
-      { user: userWithoutPassword },
-      { status: 200, headers: getRateLimitHeaders(newRateLimitResult) }
+      { 
+        success: true,
+        message: 'Jika email terdaftar, Anda akan menerima kode OTP untuk login',
+        expires: getOtpExpiryMinutes(),
+        email: normalizedEmail,
+      },
+      { status: 200, headers: getRateLimitHeaders(checkRateLimit(clientIp)) }
     );
   } catch (error) {
     console.error('Login error:', error);

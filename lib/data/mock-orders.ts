@@ -1,4 +1,6 @@
-export type OrderStatus = 'pending_payment' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+// Re-export OrderStatus from schema
+import type { OrderStatus } from '@/lib/db/schema';
+export type { OrderStatus };
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
 
 export interface MockOrderItem {

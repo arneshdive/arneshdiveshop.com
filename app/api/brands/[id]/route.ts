@@ -6,8 +6,8 @@ import { eq } from 'drizzle-orm';
 const updateBrandSchema = z.object({
   name: z.string().min(1, 'Nama merek wajib diisi').max(100).optional(),
   slug: z.string().min(1, 'Slug wajib diisi').max(100).regex(/^[a-z0-9-]+$/, 'Slug hanya boleh huruf kecil, angka, dan tanda hubung').optional(),
-  description: z.string().max(500).optional().nullable(),
-  logoUrl: z.string().url().optional().nullable().or(z.literal('')),
+  description: z.string().max(500).nullable().optional(),
+  logoUrl: z.string().url('URL tidak valid').nullable().optional().or(z.literal('')),
 });
 
 type Params = Promise<{ id: string }>;

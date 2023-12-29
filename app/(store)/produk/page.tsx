@@ -2,41 +2,37 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { SearchFilters } from '@/components/search/search-filters';
 import { SearchResults } from '@/components/search/search-results';
-import {
-  searchProducts,
-  getAvailableBrands,
-  CATEGORY_CONFIG,
-  type SearchFilters as SearchFiltersType,
-  type CategoryKey,
-} from '@/lib/data/search-utils';
-import { featuredProducts, valueProps } from '@/lib/data/mock-products';
 import { RecentlyViewed } from '@/components/product/recently-viewed';
+import { valueProps } from '@/lib/data/mock-products';
 
 interface ProdukPageProps {
   searchParams: Promise<{
     q?: string;
     category?: string;
+    brand?: string;
+    divingType?: string;
+    newArrival?: string;
+    onSale?: string;
     sort?: string;
-    priceMin?: string;
-    priceMax?: string;
-    brands?: string;
+    minPrice?: string;
+    maxPrice?: string;
   }>;
 }
 
 // Sort products based on sort parameter
-function sortProducts(products: typeof featuredProducts, sortBy: string) {
+function sortProducts(products: any[], sortBy: string) {
   const sorted = [...products];
   switch (sortBy) {
     case 'price-asc':
       return sorted.sort((a, b) => {
-        const priceA = parseInt(a.price.replace(/[^\d]/g, ''), 10) || 0;
-        const priceB = parseInt(b.price.replace(/[^\d]/g, ''), 10) || 0;
+        const priceA = parsePriceToCents(a.price);
+        const priceB = parsePriceToCents(b.price);
         return priceA - priceB;
       });
     case 'price-desc':
       return sorted.sort((a, b) => {
-        const priceA = parseInt(a.price.replace(/[^\d]/g, ''), 10) || 0;
-        const priceB = parseInt(b.price.replace(/[^\d]/g, ''), 10) || 0;
+        const priceA = parsePriceToCents(a.price);
+        const priceB = parsePriceToCents(b.price);
         return priceB - priceA;
       });
     case 'popular':
@@ -50,21 +46,69 @@ function sortProducts(products: typeof featuredProducts, sortBy: string) {
   }
 }
 
+// Parse price string to cents for comparison
+function parsePriceToCents(priceStr: string): number {
+  return parseInt(priceStr.replace(/[^\d]/g, ''), 10) || 0;
+}
+
 // Get banner config based on filters
 function getBannerConfig(
   query: string,
-  category: CategoryKey | undefined
+  category: any | null,
+  brand: any | null,
+  divingType: string | undefined,
+  isNewArrival: boolean | undefined,
+  isOnSale: boolean | undefined
 ): { title: string; description: string; gradient: string } {
-  if (category && CATEGORY_CONFIG[category]) {
-    const config = CATEGORY_CONFIG[category];
+  if (isNewArrival) {
     return {
-      title: query ? `${config.label}: "${query}"` : config.label,
-      description: config.description,
-      gradient: config.gradient,
+      title: query ? `New Arrivals: "${query}"` : 'New Arrivals',
+      description: 'Produk terbaru untuk petualangan diving Anda.',
+      gradient: 'from-emerald-600 to-emerald-500',
     };
   }
 
-  // No category - show search results or all products
+  if (isOnSale) {
+    return {
+      title: query ? `Promo: "${query}"` : 'Promo Spesial',
+      description: 'Diskon spesial untuk produk terpilih.',
+      gradient: 'from-red-600 to-red-500',
+    };
+  }
+
+  if (divingType === 'freediving') {
+    return {
+      title: query ? `Freediving: "${query}"` : 'Koleksi Freediving',
+      description: 'Peralatan freediving berkualitas untuk petualangan bawah laut.',
+      gradient: 'from-blue-600 to-blue-500',
+    };
+  }
+
+  if (divingType === 'scuba') {
+    return {
+      title: query ? `Scuba: "${query}"` : 'Koleksi Scuba',
+      description: 'Peralatan scuba diving lengkap untuk eksplorasi laut dalam.',
+      gradient: 'from-teal-600 to-teal-500',
+    };
+  }
+
+  if (category) {
+    return {
+      title: query ? `${category.name}: "${query}"` : category.name,
+      description: category.description || 'Jelajahi produk dalam kategori ini.',
+      gradient: 'from-blue-600 to-blue-500',
+    };
+  }
+
+  if (brand) {
+    return {
+      title: query ? `${brand.name}: "${query}"` : brand.name,
+      description: brand.description || 'Produk dari merek terpercaya.',
+      gradient: 'from-teal-600 to-teal-500',
+    };
+  }
+
+  // No category or brand - show search results or all products
   if (query) {
     return {
       title: `Hasil untuk "${query}"`,
@@ -85,25 +129,65 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
   const params = await searchParams;
   const query = params.q || '';
   const sortBy = params.sort || 'newest';
-  const category = params.category as CategoryKey | undefined;
+  const categoryFilter = params.category || undefined;
+  const brandFilter = params.brand || undefined;
+  const divingTypeFilter = params.divingType || undefined;
+  const newArrivalFilter = params.newArrival || undefined;
+  const onSaleFilter = params.onSale || undefined;
+  const minPrice = params.minPrice || undefined;
+  const maxPrice = params.maxPrice || undefined;
 
-  const filters: SearchFiltersType = {
-    query,
-    category,
-    priceMin: params.priceMin ? parseInt(params.priceMin, 10) : undefined,
-    priceMax: params.priceMax ? parseInt(params.priceMax, 10) : undefined,
-    brands: params.brands?.split(',').filter(Boolean),
-  };
+  // Build search URL
+  const searchUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/search`);
+  if (query) searchUrl.searchParams.set('q', query);
+  if (categoryFilter) searchUrl.searchParams.set('category', categoryFilter);
+  if (brandFilter) searchUrl.searchParams.set('brand', brandFilter);
+  if (divingTypeFilter) searchUrl.searchParams.set('divingType', divingTypeFilter);
+  if (newArrivalFilter) searchUrl.searchParams.set('newArrival', newArrivalFilter);
+  if (onSaleFilter) searchUrl.searchParams.set('onSale', onSaleFilter);
+  if (minPrice) searchUrl.searchParams.set('minPrice', minPrice);
+  if (maxPrice) searchUrl.searchParams.set('maxPrice', maxPrice);
 
-  const { products, total, categoryDistribution } = searchProducts(featuredProducts, filters);
+  // Fetch search results
+  const response = await fetch(searchUrl.toString(), {
+    cache: 'no-store', // Always fetch fresh data
+  });
+  
+  const data = await response.json();
+  
+  const products = data.products || [];
+  const total = data.total || 0;
+  const categories = data.categories || [];
+  const brands = data.brands || [];
+  const categoryDistribution = data.categoryDistribution || {};
+  const brandDistribution = data.brandDistribution || {};
+
+  // Find selected category and brand for banner
+  const selectedCategory = categoryFilter 
+    ? categories.find((c: any) => c.id === categoryFilter || c.slug === categoryFilter)
+    : null;
+  const selectedBrand = brandFilter
+    ? brands.find((b: any) => b.id === brandFilter || b.slug === brandFilter)
+    : null;
+
+  // Sort products
   const sortedProducts = sortProducts(products, sortBy);
-  const availableBrands = getAvailableBrands(featuredProducts);
-  const banner = getBannerConfig(query, category);
+  
+  // Get banner config
+  const banner = getBannerConfig(
+    query, 
+    selectedCategory, 
+    selectedBrand,
+    divingTypeFilter,
+    newArrivalFilter === 'true',
+    onSaleFilter === 'true'
+  );
 
   // Build breadcrumb
   const breadcrumb = [
     { label: 'Beranda', href: '/' },
-    ...(category && CATEGORY_CONFIG[category] ? [{ label: CATEGORY_CONFIG[category].label, href: `/produk?category=${category}` }] : []),
+    ...(selectedCategory ? [{ label: selectedCategory.name, href: `/produk?category=${selectedCategory.slug}` }] : []),
+    ...(selectedBrand && !selectedCategory ? [{ label: selectedBrand.name, href: `/produk?brand=${selectedBrand.slug}` }] : []),
     ...(query ? [{ label: `"${query}"`, href: `/produk?q=${query}` }] : []),
   ];
 
@@ -137,9 +221,16 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
       <div className="max-w-[1440px] mx-auto px-4 lg:px-12 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <SearchFilters
-            filters={filters}
+            categories={categories}
+            brands={brands}
             categoryDistribution={categoryDistribution}
-            availableBrands={availableBrands}
+            brandDistribution={brandDistribution}
+            selectedCategory={categoryFilter}
+            selectedBrand={brandFilter}
+            selectedDivingType={divingTypeFilter}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            query={query}
             totalResults={total}
           />
           <SearchResults products={sortedProducts} total={total} sortBy={sortBy} />

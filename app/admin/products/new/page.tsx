@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { BasicInfoSection } from '@/components/admin/product-form/basic-info-section';
 import { PricingSection } from '@/components/admin/product-form/pricing-section';
@@ -18,24 +17,63 @@ export default function NewProductPage() {
     formData,
     setFormData,
     images,
+    setImages,
     hasVariants,
     setHasVariants,
     variantOptions,
-    generatedVariants,
-    handleImageUpload,
-    removeImage,
+    editableVariants,
     addVariantOption,
     removeVariantOption,
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
-    isUploading,
+    updateEditableVariant,
   } = useProductForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (isSubmitting || isUploading) return;
+    if (isSubmitting) return;
+
+    // Validation
+    const errors: string[] = [];
+    
+    if (!images || images.length === 0) {
+      errors.push('Minimal 1 gambar wajib diupload');
+    }
+    
+    if (formData.divingTypes.length === 0) {
+      errors.push('Pilih minimal satu tipe diving');
+    }
+    
+    if (!formData.category) {
+      errors.push('Kategori wajib dipilih');
+    }
+    
+    // Validate price - required when no variants
+    if (!hasVariants) {
+      if (!formData.price || parseFloat(formData.price.replace(/[^\d.]/g, '')) === 0) {
+        errors.push('Harga produk wajib diisi');
+      }
+    } else {
+      // Validate variants - each active variant needs a price
+      const activeVariantsWithoutPrice = editableVariants.filter(v => v.isActive && !v.price);
+      if (activeVariantsWithoutPrice.length > 0) {
+        errors.push('Semua varian aktif harus memiliki harga');
+      }
+      
+      // Check if variant options are properly defined
+      const emptyOptions = variantOptions.filter(opt => !opt.name.trim() || opt.values.filter(v => v.trim()).length === 0);
+      if (emptyOptions.length > 0) {
+        errors.push('Lengkapi semua opsi varian (nama dan nilai)');
+      }
+    }
+    
+    if (errors.length > 0) {
+      alert(errors.join('\n'));
+      return;
+    }
+    
     setIsSubmitting(true);
 
     // Convert price strings to cents
@@ -54,9 +92,11 @@ export default function NewProductPage() {
       compareAtPriceCents,
       categoryId: formData.category,
       brandId: formData.brand || null,
+      divingTypes: formData.divingTypes,
       images,
       isActive: formData.isActive,
-      isFeatured: false, // Can be toggled later from product list
+      isNewArrival: formData.isNewArrival,
+      isOnSale: formData.isOnSale,
     };
 
     try {
@@ -66,18 +106,66 @@ export default function NewProductPage() {
         body: JSON.stringify(payload),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const error = await response.json();
-        console.error('Failed to create product:', error);
-        alert(error.error || 'Gagal menyimpan produk');
+        const errorMsg = data.details 
+          ? Object.values(data.details).join(', ')
+          : (data.error || 'Terjadi kesalahan');
+        console.error('Failed to create product:', errorMsg);
+        alert(errorMsg);
         setIsSubmitting(false);
         return;
+      }
+
+      const product = data.product;
+
+      // Create variants if enabled
+      if (hasVariants && editableVariants.length > 0 && variantOptions.length > 0) {
+        let variantErrors: string[] = [];
+        
+        const variantPromises = editableVariants.map(async (variant) => {
+          // Build options object from variantOptions
+          const options: Record<string, string> = {};
+          const nameParts = variant.name.split(' / ');
+          variantOptions.forEach((opt, idx) => {
+            if (nameParts[idx]) {
+              options[opt.name] = nameParts[idx]!;
+            }
+          });
+          
+          const variantData = {
+            name: variant.name,
+            sku: variant.sku || null,
+            options,
+            priceCents: variant.price ? Math.round(parseFloat(variant.price) * 100) : null,
+            isActive: variant.isActive,
+          };
+          
+          const variantResponse = await fetch(`/api/products/${product.id}/variants`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(variantData),
+          });
+          
+          if (!variantResponse.ok) {
+            const data = await variantResponse.json();
+            variantErrors.push(`${variant.name}: ${data.error || 'Gagal membuat varian'}`);
+          }
+        });
+        
+        await Promise.all(variantPromises);
+        
+        if (variantErrors.length > 0) {
+          alert(`Produk berhasil dibuat, tapi beberapa varian gagal:\n${variantErrors.join('\n')}`);
+        }
       }
 
       router.push('/admin/products');
     } catch (error) {
       console.error('Submit error:', error);
       alert('Terjadi kesalahan saat menyimpan produk');
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -102,18 +190,18 @@ export default function NewProductPage() {
             hasVariants={hasVariants}
             setHasVariants={setHasVariants}
             variantOptions={variantOptions}
-            generatedVariants={generatedVariants}
+            editableVariants={editableVariants}
             addVariantOption={addVariantOption}
             removeVariantOption={removeVariantOption}
             updateVariantOption={updateVariantOption}
             addVariantValue={addVariantValue}
             removeVariantValue={removeVariantValue}
+            updateEditableVariant={updateEditableVariant}
           />
 
           <ImagesSection
             images={images}
-            handleImageUpload={handleImageUpload}
-            removeImage={removeImage}
+            setImages={setImages}
           />
 
           <button type="submit" className="hidden" />
@@ -125,15 +213,17 @@ export default function NewProductPage() {
         <div className="sticky top-24 space-y-4">
           {/* Actions */}
           <div className="flex gap-3">
-            <AnimatedButton asChild variant="outline" className="flex-1 !px-0 !h-12">
-              <Link href="/admin/products">
-                <span className="text-sm font-medium tracking-wide">Batal</span>
-              </Link>
+            <AnimatedButton onClick={() => router.push('/admin/products')} variant="outline" size="xs" className="flex-1">
+              Batal
             </AnimatedButton>
-            <AnimatedButton asChild className="flex-1 !px-0 !h-12">
-              <button type="submit" form="product-form" disabled={isSubmitting || isUploading}>
-                <span className="text-sm font-medium tracking-wide">{isSubmitting ? 'Menyimpan...' : 'Simpan'}</span>
-              </button>
+            <AnimatedButton
+              type="submit"
+              form="product-form"
+              size="xs"
+              className="flex-1"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Menyimpan...' : 'Simpan'}
             </AnimatedButton>
           </div>
 
@@ -146,7 +236,6 @@ export default function NewProductPage() {
             brand={formData.brand}
             description={formData.description}
             isActive={formData.isActive}
-            stockStatus={formData.stockStatus}
             images={images}
             variantOptions={variantOptions}
           />

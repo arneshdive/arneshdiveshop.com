@@ -2,18 +2,36 @@ import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { formatRupiah } from '@/lib/utils/format';
 import { orderStatusConfig } from '@/lib/constants/order-status';
-import type { MockOrder } from '@/lib/data/mock-orders';
+import type { OrderStatus } from '@/lib/db/schema';
+
+interface ApiOrder {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  totalCents: number;
+  createdAt: string;
+  customer: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string | null;
+  };
+}
+
+interface OrderListItemProps {
+  order: ApiOrder;
+  isSelected: boolean;
+  onClick: () => void;
+}
 
 export function OrderListItem({
   order,
   isSelected,
   onClick,
-}: {
-  order: MockOrder;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
+}: OrderListItemProps) {
   const status = orderStatusConfig[order.status];
+  const customerName = `${order.customer.firstName} ${order.customer.lastName}`;
 
   return (
     <button
@@ -24,7 +42,7 @@ export function OrderListItem({
     >
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="min-w-0 flex-1">
-          <p className="font-medium tracking-tight text-neutral-900 truncate">{order.customer.name}</p>
+          <p className="font-medium tracking-tight text-neutral-900 truncate">{customerName}</p>
           <p className="text-xs text-neutral-500 mt-0.5">{order.orderNumber}</p>
         </div>
         <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${status.color} ${status.bgColor}`}>

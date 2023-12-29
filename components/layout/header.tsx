@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
-import { useCartStore } from '@/lib/store/cart';
+import { useCartStore, useCartSync } from '@/lib/store/cart';
 import type { Category } from '@/lib/db/schema';
 
 interface CategoryWithChildren extends Category {
@@ -19,6 +19,10 @@ export function Header() {
   const [categories, setCategories] = useState<CategoryWithChildren[]>([]);
   const pathname = usePathname();
   const isHomepage = pathname === '/';
+  
+  // Sync cart on mount
+  useCartSync();
+  
   const itemCount = useCartStore((state) => state.getItemCount());
 
   // Wait for mount to avoid hydration mismatch with persisted cart

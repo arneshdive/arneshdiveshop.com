@@ -1,13 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { mockOrders, statusConfig, type OrderStatus } from '@/lib/data/mock-account';
 import { formatRupiah, formatDate } from '@/lib/utils/format';
+import type { OrderStatus } from '@/lib/db/schema';
+
+interface OrderItem {
+  id: string;
+  productId: string;
+  name: string;
+  quantity: number;
+  priceCents: number;
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    images: string[] | null;
+  };
+  variant: {
+    id: string;
+    name: string;
+  } | null;
+}
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  subtotalCents: number;
+  shippingCents: number;
+  totalCents: number;
+  createdAt: string;
+  items: OrderItem[];
+  payments: {
+    status: string;
+    paymentMethod: string | null;
+  }[];
+}
+
+// Status config for customer-facing view (ping dot style)
+const customerStatusConfig: Record<OrderStatus, { label: string; textClass: string; dotClass: string; pingClass: string }> = {
+  pending_payment: { label: 'Perlu Dibayar', textClass: 'text-amber-700', dotClass: 'bg-amber-500', pingClass: 'bg-amber-400' },
+  processing: { label: 'Diproses', textClass: 'text-blue-700', dotClass: 'bg-blue-500', pingClass: 'bg-blue-400' },
+  shipped: { label: 'Dikirim', textClass: 'text-purple-700', dotClass: 'bg-purple-500', pingClass: 'bg-purple-400' },
+  delivered: { label: 'Selesai', textClass: 'text-green-700', dotClass: 'bg-green-500', pingClass: 'bg-green-400' },
+  cancelled: { label: 'Dibatalkan', textClass: 'text-red-700', dotClass: 'bg-red-500', pingClass: 'bg-red-400' },
+  refunded: { label: 'Dikembalikan', textClass: 'text-red-700', dotClass: 'bg-red-500', pingClass: 'bg-red-400' },
+};
 
 const statusFilters: { label: string; status?: OrderStatus }[] = [
   { label: 'Semua' },
@@ -19,10 +63,92 @@ const statusFilters: { label: string; status?: OrderStatus }[] = [
 
 export default function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState<OrderStatus | undefined>(undefined);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredOrders = activeFilter
-    ? mockOrders.filter((order) => order.status === activeFilter)
-    : mockOrders;
+  // Fetch orders from API
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams();
+      if (activeFilter) {
+        params.set('status', activeFilter);
+      }
+
+      const response = await fetch(`/api/orders?${params.toString()}`);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Silakan login untuk melihat pesanan Anda');
+        } else {
+          setError('Gagal memuat pesanan');
+        }
+        return;
+      }
+
+      const data = await response.json();
+      setOrders(data.orders || []);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Gagal memuat pesanan');
+    } finally {
+      setLoading(false);
+    }
+  }, [activeFilter]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pesanan Saya</h1>
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-neutral-500">Memuat pesanan...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state - not logged in
+  if (error?.includes('login')) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pesanan Saya</h1>
+        <EmptyState
+          icon="solar:lock-linear"
+          title="Silakan Login"
+          description="Login untuk melihat riwayat pesanan Anda"
+          ctaLabel="Login"
+          ctaHref="/account/login"
+        />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pesanan Saya</h1>
+        <EmptyState
+          icon="solar:danger-triangle-linear"
+          title="Gagal Memuat"
+          description={error}
+          ctaLabel="Coba Lagi"
+          onClick={fetchOrders}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -47,7 +173,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders List */}
-      {filteredOrders.length === 0 ? (
+      {orders.length === 0 ? (
         <EmptyState
           icon="solar:bag-3-linear"
           title="Belum Ada Pesanan"
@@ -57,25 +183,24 @@ export default function OrdersPage() {
         />
       ) : (
         <div className="space-y-8">
-          {filteredOrders.map((order, index) => (
-            <div key={order.id} className={index !== filteredOrders.length - 1 ? 'border-b border-neutral-200 pb-8' : ''}>
+          {orders.map((order, index) => (
+            <div key={order.id} className={index !== orders.length - 1 ? 'border-b border-neutral-200 pb-8' : ''}>
               <OrderCard order={order} />
             </div>
           ))}
         </div>
       )}
-
-      {/* Orders List */}
     </div>
   );
 }
 
 interface OrderCardProps {
-  order: typeof mockOrders[0];
+  order: Order;
 }
 
 function OrderCard({ order }: OrderCardProps) {
-  const status = statusConfig[order.status];
+  const status = customerStatusConfig[order.status];
+  const isPendingPayment = order.status === 'pending_payment';
 
   const copyOrderId = () => {
     navigator.clipboard.writeText(order.orderNumber);
@@ -95,7 +220,9 @@ function OrderCard({ order }: OrderCardProps) {
           </button>
           <span className={cn('inline-flex items-center gap-2 text-sm font-medium leading-tight', status.textClass)}>
             <span className="relative flex h-2 w-2">
-              <span className={cn('animate-ping absolute inline-flex h-full w-full rounded-full opacity-75', status.pingClass)} />
+              {isPendingPayment && (
+                <span className={cn('animate-ping absolute inline-flex h-full w-full rounded-full opacity-75', status.pingClass)} />
+              )}
               <span className={cn('relative inline-flex rounded-full h-2 w-2', status.dotClass)} />
             </span>
             {status.label}
@@ -106,13 +233,13 @@ function OrderCard({ order }: OrderCardProps) {
 
       {/* Items */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
-        {order.items.map((item) => (
+        {order.items.slice(0, 3).map((item) => (
           <div key={item.id} className="flex gap-4 bg-neutral-50 rounded-xl p-4 sm:min-w-[280px] sm:flex-1 sm:max-w-md">
             {/* Image */}
             <div className="w-20 h-20 bg-neutral-100 flex-shrink-0 rounded-lg overflow-hidden">
-              {item.image ? (
+              {item.product.images?.[0] ? (
                 <Image
-                  src={item.image}
+                  src={item.product.images[0]}
                   alt={item.name}
                   width={80}
                   height={80}
@@ -129,14 +256,17 @@ function OrderCard({ order }: OrderCardProps) {
             <div className="flex-1 flex flex-col justify-center py-0.5">
               <p className="font-medium tracking-tight">{item.name}</p>
               <p className="text-sm text-neutral-400">
-                {item.variant?.color && `Warna: ${item.variant.color}`}
-                {item.variant?.size && `${item.variant?.color ? ' • ' : ''}Ukuran: ${item.variant.size}`}
-                {item.variant ? ' • ' : ''}Qty: {item.quantity}
+                {item.variant?.name && `${item.variant.name} • `}Qty: {item.quantity}
               </p>
               <p className="text-base font-semibold tracking-tight mt-1">{formatRupiah(item.priceCents)}</p>
             </div>
           </div>
         ))}
+        {order.items.length > 3 && (
+          <div className="flex items-center justify-center bg-neutral-50 rounded-xl p-4 sm:min-w-[140px] text-sm text-neutral-500">
+            +{order.items.length - 3} item lainnya
+          </div>
+        )}
       </div>
 
       {/* Footer */}
@@ -145,7 +275,7 @@ function OrderCard({ order }: OrderCardProps) {
           Total: <strong className="text-lg font-semibold tracking-tight">{formatRupiah(order.totalCents)}</strong>
         </p>
         <div className="flex gap-2">
-          {order.status === 'pending_payment' && (
+          {isPendingPayment && (
             <AnimatedButton className="px-5 py-2.5 text-sm">
               Bayar Sekarang
             </AnimatedButton>
@@ -155,8 +285,10 @@ function OrderCard({ order }: OrderCardProps) {
               Lacak Pengiriman
             </AnimatedButton>
           )}
-          <AnimatedButton variant="outline" className="px-4 py-2 text-sm">
-            Lihat Detail
+          <AnimatedButton variant="outline" asChild className="px-4 py-2 text-sm">
+            <Link href={`/account/orders/${order.id}`}>
+              Lihat Detail
+            </Link>
           </AnimatedButton>
         </div>
       </div>

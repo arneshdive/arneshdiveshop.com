@@ -17,6 +17,8 @@ export interface CheckoutData {
   formattedAddress: string;
   lat: number | null;
   lng: number | null;
+  // API session tracking
+  checkoutSessionId: string | null;
 }
 
 interface CheckoutState {
@@ -44,6 +46,7 @@ const initialData: CheckoutData = {
   formattedAddress: '',
   lat: null,
   lng: null,
+  checkoutSessionId: null,
 };
 
 export const useCheckoutStore = create<CheckoutState & CheckoutActions>()(

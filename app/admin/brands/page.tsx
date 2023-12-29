@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Icon } from '@iconify/react';
-import { Plus } from 'lucide-react';
+import { Plus, Loader } from 'lucide-react';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { useBrands } from '@/lib/hooks/use-brands';
 import type { Brand } from '@/lib/db/schema';
 
 interface BrandFormData {
@@ -28,32 +29,12 @@ function generateSlug(name: string): string {
 }
 
 export default function BrandsPage() {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { brands, isLoading, createBrand, updateBrand, deleteBrand, isCreating, isUpdating } = useBrands();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [form, setForm] = useState<BrandFormData>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSaving, setIsSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchBrands();
-  }, []);
-
-  const fetchBrands = async () => {
-    try {
-      const response = await fetch('/api/brands');
-      const data = await response.json();
-      if (response.ok) {
-        setBrands(data.brands);
-      }
-    } catch (error) {
-      console.error('Error fetching brands:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const openCreateModal = () => {
     setEditingBrand(null);
@@ -96,65 +77,44 @@ export default function BrandsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    setIsSaving(true);
 
-    try {
-      const url = editingBrand
-        ? `/api/brands/${editingBrand.id}`
-        : '/api/brands';
-      const method = editingBrand ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    if (editingBrand) {
+      updateBrand(
+        {
+          id: editingBrand.id,
+          data: {
+            name: form.name,
+            slug: form.slug,
+            description: form.description || null,
+            logoUrl: form.logoUrl || null,
+          },
+        },
+        {
+          onSuccess: () => closeModal(),
+          onError: (error) => setErrors({ general: error.message }),
+        }
+      );
+    } else {
+      createBrand(
+        {
           name: form.name,
           slug: form.slug,
           description: form.description || null,
           logoUrl: form.logoUrl || null,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.details) {
-          setErrors(data.details);
-        } else {
-          setErrors({ general: data.error || 'Terjadi kesalahan' });
+        },
+        {
+          onSuccess: () => closeModal(),
+          onError: (error) => setErrors({ general: error.message }),
         }
-        return;
-      }
-
-      await fetchBrands();
-      closeModal();
-    } catch (error) {
-      console.error('Error saving brand:', error);
-      setErrors({ general: 'Terjadi kesalahan pada server' });
-    } finally {
-      setIsSaving(false);
+      );
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      const response = await fetch(`/api/brands/${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.error || 'Gagal menghapus merek');
-        return;
-      }
-
-      setBrands((prev) => prev.filter((b) => b.id !== id));
-      setDeleteConfirm(null);
-    } catch (error) {
-      console.error('Error deleting brand:', error);
-      alert('Terjadi kesalahan pada server');
-    }
+  const handleDelete = (id: string) => {
+    deleteBrand(id, {
+      onSuccess: () => setDeleteConfirm(null),
+      onError: (error) => alert(error.message),
+    });
   };
 
   return (
@@ -165,30 +125,32 @@ export default function BrandsPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Merek</h1>
           <p className="text-sm text-neutral-500 mt-1">Kelola merek produk toko Anda</p>
         </div>
-        <AnimatedButton onClick={openCreateModal} className="px-6 py-3">
-          <Plus className="w-4 h-4" />
-          <span className="text-sm font-medium tracking-wide">Tambah Merek</span>
-        </AnimatedButton>
+        {brands.length > 0 && (
+          <AnimatedButton onClick={openCreateModal} size="xs">
+            <Plus className="w-4 h-4" />
+            <span className="text-sm font-medium tracking-wide">Tambah Merek</span>
+          </AnimatedButton>
+        )}
       </div>
 
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-16">
-          <Icon icon="solar:spinner-linear" className="w-8 h-8 text-neutral-400 animate-spin" />
+          <Loader className="w-8 h-8 text-neutral-400 animate-spin" />
         </div>
       )}
 
       {/* Empty State */}
       {!isLoading && brands.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mb-4">
             <Icon icon="solar:tag-linear" className="w-8 h-8 text-neutral-400" />
           </div>
           <p className="text-neutral-600 font-medium tracking-tight mb-1">Belum ada merek</p>
           <p className="text-sm text-neutral-500 mb-6">
             Mulai tambahkan merek untuk produk Anda
           </p>
-          <AnimatedButton onClick={openCreateModal} className="px-6 py-3">
+          <AnimatedButton onClick={openCreateModal} size="xs">
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium tracking-wide">Tambah Merek</span>
           </AnimatedButton>
@@ -308,26 +270,16 @@ export default function BrandsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-1.5">
-                  Slug <span className="text-red-500">*</span>
+                  Slug
                 </label>
                 <input
                   type="text"
                   value={form.slug}
-                  onChange={(e) => {
-                    setForm((prev) => ({ ...prev, slug: e.target.value }));
-                    setErrors((prev) => {
-                      const { slug: _, ...rest } = prev;
-                      return rest;
-                    });
-                  }}
-                  placeholder="nama-merek"
-                  className="w-full px-4 py-2.5 text-sm bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent font-mono"
+                  disabled
+                  className="w-full px-4 py-2.5 text-sm bg-neutral-100 border border-neutral-200 rounded-xl text-neutral-500 font-mono cursor-not-allowed"
                 />
-                {errors.slug && (
-                  <p className="text-xs text-red-500 mt-1">{errors.slug}</p>
-                )}
                 <p className="text-xs text-neutral-500 mt-1">
-                  Digunakan untuk URL produk, contoh: /produk?brand=nama-merek
+                  Slug dibuat otomatis dari nama merek
                 </p>
               </div>
 
@@ -374,10 +326,10 @@ export default function BrandsPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSaving}
+                  disabled={isCreating || isUpdating}
                   className="px-6 py-2.5 text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {isSaving ? 'Menyimpan...' : editingBrand ? 'Simpan Perubahan' : 'Tambah Merek'}
+                  {isCreating || isUpdating ? 'Menyimpan...' : editingBrand ? 'Simpan Perubahan' : 'Tambah Merek'}
                 </button>
               </div>
             </form>

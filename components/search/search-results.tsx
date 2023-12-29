@@ -2,10 +2,24 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/product/product-card';
-import type { MockProduct } from '@/lib/data/mock-products';
+
+interface Product {
+  id: string;
+  handle: string;
+  title: string;
+  vendor?: string;
+  price: string;
+  compareAtPrice?: string;
+  badge?: string;
+  image?: string;
+  secondaryImage?: string;
+  categoryId?: string;
+  brandId?: string;
+  isActive?: boolean;
+}
 
 interface SearchResultsProps {
-  products: MockProduct[];
+  products: Product[];
   total: number;
   sortBy: string;
 }

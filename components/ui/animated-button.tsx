@@ -174,38 +174,46 @@ export function AnimatedButton({
   if (asChild && isValidElement(children)) {
     const child = children as React.ReactElement<any>;
     
-    return (
-      <span
-        className={cn(
-          "group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap w-fit",
-          config.container,
-          sizeConfig[size],
-          className,
-        )}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <motion.div
-          initial={{
-            y: "100%",
-            borderTopLeftRadius: "50%",
-            borderTopRightRadius: "50%",
-          }}
-          animate={bgControls}
-          className={cn(
-            "absolute -inset-x-[20%] top-0 h-[150%] w-[140%] pointer-events-none",
-            config.fill,
-          )}
-        />
-        <motion.span
-          initial={{ color: config.textInitial }}
-          animate={textControls}
-          className="relative z-10 flex items-center justify-center gap-2.5 whitespace-nowrap"
-        >
-          {child.props.children}
-        </motion.span>
-      </span>
-    );
+    // Clone the child element and wrap the content with our animations
+    const childProps = child.props;
+    const originalClassName = childProps.className || '';
+    
+    return React.cloneElement(child, {
+      className: cn(
+        "group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap w-fit",
+        config.container,
+        sizeConfig[size],
+        className,
+        originalClassName,
+      ),
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave,
+      children: (
+        <>
+          {/* Background fill */}
+          <motion.div
+            initial={{
+              y: "100%",
+              borderTopLeftRadius: "50%",
+              borderTopRightRadius: "50%",
+            }}
+            animate={bgControls}
+            className={cn(
+              "absolute -inset-x-[20%] top-0 h-[150%] w-[140%] pointer-events-none",
+              config.fill,
+            )}
+          />
+          {/* Button content */}
+          <motion.span
+            initial={{ color: config.textInitial }}
+            animate={textControls}
+            className="relative z-10 flex items-center justify-center gap-2.5 whitespace-nowrap"
+          >
+            {childProps.children}
+          </motion.span>
+        </>
+      ),
+    });
   }
 
   return (

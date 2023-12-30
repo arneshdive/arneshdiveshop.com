@@ -7,22 +7,34 @@ import {
   createCheckoutSession,
   updateCheckoutSession,
   deleteCheckoutSession,
+  updateCheckoutSessionTotals,
+  getCheckoutSessionById,
   CheckoutSessionWithCart,
 } from '@/lib/queries/checkout';
 import { getCartByUserId, getCartByGuestId } from '@/lib/queries/cart';
-import {
-  checkoutSessionSchema,
-  checkoutShippingSchema,
-  formatIndonesianPhone,
-} from '@/lib/utils/indonesia-address';
-import { matchCityToRajaOngkir } from '@/lib/rajaongkir/city-matcher';
 import { z } from 'zod';
 
 const GUEST_COOKIE_NAME = 'guest_id';
 
-/**
- * Helper to get checkout session for current user/guest
- */
+// Validation schema for checkout session
+const checkoutSessionSchema = z.object({
+  email: z.string().email('Email tidak valid'),
+  phone: z.string().min(10, 'Nomor telepon tidak valid'),
+  fullName: z.string().min(2, 'Nama minimal 2 karakter'),
+  address1: z.string().min(5, 'Alamat minimal 5 karakter'),
+  address2: z.string().optional(),
+  notes: z.string().max(500).optional(),
+  // RajaOngkir destination
+  rajaongkirCityId: z.string().min(1, 'Pilih kelurahan/kecamatan'),
+  rajaongkirCityName: z.string().optional(),
+  rajaongkirProvince: z.string().optional(),
+  rajaongkirCity: z.string().optional(),
+  rajaongkirDistrict: z.string().optional(),
+  rajaongkirSubdistrict: z.string().optional(),
+  rajaongkirPostalCode: z.string().optional(),
+  shippingMethod: z.string().optional(),
+});
+
 async function getCurrentCheckoutSession(): Promise<CheckoutSessionWithCart | null> {
   const session = await getSession();
   const cookieStore = await cookies();
@@ -39,9 +51,6 @@ async function getCurrentCheckoutSession(): Promise<CheckoutSessionWithCart | nu
   return null;
 }
 
-/**
- * Helper to build response with optional guest cookie
- */
 function buildResponse(data: object, guestId?: string): NextResponse {
   const response = NextResponse.json(data);
 
@@ -50,12 +59,24 @@ function buildResponse(data: object, guestId?: string): NextResponse {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
       path: '/',
     });
   }
 
   return response;
+}
+
+// Format Indonesian phone number
+function formatIndonesianPhone(phone: string): string {
+  let formatted = phone.replace(/[^0-9]/g, '');
+  if (formatted.startsWith('0')) {
+    formatted = '62' + formatted.substring(1);
+  }
+  if (!formatted.startsWith('62')) {
+    formatted = '62' + formatted;
+  }
+  return formatted;
 }
 
 /**
@@ -81,13 +102,6 @@ export async function GET() {
 
 /**
  * POST /api/checkout - Create checkout session from cart
- *
- * Request body:
- * - email, phone, fullName (contact info)
- * - address1, address2, city, province, postalCode (shipping address)
- * - optional: lat, lng, formattedAddress (map coordinates)
- * - optional: notes
- * - optional: shippingMethod
  */
 export async function POST(request: NextRequest) {
   try {
@@ -96,13 +110,11 @@ export async function POST(request: NextRequest) {
     let guestId = cookieStore.get(GUEST_COOKIE_NAME)?.value;
     let shouldSetGuestCookie = false;
 
-    // For guest users without ID, generate one
     if (!session && !guestId) {
       guestId = crypto.randomUUID();
       shouldSetGuestCookie = true;
     }
 
-    // Parse and validate request body
     const body = await request.json();
     const result = checkoutSessionSchema.safeParse(body);
 
@@ -140,14 +152,7 @@ export async function POST(request: NextRequest) {
       await deleteCheckoutSession(existingSession.id);
     }
 
-    // Format phone number to standard Indonesian format
     const formattedPhone = formatIndonesianPhone(data.phone);
-
-    // Calculate totals from cart
-    const subtotalCents = cart.subtotalCents;
-    // TODO: Calculate shipping based on shippingMethod and destination (F-012)
-    const shippingCents = 0; // Will be calculated by F-012 shipping API
-    const totalCents = subtotalCents + shippingCents;
 
     // Create checkout session
     const checkoutSession = await createCheckoutSession({
@@ -157,42 +162,29 @@ export async function POST(request: NextRequest) {
       email: data.email,
       phone: formattedPhone,
       fullName: data.fullName,
+      // Street address
       address1: data.address1,
       address2: data.address2,
-      city: data.city,
-      province: data.province,
-      postalCode: data.postalCode,
-      country: data.country,
       notes: data.notes,
-      lat: data.lat,
-      lng: data.lng,
-      formattedAddress: data.formattedAddress,
+      // RajaOngkir destination
+      rajaongkirCityId: data.rajaongkirCityId,
+      rajaongkirCityName: data.rajaongkirCityName,
+      rajaongkirProvince: data.rajaongkirProvince,
+      rajaongkirCity: data.rajaongkirCity,
+      rajaongkirDistrict: data.rajaongkirDistrict,
+      rajaongkirSubdistrict: data.rajaongkirSubdistrict,
+      rajaongkirPostalCode: data.rajaongkirPostalCode,
       shippingMethod: data.shippingMethod,
     });
 
-    // Match city to RajaOngkir city_id for shipping calculations
-    try {
-      const cityMatch = await matchCityToRajaOngkir(data.city, data.province);
-      if (cityMatch) {
-        await updateCheckoutSession(checkoutSession.id, {
-          rajaongkirCityId: cityMatch.cityId,
-        });
-      }
-    } catch (error) {
-      // Log but don't fail the checkout - shipping calculator can retry matching
-      console.error('Failed to match city for RajaOngkir:', error);
-    }
-
-    // Update totals (will be recalculated when shipping is calculated)
-    const { updateCheckoutSessionTotals } = await import('@/lib/queries/checkout');
+    // Update totals
+    const subtotalCents = cart.subtotalCents;
     await updateCheckoutSessionTotals(checkoutSession.id, {
       subtotalCents,
-      shippingCents,
-      totalCents,
+      shippingCents: 0,
+      totalCents: subtotalCents,
     });
 
-    // Re-fetch session with updated totals
-    const { getCheckoutSessionById } = await import('@/lib/queries/checkout');
     const updatedSession = await getCheckoutSessionById(checkoutSession.id);
 
     return buildResponse(
@@ -210,10 +202,6 @@ export async function POST(request: NextRequest) {
 
 /**
  * PUT /api/checkout - Update checkout session
- *
- * Request body:
- * - shippingMethod (required)
- * - optional: other fields to update
  */
 export async function PUT(request: NextRequest) {
   try {
@@ -233,15 +221,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Parse request body - allow partial updates
     const body = await request.json();
 
-    // Validate shipping method if provided
     const updateSchema = z.object({
-      shippingMethod: checkoutShippingSchema.shape.shippingMethod.optional(),
-      lat: z.string().optional(),
-      lng: z.string().optional(),
-      formattedAddress: z.string().optional(),
+      shippingMethod: z.string().optional(),
       notes: z.string().max(500).optional(),
     });
 
@@ -259,7 +242,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update checkout session
     const updatedSession = await updateCheckoutSession(
       checkoutSession.id,
       result.data
@@ -276,7 +258,7 @@ export async function PUT(request: NextRequest) {
 }
 
 /**
- * DELETE /api/checkout - Clear/expire checkout session
+ * DELETE /api/checkout - Clear checkout session
  */
 export async function DELETE() {
   try {
@@ -286,7 +268,6 @@ export async function DELETE() {
       return NextResponse.json({ success: true });
     }
 
-    // Delete the checkout session
     await deleteCheckoutSession(checkoutSession.id);
 
     return NextResponse.json({ success: true });

@@ -26,9 +26,11 @@ export function calculateTotalWeight(items: CartItemForShipping[]): number {
 
 /**
  * Convert Rupiah to cents
+ * RajaOngkir returns costs in Rupiah, we need to convert to cents
+ * 1 Rupiah = 100 cents in our convention
  */
 function rupiahToCents(rupiah: number): number {
-  return rupiah; // 1 Rupiah = 1 cent in our system
+  return rupiah * 100;
 }
 
 /**

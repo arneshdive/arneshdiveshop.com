@@ -171,7 +171,7 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="max-w-7xl">
+    <div>
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Tambah Produk</h1>
@@ -180,7 +180,7 @@ export default function NewProductPage() {
 
       <div className="flex gap-8">
         {/* Form */}
-      <div className="flex-1 max-w-4xl">
+      <div className="flex-1">
         <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
           <BasicInfoSection formData={formData} setFormData={setFormData} />
 

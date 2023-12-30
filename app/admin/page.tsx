@@ -35,7 +35,7 @@ const stats = [
 
 export default function AdminDashboard() {
   return (
-    <div className="max-w-7xl">
+    <div>
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Dashboard</h1>

@@ -63,12 +63,17 @@ async function fetchPromotions(): Promise<{ promotions: Promotion[] }> {
 
 // Create promotion
 async function createPromotion(data: PromotionFormData): Promise<{ promotion: Promotion }> {
+  // For fixed_cents type, convert Rupiah to cents. For percentage, value is basis points (no conversion).
+  const valueCents = data.type === 'fixed_cents' 
+    ? (parseInt(data.valueCents) || 0) * 100 
+    : (parseInt(data.valueCents) || 0);
+  
   const response = await fetch('/api/admin/promotions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ...data,
-      valueCents: parseInt(data.valueCents) || 0,
+      valueCents,
       minOrderCents: data.minOrderCents ? parseInt(data.minOrderCents) * 100 : null,
       maxUses: data.maxUses ? parseInt(data.maxUses) : null,
       maxUsesPerCustomer: data.maxUsesPerCustomer ? parseInt(data.maxUsesPerCustomer) : null,
@@ -156,12 +161,16 @@ export default function PromotionsPage() {
 
   const openEditModal = (promotion: Promotion) => {
     setEditingPromotion(promotion);
+    // For fixed_cents type, convert cents to Rupiah for display. For percentage, value is basis points.
+    const valueForDisplay = promotion.type === 'fixed_cents'
+      ? (promotion.valueCents / 100).toString()
+      : promotion.valueCents.toString();
     setFormData({
       code: promotion.code,
       name: promotion.name,
       description: promotion.description || '',
       type: promotion.type,
-      valueCents: promotion.valueCents.toString(),
+      valueCents: valueForDisplay,
       minOrderCents: promotion.minOrderCents ? (promotion.minOrderCents / 100).toString() : '',
       maxUses: promotion.maxUses?.toString() || '',
       maxUsesPerCustomer: promotion.maxUsesPerCustomer?.toString() || '',
@@ -236,11 +245,12 @@ export default function PromotionsPage() {
     if (promotion.type === 'percentage') {
       return `${(promotion.valueCents / 100).toFixed(0)}%`;
     }
+    // fixed_cents: valueCents is in cents, convert to Rupiah for display
     return `Rp ${(promotion.valueCents / 100).toLocaleString('id-ID')}`;
   };
 
   return (
-    <div className="max-w-7xl">
+    <div>
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>

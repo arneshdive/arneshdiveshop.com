@@ -1,23 +1,23 @@
-// For true integer-cents values (per the DB convention in SPEC.md) once a real
-// backend exists — divides by 100 before formatting.
-export function formatCurrency(cents: number, currency = 'IDR'): string {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-  }).format(cents / 100);
-}
-
-// For today's mock data: every `*Cents`-named mock field actually holds a
-// whole-Rupiah amount (no /100), consistent with mock-products.ts's display
-// strings. Use this — not formatCurrency — until real cents-based data exists.
-export function formatRupiah(amount: number): string {
+/**
+ * Format cents to Rupiah currency string.
+ * 
+ * CONVENTION: All prices in the database are stored as cents (1 Rupiah = 100 cents).
+ * - Rp 850.000 is stored as 85000000 in the database
+ * - This function divides by 100 to convert cents to Rupiah for display
+ * 
+ * @param cents - Amount in cents (e.g., 85000000 for Rp 850.000)
+ * @returns Formatted currency string (e.g., "Rp850.000")
+ */
+export function formatRupiah(cents: number): string {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0,
-  }).format(amount);
+  }).format(cents / 100);
 }
+
+// Alias for clarity in some contexts
+export const formatCurrency = formatRupiah;
 
 // Formats a raw numeric input value with thousands separators as the user types
 // (e.g. admin form fields for price). Distinct from formatRupiah/formatCurrency,

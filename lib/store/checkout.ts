@@ -5,18 +5,19 @@ export interface CheckoutData {
   email: string;
   phone: string;
   fullName: string;
-  address1: string;
-  address2: string;
-  city: string;
-  postalCode: string;
-  province: string;
+  // Shipping address
+  address1: string;          // Street address (manual input)
+  address2: string;          // Additional details (RT/RW, patokan, etc)
   notes: string;
   shippingMethod: 'jne-regular' | 'jne-yes' | 'sicepat-reg';
-  // Map-selected location
-  hasMapLocation: boolean;
-  formattedAddress: string;
-  lat: number | null;
-  lng: number | null;
+  // RajaOngkir destination (subdistrict level)
+  rajaongkirCityId: string | null;
+  rajaongkirCityName: string | null;  // Full label for display
+  rajaongkirProvince: string | null;
+  rajaongkirCity: string | null;      // City name
+  rajaongkirDistrict: string | null;  // Kecamatan
+  rajaongkirSubdistrict: string | null; // Kelurahan
+  rajaongkirPostalCode: string | null;
   // API session tracking
   checkoutSessionId: string | null;
 }
@@ -37,15 +38,15 @@ const initialData: CheckoutData = {
   fullName: '',
   address1: '',
   address2: '',
-  city: '',
-  postalCode: '',
-  province: '',
   notes: '',
   shippingMethod: 'jne-regular',
-  hasMapLocation: false,
-  formattedAddress: '',
-  lat: null,
-  lng: null,
+  rajaongkirCityId: null,
+  rajaongkirCityName: null,
+  rajaongkirProvince: null,
+  rajaongkirCity: null,
+  rajaongkirDistrict: null,
+  rajaongkirSubdistrict: null,
+  rajaongkirPostalCode: null,
   checkoutSessionId: null,
 };
 

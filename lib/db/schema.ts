@@ -173,12 +173,17 @@ export const addresses = pgTable('addresses', {
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
   phone: text('phone'),
+  // Street address
   address1: text('address1').notNull(),
   address2: text('address2'),
-  city: text('city').notNull(),
-  state: text('state'), // Province in Indonesia context
-  postalCode: text('postal_code').notNull(),
-  country: text('country').notNull().default('Indonesia'),
+  // RajaOngkir destination
+  rajaongkirCityId: text('rajaongkir_city_id').notNull(),
+  rajaongkirCityName: text('rajaongkir_city_name'),
+  rajaongkirProvince: text('rajaongkir_province'),
+  rajaongkirCity: text('rajaongkir_city'),
+  rajaongkirDistrict: text('rajaongkir_district'),
+  rajaongkirSubdistrict: text('rajaongkir_subdistrict'),
+  rajaongkirPostalCode: text('rajaongkir_postal_code'),
   isDefault: boolean('is_default').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -217,17 +222,23 @@ export const checkoutSessions = pgTable('checkout_sessions', {
   email: text('email').notNull(),
   phone: text('phone').notNull(),
   fullName: text('full_name').notNull(),
+  // Shipping address (street level)
   address1: text('address1').notNull(),
   address2: text('address2'),
-  city: text('city').notNull(),
-  province: text('province').notNull(),
-  postalCode: text('postal_code').notNull(),
-  country: text('country').notNull().default('Indonesia'),
   notes: text('notes'),
-  lat: text('lat'),
-  lng: text('lng'),
-  formattedAddress: text('formatted_address'),
-  rajaongkirCityId: text('rajaongkir_city_id'), // Matched from customer address
+  // RajaOngkir destination (subdistrict level for pricing)
+  rajaongkirCityId: text('rajaongkir_city_id').notNull(),
+  rajaongkirCityName: text('rajaongkir_city_name'),
+  rajaongkirProvince: text('rajaongkir_province'),
+  rajaongkirCity: text('rajaongkir_city'),
+  rajaongkirDistrict: text('rajaongkir_district'),
+  rajaongkirSubdistrict: text('rajaongkir_subdistrict'),
+  rajaongkirPostalCode: text('rajaongkir_postal_code'),
+  // Backward compatibility fields
+  city: text('city'),
+  province: text('province'),
+  postalCode: text('postal_code'),
+  country: text('country').notNull().default('Indonesia'),
   shippingMethod: text('shipping_method'),
   subtotalCents: integer('subtotal_cents'),
   shippingCents: integer('shipping_cents'),

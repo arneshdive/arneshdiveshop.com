@@ -151,7 +151,7 @@ export default function ProductsPage() {
   const products = data?.products ?? [];
 
   return (
-    <div className="max-w-7xl">
+    <div>
       {/* Page Header */}
       <div className="flex items-start justify-between mb-8">
         <div>

@@ -49,16 +49,18 @@ export interface MockOrder {
   };
 }
 
+// CONVENTION: All *Cents values are in cents (1 Rupiah = 100 cents)
+// Rp 850.000 = 85000000 cents
 export const mockOrders: MockOrder[] = [
   {
     id: '1',
     orderNumber: 'ORD-2025-001',
     status: 'pending_payment',
-    subtotalCents: 1650000,
-    shippingCents: 50000,
+    subtotalCents: 165000000, // Rp 1.650.000
+    shippingCents: 5000000, // Rp 50.000
     taxCents: 0,
     discountCents: 0,
-    totalCents: 1700000,
+    totalCents: 170000000,
     createdAt: '2026-07-11T10:30:00Z',
     customer: {
       id: 'c1',
@@ -83,14 +85,14 @@ export const mockOrders: MockOrder[] = [
         productId: 'p1',
         name: 'Cressi F1 Freediving Mask',
         quantity: 1,
-        priceCents: 450000,
+        priceCents: 45000000, // Rp 450.000
       },
       {
         id: 'i2',
         productId: 'p2',
         name: 'Mares Avanti Quattro Fins',
         quantity: 1,
-        priceCents: 1200000,
+        priceCents: 120000000, // Rp 1.200.000
       },
     ],
     payment: {
@@ -102,11 +104,11 @@ export const mockOrders: MockOrder[] = [
     id: '2',
     orderNumber: 'ORD-2025-002',
     status: 'shipped',
-    subtotalCents: 8500000,
+    subtotalCents: 850000000, // Rp 8.500.000
     shippingCents: 0,
     taxCents: 0,
-    discountCents: 500000,
-    totalCents: 8000000,
+    discountCents: 50000000, // Rp 500.000
+    totalCents: 800000000,
     createdAt: '2026-07-11T08:15:00Z',
     customer: {
       id: 'c2',
@@ -130,7 +132,7 @@ export const mockOrders: MockOrder[] = [
         productId: 'p4',
         name: 'Scubapro Hydros Pro BCD',
         quantity: 1,
-        priceCents: 8500000,
+        priceCents: 850000000, // Rp 8.500.000
       },
     ],
     payment: {
@@ -144,11 +146,11 @@ export const mockOrders: MockOrder[] = [
     id: '3',
     orderNumber: 'ORD-2025-003',
     status: 'shipped',
-    subtotalCents: 890000,
-    shippingCents: 75000,
+    subtotalCents: 89000000, // Rp 890.000
+    shippingCents: 7500000, // Rp 75.000
     taxCents: 0,
     discountCents: 0,
-    totalCents: 965000,
+    totalCents: 96500000,
     createdAt: '2026-07-10T14:20:00Z',
     customer: {
       id: 'c3',
@@ -172,7 +174,7 @@ export const mockOrders: MockOrder[] = [
         productId: 'p3',
         name: 'Apeks RK3 Fins',
         quantity: 1,
-        priceCents: 890000,
+        priceCents: 89000000, // Rp 890.000
       },
     ],
     payment: {
@@ -186,11 +188,11 @@ export const mockOrders: MockOrder[] = [
     id: '4',
     orderNumber: 'ORD-2025-004',
     status: 'delivered',
-    subtotalCents: 2400000,
-    shippingCents: 50000,
+    subtotalCents: 240000000, // Rp 2.400.000
+    shippingCents: 5000000, // Rp 50.000
     taxCents: 0,
-    discountCents: 200000,
-    totalCents: 2250000,
+    discountCents: 20000000, // Rp 200.000
+    totalCents: 225000000,
     createdAt: '2026-07-08T09:00:00Z',
     customer: {
       id: 'c4',
@@ -214,7 +216,7 @@ export const mockOrders: MockOrder[] = [
         productId: 'p2',
         name: 'Mares Avanti Quattro Fins',
         quantity: 2,
-        priceCents: 1200000,
+        priceCents: 120000000, // Rp 1.200.000
       },
     ],
     payment: {
@@ -228,11 +230,11 @@ export const mockOrders: MockOrder[] = [
     id: '5',
     orderNumber: 'ORD-2025-005',
     status: 'cancelled',
-    subtotalCents: 450000,
-    shippingCents: 50000,
+    subtotalCents: 45000000, // Rp 450.000
+    shippingCents: 5000000, // Rp 50.000
     taxCents: 0,
     discountCents: 0,
-    totalCents: 500000,
+    totalCents: 50000000,
     createdAt: '2026-07-07T16:45:00Z',
     customer: {
       id: 'c5',
@@ -256,7 +258,7 @@ export const mockOrders: MockOrder[] = [
         productId: 'p1',
         name: 'Cressi F1 Freediving Mask',
         quantity: 1,
-        priceCents: 450000,
+        priceCents: 45000000, // Rp 450.000
       },
     ],
     payment: {
@@ -268,11 +270,11 @@ export const mockOrders: MockOrder[] = [
     id: '6',
     orderNumber: 'ORD-2025-006',
     status: 'pending_payment',
-    subtotalCents: 1780000,
-    shippingCents: 50000,
+    subtotalCents: 178000000, // Rp 1.780.000
+    shippingCents: 5000000, // Rp 50.000
     taxCents: 0,
     discountCents: 0,
-    totalCents: 1830000,
+    totalCents: 183000000,
     createdAt: '2026-07-11T11:00:00Z',
     customer: {
       id: 'c6',
@@ -296,21 +298,21 @@ export const mockOrders: MockOrder[] = [
         productId: 'p1',
         name: 'Cressi F1 Freediving Mask',
         quantity: 1,
-        priceCents: 450000,
+        priceCents: 45000000, // Rp 450.000
       },
       {
         id: 'i8',
         productId: 'p3',
         name: 'Apeks RK3 Fins',
         quantity: 1,
-        priceCents: 890000,
+        priceCents: 89000000, // Rp 890.000
       },
       {
         id: 'i9',
         productId: 'p5',
         name: 'Dive Computer Suunto Zoop',
         quantity: 1,
-        priceCents: 440000,
+        priceCents: 44000000, // Rp 440.000
       },
     ],
     payment: {

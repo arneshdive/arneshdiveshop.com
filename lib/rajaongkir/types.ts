@@ -13,9 +13,12 @@ export interface RajaongkirProvince {
 export interface RajaongkirCity {
   id: string;
   name: string;
-  type: string; // "Kabupaten" or "Kota"
+  type: string; // "Kabupaten", "Kota", "Kecamatan", "Kelurahan"
   provinceId: string;
   province: string;
+  city?: string;       // City name (for subdistricts)
+  district?: string;   // District name (for subdistricts)
+  subdistrict?: string; // Subdistrict name
   postalCode: string;
 }
 

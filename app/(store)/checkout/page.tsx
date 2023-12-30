@@ -39,7 +39,8 @@ export default function CheckoutPage() {
     if (!data.email || !isValidEmail(data.email)) return false;
     if (!data.phone || !isValidPhone(data.phone)) return false;
     if (!data.fullName.trim()) return false;
-    if (!data.hasMapLocation) return false; // Map selection is mandatory
+    if (!data.rajaongkirCityId) return false; // Destination is mandatory
+    if (!data.address1.trim()) return false; // Street address is mandatory
     return true;
   };
 
@@ -56,15 +57,22 @@ export default function CheckoutPage() {
           email: data.email,
           phone: data.phone,
           fullName: data.fullName,
+          // Street address
           address1: data.address1,
           address2: data.address2,
-          city: data.city,
-          province: data.province,
-          postalCode: data.postalCode,
-          lat: data.lat?.toString(),
-          lng: data.lng?.toString(),
-          formattedAddress: data.formattedAddress,
           notes: data.notes,
+          // RajaOngkir destination
+          rajaongkirCityId: data.rajaongkirCityId,
+          rajaongkirCityName: data.rajaongkirCityName,
+          rajaongkirProvince: data.rajaongkirProvince,
+          rajaongkirCity: data.rajaongkirCity,
+          rajaongkirDistrict: data.rajaongkirDistrict,
+          rajaongkirSubdistrict: data.rajaongkirSubdistrict,
+          rajaongkirPostalCode: data.rajaongkirPostalCode,
+          // City/province for backward compatibility
+          city: data.rajaongkirCity || data.rajaongkirDistrict,
+          province: data.rajaongkirProvince,
+          postalCode: data.rajaongkirPostalCode,
           shippingMethod: data.shippingMethod,
         }),
       });
@@ -78,7 +86,6 @@ export default function CheckoutPage() {
       setField('checkoutSessionId', result.checkoutSession.id);
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      // Don't show alert here, will be handled on submit
     } finally {
       setIsCreatingSession(false);
     }
@@ -109,7 +116,7 @@ export default function CheckoutPage() {
     if (validateForm() && !data.checkoutSessionId && !isCreatingSession) {
       createCheckoutSession();
     }
-  }, [data.email, data.phone, data.fullName, data.hasMapLocation, data.checkoutSessionId]);
+  }, [data.email, data.phone, data.fullName, data.rajaongkirCityId, data.address1, data.checkoutSessionId]);
 
   // Track previous shipping method to detect changes
   const [prevShippingMethod, setPrevShippingMethod] = useState(data.shippingMethod);
@@ -144,13 +151,17 @@ export default function CheckoutPage() {
             fullName: data.fullName,
             address1: data.address1,
             address2: data.address2,
-            city: data.city,
-            province: data.province,
-            postalCode: data.postalCode,
-            lat: data.lat?.toString(),
-            lng: data.lng?.toString(),
-            formattedAddress: data.formattedAddress,
             notes: data.notes,
+            rajaongkirCityId: data.rajaongkirCityId,
+            rajaongkirCityName: data.rajaongkirCityName,
+            rajaongkirProvince: data.rajaongkirProvince,
+            rajaongkirCity: data.rajaongkirCity,
+            rajaongkirDistrict: data.rajaongkirDistrict,
+            rajaongkirSubdistrict: data.rajaongkirSubdistrict,
+            rajaongkirPostalCode: data.rajaongkirPostalCode,
+            city: data.rajaongkirCity || data.rajaongkirDistrict,
+            province: data.rajaongkirProvince,
+            postalCode: data.rajaongkirPostalCode,
             shippingMethod: data.shippingMethod,
           }),
         });
@@ -195,11 +206,9 @@ export default function CheckoutPage() {
       // Open Midtrans Snap payment
       openSnapPayment(snapToken, {
         onSuccess: (_result: SnapResult) => {
-          // Payment successful
           router.push(`/checkout/success?order_id=${orderId}`);
         },
         onPending: (_result: SnapResult) => {
-          // Payment pending (e.g., VA waiting)
           router.push(`/checkout/success?order_id=${orderId}&status=pending`);
         },
         onError: (error: SnapError) => {
@@ -208,7 +217,6 @@ export default function CheckoutPage() {
           setIsSubmitting(false);
         },
         onClose: () => {
-          // User closed the popup without finishing
           alert('Anda menutup popup pembayaran. Anda dapat mencoba lagi.');
           setIsSubmitting(false);
         },
@@ -223,7 +231,6 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <>
-        {/* Hero */}
         <section className="relative bg-neutral-100 pt-24 pb-12 lg:pt-32 lg:pb-16">
           <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
             <div className="text-center">
@@ -248,10 +255,8 @@ export default function CheckoutPage() {
 
   return (
     <>
-      {/* Progress */}
       <CheckoutProgress currentStep="information" />
 
-      {/* Hero */}
       <section className="relative bg-neutral-100 pt-12 pb-8">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="text-center">
@@ -265,11 +270,9 @@ export default function CheckoutPage() {
         </div>
       </section>
 
-      {/* Content */}
       <section className="py-12 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16">
-            {/* Forms */}
             <div className="flex-1">
               <ContactForm />
               <ShippingAddressForm />
@@ -298,7 +301,6 @@ export default function CheckoutPage() {
               </Link>
             </div>
 
-            {/* Order Summary */}
             <div className="lg:w-[480px]">
               <OrderSummaryCard />
             </div>
@@ -306,12 +308,10 @@ export default function CheckoutPage() {
         </div>
       </section>
 
-      {/* Separator */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
         <hr className="border-neutral-200" />
       </div>
 
-      {/* USP Section - overlaps the footer below it */}
       <section className="relative z-10 -mb-16 lg:-mb-20">
         <USPSection />
       </section>

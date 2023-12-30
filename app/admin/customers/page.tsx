@@ -140,7 +140,7 @@ export default function CustomersPage() {
     : null;
 
   return (
-    <div className="max-w-7xl flex-1 flex flex-col min-h-0">
+    <div className="flex-1 flex flex-col min-h-0">
       {/* Page Header */}
       <div className="mb-8 flex-shrink-0">
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Pelanggan</h1>

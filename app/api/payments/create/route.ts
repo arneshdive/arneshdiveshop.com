@@ -252,9 +252,10 @@ export async function POST(request: NextRequest) {
 
 /**
  * Calculate shipping cost based on method and order total
+ * CONVENTION: All values are in cents (1 Rupiah = 100 cents)
  */
 function calculateShippingCost(shippingMethod: string | null, subtotalCents: number): number {
-  const FREE_SHIPPING_THRESHOLD = 50000000; // 500,000 IDR in cents (500rb * 100)
+  const FREE_SHIPPING_THRESHOLD = 50000000; // Rp 500.000 in cents
   
   // Free shipping for orders above threshold
   if (subtotalCents >= FREE_SHIPPING_THRESHOLD) {
@@ -263,13 +264,13 @@ function calculateShippingCost(shippingMethod: string | null, subtotalCents: num
 
   switch (shippingMethod) {
     case 'jne-regular':
-      return 250000; // 25,000 IDR in cents
+      return 2500000; // Rp 25.000 in cents
     case 'jne-yes':
-      return 450000; // 45,000 IDR in cents
+      return 4500000; // Rp 45.000 in cents
     case 'sicepat-reg':
-      return 200000; // 20,000 IDR in cents
+      return 2000000; // Rp 20.000 in cents
     default:
-      return 250000; // Default to JNE Regular
+      return 2500000; // Default to JNE Regular
   }
 }
 

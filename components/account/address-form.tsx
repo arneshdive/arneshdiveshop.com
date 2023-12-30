@@ -3,8 +3,24 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
-import { MapModal } from '@/components/checkout/map-modal';
-import type { Address } from '@/lib/data/mock-account';
+import { DestinationSearch } from '@/components/checkout/destination-search';
+
+interface Address {
+  id: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  address1: string;
+  address2?: string;
+  rajaongkirCityId: string;
+  rajaongkirCityName: string;
+  rajaongkirProvince?: string;
+  rajaongkirCity?: string;
+  rajaongkirDistrict?: string;
+  rajaongkirSubdistrict?: string;
+  rajaongkirPostalCode?: string;
+}
 
 interface AddressFormProps {
   initialData?: Address | null;
@@ -13,38 +29,33 @@ interface AddressFormProps {
 }
 
 export function AddressForm({ initialData, onSave, onCancel }: AddressFormProps) {
-  const [isMapOpen, setIsMapOpen] = useState(false);
-  const [hasMapLocation, setHasMapLocation] = useState(!!initialData?.address1);
-
   // Form state
   const [name, setName] = useState(initialData?.name || '');
   const [fullName, setFullName] = useState(
     initialData ? `${initialData.firstName} ${initialData.lastName}` : ''
   );
   const [phone, setPhone] = useState(initialData?.phone || '');
-  const [notes, setNotes] = useState(initialData?.address2 || '');
-
-  // Map-derived data (read-only after selection)
   const [address1, setAddress1] = useState(initialData?.address1 || '');
-  const [city, setCity] = useState(initialData?.city || '');
-  const [state, setState] = useState(initialData?.state || '');
-  const [postalCode, setPostalCode] = useState(initialData?.postalCode || '');
-  const [formattedAddress, setFormattedAddress] = useState('');
+  const [address2, setAddress2] = useState(initialData?.address2 || '');
 
-  const handleMapSelect = (data: {
-    address1: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    formattedAddress?: string;
-  }) => {
-    setAddress1(data.address1);
-    setCity(data.city);
-    setState(data.state);
-    setPostalCode(data.postalCode);
-    setFormattedAddress(data.formattedAddress || '');
-    setHasMapLocation(true);
-  };
+  // RajaOngkir destination
+  const [destination, setDestination] = useState<{
+    id: string;
+    name: string;
+    province: string;
+    city?: string;
+    district?: string;
+    fullName: string;
+  } | null>(
+    initialData?.rajaongkirCityId ? {
+      id: initialData.rajaongkirCityId,
+      name: initialData.rajaongkirSubdistrict || '',
+      province: initialData.rajaongkirProvince || '',
+      city: initialData.rajaongkirCity,
+      district: initialData.rajaongkirDistrict,
+      fullName: initialData.rajaongkirCityName || '',
+    } : null
+  );
 
   const handleSave = () => {
     const nameParts = fullName.trim().split(' ');
@@ -57,14 +68,17 @@ export function AddressForm({ initialData, onSave, onCancel }: AddressFormProps)
       lastName,
       phone,
       address1,
-      address2: notes || undefined,
-      city,
-      state,
-      postalCode,
+      address2: address2 || undefined,
+      rajaongkirCityId: destination?.id,
+      rajaongkirCityName: destination?.fullName,
+      rajaongkirProvince: destination?.province,
+      rajaongkirCity: destination?.city,
+      rajaongkirDistrict: destination?.district,
+      rajaongkirSubdistrict: destination?.name,
     });
   };
 
-  const isValid = name.trim() && fullName.trim() && phone.trim() && hasMapLocation;
+  const isValid = name.trim() && fullName.trim() && phone.trim() && destination && address1.trim();
 
   return (
     <div className="bg-neutral-50 p-8 rounded-xl">
@@ -115,67 +129,65 @@ export function AddressForm({ initialData, onSave, onCancel }: AddressFormProps)
           />
         </div>
 
-        {/* Map Selection */}
-        {!hasMapLocation ? (
-          <div className="py-8 text-center border-2 border-dashed border-neutral-200 rounded-xl">
-            <div className="w-16 h-16 mx-auto mb-4 bg-neutral-200 rounded-full flex items-center justify-center">
-              <Icon icon="solar:map-point-linear" className="w-8 h-8 text-neutral-400" />
-            </div>
-            <h3 className="text-base font-medium mb-2">Pilih Lokasi Pengiriman</h3>
-            <p className="text-sm text-neutral-500 max-w-sm mx-auto mb-4">
-              Tentukan lokasi pengiriman Anda dengan menandai di peta.
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsMapOpen(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors"
-            >
-              <Icon icon="solar:map-point-linear" className="w-5 h-5" />
-              Cari di Peta
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Selected Address - Read Only */}
-            <div className="p-4 bg-white border border-neutral-200 rounded-xl">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
-                  <Icon icon="solar:map-point-bold" className="w-5 h-5 text-neutral-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-neutral-500 mb-1">Alamat Pengiriman</p>
-                  <p className="text-sm font-medium leading-relaxed">
-                    {formattedAddress || `${address1}, ${city}, ${state} ${postalCode}`}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsMapOpen(true)}
-                  className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
-                >
-                  Ubah
-                </button>
-              </div>
-            </div>
+        {/* Destination Search */}
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-2">
+            Kelurahan/Kecamatan <span className="text-red-500">*</span>
+          </label>
+          <DestinationSearch
+            value={destination?.fullName}
+            onSelect={(dest) => setDestination(dest)}
+            placeholder="Cari kelurahan atau kecamatan..."
+          />
+          <p className="text-xs text-neutral-400 mt-2">
+            Ketik nama kelurahan atau kecamatan tujuan pengiriman
+          </p>
+        </div>
 
-            {/* Additional Details - Optional */}
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-2">
-                Detail Tambahan <span className="text-neutral-400 font-normal">(opsional)</span>
-              </label>
-              <input
-                type="text"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Nama gedung, nomor apartemen, RT/RW, patokan..."
-                className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
-              />
-              <p className="text-xs text-neutral-400 mt-2">
-                Tambahkan detail yang bisa membantu kurir menemukan lokasi Anda
-              </p>
+        {/* Selected Destination */}
+        {destination && (
+          <div className="p-4 bg-white border border-neutral-200 rounded-xl">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                <Icon icon="solar:map-point-bold" className="w-5 h-5 text-neutral-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-neutral-500 mb-1">Tujuan Pengiriman</p>
+                <p className="text-sm font-medium leading-relaxed">
+                  {destination.fullName}
+                </p>
+              </div>
             </div>
           </div>
         )}
+
+        {/* Street Address */}
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-2">
+            Alamat Lengkap <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={address1}
+            onChange={(e) => setAddress1(e.target.value)}
+            placeholder="Jalan, nomor rumah, nama gedung, RT/RW..."
+            rows={2}
+            className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors resize-none"
+          />
+        </div>
+
+        {/* Additional Details */}
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-2">
+            Detail Tambahan <span className="text-neutral-400 font-normal">(opsional)</span>
+          </label>
+          <input
+            type="text"
+            value={address2}
+            onChange={(e) => setAddress2(e.target.value)}
+            placeholder="Patokan, catatan untuk kurir..."
+            className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+          />
+        </div>
       </div>
 
       <div className="flex gap-3 mt-8">
@@ -193,13 +205,6 @@ export function AddressForm({ initialData, onSave, onCancel }: AddressFormProps)
           Batal
         </button>
       </div>
-
-      {/* Map Modal */}
-      <MapModal
-        isOpen={isMapOpen}
-        onClose={() => setIsMapOpen(false)}
-        onAddressSelect={handleMapSelect}
-      />
     </div>
   );
 }

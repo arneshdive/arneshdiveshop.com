@@ -1,6 +1,5 @@
 import { db, checkoutSessions } from '@/lib/db';
 import { eq, and, gt, isNull, or, lt } from 'drizzle-orm';
-import type { CheckoutSessionInput } from '@/lib/utils/indonesia-address';
 import { getCartWithItems } from './cart';
 
 const CHECKOUT_SESSION_DURATION_HOURS = 24;
@@ -13,17 +12,19 @@ export interface CheckoutSessionWithCart {
   email: string;
   phone: string;
   fullName: string;
+  // Shipping address
   address1: string;
   address2: string | null;
-  city: string;
-  province: string;
-  postalCode: string;
-  country: string;
   notes: string | null;
-  lat: string | null;
-  lng: string | null;
-  formattedAddress: string | null;
-  rajaongkirCityId: string | null;
+  // RajaOngkir destination
+  rajaongkirCityId: string;
+  rajaongkirCityName: string | null;
+  rajaongkirProvince: string | null;
+  rajaongkirCity: string | null;
+  rajaongkirDistrict: string | null;
+  rajaongkirSubdistrict: string | null;
+  rajaongkirPostalCode: string | null;
+  // Totals
   shippingMethod: string | null;
   subtotalCents: number | null;
   shippingCents: number | null;
@@ -35,15 +36,43 @@ export interface CheckoutSessionWithCart {
   cart: Awaited<ReturnType<typeof getCartWithItems>> | null;
 }
 
+export interface CreateCheckoutSessionInput {
+  userId?: string;
+  guestId?: string;
+  cartId?: string;
+  email: string;
+  phone: string;
+  fullName: string;
+  address1: string;
+  address2?: string;
+  notes?: string;
+  rajaongkirCityId: string;
+  rajaongkirCityName?: string;
+  rajaongkirProvince?: string;
+  rajaongkirCity?: string;
+  rajaongkirDistrict?: string;
+  rajaongkirSubdistrict?: string;
+  rajaongkirPostalCode?: string;
+  shippingMethod?: string;
+}
+
+export interface UpdateCheckoutSessionInput {
+  shippingMethod?: string;
+  notes?: string;
+  rajaongkirCityId?: string;
+  rajaongkirCityName?: string;
+  rajaongkirProvince?: string;
+  rajaongkirCity?: string;
+  rajaongkirDistrict?: string;
+  rajaongkirSubdistrict?: string;
+  rajaongkirPostalCode?: string;
+}
+
 /**
  * Create a new checkout session
  */
 export async function createCheckoutSession(
-  data: CheckoutSessionInput & {
-    userId?: string;
-    guestId?: string;
-    cartId?: string;
-  }
+  data: CreateCheckoutSessionInput
 ): Promise<CheckoutSessionWithCart> {
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + CHECKOUT_SESSION_DURATION_HOURS);
@@ -59,15 +88,15 @@ export async function createCheckoutSession(
       fullName: data.fullName,
       address1: data.address1,
       address2: data.address2 || null,
-      city: data.city,
-      province: data.province,
-      postalCode: data.postalCode,
-      country: data.country || 'Indonesia',
       notes: data.notes || null,
-      lat: data.lat || null,
-      lng: data.lng || null,
-      formattedAddress: data.formattedAddress || null,
-      shippingMethod: data.shippingMethod || 'jne-regular',
+      rajaongkirCityId: data.rajaongkirCityId,
+      rajaongkirCityName: data.rajaongkirCityName || null,
+      rajaongkirProvince: data.rajaongkirProvince || null,
+      rajaongkirCity: data.rajaongkirCity || null,
+      rajaongkirDistrict: data.rajaongkirDistrict || null,
+      rajaongkirSubdistrict: data.rajaongkirSubdistrict || null,
+      rajaongkirPostalCode: data.rajaongkirPostalCode || null,
+      shippingMethod: data.shippingMethod || null,
       expiresAt,
     })
     .returning();
@@ -76,7 +105,6 @@ export async function createCheckoutSession(
     throw new Error('Failed to create checkout session');
   }
 
-  // Fetch cart data
   let cart = null;
   if (data.cartId) {
     cart = await getCartWithItems(data.cartId);
@@ -102,7 +130,6 @@ export async function getCheckoutSessionById(
     return null;
   }
 
-  // Fetch cart data
   let cart = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
@@ -133,7 +160,6 @@ export async function getCheckoutSessionByUserId(
     return null;
   }
 
-  // Fetch cart data
   let cart = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
@@ -164,7 +190,6 @@ export async function getCheckoutSessionByGuestId(
     return null;
   }
 
-  // Fetch cart data
   let cart = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
@@ -181,7 +206,7 @@ export async function getCheckoutSessionByGuestId(
  */
 export async function updateCheckoutSession(
   sessionId: string,
-  data: Partial<CheckoutSessionInput> & { rajaongkirCityId?: string }
+  data: UpdateCheckoutSessionInput
 ): Promise<CheckoutSessionWithCart | null> {
   const [session] = await db
     .update(checkoutSessions)
@@ -196,7 +221,6 @@ export async function updateCheckoutSession(
     return null;
   }
 
-  // Fetch cart data
   let cart = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
@@ -242,43 +266,8 @@ export async function completeCheckoutSession(sessionId: string): Promise<void> 
 }
 
 /**
- * Expire checkout session
- */
-export async function expireCheckoutSession(sessionId: string): Promise<void> {
-  await db
-    .update(checkoutSessions)
-    .set({
-      status: 'expired',
-      updatedAt: new Date(),
-    })
-    .where(eq(checkoutSessions.id, sessionId));
-}
-
-/**
  * Delete checkout session
  */
 export async function deleteCheckoutSession(sessionId: string): Promise<void> {
   await db.delete(checkoutSessions).where(eq(checkoutSessions.id, sessionId));
-}
-
-/**
- * Clean up expired checkout sessions (can be run as a cron job)
- */
-export async function cleanupExpiredCheckoutSessions(): Promise<void> {
-  // Mark all pending sessions that have expired as expired
-  await db
-    .update(checkoutSessions)
-    .set({ status: 'expired', updatedAt: new Date() })
-    .where(
-      and(
-        eq(checkoutSessions.status, 'pending'),
-        or(
-          lt(checkoutSessions.expiresAt, new Date()),
-          and(
-            isNull(checkoutSessions.expiresAt),
-            lt(checkoutSessions.createdAt, new Date(Date.now() - CHECKOUT_SESSION_DURATION_HOURS * 60 * 60 * 1000))
-          )
-        )
-      )
-    );
 }

@@ -225,7 +225,7 @@ export default function OrdersPage() {
   }, [queryClient]);
 
   return (
-    <div className="max-w-7xl flex-1 flex flex-col min-h-0">
+    <div className="flex-1 flex flex-col min-h-0">
       {/* Page Header */}
       <div className="flex items-start justify-between mb-8 flex-shrink-0">
         <div>

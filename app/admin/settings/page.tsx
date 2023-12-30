@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Input, Textarea } from '@/components/admin/input';
 
@@ -10,6 +11,9 @@ interface RajaongkirCity {
   name: string;
   type: string;
   province: string;
+  city?: string;
+  district?: string;
+  fullName: string;
 }
 
 interface ShopSettingsData {
@@ -117,42 +121,41 @@ export default function SettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings),
       });
+      
       if (response.ok) {
-        const button = document.querySelector('button[type="submit"]');
-        if (button) {
-          button.textContent = 'Tersimpan!';
-          setTimeout(() => {
-            button.textContent = 'Simpan';
-          }, 2000);
-        }
+        toast.success('Pengaturan berhasil disimpan');
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Gagal menyimpan pengaturan');
       }
     } catch (error) {
       console.error('Error saving settings:', error);
+      toast.error('Terjadi kesalahan saat menyimpan');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleCitySelect = (city: RajaongkirCity) => {
+  const handleCitySelect = (city: { id: string; name: string; type: string; province: string; city?: string; district?: string; fullName: string }) => {
     setSettings(prev => ({
       ...prev,
       rajaongkirCityId: city.id,
-      rajaongkirCityName: `${city.type} ${city.name}, ${city.province}`,
+      rajaongkirCityName: city.fullName,
     }));
-    setCitySearch(`${city.type} ${city.name}, ${city.province}`);
+    setCitySearch(city.fullName);
     setShowCityDropdown(false);
   };
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-[400px]">
         <Icon icon="solar:spinner" className="w-8 h-8 animate-spin text-neutral-400" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl">
+    <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Pengaturan</h1>
@@ -286,8 +289,8 @@ export default function SettingsPage() {
                         onClick={() => handleCitySelect(city)}
                         className="w-full px-4 py-3 text-left text-sm hover:bg-neutral-50 border-b border-neutral-100 last:border-0"
                       >
-                        <p className="font-medium text-neutral-900">{city.type} {city.name}</p>
-                        <p className="text-xs text-neutral-500">{city.province}</p>
+                        <p className="font-medium text-neutral-900">{city.name}</p>
+                        <p className="text-xs text-neutral-500">{city.fullName}</p>
                       </button>
                     ))}
                   </div>

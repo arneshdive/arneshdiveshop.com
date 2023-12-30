@@ -113,7 +113,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="max-w-7xl">
+    <div>
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>

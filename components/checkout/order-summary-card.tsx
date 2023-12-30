@@ -6,6 +6,11 @@ import { useCheckoutStore } from '@/lib/store/checkout';
 import { shippingMethods, FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
 import { formatRupiah } from '@/lib/utils/format';
 
+// Note: All price values in this component are in cents (1 Rupiah = 100 cents)
+// - FREE_SHIPPING_THRESHOLD is in cents
+// - shippingMethods[].price is in cents
+// - Cart totals are in cents
+
 export function OrderSummaryCard() {
   // Ensure cart is synced
   useCartSync();
@@ -18,7 +23,7 @@ export function OrderSummaryCard() {
   const freeShipping = subtotalCents >= FREE_SHIPPING_THRESHOLD;
   const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotalCents;
   const selectedMethod = shippingMethods.find((m) => m.id === data.shippingMethod);
-  const shippingCost = freeShipping ? 0 : (selectedMethod?.price || 0);
+  const shippingCostCents = freeShipping ? 0 : (selectedMethod?.price || 0);
 
   // Get image for item
   const getItemImage = (item: typeof items[0]) => {
@@ -95,11 +100,11 @@ export function OrderSummaryCard() {
         )}
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Ongkos Kirim</span>
-          <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : formatRupiah(shippingCost)}</span>
+          <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : formatRupiah(shippingCostCents)}</span>
         </div>
         <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
           <span>Total</span>
-          <span>{formatRupiah(totalCents + shippingCost)}</span>
+          <span>{formatRupiah(totalCents + shippingCostCents)}</span>
         </div>
       </div>
 

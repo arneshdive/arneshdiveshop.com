@@ -90,16 +90,17 @@ const shippingAddress = {
 };
 
 // Mock orders — "my orders" for the logged-in customer above.
+// CONVENTION: All *Cents values are in cents (1 Rupiah = 100 cents)
 export const mockOrders: MockOrder[] = [
   {
     id: '1',
     orderNumber: 'ARD-2024-0042',
     status: 'pending_payment',
-    subtotalCents: 3350000,
+    subtotalCents: 335000000, // Rp 3.350.000 in cents
     shippingCents: 0,
     taxCents: 0,
     discountCents: 0,
-    totalCents: 3350000,
+    totalCents: 335000000,
     createdAt: '2024-07-02',
     customer,
     shippingAddress,
@@ -111,7 +112,7 @@ export const mockOrders: MockOrder[] = [
         image: '/product-sample-1.webp',
         variant: { color: 'Hitam' },
         quantity: 1,
-        priceCents: 850000,
+        priceCents: 85000000, // Rp 850.000 in cents
       },
       {
         id: '1-2',
@@ -120,7 +121,7 @@ export const mockOrders: MockOrder[] = [
         image: '/product-sample-2.webp',
         variant: { size: '42-43' },
         quantity: 1,
-        priceCents: 2500000,
+        priceCents: 250000000, // Rp 2.500.000 in cents
       },
     ],
     payment: {
@@ -132,11 +133,11 @@ export const mockOrders: MockOrder[] = [
     id: '2',
     orderNumber: 'ARD-2024-0041',
     status: 'shipped',
-    subtotalCents: 1800000,
-    shippingCents: 25000,
+    subtotalCents: 180000000, // Rp 1.800.000 in cents
+    shippingCents: 2500000, // Rp 25.000 in cents
     taxCents: 0,
     discountCents: 0,
-    totalCents: 1825000,
+    totalCents: 182500000,
     createdAt: '2024-06-28',
     customer,
     shippingAddress,
@@ -148,7 +149,7 @@ export const mockOrders: MockOrder[] = [
         image: '/instagram-1.jpg',
         variant: { size: 'L' },
         quantity: 1,
-        priceCents: 1800000,
+        priceCents: 180000000, // Rp 1.800.000 in cents
       },
     ],
     payment: {
@@ -162,11 +163,11 @@ export const mockOrders: MockOrder[] = [
     id: '3',
     orderNumber: 'ARD-2024-0040',
     status: 'delivered',
-    subtotalCents: 450000,
-    shippingCents: 25000,
+    subtotalCents: 45000000, // Rp 450.000 in cents
+    shippingCents: 2500000, // Rp 25.000 in cents
     taxCents: 0,
     discountCents: 0,
-    totalCents: 475000,
+    totalCents: 47500000,
     createdAt: '2024-06-15',
     customer,
     shippingAddress,
@@ -177,7 +178,7 @@ export const mockOrders: MockOrder[] = [
         name: 'Sabuk Pemberat Stainless',
         image: '/instagram-2.jpg',
         quantity: 1,
-        priceCents: 450000,
+        priceCents: 45000000, // Rp 450.000 in cents
       },
     ],
     payment: {

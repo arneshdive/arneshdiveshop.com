@@ -26,26 +26,44 @@ export async function syncProvinces(): Promise<number> {
 
 /**
  * Sync all cities from RajaOngkir API to database
+ * Fetches cities for each province
  */
 export async function syncCities(): Promise<number> {
-  const cities = await rajaongkirClient.getCities();
+  // First get all provinces
+  const provinces = await rajaongkirClient.getProvinces();
   
-  // Clear existing
+  // Clear existing cities
   await db.delete(rajaongkirCities);
   
-  // Insert new
-  await db.insert(rajaongkirCities).values(
-    cities.map(c => ({
-      id: c.id,
-      name: c.name,
-      type: c.type,
-      provinceId: c.provinceId,
-      province: c.province,
-      postalCode: c.postalCode || null,
-    }))
-  );
+  // Fetch cities for each province
+  let totalCities = 0;
+  
+  for (const province of provinces) {
+    try {
+      const cities = await rajaongkirClient.getCities(province.id);
+      
+      if (cities.length > 0) {
+        await db.insert(rajaongkirCities).values(
+          cities.map(c => ({
+            id: c.id,
+            name: c.name,
+            type: c.type,
+            provinceId: province.id,
+            province: province.name,
+            postalCode: c.postalCode || null,
+          }))
+        );
+        totalCities += cities.length;
+      }
+      
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 100));
+    } catch (error) {
+      console.error(`Failed to sync cities for province ${province.name}:`, error);
+    }
+  }
 
-  return cities.length;
+  return totalCities;
 }
 
 /**
@@ -62,7 +80,15 @@ export async function syncAllRajaongkirData(): Promise<{
 }
 
 /**
- * Get city by ID
+ * Search cities using RajaOngkir direct search API
+ * This is better for checkout flow - uses subdistrict IDs for accurate pricing
+ */
+export async function searchDestinations(query: string, limit = 10) {
+  return rajaongkirClient.searchDestination(query, limit);
+}
+
+/**
+ * Get city by ID from local cache
  */
 export async function getCityById(cityId: string) {
   return db.query.rajaongkirCities.findFirst({
@@ -71,7 +97,7 @@ export async function getCityById(cityId: string) {
 }
 
 /**
- * Search cities by name
+ * Search cities by name from local cache
  */
 export async function searchCities(query: string, limit = 10) {
   const searchPattern = `%${query.toLowerCase()}%`;

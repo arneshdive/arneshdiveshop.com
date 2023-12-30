@@ -228,7 +228,7 @@ export default function EditProductPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl">
+      <div>
         <div className="text-center py-16">
           <p className="text-neutral-500">Memuat produk...</p>
         </div>
@@ -238,7 +238,7 @@ export default function EditProductPage() {
 
   if (error || !data?.product) {
     return (
-      <div className="max-w-7xl">
+      <div>
         <div className="text-center py-16">
           <p className="text-red-600 mb-4">Produk tidak ditemukan</p>
           <AnimatedButton onClick={() => router.push('/admin/products')} variant="outline" size="xs">
@@ -250,7 +250,7 @@ export default function EditProductPage() {
   }
 
   return (
-    <div className="max-w-7xl">
+    <div>
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Edit Produk</h1>
@@ -259,7 +259,7 @@ export default function EditProductPage() {
 
       <div className="flex gap-8">
         {/* Form */}
-        <div className="flex-1 max-w-4xl">
+        <div className="flex-1">
           <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
             <BasicInfoSection formData={formData} setFormData={setFormData} />
 

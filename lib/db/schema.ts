@@ -394,6 +394,8 @@ export const shopSettings = pgTable('shop_settings', {
   // Shipping origin
   rajaongkirCityId: text('rajaongkir_city_id'),
   rajaongkirCityName: text('rajaongkir_city_name'), // Human readable: "Kota Denpasar, Bali"
+  // Active couriers for shipping
+  activeCouriers: text('active_couriers').default('jne,jnt,sicepat'),
   // Social media
   instagram: text('instagram'),
   tiktok: text('tiktok'),

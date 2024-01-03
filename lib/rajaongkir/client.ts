@@ -205,16 +205,15 @@ export const rajaongkirClient = {
   },
 
   /**
-   * Calculate costs for all available couriers
+   * Calculate costs for specified couriers
    * Supported couriers: jne, jnt, sicepat, idexpress, anteraja, pos, tiki
    */
   async calculateAllCouriers(
     origin: string,
     destination: string,
-    weight: number
+    weight: number,
+    couriers: string[] = ['jne', 'jnt', 'sicepat', 'idexpress', 'anteraja', 'pos', 'tiki']
   ): Promise<RajaongkirCostResult[]> {
-    const couriers = ['jne', 'jnt', 'sicepat', 'idexpress', 'anteraja', 'pos', 'tiki'];
-    
     const results = await Promise.all(
       couriers.map(courier => 
         this.calculateCost({ origin, destination, weight, courier: courier as 'jne' | 'pos' | 'tiki' })

@@ -2,6 +2,77 @@ import { db, shopSettings } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { unstable_cache } from 'next/cache';
 
+// ============================================================================
+// Courier Settings
+// ============================================================================
+
+// All supported couriers
+export const COURIERS = [
+  { code: 'jne', name: 'JNE' },
+  { code: 'jnt', name: 'J&T Express' },
+  { code: 'sicepat', name: 'SiCepat' },
+  { code: 'idexpress', name: 'ID Express' },
+  { code: 'anteraja', name: 'AnterAja' },
+  { code: 'pos', name: 'POS Indonesia' },
+  { code: 'tiki', name: 'TIKI' },
+] as const;
+
+export type CourierCode = (typeof COURIERS)[number]['code'];
+
+const DEFAULT_COURIERS: CourierCode[] = ['jne', 'jnt', 'sicepat'];
+
+/**
+ * Get active couriers from shop settings
+ * Falls back to default if not configured
+ */
+export async function getActiveCouriers(): Promise<CourierCode[]> {
+  const result = await db
+    .select({ activeCouriers: shopSettings.activeCouriers })
+    .from(shopSettings)
+    .where(eq(shopSettings.id, 'default'))
+    .limit(1);
+
+  const settings = result[0];
+
+  if (!settings?.activeCouriers) {
+    return DEFAULT_COURIERS;
+  }
+
+  const couriers = settings.activeCouriers
+    .split(',')
+    .map((c) => c.trim())
+    .filter((c): c is CourierCode => COURIERS.some((courier) => courier.code === c));
+
+  return couriers.length > 0 ? couriers : DEFAULT_COURIERS;
+}
+
+/**
+ * Validate courier codes
+ */
+export function validateCourierCodes(codes: string[]): {
+  valid: boolean;
+  error?: string;
+  validCodes: CourierCode[];
+} {
+  if (!Array.isArray(codes) || codes.length === 0) {
+    return { valid: false, error: 'Minimal 1 kurir harus aktif', validCodes: [] };
+  }
+
+  const validCodes = codes.filter((c): c is CourierCode =>
+    COURIERS.some((courier) => courier.code === c)
+  );
+
+  if (validCodes.length === 0) {
+    return { valid: false, error: 'Minimal 1 kurir harus aktif', validCodes: [] };
+  }
+
+  return { valid: true, validCodes };
+}
+
+// ============================================================================
+// Shop Settings Queries
+// ============================================================================
+
 // Cache tag for shop settings
 export const SHOP_SETTINGS_CACHE_TAG = 'shop-settings';
 

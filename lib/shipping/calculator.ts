@@ -2,6 +2,7 @@
 
 import { rajaongkirClient } from '@/lib/rajaongkir/client';
 import { getShopOriginCityId } from '@/lib/rajaongkir/city-matcher';
+import { getActiveCouriers } from '@/lib/queries/settings';
 import type { ShippingRate } from '@/lib/rajaongkir/types';
 
 const DEFAULT_PRODUCT_WEIGHT_GRAMS = 500;
@@ -65,10 +66,14 @@ export async function calculateShippingRates(
   }
 
   try {
+    // Get active couriers from settings
+    const activeCouriers = await getActiveCouriers();
+
     const results = await rajaongkirClient.calculateAllCouriers(
       originCityId,
       destinationCityId,
-      weightForApi
+      weightForApi,
+      activeCouriers
     );
 
     const rates: ShippingRate[] = [];

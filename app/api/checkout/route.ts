@@ -26,12 +26,12 @@ const checkoutSessionSchema = z.object({
   notes: z.string().max(500).optional(),
   // RajaOngkir destination
   rajaongkirCityId: z.string().min(1, 'Pilih kelurahan/kecamatan'),
-  rajaongkirCityName: z.string().optional(),
-  rajaongkirProvince: z.string().optional(),
-  rajaongkirCity: z.string().optional(),
-  rajaongkirDistrict: z.string().optional(),
-  rajaongkirSubdistrict: z.string().optional(),
-  rajaongkirPostalCode: z.string().optional(),
+  rajaongkirCityName: z.string().nullish(),
+  rajaongkirProvince: z.string().nullish(),
+  rajaongkirCity: z.string().nullish(),
+  rajaongkirDistrict: z.string().nullish(),
+  rajaongkirSubdistrict: z.string().nullish(),
+  rajaongkirPostalCode: z.string().nullish(),
   shippingMethod: z.string().optional(),
 });
 
@@ -226,6 +226,14 @@ export async function PUT(request: NextRequest) {
     const updateSchema = z.object({
       shippingMethod: z.string().optional(),
       notes: z.string().max(500).optional(),
+      // Allow updating destination
+      rajaongkirCityId: z.string().optional(),
+      rajaongkirCityName: z.string().nullish(),
+      rajaongkirProvince: z.string().nullish(),
+      rajaongkirCity: z.string().nullish(),
+      rajaongkirDistrict: z.string().nullish(),
+      rajaongkirSubdistrict: z.string().nullish(),
+      rajaongkirPostalCode: z.string().nullish(),
     });
 
     const result = updateSchema.safeParse(body);

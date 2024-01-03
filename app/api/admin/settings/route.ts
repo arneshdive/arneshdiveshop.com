@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db';
 import { shopSettings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { validateCourierCodes } from '@/lib/queries/settings';
 
 // GET /api/admin/settings - Fetch shop settings
 export async function GET() {
@@ -37,6 +38,17 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
 
+    // Validate activeCouriers if provided
+    if (body.activeCouriers !== undefined) {
+      const validation = validateCourierCodes(body.activeCouriers);
+      if (!validation.valid) {
+        return NextResponse.json(
+          { error: validation.error },
+          { status: 400 }
+        );
+      }
+    }
+
     const updateData = {
       storeName: body.storeName,
       email: body.email,
@@ -46,6 +58,9 @@ export async function PUT(request: Request) {
       about: body.about,
       rajaongkirCityId: body.rajaongkirCityId || null,
       rajaongkirCityName: body.rajaongkirCityName || null,
+      activeCouriers: body.activeCouriers
+        ? body.activeCouriers.join(',')
+        : undefined,
       instagram: body.instagram,
       tiktok: body.tiktok,
       updatedAt: new Date(),

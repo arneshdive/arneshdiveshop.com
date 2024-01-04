@@ -27,6 +27,7 @@ interface ShopSettingsData {
   rajaongkirCityName: string | null;
   instagram: string | null;
   tiktok: string | null;
+  activeCouriers: string[];
 }
 
 export default function SettingsPage() {
@@ -41,6 +42,7 @@ export default function SettingsPage() {
     rajaongkirCityName: null,
     instagram: null,
     tiktok: null,
+    activeCouriers: ['jne', 'jnt', 'sicepat'],
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -48,6 +50,37 @@ export default function SettingsPage() {
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [citySearch, setCitySearch] = useState('');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+
+  // Available couriers for toggle UI
+  const AVAILABLE_COURIERS = [
+    { code: 'jne', name: 'JNE' },
+    { code: 'jnt', name: 'J&T Express' },
+    { code: 'sicepat', name: 'SiCepat' },
+    { code: 'idexpress', name: 'ID Express' },
+    { code: 'anteraja', name: 'AnterAja' },
+    { code: 'pos', name: 'POS Indonesia' },
+    { code: 'tiki', name: 'TIKI' },
+  ] as const;
+
+  // Toggle courier on/off
+  const toggleCourier = (code: string) => {
+    setSettings(prev => {
+      const isActive = prev.activeCouriers.includes(code);
+
+      // Prevent unchecking the last courier
+      if (isActive && prev.activeCouriers.length === 1) {
+        toast.error('Minimal 1 kurir harus aktif');
+        return prev;
+      }
+
+      return {
+        ...prev,
+        activeCouriers: isActive
+          ? prev.activeCouriers.filter(c => c !== code)
+          : [...prev.activeCouriers, code],
+      };
+    });
+  };
 
   // Fetch settings on mount
   useEffect(() => {
@@ -67,6 +100,7 @@ export default function SettingsPage() {
             rajaongkirCityName: data.rajaongkirCityName || null,
             instagram: data.instagram || '',
             tiktok: data.tiktok || '',
+            activeCouriers: data.activeCouriers || ['jne', 'jnt', 'sicepat'],
           });
           if (data.rajaongkirCityName) {
             setCitySearch(data.rajaongkirCityName);
@@ -298,6 +332,46 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Active Couriers */}
+        <div className="bg-white rounded-xl p-6 space-y-4">
+          <h2 className="text-base font-medium tracking-tight text-neutral-900">Kurir Pengiriman</h2>
+          <p className="text-sm text-neutral-500">
+            Pilih kurir yang tersedia untuk pelanggan
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {AVAILABLE_COURIERS.map((courier) => {
+              const isActive = settings.activeCouriers.includes(courier.code);
+              return (
+                <label
+                  key={courier.code}
+                  className={
+                    `flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    isActive
+                      ? 'border-neutral-900 bg-neutral-50'
+                      : 'border-neutral-200 hover:border-neutral-300'
+                  }`
+                  }
+                >
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={() => toggleCourier(courier.code)}
+                    className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                  />
+                  <span className={`text-sm font-medium ${isActive ? 'text-neutral-900' : 'text-neutral-500'}`}>
+                    {courier.name}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          <p className="text-xs text-neutral-400">
+            💡 Minimal 1 kurir harus aktif
+          </p>
         </div>
 
         {/* Social Media */}

@@ -23,7 +23,15 @@ export async function GET() {
       settings = inserted;
     }
 
-    return NextResponse.json(settings[0]);
+    const result = settings[0];
+    
+    // Transform activeCouriers from comma-separated string to array
+    return NextResponse.json({
+      ...result,
+      activeCouriers: result.activeCouriers
+        ? result.activeCouriers.split(',').filter(Boolean)
+        : ['jne', 'jnt', 'sicepat'],
+    });
   } catch (error) {
     console.error('Error fetching shop settings:', error);
     return NextResponse.json(

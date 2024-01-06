@@ -35,14 +35,14 @@ export default function CheckoutPage() {
       .catch((err) => console.error('Failed to load Snap.js:', err));
   }, []);
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     if (!data.email || !isValidEmail(data.email)) return false;
     if (!data.phone || !isValidPhone(data.phone)) return false;
     if (!data.fullName.trim()) return false;
     if (!data.rajaongkirCityId) return false; // Destination is mandatory
     if (!data.address1.trim()) return false; // Street address is mandatory
     return true;
-  };
+  }, [data.email, data.phone, data.fullName, data.rajaongkirCityId, data.address1]);
 
   // Create checkout session when form is valid
   const createCheckoutSession = useCallback(async () => {
@@ -89,7 +89,7 @@ export default function CheckoutPage() {
     } finally {
       setIsCreatingSession(false);
     }
-  }, [data, setField]);
+  }, [data, setField, validateForm]);
 
   // Update shipping method on the server
   const updateShippingMethod = useCallback(async (shippingMethod: typeof data.shippingMethod) => {
@@ -111,12 +111,26 @@ export default function CheckoutPage() {
     }
   }, [data.checkoutSessionId]);
 
+  // Debug: Log state to understand why session isn't being created
+  useEffect(() => {
+    console.log('[Checkout] State:', {
+      email: data.email,
+      emailValid: data.email ? isValidEmail(data.email) : false,
+      phone: data.phone,
+      phoneValid: data.phone ? isValidPhone(data.phone) : false,
+      fullName: data.fullName,
+      rajaongkirCityId: data.rajaongkirCityId,
+      address1: data.address1,
+      checkoutSessionId: data.checkoutSessionId,
+    });
+  }, [data.email, data.phone, data.fullName, data.rajaongkirCityId, data.address1, data.checkoutSessionId]);
+
   // Auto-create session when form becomes valid
   useEffect(() => {
     if (validateForm() && !data.checkoutSessionId && !isCreatingSession) {
       createCheckoutSession();
     }
-  }, [data.email, data.phone, data.fullName, data.rajaongkirCityId, data.address1, data.checkoutSessionId]);
+  }, [validateForm, data.checkoutSessionId, isCreatingSession, createCheckoutSession]);
 
   // Track previous shipping method to detect changes
   const [prevShippingMethod, setPrevShippingMethod] = useState(data.shippingMethod);

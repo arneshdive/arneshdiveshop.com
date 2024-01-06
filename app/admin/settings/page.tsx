@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Input, Textarea } from '@/components/admin/input';
+import { formatPhoneInput } from '@/lib/utils/format';
 
 interface RajaongkirCity {
   id: string;
@@ -223,8 +224,11 @@ export default function SettingsPage() {
             <Input
               label="Telepon"
               value={settings.phone}
-              onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-              placeholder="+62 xxx-xxxx-xxxx"
+              onChange={(e) => {
+                const formatted = formatPhoneInput(e.target.value);
+                setSettings({ ...settings, phone: formatted });
+              }}
+              placeholder="0812-3456-7890"
             />
           </div>
 
@@ -232,8 +236,11 @@ export default function SettingsPage() {
             <Input
               label="WhatsApp (tanpa +)"
               value={settings.whatsapp}
-              onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
-              placeholder="6281234567890"
+              onChange={(e) => {
+                const formatted = formatPhoneInput(e.target.value);
+                setSettings({ ...settings, whatsapp: formatted });
+              }}
+              placeholder="0812-3456-7890"
             />
             <Input
               label="Jam operasional"

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { useCartSync } from '@/lib/store/cart';
 import { formatCurrency } from '@/lib/utils/format';
+import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
 import { Icon } from '@iconify/react';
 import type { ShippingRate } from '@/lib/rajaongkir/types';
 
@@ -21,8 +22,13 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch shipping rates when checkoutSessionId or destination changes
+  // Debug: Log when effect runs
   useEffect(() => {
+    console.log('[ShippingMethodSelector] Effect triggered:', {
+      checkoutSessionId,
+      rajaongkirCityId: data.rajaongkirCityId,
+    });
+    
     if (!checkoutSessionId || !data.rajaongkirCityId) {
       setRates([]);
       return;
@@ -101,10 +107,19 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
         </div>
       )}
 
-      {/* No session state */}
+      {/* No session state - show what's missing */}
       {!checkoutSessionId && !isLoading && (
         <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-600 text-sm">
-          Lengkapi alamat pengiriman untuk melihat pilihan kurir.
+          <p className="font-medium mb-2">Lengkapi data berikut untuk melihat pilihan kurir:</p>
+          <ul className="space-y-1 text-xs">
+            {!data.email && <li className="flex items-center gap-2"><span className="text-neutral-400">○</span> Email</li>}
+            {data.email && !isValidEmail(data.email) && <li className="flex items-center gap-2"><span className="text-amber-500">○</span> Email (format tidak valid)</li>}
+            {!data.phone && <li className="flex items-center gap-2"><span className="text-neutral-400">○</span> No. Telepon</li>}
+            {data.phone && !isValidPhone(data.phone) && <li className="flex items-center gap-2"><span className="text-amber-500">○</span> No. Telepon (format tidak valid)</li>}
+            {!data.fullName.trim() && <li className="flex items-center gap-2"><span className="text-neutral-400">○</span> Nama Lengkap</li>}
+            {!data.rajaongkirCityId && <li className="flex items-center gap-2"><span className="text-neutral-400">○</span> Kelurahan/Kecamatan</li>}
+            {!data.address1.trim() && <li className="flex items-center gap-2"><span className="text-neutral-400">○</span> Alamat Lengkap</li>}
+          </ul>
         </div>
       )}
 

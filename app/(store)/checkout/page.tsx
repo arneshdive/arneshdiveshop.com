@@ -111,20 +111,6 @@ export default function CheckoutPage() {
     }
   }, [data.checkoutSessionId]);
 
-  // Debug: Log state to understand why session isn't being created
-  useEffect(() => {
-    console.log('[Checkout] State:', {
-      email: data.email,
-      emailValid: data.email ? isValidEmail(data.email) : false,
-      phone: data.phone,
-      phoneValid: data.phone ? isValidPhone(data.phone) : false,
-      fullName: data.fullName,
-      rajaongkirCityId: data.rajaongkirCityId,
-      address1: data.address1,
-      checkoutSessionId: data.checkoutSessionId,
-    });
-  }, [data.email, data.phone, data.fullName, data.rajaongkirCityId, data.address1, data.checkoutSessionId]);
-
   // Auto-create session when form becomes valid
   useEffect(() => {
     if (validateForm() && !data.checkoutSessionId && !isCreatingSession) {

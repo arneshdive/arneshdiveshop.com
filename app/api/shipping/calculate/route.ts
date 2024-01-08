@@ -1,19 +1,22 @@
 // app/api/shipping/calculate/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
-import { getCheckoutSessionById, updateCheckoutSession } from '@/lib/queries/checkout';
+import { getCheckoutSessionById } from '@/lib/queries/checkout';
+import { getCartByUserId, getCartByGuestId } from '@/lib/queries/cart';
 import { calculateShippingRates } from '@/lib/shipping/calculator';
-import { matchCityToRajaOngkir } from '@/lib/rajaongkir/city-matcher';
+import { getSession } from '@/lib/auth/session';
 
 const calculateSchema = z.object({
-  checkoutSessionId: z.string().min(1, 'Checkout session ID required'),
-  cityId: z.string().optional(), // Override: use if already matched
+  cityId: z.string().min(1, 'Destination city ID required'),
+  checkoutSessionId: z.string().optional(), // Optional - for updating session
 });
 
 /**
  * POST /api/shipping/calculate
- * Calculate shipping rates for checkout session
+ * Calculate shipping rates for a destination
+ * Requires cityId, optionally checkoutSessionId
  */
 export async function POST(request: NextRequest) {
   try {
@@ -27,49 +30,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { checkoutSessionId, cityId } = result.data;
+    const { cityId, checkoutSessionId } = result.data;
+    const destinationCityId = cityId;
 
-    // Get checkout session
-    const session = await getCheckoutSessionById(checkoutSessionId);
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Checkout session not found' },
-        { status: 404 }
-      );
-    }
+    // Get cart items - either from checkout session or directly from cart
+    let cartItems: Awaited<ReturnType<typeof getCartByUserId>>['items'] = [];
 
-    if (!session.cart || session.cart.items.length === 0) {
-      return NextResponse.json(
-        { error: 'Cart is empty' },
-        { status: 400 }
-      );
-    }
-
-    // Get or match destination city_id
-    let destinationCityId = cityId || session.rajaongkirCityId;
-
-    if (!destinationCityId && session.city && session.province) {
-      const match = await matchCityToRajaOngkir(session.city, session.province);
-      if (match) {
-        destinationCityId = match.cityId;
-        // Cache the city_id in checkout session
-        await updateCheckoutSession(checkoutSessionId, {
-          rajaongkirCityId: destinationCityId,
-        });
+    if (checkoutSessionId) {
+      const session = await getCheckoutSessionById(checkoutSessionId);
+      if (session?.cart?.items) {
+        cartItems = session.cart.items;
       }
     }
 
-    if (!destinationCityId) {
-      return NextResponse.json(
-        { error: 'Could not determine destination city. Please verify your address.' },
-        { status: 400 }
-      );
+    // If no session or no items from session, get from user/guest cart
+    if (cartItems.length === 0) {
+      const session = await getSession();
+      const cookieStore = await cookies();
+      const guestId = cookieStore.get('guest_id')?.value;
+
+      let cart = null;
+      if (session) {
+        cart = await getCartByUserId(session.userId);
+      } else if (guestId) {
+        cart = await getCartByGuestId(guestId);
+      }
+
+      if (!cart || cart.items.length === 0) {
+        return NextResponse.json(
+          { error: 'Keranjang kosong', rates: [] },
+          { status: 400 }
+        );
+      }
+
+      cartItems = cart.items;
     }
 
     // Calculate rates
     const { rates, weight, error } = await calculateShippingRates(
       destinationCityId,
-      session.cart.items
+      cartItems
     );
 
     return NextResponse.json({

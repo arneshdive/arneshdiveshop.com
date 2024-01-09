@@ -1,19 +1,28 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { useCartSync } from '@/lib/store/cart';
 import { formatCurrency } from '@/lib/utils/format';
 import { Icon } from '@iconify/react';
 import type { ShippingRate } from '@/lib/rajaongkir/types';
 
+// Courier display names
+const COURIER_NAMES: Record<string, string> = {
+  jne: 'JNE',
+  jnt: 'J&T Express',
+  sicepat: 'SiCepat',
+  idexpress: 'ID Express',
+  anteraja: 'AnterAja',
+  pos: 'POS Indonesia',
+  tiki: 'TIKI',
+};
+
 interface ShippingMethodSelectorProps {
-  // checkoutSessionId is no longer required for rate calculation
   checkoutSessionId?: string | null;
 }
 
 export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSelectorProps) {
-  // Ensure cart is synced
   useCartSync();
 
   const { data, setField } = useCheckoutStore();
@@ -21,13 +30,37 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
   const [rates, setRates] = useState<ShippingRate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedCouriers, setExpandedCouriers] = useState<Set<string>>(new Set());
 
-  // Fetch shipping rates when destination changes (don't require checkout session)
+  // Group rates by courier
+  const groupedRates = useMemo(() => {
+    const groups: Record<string, ShippingRate[]> = {};
+    
+    for (const rate of rates) {
+      if (!groups[rate.courier]) {
+        groups[rate.courier] = [];
+      }
+      groups[rate.courier].push(rate);
+    }
+    
+    // Sort groups by cheapest option in each group
+    const sortedEntries = Object.entries(groups).sort((a, b) => {
+      const minA = Math.min(...a[1].map(r => r.costCents));
+      const minB = Math.min(...b[1].map(r => r.costCents));
+      return minA - minB;
+    });
+    
+    return Object.fromEntries(sortedEntries);
+  }, [rates]);
+
+  // Fetch shipping rates when destination changes
   useEffect(() => {
     if (!data.rajaongkirCityId) {
       setRates([]);
       return;
     }
+
+    let isCancelled = false;
 
     const fetchRates = async () => {
       setIsLoading(true);
@@ -39,7 +72,6 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             cityId: data.rajaongkirCityId,
-            weight: undefined, // Will be calculated server-side from cart
           }),
         });
 
@@ -49,26 +81,62 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
         }
 
         const result = await response.json();
-        setRates(result.rates || []);
+        
+        if (!isCancelled) {
+          setRates(result.rates || []);
 
-        // Set first rate as default if none selected
-        if (result.rates?.length > 0 && !data.shippingMethod) {
-          const firstRate = result.rates[0];
-          setField('shippingMethod', `${firstRate.courier}-${firstRate.service}`.toLowerCase() as typeof data.shippingMethod);
+          // Set first rate as default if none selected
+          if (result.rates?.length > 0 && !data.shippingMethod) {
+            const firstRate = result.rates[0];
+            setField('shippingMethod', `${firstRate.courier}-${firstRate.service}`.toLowerCase() as typeof data.shippingMethod);
+          }
         }
       } catch (err) {
-        console.error('Error fetching shipping rates:', err);
-        setError(err instanceof Error ? err.message : 'Gagal mengambil ongkos kirim');
+        if (!isCancelled) {
+          console.error('Error fetching shipping rates:', err);
+          setError(err instanceof Error ? err.message : 'Gagal mengambil ongkos kirim');
+        }
       } finally {
-        setIsLoading(false);
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchRates();
-  }, [checkoutSessionId, data.rajaongkirCityId, data.shippingMethod, setField]);
 
-  // Generate a unique ID for a rate
+    return () => {
+      isCancelled = true;
+    };
+  }, [data.rajaongkirCityId]);
+
+  // Expand courier that has selected rate
+  useEffect(() => {
+    if (data.shippingMethod) {
+      const [courier] = data.shippingMethod.split('-');
+      if (courier && !expandedCouriers.has(courier)) {
+        setExpandedCouriers(new Set([courier]));
+      }
+    }
+  }, [data.shippingMethod]);
+
   const getRateId = (rate: ShippingRate) => `${rate.courier}-${rate.service}`.toLowerCase();
+
+  const toggleCourier = (courier: string) => {
+    setExpandedCouriers(prev => {
+      const next = new Set(prev);
+      if (next.has(courier)) {
+        next.delete(courier);
+      } else {
+        next.add(courier);
+      }
+      return next;
+    });
+  };
+
+  const getCheapestRate = (courierRates: ShippingRate[]) => {
+    return courierRates.reduce((min, r) => r.costCents < min.costCents ? r : min, courierRates[0]);
+  };
 
   return (
     <div className="pb-8">
@@ -109,52 +177,98 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
         </div>
       )}
 
-      {/* Rates list */}
-      {!isLoading && !error && rates.length > 0 && (
+      {/* Grouped rates */}
+      {!isLoading && !error && Object.keys(groupedRates).length > 0 && (
         <div className="space-y-3">
-          {rates.map((rate) => {
-            const rateId = getRateId(rate);
-            const isSelected = data.shippingMethod === rateId;
-
+          {Object.entries(groupedRates).map(([courier, courierRates]) => {
+            const isExpanded = expandedCouriers.has(courier);
+            const cheapest = getCheapestRate(courierRates);
+            const hasSelection = courierRates.some(r => data.shippingMethod === getRateId(r));
+            
             return (
-              <label
-                key={rateId}
-                className={`flex items-center justify-between p-5 border-2 rounded-xl cursor-pointer transition-all ${
-                  isSelected
-                    ? 'border-neutral-900 bg-neutral-50'
-                    : 'border-neutral-200 hover:border-neutral-300'
+              <div
+                key={courier}
+                className={`border-2 rounded-xl transition-all ${
+                  hasSelection ? 'border-neutral-900' : 'border-neutral-200'
                 }`}
               >
-                <div className="flex items-center gap-4">
-                  <input
-                    type="radio"
-                    name="shippingMethod"
-                    checked={isSelected}
-                    onChange={() => setField('shippingMethod', rateId as typeof data.shippingMethod)}
-                    className="sr-only"
-                  />
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                      isSelected
-                        ? 'border-neutral-900'
-                        : 'border-neutral-300'
-                    }`}
-                  >
-                    {isSelected && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-neutral-900" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="font-medium">{rate.name}</div>
-                    <div className="text-sm text-neutral-500">
-                      {rate.description} • {rate.etd}
+                {/* Courier header - clickable to expand/collapse */}
+                <button
+                  type="button"
+                  onClick={() => toggleCourier(courier)}
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon
+                      icon={isExpanded ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+                      className="w-5 h-5 text-neutral-400"
+                    />
+                    <div>
+                      <div className="font-medium">
+                        {COURIER_NAMES[courier] || courier.toUpperCase()}
+                      </div>
+                      <div className="text-xs text-neutral-500">
+                        {courierRates.length} layanan • Mulai dari {formatCurrency(cheapest.costCents)}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <span className="font-semibold">{formatCurrency(rate.costCents)}</span>
-                </div>
-              </label>
+                  {hasSelection && (
+                    <div className="flex items-center gap-2 text-xs text-neutral-600">
+                      <Icon icon="solar:check-circle-bold" className="w-4 h-4 text-neutral-900" />
+                      Terpilih
+                    </div>
+                  )}
+                </button>
+
+                {/* Expanded services */}
+                {isExpanded && (
+                  <div className="border-t border-neutral-100 divide-y divide-neutral-100">
+                    {courierRates.map((rate) => {
+                      const rateId = getRateId(rate);
+                      const isSelected = data.shippingMethod === rateId;
+
+                      return (
+                        <label
+                          key={rateId}
+                          className={`flex items-center justify-between p-4 pl-12 cursor-pointer transition-colors ${
+                            isSelected ? 'bg-neutral-50' : 'hover:bg-neutral-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="shippingMethod"
+                              checked={isSelected}
+                              onChange={() => setField('shippingMethod', rateId as typeof data.shippingMethod)}
+                              className="sr-only"
+                            />
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                isSelected
+                                  ? 'border-neutral-900'
+                                  : 'border-neutral-300'
+                              }`}
+                            >
+                              {isSelected && (
+                                <div className="w-2 h-2 rounded-full bg-neutral-900" />
+                              )}
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium">{rate.service}</div>
+                              <div className="text-xs text-neutral-500">
+                                {rate.description} • {rate.etd}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-sm font-semibold">
+                            {formatCurrency(rate.costCents)}
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>

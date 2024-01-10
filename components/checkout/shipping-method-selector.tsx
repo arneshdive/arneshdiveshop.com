@@ -188,7 +188,7 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
             return (
               <div
                 key={courier}
-                className={`border-2 rounded-xl transition-all ${
+                className={`border-2 rounded-xl overflow-hidden transition-all ${
                   hasSelection ? 'border-neutral-900' : 'border-neutral-200'
                 }`}
               >
@@ -222,7 +222,7 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
 
                 {/* Expanded services */}
                 {isExpanded && (
-                  <div className="border-t border-neutral-100 divide-y divide-neutral-100">
+                  <div className="border-t border-neutral-100 divide-y divide-neutral-100 rounded-b-xl overflow-hidden">
                     {courierRates.map((rate) => {
                       const rateId = getRateId(rate);
                       const isSelected = data.shippingMethod === rateId;
@@ -254,9 +254,9 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
                               )}
                             </div>
                             <div>
-                              <div className="text-sm font-medium">{rate.service}</div>
+                              <div className="text-sm font-medium">{rate.description || rate.service}</div>
                               <div className="text-xs text-neutral-500">
-                                {rate.description} • {rate.etd}
+                                {rate.etd}
                               </div>
                             </div>
                           </div>

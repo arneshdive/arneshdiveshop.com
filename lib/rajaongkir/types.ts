@@ -48,8 +48,9 @@ export interface RajaongkirServiceCost {
 export interface ShippingRate {
   courier: string; // 'jne', 'pos', 'tiki'
   service: string; // 'REG', 'YES', etc.
-  name: string; // 'JNE Reguler'
-  description: string; // 'Layanan Reguler'
+  name: string; // 'Reguler'
+  description: string; // 'Pengiriman standar 1-2 hari'
+  category: 'same_day' | 'next_day' | 'regular' | 'economy' | 'cargo';
   costCents: number; // Converted to cents
   etd: string; // '1-2 hari'
 }

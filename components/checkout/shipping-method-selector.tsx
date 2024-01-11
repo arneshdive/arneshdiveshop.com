@@ -18,6 +18,15 @@ const COURIER_NAMES: Record<string, string> = {
   tiki: 'TIKI',
 };
 
+// Category badges
+const CATEGORY_BADGES: Record<string, { label: string; color: string }> = {
+  same_day: { label: 'Same Day', color: 'bg-emerald-100 text-emerald-700' },
+  next_day: { label: 'Next Day', color: 'bg-blue-100 text-blue-700' },
+  regular: { label: 'Reguler', color: 'bg-neutral-100 text-neutral-600' },
+  economy: { label: 'Hemat', color: 'bg-amber-100 text-amber-700' },
+  cargo: { label: 'Cargo', color: 'bg-purple-100 text-purple-700' },
+};
+
 interface ShippingMethodSelectorProps {
   checkoutSessionId?: string | null;
 }
@@ -50,7 +59,22 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
       return minA - minB;
     });
     
-    return Object.fromEntries(sortedEntries);
+    const result = Object.fromEntries(sortedEntries);
+    
+    // Sort services within each group by category, then price
+    for (const courier of Object.keys(result)) {
+      result[courier].sort((a, b) => {
+        // Same day first, then next day, etc.
+        const categoryOrder = ['same_day', 'next_day', 'regular', 'economy', 'cargo'];
+        const catA = categoryOrder.indexOf(a.category);
+        const catB = categoryOrder.indexOf(b.category);
+        
+        if (catA !== catB) return catA - catB;
+        return a.costCents - b.costCents;
+      });
+    }
+    
+    return result;
   }, [rates]);
 
   // Fetch shipping rates when destination changes
@@ -254,9 +278,16 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
                               )}
                             </div>
                             <div>
-                              <div className="text-sm font-medium">{rate.description || rate.service}</div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{rate.name}</span>
+                                {rate.category && CATEGORY_BADGES[rate.category] && (
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CATEGORY_BADGES[rate.category].color}`}>
+                                    {CATEGORY_BADGES[rate.category].label}
+                                  </span>
+                                )}
+                              </div>
                               <div className="text-xs text-neutral-500">
-                                {rate.etd}
+                                {rate.description} • {rate.etd}
                               </div>
                             </div>
                           </div>

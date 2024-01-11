@@ -3,6 +3,7 @@
 import { rajaongkirClient } from '@/lib/rajaongkir/client';
 import { getShopOriginCityId } from '@/lib/rajaongkir/city-matcher';
 import { getActiveCouriers } from '@/lib/queries/settings';
+import { getServiceInfo } from '@/lib/rajaongkir/service-names';
 import type { ShippingRate } from '@/lib/rajaongkir/types';
 
 const DEFAULT_PRODUCT_WEIGHT_GRAMS = 500;
@@ -82,11 +83,13 @@ export async function calculateShippingRates(
       for (const cost of result.costs) {
         const costValue = cost.cost[0];
         if (costValue) {
+          const serviceInfo = getServiceInfo(result.code, cost.service, cost.description);
           rates.push({
             courier: result.code,
             service: cost.service,
-            name: `${result.name} ${cost.service}`,
-            description: cost.description,
+            name: serviceInfo.name,
+            description: serviceInfo.description,
+            category: serviceInfo.category,
             costCents: rupiahToCents(costValue.value),
             etd: formatEtd(costValue.etd),
           });

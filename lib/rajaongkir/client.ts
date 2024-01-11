@@ -15,10 +15,23 @@ import type {
  */
 
 const RAJAONGKIR_BASE_URL = process.env.RAJAONGKIR_BASE_URL || 'https://rajaongkir.komerce.id/api/v1';
-const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY;
 
-if (!RAJAONGKIR_API_KEY) {
+// Collect all available API keys for round-robin load balancing
+const RAJAONGKIR_API_KEYS = [
+  process.env.RAJAONGKIR_API_KEY,
+  process.env.RAJAONGKIR_API_KEY_2,
+].filter((key): key is string => !!key);
+
+if (RAJAONGKIR_API_KEYS.length === 0) {
   console.warn('RAJAONGKIR_API_KEY is not set. Shipping calculation will not work.');
+}
+
+// Round-robin key rotation
+let currentKeyIndex = 0;
+function getNextApiKey(): string {
+  const key = RAJAONGKIR_API_KEYS[currentKeyIndex];
+  currentKeyIndex = (currentKeyIndex + 1) % RAJAONGKIR_API_KEYS.length;
+  return key;
 }
 
 export const rajaongkirClient = {
@@ -27,13 +40,14 @@ export const rajaongkirClient = {
    * Endpoint: GET /destination/province
    */
   async getProvinces(): Promise<RajaongkirProvince[]> {
-    if (!RAJAONGKIR_API_KEY) {
+    if (RAJAONGKIR_API_KEYS.length === 0) {
       throw new Error('RAJAONGKIR_API_KEY is not configured');
     }
 
+    const apiKey = getNextApiKey();
     const response = await fetch(`${RAJAONGKIR_BASE_URL}/destination/province`, {
       headers: {
-        key: RAJAONGKIR_API_KEY,
+        key: apiKey,
       },
     });
 
@@ -60,13 +74,14 @@ export const rajaongkirClient = {
    * Note: This returns districts, not cities! Use direct search for accurate subdistrict IDs.
    */
   async getCities(provinceId: string): Promise<RajaongkirCity[]> {
-    if (!RAJAONGKIR_API_KEY) {
+    if (RAJAONGKIR_API_KEYS.length === 0) {
       throw new Error('RAJAONGKIR_API_KEY is not configured');
     }
 
+    const apiKey = getNextApiKey();
     const response = await fetch(`${RAJAONGKIR_BASE_URL}/destination/city/${provinceId}`, {
       headers: {
-        key: RAJAONGKIR_API_KEY,
+        key: apiKey,
       },
     });
 
@@ -97,17 +112,18 @@ export const rajaongkirClient = {
    * This is the recommended method - returns subdistrict IDs for accurate pricing
    */
   async searchDestination(query: string, limit = 10): Promise<RajaongkirCity[]> {
-    if (!RAJAONGKIR_API_KEY) {
+    if (RAJAONGKIR_API_KEYS.length === 0) {
       throw new Error('RAJAONGKIR_API_KEY is not configured');
     }
 
+    const apiKey = getNextApiKey();
     const url = `${RAJAONGKIR_BASE_URL}/destination/domestic-destination?search=${encodeURIComponent(query)}&limit=${limit}&offset=0`;
 
     console.log('[RajaOngkir] Searching:', url);
 
     const response = await fetch(url, {
       headers: {
-        key: RAJAONGKIR_API_KEY,
+        key: apiKey,
       },
       cache: 'no-store',
     });
@@ -154,14 +170,15 @@ export const rajaongkirClient = {
    * Endpoint: POST /calculate/domestic-cost
    */
   async calculateCost(query: RajaongkirCostQuery): Promise<RajaongkirCostResult> {
-    if (!RAJAONGKIR_API_KEY) {
+    if (RAJAONGKIR_API_KEYS.length === 0) {
       throw new Error('RAJAONGKIR_API_KEY is not configured');
     }
 
+    const apiKey = getNextApiKey();
     const response = await fetch(`${RAJAONGKIR_BASE_URL}/calculate/domestic-cost`, {
       method: 'POST',
       headers: {
-        key: RAJAONGKIR_API_KEY,
+        key: apiKey,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({

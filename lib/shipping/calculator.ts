@@ -84,6 +84,12 @@ export async function calculateShippingRates(
         const costValue = cost.cost[0];
         if (costValue) {
           const serviceInfo = getServiceInfo(result.code, cost.service, cost.description);
+          
+          // Skip cargo services (not relevant for regular e-commerce)
+          if (serviceInfo.category === 'cargo') {
+            continue;
+          }
+          
           rates.push({
             courier: result.code,
             service: cost.service,

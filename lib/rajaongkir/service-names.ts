@@ -169,6 +169,21 @@ export const SERVICE_INFO: Record<string, ServiceInfo> = {
     description: 'Untuk barang besar',
     category: 'cargo',
   },
+  'tiki_T15': {
+    name: 'Motor <150cc',
+    description: 'Pengiriman motor',
+    category: 'cargo',
+  },
+  'tiki_T25': {
+    name: 'Motor <250cc',
+    description: 'Pengiriman motor',
+    category: 'cargo',
+  },
+  'tiki_T60': {
+    name: 'Motor <600cc',
+    description: 'Pengiriman motor',
+    category: 'cargo',
+  },
 
   // ===========================================
   // POS Indonesia
@@ -186,12 +201,12 @@ export const SERVICE_INFO: Record<string, ServiceInfo> = {
   'pos_PAKETPOS DANGEROUS GOODS': {
     name: 'Dangerous Goods',
     description: 'Barang berbahaya',
-    category: 'regular',
+    category: 'cargo', // Not relevant for regular e-commerce
   },
   'pos_PAKETPOS VALUABLE GOODS': {
     name: 'Valuable Goods',
     description: 'Barang berharga',
-    category: 'regular',
+    category: 'cargo', // Not relevant for regular e-commerce
   },
   'pos_POS KARGO': {
     name: 'Kargo',
@@ -255,7 +270,7 @@ function inferCategory(service: string, description?: string): ServiceInfo['cate
   if (text.includes('next day') || text.includes('yes') || text.includes('besok') || text.includes('ons')) {
     return 'next_day';
   }
-  if (text.includes('cargo') || text.includes('trucking') || text.includes('kargo') || text.includes('gokil')) {
+  if (text.includes('cargo') || text.includes('trucking') || text.includes('kargo') || text.includes('gokil') || text.includes('motor')) {
     return 'cargo';
   }
   if (text.includes('eco') || text.includes('economy') || text.includes('hemat') || text.includes('halu')) {

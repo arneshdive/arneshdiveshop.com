@@ -1,5 +1,6 @@
 'use client';
 
+import { Input, Textarea } from '@/components/admin/input';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { DestinationSearch } from './destination-search';
 
@@ -20,12 +21,12 @@ export function ShippingAddressForm() {
           <label className="block text-sm font-medium text-neutral-700 mb-2">
             Nama Lengkap <span className="text-red-500">*</span>
           </label>
-          <input
+          <Input
             type="text"
             value={data.fullName}
             onChange={(e) => setField('fullName', e.target.value)}
             placeholder="Nama penerima paket"
-            className="w-full px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+            className="py-3 rounded-xl"
           />
         </div>
 
@@ -81,12 +82,12 @@ export function ShippingAddressForm() {
           <label className="block text-sm font-medium text-neutral-700 mb-2">
             Alamat Lengkap <span className="text-red-500">*</span>
           </label>
-          <textarea
+          <Textarea
             value={data.address1}
             onChange={(e) => setField('address1', e.target.value)}
             placeholder="Jalan, nomor rumah, nama gedung, RT/RW..."
             rows={2}
-            className="w-full px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors resize-none"
+            className="py-3 rounded-xl"
           />
         </div>
 
@@ -95,12 +96,12 @@ export function ShippingAddressForm() {
           <label className="block text-sm font-medium text-neutral-700 mb-2">
             Detail Tambahan <span className="text-neutral-400 font-normal">(opsional)</span>
           </label>
-          <input
+          <Input
             type="text"
             value={data.notes}
             onChange={(e) => setField('notes', e.target.value)}
             placeholder="Patokan, catatan untuk kurir..."
-            className="w-full px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+            className="py-3 rounded-xl"
           />
         </div>
       </div>

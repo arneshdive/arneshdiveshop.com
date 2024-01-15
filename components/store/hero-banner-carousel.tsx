@@ -16,8 +16,8 @@ const fallbackBanner = {
   title: 'Berjelajah di kedalaman',
   subtitle: 'Temukan perlengkapan freediving yang Anda butuhkan.',
   eyebrow: 'Freediving & Scuba',
-  ctaText: 'Lihat Koleksi',
-  ctaLink: '/freediving',
+  ctaText: 'Semua Katalog',
+  ctaLink: '/produk',
   imageUrl: '/hero-image.webp',
 };
 
@@ -98,7 +98,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                   asChild
                   variant="white"
                 >
-                  <Link href={currentBanner.ctaLink || currentBanner.link || '/freediving'}>
+                  <Link href={currentBanner.ctaLink || currentBanner.link || '/produk'}>
                     {currentBanner.ctaText || 'Lihat Koleksi'}
                   </Link>
                 </AnimatedButton>

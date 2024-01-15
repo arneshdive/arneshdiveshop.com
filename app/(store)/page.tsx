@@ -12,22 +12,24 @@ import type { MockProduct } from '@/lib/data/mock-products';
 
 // Convert DB product to MockProduct format for ProductSection
 function toMockProduct(product: any): MockProduct {
-  const badge = product.isNewArrival 
-    ? 'New Arrival' 
-    : product.isOnSale 
-      ? 'Sale' 
+  const badge = product.isNewArrival
+    ? 'New Arrival'
+    : product.isOnSale
+      ? 'Sale'
       : undefined;
-  
+
   // Calculate price range from variants
-  // Note: priceCents fields store whole Rupiah amounts (not actual cents)
+  // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
   const variantPrices = (product.variants || [])
     .filter((v: any) => v.isActive && v.priceCents !== null)
     .map((v: any) => v.priceCents);
   
   let priceDisplay: string;
+  let priceRangeMin: number | undefined;
+  let priceRangeMax: number | undefined;
   
   if (variantPrices.length > 0) {
-    // Variants have their own prices - show range or single price
+    // Variants have their own prices - show only minimum price
     const minPrice = Math.min(...variantPrices);
     const maxPrice = Math.max(...variantPrices);
     
@@ -35,14 +37,12 @@ function toMockProduct(product: any): MockProduct {
     const effectiveMin = product.priceCents ? Math.min(product.priceCents, minPrice) : minPrice;
     const effectiveMax = Math.max(minPrice, product.priceCents || 0, maxPrice);
     
-    if (effectiveMin === effectiveMax) {
-      priceDisplay = `Rp ${effectiveMin.toLocaleString('id-ID')}`;
-    } else {
-      priceDisplay = `Rp ${effectiveMin.toLocaleString('id-ID')} - Rp ${effectiveMax.toLocaleString('id-ID')}`;
-    }
+    priceRangeMin = effectiveMin;
+    priceRangeMax = effectiveMax;
+    priceDisplay = `Rp ${(effectiveMin / 100).toLocaleString('id-ID')}`;
   } else {
     // No variant prices - use base price
-    priceDisplay = product.priceCents ? `Rp ${product.priceCents.toLocaleString('id-ID')}` : 'Rp 0';
+    priceDisplay = product.priceCents ? `Rp ${(product.priceCents / 100).toLocaleString('id-ID')}` : 'Rp 0';
   }
       
   return {
@@ -51,8 +51,10 @@ function toMockProduct(product: any): MockProduct {
     title: product.name,
     vendor: product.brand?.name,
     price: priceDisplay,
-    compareAtPrice: product.compareAtPriceCents 
-      ? `Rp ${product.compareAtPriceCents.toLocaleString('id-ID')}` 
+    priceRangeMin,
+    priceRangeMax,
+    compareAtPrice: product.compareAtPriceCents
+      ? `Rp ${(product.compareAtPriceCents / 100).toLocaleString('id-ID')}`
       : undefined,
     badge,
     image: product.images?.[0] || undefined,
@@ -64,15 +66,15 @@ export default async function HomePage() {
   // Fetch new arrival products
   const newArrivals = await getProducts({ isActive: true, isNewArrival: true });
   const newArrivalProducts: MockProduct[] = newArrivals.slice(0, 4).map(toMockProduct);
-  
+
   // Fetch on sale products
   const onSaleProducts = await getProducts({ isActive: true, isOnSale: true });
   const saleProducts: MockProduct[] = onSaleProducts.slice(0, 4).map(toMockProduct);
-  
+
   // Fetch all latest products for the "explore" section
   const allProducts = await getProducts({ isActive: true });
   const latestProducts: MockProduct[] = allProducts.slice(0, 8).map(toMockProduct);
-  
+
   // Fetch hero banners from DB
   const heroBanners = await db.query.banners.findMany({
     where: and(
@@ -101,10 +103,17 @@ export default async function HomePage() {
 
       {/* Split Banner - Diving Types */}
       <section className="relative grid md:grid-cols-2 mt-20">
-        <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-200 flex items-end p-8 lg:p-12">
+        <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-900 flex items-end pb-20 lg:pb-28 pt-8 px-8 lg:px-12 overflow-hidden">
+          {/* Freediving Background Image */}
+          <img
+            src="https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?auto=format&fit=crop&w=1200&q=80"
+            alt="Freediving"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="relative z-10">
-            <span className="text-xs uppercase tracking-widest text-neutral-500 mb-2 block">Freediving</span>
-            <h3 className="text-2xl lg:text-3xl font-semibold mb-4">Koleksi Freediving</h3>
+            <span className="text-xs uppercase tracking-widest text-white/70 mb-2 block">Freediving</span>
+            <h3 className="text-2xl lg:text-3xl font-semibold mb-4 text-white">Koleksi Freediving</h3>
             <AnimatedButton asChild variant="white">
               <Link href="/produk?divingType=freediving">
                 Lihat Koleksi
@@ -113,10 +122,17 @@ export default async function HomePage() {
             </AnimatedButton>
           </div>
         </div>
-        <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-300 flex items-end p-8 lg:p-12">
+        <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-900 flex items-end pb-20 lg:pb-28 pt-8 px-8 lg:px-12 overflow-hidden">
+          {/* Scuba Background Image */}
+          <img
+            src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80"
+            alt="Scuba Diving"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="relative z-10">
-            <span className="text-xs uppercase tracking-widest text-neutral-600 mb-2 block">Scuba</span>
-            <h3 className="text-2xl lg:text-3xl font-semibold mb-4">Koleksi Scuba</h3>
+            <span className="text-xs uppercase tracking-widest text-white/70 mb-2 block">Scuba</span>
+            <h3 className="text-2xl lg:text-3xl font-semibold mb-4 text-white">Koleksi Scuba</h3>
             <AnimatedButton asChild variant="white">
               <Link href="/produk?divingType=scuba">
                 Lihat Koleksi
@@ -155,10 +171,20 @@ export default async function HomePage() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="flex flex-col justify-between items-end mb-8">
             <div className="flex flex-col w-full items-center justify-center max-w-3xl mx-auto text-center">
-              <span className="text-xs uppercase tracking-widest text-neutral-500 mb-4">Passion, Freedom, Performance</span>
-              <h2 className="text-2xl lg:text-6xl tracking-tighter font-bold mb-3">Visit Our Feed</h2>
-              <p className="text-lg font-semibold tracking-tight mb-6">Flowers & Saints is an Australian streetwear brand built on purpose, not trends.</p>
-              <p className="text-lg tracking-tight">Inspired by real moments and real people, these looks reflect modern Australian apparel — understated, confident, and designed to last.</p>
+              <span className="text-xs uppercase tracking-widest text-neutral-500 mb-4">Jelajahi Kebebasan Bawah Laut</span>
+              <h2 className="text-2xl lg:text-6xl tracking-tighter font-bold mb-3">Ikuti Perjalanan Kami</h2>
+              <p className="text-lg font-semibold tracking-tight mb-6">Ikuti bagaimana Arnesh Dive menemani petualangan para diver di seluruh Indonesia.</p>
+              <p className="text-lg tracking-tight mb-8">Dari freediving hingga scuba, setiap penyelaman adalah cerita baru. Temukan inspirasi untuk petualangan diving Anda berikutnya.</p>
+              <AnimatedButton asChild variant="outline" size="xs">
+                <a
+                  href="https://www.instagram.com/arnesh.official"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon icon="mdi:instagram" className="w-4 h-4" />
+                  Instagram
+                </a>
+              </AnimatedButton>
             </div>
             <a
               href="https://www.instagram.com/arnesh.official"

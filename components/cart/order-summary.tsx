@@ -5,13 +5,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useCartStore } from '@/lib/store/cart';
 import { formatRupiah } from '@/lib/utils/format';
-import { FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
 import { AnimatedButton } from '@/components/ui/animated-button';
-
-// Note: FREE_SHIPPING_THRESHOLD is in Rupiah, and cart uses cents (same value)
-// So we can use it directly since 1 Rupiah = 100 cents conceptually, but actually
-// the system treats priceCents as the actual Rupiah value (e.g., 850000 means Rp 850.000)
-// For consistency, we'll treat the threshold as-is
 
 export function OrderSummary() {
   const { 
@@ -32,8 +26,6 @@ export function OrderSummary() {
   
   const subtotalCents = getSubtotalCents();
   const totalCents = getTotalCents();
-  const freeShipping = subtotalCents >= FREE_SHIPPING_THRESHOLD;
-  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotalCents;
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -81,24 +73,6 @@ export function OrderSummary() {
       {/* Desktop Sidebar Card */}
       <div className="hidden lg:block bg-neutral-50 p-8 lg:p-12 sticky top-24 rounded-2xl">
         <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
-
-        {/* Free shipping progress */}
-        {!freeShipping && subtotalCents > 0 && (
-          <div className="mb-6 p-4 bg-white rounded-xl">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
-            </div>
-            <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-neutral-900 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
-              />
-            </div>
-            <p className="text-xs text-neutral-400 mt-2">
-              Tambah {formatRupiah(remainingForFreeShipping)} lagi untuk gratis ongkir
-            </p>
-          </div>
-        )}
 
         {/* Items */}
         <div className="space-y-4 mb-6">
@@ -189,7 +163,7 @@ export function OrderSummary() {
           )}
           <div className="flex justify-between text-sm">
             <span className="text-neutral-500">Ongkos Kirim</span>
-            <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : 'Dihitung saat checkout'}</span>
+            <span>Dihitung saat checkout</span>
           </div>
           <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
             <span>Total</span>
@@ -262,24 +236,6 @@ export function OrderSummary() {
             </div>
 
             <div className="p-6">
-              {/* Free shipping progress */}
-              {!freeShipping && subtotalCents > 0 && (
-                <div className="mb-6 p-4 bg-neutral-50 rounded-xl">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
-                  </div>
-                  <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-neutral-900 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs text-neutral-400 mt-2">
-                    Tambah {formatRupiah(remainingForFreeShipping)} lagi untuk gratis ongkir
-                  </p>
-                </div>
-              )}
-
               {/* Promo Code */}
               <div className="mb-6">
                 <p className="text-sm font-medium mb-2">Kode Promo</p>
@@ -338,7 +294,7 @@ export function OrderSummary() {
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">Ongkos Kirim</span>
-                  <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : 'Dihitung saat checkout'}</span>
+                  <span>Dihitung saat checkout</span>
                 </div>
                 <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
                   <span>Total</span>

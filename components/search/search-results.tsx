@@ -9,6 +9,8 @@ interface Product {
   title: string;
   vendor?: string;
   price: string;
+  priceRangeMin?: number;
+  priceRangeMax?: number;
   compareAtPrice?: string;
   badge?: string;
   image?: string;

@@ -168,12 +168,12 @@ export async function POST(request: NextRequest) {
       notes: data.notes,
       // RajaOngkir destination
       rajaongkirCityId: data.rajaongkirCityId,
-      rajaongkirCityName: data.rajaongkirCityName,
-      rajaongkirProvince: data.rajaongkirProvince,
-      rajaongkirCity: data.rajaongkirCity,
-      rajaongkirDistrict: data.rajaongkirDistrict,
-      rajaongkirSubdistrict: data.rajaongkirSubdistrict,
-      rajaongkirPostalCode: data.rajaongkirPostalCode,
+      rajaongkirCityName: data.rajaongkirCityName ?? undefined,
+      rajaongkirProvince: data.rajaongkirProvince ?? undefined,
+      rajaongkirCity: data.rajaongkirCity ?? undefined,
+      rajaongkirDistrict: data.rajaongkirDistrict ?? undefined,
+      rajaongkirSubdistrict: data.rajaongkirSubdistrict ?? undefined,
+      rajaongkirPostalCode: data.rajaongkirPostalCode ?? undefined,
       shippingMethod: data.shippingMethod,
     });
 
@@ -250,9 +250,20 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const data = result.data;
     const updatedSession = await updateCheckoutSession(
       checkoutSession.id,
-      result.data
+      {
+        shippingMethod: data.shippingMethod,
+        notes: data.notes,
+        rajaongkirCityId: data.rajaongkirCityId,
+        rajaongkirCityName: data.rajaongkirCityName ?? undefined,
+        rajaongkirProvince: data.rajaongkirProvince ?? undefined,
+        rajaongkirCity: data.rajaongkirCity ?? undefined,
+        rajaongkirDistrict: data.rajaongkirDistrict ?? undefined,
+        rajaongkirSubdistrict: data.rajaongkirSubdistrict ?? undefined,
+        rajaongkirPostalCode: data.rajaongkirPostalCode ?? undefined,
+      }
     );
 
     return NextResponse.json({ checkoutSession: updatedSession });

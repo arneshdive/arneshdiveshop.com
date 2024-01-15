@@ -16,7 +16,8 @@ import type {
 
 const RAJAONGKIR_BASE_URL = process.env.RAJAONGKIR_BASE_URL || 'https://rajaongkir.komerce.id/api/v1';
 
-// Collect all available API keys for round-robin load balancing
+// Collect all available API keys. Keys are used one at a time - the first
+// key's daily quota is spent fully before failing over to the next one.
 const RAJAONGKIR_API_KEYS = [
   process.env.RAJAONGKIR_API_KEY,
   process.env.RAJAONGKIR_API_KEY_2,
@@ -26,12 +27,39 @@ if (RAJAONGKIR_API_KEYS.length === 0) {
   console.warn('RAJAONGKIR_API_KEY is not set. Shipping calculation will not work.');
 }
 
-// Round-robin key rotation
+// Sticky key index: only advances when the current key's daily quota is
+// exhausted (API responds 429). Persists for the life of the server process
+// so every request keeps using the same key until it actually runs out.
 let currentKeyIndex = 0;
-function getNextApiKey(): string {
-  const key = RAJAONGKIR_API_KEYS[currentKeyIndex];
-  currentKeyIndex = (currentKeyIndex + 1) % RAJAONGKIR_API_KEYS.length;
-  return key;
+
+/**
+ * Fetch with automatic key failover. Tries the current key; if it comes
+ * back 429 (daily limit exceeded), permanently switches to the next key
+ * and retries, continuing until a non-429 response or the keys run out.
+ */
+async function rajaongkirFetch(url: string, init: RequestInit = {}): Promise<Response> {
+  if (RAJAONGKIR_API_KEYS.length === 0) {
+    throw new Error('RAJAONGKIR_API_KEY is not configured');
+  }
+
+  let response: Response;
+
+  while (true) {
+    const apiKey = RAJAONGKIR_API_KEYS[currentKeyIndex]!;
+    response = await fetch(url, {
+      ...init,
+      headers: { ...init.headers, key: apiKey },
+    });
+
+    if (response.status !== 429 || currentKeyIndex >= RAJAONGKIR_API_KEYS.length - 1) {
+      return response;
+    }
+
+    currentKeyIndex += 1;
+    console.warn(
+      `[RajaOngkir] API key ${currentKeyIndex} hit its daily limit, switching to key ${currentKeyIndex + 1}`
+    );
+  }
 }
 
 export const rajaongkirClient = {
@@ -40,16 +68,7 @@ export const rajaongkirClient = {
    * Endpoint: GET /destination/province
    */
   async getProvinces(): Promise<RajaongkirProvince[]> {
-    if (RAJAONGKIR_API_KEYS.length === 0) {
-      throw new Error('RAJAONGKIR_API_KEY is not configured');
-    }
-
-    const apiKey = getNextApiKey();
-    const response = await fetch(`${RAJAONGKIR_BASE_URL}/destination/province`, {
-      headers: {
-        key: apiKey,
-      },
-    });
+    const response = await rajaongkirFetch(`${RAJAONGKIR_BASE_URL}/destination/province`);
 
     if (!response.ok) {
       throw new Error(`RajaOngkir API error: ${response.status}`);
@@ -74,16 +93,7 @@ export const rajaongkirClient = {
    * Note: This returns districts, not cities! Use direct search for accurate subdistrict IDs.
    */
   async getCities(provinceId: string): Promise<RajaongkirCity[]> {
-    if (RAJAONGKIR_API_KEYS.length === 0) {
-      throw new Error('RAJAONGKIR_API_KEY is not configured');
-    }
-
-    const apiKey = getNextApiKey();
-    const response = await fetch(`${RAJAONGKIR_BASE_URL}/destination/city/${provinceId}`, {
-      headers: {
-        key: apiKey,
-      },
-    });
+    const response = await rajaongkirFetch(`${RAJAONGKIR_BASE_URL}/destination/city/${provinceId}`);
 
     if (!response.ok) {
       throw new Error(`RajaOngkir API error: ${response.status}`);
@@ -112,21 +122,11 @@ export const rajaongkirClient = {
    * This is the recommended method - returns subdistrict IDs for accurate pricing
    */
   async searchDestination(query: string, limit = 10): Promise<RajaongkirCity[]> {
-    if (RAJAONGKIR_API_KEYS.length === 0) {
-      throw new Error('RAJAONGKIR_API_KEY is not configured');
-    }
-
-    const apiKey = getNextApiKey();
     const url = `${RAJAONGKIR_BASE_URL}/destination/domestic-destination?search=${encodeURIComponent(query)}&limit=${limit}&offset=0`;
 
     console.log('[RajaOngkir] Searching:', url);
 
-    const response = await fetch(url, {
-      headers: {
-        key: apiKey,
-      },
-      cache: 'no-store',
-    });
+    const response = await rajaongkirFetch(url, { cache: 'no-store' });
 
     console.log('[RajaOngkir] Response status:', response.status);
 
@@ -170,15 +170,9 @@ export const rajaongkirClient = {
    * Endpoint: POST /calculate/domestic-cost
    */
   async calculateCost(query: RajaongkirCostQuery): Promise<RajaongkirCostResult> {
-    if (RAJAONGKIR_API_KEYS.length === 0) {
-      throw new Error('RAJAONGKIR_API_KEY is not configured');
-    }
-
-    const apiKey = getNextApiKey();
-    const response = await fetch(`${RAJAONGKIR_BASE_URL}/calculate/domestic-cost`, {
+    const response = await rajaongkirFetch(`${RAJAONGKIR_BASE_URL}/calculate/domestic-cost`, {
       method: 'POST',
       headers: {
-        key: apiKey,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({

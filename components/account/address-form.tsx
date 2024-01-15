@@ -10,16 +10,16 @@ interface Address {
   name: string;
   firstName: string;
   lastName: string;
-  phone: string;
+  phone: string | null;
   address1: string;
-  address2?: string;
+  address2: string | null;
   rajaongkirCityId: string;
-  rajaongkirCityName: string;
-  rajaongkirProvince?: string;
-  rajaongkirCity?: string;
-  rajaongkirDistrict?: string;
-  rajaongkirSubdistrict?: string;
-  rajaongkirPostalCode?: string;
+  rajaongkirCityName: string | null;
+  rajaongkirProvince: string | null;
+  rajaongkirCity: string | null;
+  rajaongkirDistrict: string | null;
+  rajaongkirSubdistrict: string | null;
+  rajaongkirPostalCode: string | null;
 }
 
 interface AddressFormProps {
@@ -49,11 +49,11 @@ export function AddressForm({ initialData, onSave, onCancel }: AddressFormProps)
   } | null>(
     initialData?.rajaongkirCityId ? {
       id: initialData.rajaongkirCityId,
-      name: initialData.rajaongkirSubdistrict || '',
-      province: initialData.rajaongkirProvince || '',
-      city: initialData.rajaongkirCity,
-      district: initialData.rajaongkirDistrict,
-      fullName: initialData.rajaongkirCityName || '',
+      name: initialData.rajaongkirSubdistrict ?? '',
+      province: initialData.rajaongkirProvince ?? '',
+      city: initialData.rajaongkirCity ?? undefined,
+      district: initialData.rajaongkirDistrict ?? undefined,
+      fullName: initialData.rajaongkirCityName ?? '',
     } : null
   );
 

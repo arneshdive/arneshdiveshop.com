@@ -2,28 +2,16 @@
 
 import { Icon } from '@iconify/react';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
-import { useCheckoutStore } from '@/lib/store/checkout';
-import { shippingMethods, FREE_SHIPPING_THRESHOLD } from '@/lib/constants/shipping';
 import { formatRupiah } from '@/lib/utils/format';
-
-// Note: All price values in this component are in cents (1 Rupiah = 100 cents)
-// - FREE_SHIPPING_THRESHOLD is in cents
-// - shippingMethods[].price is in cents
-// - Cart totals are in cents
 
 export function OrderSummaryCard() {
   // Ensure cart is synced
   useCartSync();
   
   const { items, promoDiscountCents, getSubtotalCents, getTotalCents } = useCartStore();
-  const { data } = useCheckoutStore();
   
   const subtotalCents = getSubtotalCents();
   const totalCents = getTotalCents();
-  const freeShipping = subtotalCents >= FREE_SHIPPING_THRESHOLD;
-  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotalCents;
-  const selectedMethod = shippingMethods.find((m) => m.id === data.shippingMethod);
-  const shippingCostCents = freeShipping ? 0 : (selectedMethod?.price || 0);
 
   // Get image for item
   const getItemImage = (item: typeof items[0]) => {
@@ -33,24 +21,6 @@ export function OrderSummaryCard() {
   return (
     <div className="bg-neutral-50 p-8 lg:p-12 sticky top-24 rounded-2xl">
       <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
-
-      {/* Free shipping progress */}
-      {!freeShipping && subtotalCents > 0 && (
-        <div className="mb-6 p-4 bg-white rounded-xl">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-neutral-500">Gratis ongkir di atas {formatRupiah(FREE_SHIPPING_THRESHOLD)}</span>
-          </div>
-          <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-neutral-900 rounded-full transition-all duration-500"
-              style={{ width: `${Math.min((subtotalCents / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
-            />
-          </div>
-          <p className="text-xs text-neutral-400 mt-2">
-            Tambah {formatRupiah(remainingForFreeShipping)} lagi untuk gratis ongkir
-          </p>
-        </div>
-      )}
 
       {/* Items */}
       <div className="space-y-4 mb-6">
@@ -100,11 +70,11 @@ export function OrderSummaryCard() {
         )}
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Ongkos Kirim</span>
-          <span>{freeShipping ? <span className="text-green-600 font-medium">Gratis</span> : formatRupiah(shippingCostCents)}</span>
+          <span className="text-neutral-400">Dihitung setelah pilih kurir</span>
         </div>
         <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
           <span>Total</span>
-          <span>{formatRupiah(totalCents + shippingCostCents)}</span>
+          <span>{formatRupiah(totalCents)}</span>
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCategories } from '@/lib/hooks/use-categories';
 import type { Category } from '@/lib/db/schema';
@@ -86,8 +87,14 @@ export default function CategoriesPage() {
           },
         },
         {
-          onSuccess: () => closeModal(),
-          onError: (error) => setErrors({ general: error.message }),
+          onSuccess: () => {
+            toast.success('Kategori berhasil diperbarui');
+            closeModal();
+          },
+          onError: (error) => {
+            toast.error(error.message || 'Gagal memperbarui kategori');
+            setErrors({ general: error.message });
+          },
         }
       );
     } else {
@@ -98,8 +105,14 @@ export default function CategoriesPage() {
           description: form.description || null,
         },
         {
-          onSuccess: () => closeModal(),
-          onError: (error) => setErrors({ general: error.message }),
+          onSuccess: () => {
+            toast.success('Kategori berhasil ditambahkan');
+            closeModal();
+          },
+          onError: (error) => {
+            toast.error(error.message || 'Gagal menambahkan kategori');
+            setErrors({ general: error.message });
+          },
         }
       );
     }
@@ -107,8 +120,13 @@ export default function CategoriesPage() {
 
   const handleDelete = (id: string) => {
     deleteCategory(id, {
-      onSuccess: () => setDeleteConfirm(null),
-      onError: (error) => alert(error.message),
+      onSuccess: () => {
+        toast.success('Kategori berhasil dihapus');
+        setDeleteConfirm(null);
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Gagal menghapus kategori');
+      },
     });
   };
 

@@ -103,13 +103,17 @@ export default function CheckoutPage() {
       });
 
       if (!response.ok) {
+        // Session is stale (already paid / payment in flight / expired) -
+        // drop it so the next render creates a fresh one (with the current
+        // shipping method already included), instead of getting stuck.
+        setField('checkoutSessionId', null);
         const error = await response.json();
         throw new Error(error.error || 'Failed to update shipping method');
       }
     } catch (error) {
       console.error('Error updating shipping method:', error);
     }
-  }, [data.checkoutSessionId]);
+  }, [data.checkoutSessionId, setField]);
 
   // Auto-create session when form becomes valid
   useEffect(() => {
@@ -177,11 +181,18 @@ export default function CheckoutPage() {
       }
 
       // Ensure shipping method is updated
-      await fetch('/api/checkout/', {
+      const shippingUpdateResponse = await fetch('/api/checkout/', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ shippingMethod: data.shippingMethod }),
       });
+
+      if (!shippingUpdateResponse.ok) {
+        // Cached session is stale - drop it so the next click starts fresh
+        // instead of repeatedly failing against a dead session id.
+        setField('checkoutSessionId', null);
+        throw new Error('Sesi checkout sudah tidak berlaku, silakan coba lagi');
+      }
 
       // Create payment transaction
       const paymentResponse = await fetch('/api/payments/create', {
@@ -192,6 +203,11 @@ export default function CheckoutPage() {
 
       if (!paymentResponse.ok) {
         const error = await paymentResponse.json();
+        if (paymentResponse.status === 400 || paymentResponse.status === 404) {
+          // Session is invalid/already paid, not a transient failure -
+          // reusing it again would just fail the same way.
+          setField('checkoutSessionId', null);
+        }
         throw new Error(error.error || 'Failed to create payment transaction');
       }
 

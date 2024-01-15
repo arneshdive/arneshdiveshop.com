@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getCheckoutSessionById, updateCheckoutSessionTotals } from '@/lib/queries/checkout';
+import {
+  getCheckoutSessionById,
+  updateCheckoutSessionTotals,
+  markCheckoutSessionPaymentPending,
+  type CheckoutSessionWithCart,
+} from '@/lib/queries/checkout';
 import { getMidtransProvider } from '@/lib/payment/midtrans';
-import { db, checkoutSessions, orders, payments, orderItems, cartItems } from '@/lib/db';
+import { db, orders, payments, orderItems } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { createAccountFromCheckout } from '@/lib/auth/seamless-signup';
 
@@ -52,7 +57,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (session.status !== 'pending') {
+    if (session.status === 'completed') {
+      return NextResponse.json(
+        { error: 'Checkout session has already been paid' },
+        { status: 400 }
+      );
+    }
+
+    // 'pending' = first payment attempt, 'payment_pending' = retrying after
+    // closing/abandoning a previous Snap popup. Anything else is invalid.
+    if (session.status !== 'pending' && session.status !== 'payment_pending') {
       return NextResponse.json(
         { error: 'Checkout session is no longer valid' },
         { status: 400 }
@@ -67,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ============================================================
-    // IDEMPOTENCY CHECK: Return existing payment if already created
+    // IDEMPOTENCY CHECK: Reuse or re-open an existing order/payment
     // ============================================================
     // Use checkoutSessionId as the idempotency key
     const existingOrder = await db.query.orders.findFirst({
@@ -76,14 +90,15 @@ export async function POST(request: NextRequest) {
         payments: true,
       },
     });
+    const existingPayment = existingOrder?.payments[0];
 
-    if (existingOrder && existingOrder.payments.length > 0) {
-      const existingPayment = existingOrder.payments[0];
-      
-      // If payment has a snap token, return it (user is retrying payment)
-      if (existingPayment?.metadata && typeof existingPayment.metadata === 'object') {
-        const metadata = existingPayment.metadata as Record<string, unknown>;
-        if (metadata.snapToken) {
+    if (existingOrder && existingPayment) {
+      if (existingPayment.status === 'pending') {
+        // Previous Snap transaction is still open (user closed the popup
+        // without paying) - hand back the same token instead of creating
+        // a duplicate order.
+        const metadata = existingPayment.metadata as Record<string, unknown> | null;
+        if (metadata?.snapToken) {
           console.log('Returning existing payment for idempotency key:', checkoutSessionId);
           return NextResponse.json({
             success: true,
@@ -96,6 +111,72 @@ export async function POST(request: NextRequest) {
           });
         }
       }
+
+      if (existingPayment.status === 'failed' || existingPayment.status === 'expired') {
+        // Previous Snap transaction was denied/expired - open a fresh
+        // transaction against the SAME order (Midtrans allows re-charging
+        // an order_id once its prior transaction reached a final state).
+        const midtrans = getMidtransProvider();
+        const transaction = await midtrans.createTransaction({
+          orderId: existingOrder.id,
+          orderNumber: existingOrder.orderNumber,
+          amountCents: existingOrder.totalCents,
+          currency: 'IDR',
+          customerEmail: session.email,
+          customerPhone: session.phone,
+          customerName: session.fullName,
+          billingAddress: {
+            address1: session.address1,
+            address2: session.address2,
+            city: session.rajaongkirCity || session.rajaongkirCityName || '',
+            province: session.rajaongkirProvince || '',
+            postalCode: session.rajaongkirPostalCode || '',
+            country: 'Indonesia',
+          },
+          itemDetails: buildItemDetails(session, existingOrder.shippingCents),
+        });
+
+        await db
+          .update(payments)
+          .set({
+            status: 'pending',
+            providerTransactionId: transaction.providerTransactionId,
+            metadata: {
+              snapToken: transaction.token,
+              redirectUrl: transaction.redirectUrl,
+            },
+            updatedAt: new Date(),
+          })
+          .where(eq(payments.id, existingPayment.id));
+
+        // The webhook cancelled the order on the prior failure/expiry -
+        // a new transaction is now in flight, so reopen it.
+        if (existingOrder.status === 'cancelled') {
+          await db
+            .update(orders)
+            .set({ status: 'pending_payment', updatedAt: new Date() })
+            .where(eq(orders.id, existingOrder.id));
+        }
+
+        await markCheckoutSessionPaymentPending(checkoutSessionId);
+
+        return NextResponse.json({
+          success: true,
+          data: {
+            orderId: existingOrder.id,
+            orderNumber: existingOrder.orderNumber,
+            snapToken: transaction.token,
+            redirectUrl: transaction.redirectUrl,
+          },
+        });
+      }
+
+      // 'paid' (or any other unexpected status): session should already be
+      // 'completed' by the webhook - treat as no longer payable.
+      return NextResponse.json(
+        { error: 'Checkout session has already been paid' },
+        { status: 400 }
+      );
     }
 
     // Calculate totals
@@ -127,7 +208,7 @@ export async function POST(request: NextRequest) {
 
     // Create Snap transaction with Midtrans
     const midtrans = getMidtransProvider();
-    
+
     const transaction = await midtrans.createTransaction({
       orderId,
       orderNumber,
@@ -139,32 +220,12 @@ export async function POST(request: NextRequest) {
       billingAddress: {
         address1: session.address1,
         address2: session.address2,
-        city: session.city,
-        province: session.province,
-        postalCode: session.postalCode,
-        country: session.country,
+        city: session.rajaongkirCity || session.rajaongkirCityName || '',
+        province: session.rajaongkirProvince || '',
+        postalCode: session.rajaongkirPostalCode || '',
+        country: 'Indonesia',
       },
-      itemDetails: [
-        // Add cart items
-        ...session.cart.items.map(item => {
-          const priceCents = item.variant?.priceCents ?? item.product.priceCents;
-          return {
-            id: item.productId,
-            name: item.variant 
-              ? `${item.product.name} - ${item.variant.name}`
-              : item.product.name,
-            price: priceCents,
-            quantity: item.quantity,
-          };
-        }),
-        // Add shipping as a line item
-        {
-          id: `shipping-${session.shippingMethod || 'standard'}`,
-          name: `Pengiriman: ${getShippingMethodName(session.shippingMethod)}`,
-          price: shippingCents,
-          quantity: 1,
-        },
-      ],
+      itemDetails: buildItemDetails(session, shippingCents),
     });
 
     // Create order record (pending_payment status) WITH idempotency key
@@ -184,10 +245,10 @@ export async function POST(request: NextRequest) {
       shippingPhone: session.phone,
       shippingAddress1: session.address1,
       shippingAddress2: session.address2,
-      shippingCity: session.city,
-      shippingState: session.province,
-      shippingPostalCode: session.postalCode,
-      shippingCountry: session.country,
+      shippingCity: session.rajaongkirCity || session.rajaongkirCityName || '',
+      shippingState: session.rajaongkirProvince,
+      shippingPostalCode: session.rajaongkirPostalCode || '',
+      shippingCountry: 'Indonesia',
       notes: session.notes,
     });
 
@@ -198,7 +259,7 @@ export async function POST(request: NextRequest) {
         orderId,
         productId: item.productId,
         variantId: item.variantId,
-        name: item.variant 
+        name: item.variant
           ? `${item.product.name} - ${item.variant.name}`
           : item.product.name,
         quantity: item.quantity,
@@ -221,16 +282,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Mark checkout session as completed
-    await db
-      .update(checkoutSessions)
-      .set({ status: 'completed', updatedAt: new Date() })
-      .where(eq(checkoutSessions.id, checkoutSessionId));
-
-    // Clear the cart
-    if (session.cartId) {
-      await db.delete(cartItems).where(eq(cartItems.cartId, session.cartId));
-    }
+    // Payment attempt is now in flight - the checkout session stays
+    // editable-but-locked until the Midtrans webhook confirms the outcome.
+    // Completing the session and clearing the cart happens there, not here.
+    await markCheckoutSessionPaymentPending(checkoutSessionId);
 
     return NextResponse.json({
       success: true,
@@ -248,6 +303,41 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Midtrans rejects the whole transaction if any item_details[].name exceeds this
+const MIDTRANS_ITEM_NAME_MAX_LENGTH = 50;
+
+function truncateForMidtrans(name: string): string {
+  if (name.length <= MIDTRANS_ITEM_NAME_MAX_LENGTH) return name;
+  return `${name.slice(0, MIDTRANS_ITEM_NAME_MAX_LENGTH - 3)}...`;
+}
+
+/**
+ * Build Midtrans item_details for a checkout session's cart + shipping
+ */
+function buildItemDetails(session: CheckoutSessionWithCart, shippingCents: number) {
+  if (!session.cart) return [];
+  return [
+    ...session.cart.items.map(item => {
+      const priceCents = item.variant?.priceCents ?? item.product.priceCents;
+      const name = item.variant
+        ? `${item.product.name} - ${item.variant.name}`
+        : item.product.name;
+      return {
+        id: item.productId,
+        name: truncateForMidtrans(name),
+        price: priceCents,
+        quantity: item.quantity,
+      };
+    }),
+    {
+      id: `shipping-${session.shippingMethod || 'standard'}`,
+      name: truncateForMidtrans(`Pengiriman: ${getShippingMethodName(session.shippingMethod)}`),
+      price: shippingCents,
+      quantity: 1,
+    },
+  ];
 }
 
 /**

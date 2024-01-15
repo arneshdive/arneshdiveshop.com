@@ -7,9 +7,10 @@ import { OrderSummary } from '@/components/cart/order-summary';
 import { EmptyCart } from '@/components/cart/empty-cart';
 import { RecentlyViewed } from '@/components/product/recently-viewed';
 import { USPSection } from '@/components/layout/usp-section';
-import { useCartStore } from '@/lib/store/cart';
+import { useCartStore, useCartSync } from '@/lib/store/cart';
 
 export default function CartPage() {
+  useCartSync();
   const items = useCartStore((state) => state.items);
 
   return (

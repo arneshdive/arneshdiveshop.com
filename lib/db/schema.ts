@@ -75,6 +75,7 @@ export const users = pgTable('users', {
   password: text('password'), // Hashed password for credentials auth
   emailVerified: timestamp('email_verified'),
   role: userRoleEnum('role').default('customer').notNull(),
+  blockedAt: timestamp('blocked_at'), // If set, user is blocked
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -170,6 +171,7 @@ export const addresses = pgTable('addresses', {
   customerId: text('customer_id')
     .references(() => customers.id, { onDelete: 'cascade' })
     .notNull(),
+  name: text('name').notNull().default('Alamat'), // Label like "Rumah", "Kantor"
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
   phone: text('phone'),

@@ -133,15 +133,23 @@ export function ProductCard({ product }: ProductCardProps) {
         </p>
 
         {/* Price */}
-        <div className="flex justify-center gap-2">
-          {product.compareAtPrice ? (
-            <p className="text-sm whitespace-nowrap">
-              <span className="text-red-500">{product.price}</span>{' '}
-              <s className="text-neutral-400">{product.compareAtPrice}</s>
-            </p>
-          ) : (
-            <span className="text-sm text-neutral-700 whitespace-nowrap">{product.price}</span>
+        <div className="flex flex-col items-center gap-0.5">
+          {/* Show "Mulai dari" for products with variants (different min/max prices) */}
+          {product.priceRangeMin !== undefined && 
+           product.priceRangeMax !== undefined && 
+           product.priceRangeMin !== product.priceRangeMax && (
+            <span className="text-[10px] text-neutral-500 uppercase tracking-wide">Mulai dari</span>
           )}
+          <div className="flex justify-center gap-2">
+            {product.compareAtPrice ? (
+              <p className="text-sm whitespace-nowrap">
+                <span className="text-red-500">{product.price}</span>{' '}
+                <s className="text-neutral-400">{product.compareAtPrice}</s>
+              </p>
+            ) : (
+              <span className="text-sm text-neutral-700 whitespace-nowrap">{product.price}</span>
+            )}
+          </div>
         </div>
 
         {/* Color Swatches */}

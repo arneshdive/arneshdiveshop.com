@@ -104,9 +104,9 @@ function MapContent({
   position,
   setPosition,
   setAddressInput,
-  cityInput,
+  cityInput: _cityInput,
   setCityInput,
-  provinceInput,
+  provinceInput: _provinceInput,
   setProvinceInput,
 }: {
   position: L.LatLng;

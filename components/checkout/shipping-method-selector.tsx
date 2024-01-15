@@ -31,7 +31,7 @@ interface ShippingMethodSelectorProps {
   checkoutSessionId?: string | null;
 }
 
-export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSelectorProps) {
+export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }: ShippingMethodSelectorProps) {
   useCartSync();
 
   const { data, setField } = useCheckoutStore();
@@ -49,7 +49,7 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
       if (!groups[rate.courier]) {
         groups[rate.courier] = [];
       }
-      groups[rate.courier].push(rate);
+      groups[rate.courier]!.push(rate);
     }
     
     // Sort groups by cheapest option in each group
@@ -63,7 +63,7 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
     
     // Sort services within each group by category, then price
     for (const courier of Object.keys(result)) {
-      result[courier].sort((a, b) => {
+      result[courier]!.sort((a, b) => {
         // Same day first, then next day, etc.
         const categoryOrder = ['same_day', 'next_day', 'regular', 'economy', 'cargo'];
         const catA = categoryOrder.indexOf(a.category);
@@ -158,8 +158,9 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
     });
   };
 
-  const getCheapestRate = (courierRates: ShippingRate[]) => {
-    return courierRates.reduce((min, r) => r.costCents < min.costCents ? r : min, courierRates[0]);
+  const getCheapestRate = (courierRates: ShippingRate[]): ShippingRate | undefined => {
+    if (courierRates.length === 0) return undefined;
+    return courierRates.reduce((min, r) => r.costCents < min.costCents ? r : min, courierRates[0]!);
   };
 
   return (
@@ -208,6 +209,9 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
             const isExpanded = expandedCouriers.has(courier);
             const cheapest = getCheapestRate(courierRates);
             const hasSelection = courierRates.some(r => data.shippingMethod === getRateId(r));
+
+            // Skip if no rates (shouldn't happen but satisfies TypeScript)
+            if (!cheapest) return null;
             
             return (
               <div
@@ -281,8 +285,8 @@ export function ShippingMethodSelector({ checkoutSessionId }: ShippingMethodSele
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium">{rate.name}</span>
                                 {rate.category && CATEGORY_BADGES[rate.category] && (
-                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CATEGORY_BADGES[rate.category].color}`}>
-                                    {CATEGORY_BADGES[rate.category].label}
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CATEGORY_BADGES[rate.category]!.color}`}>
+                                    {CATEGORY_BADGES[rate.category]!.label}
                                   </span>
                                 )}
                               </div>

@@ -302,7 +302,7 @@ export default function OrdersPage() {
 
       <div className="flex gap-6 flex-1 min-h-0">
         {/* Left: Order List */}
-        <div className="w-[360px] flex-shrink-0 flex flex-col bg-white rounded-2xl">
+        <div className="w-[400px] flex-shrink-0 flex flex-col bg-white rounded-2xl">
           {/* Filters */}
           <div className="p-4 pb-0 space-y-3">
             {/* Status Tabs */}

@@ -1,11 +1,146 @@
 'use client';
 
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
-import { mockUserSettings } from '@/lib/data/mock-account';
+import { toast } from 'sonner';
+
+// Types matching API response
+interface UserProfile {
+  userId: string;
+  email: string;
+  name: string | null;
+  role: string;
+  customerId: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  totalSpentCents: number | null;
+}
+
+// Fetch profile from API
+async function fetchProfile(): Promise<{ profile: UserProfile }> {
+  const response = await fetch('/api/account/profile');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Silakan login untuk mengakses pengaturan');
+    }
+    throw new Error('Gagal memuat profil');
+  }
+  return response.json();
+}
+
+// Update profile mutation
+async function updateProfile(data: {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}): Promise<{ profile: UserProfile }> {
+  const response = await fetch('/api/account/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Gagal mengubah profil');
+  }
+  return response.json();
+}
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState(mockUserSettings);
+  const queryClient = useQueryClient();
+  
+  // Local form state
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+
+  // Fetch profile
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['profile'],
+    queryFn: fetchProfile,
+  });
+
+  // Sync form state when profile loads
+  const profile = data?.profile;
+  const [initialized, setInitialized] = useState(false);
+  
+  if (profile && !initialized) {
+    setFirstName(profile.firstName || '');
+    setLastName(profile.lastName || '');
+    setPhone(profile.phone || '');
+    setInitialized(true);
+  }
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: updateProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast.success('Profil berhasil disimpan');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSave = () => {
+    updateMutation.mutate({ firstName, lastName, phone });
+  };
+
+  const hasChanges = 
+    firstName !== (profile?.firstName || '') ||
+    lastName !== (profile?.lastName || '') ||
+    phone !== (profile?.phone || '');
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pengaturan Akun</h1>
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-neutral-500">Memuat profil...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state - not logged in
+  if (error?.message.includes('login')) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pengaturan Akun</h1>
+        <div className="bg-neutral-50 p-8 rounded-xl text-center">
+          <p className="text-neutral-500">Silakan login untuk mengakses pengaturan akun</p>
+          <AnimatedButton asChild className="mt-4">
+            <a href="/auth">Login</a>
+          </AnimatedButton>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pengaturan Akun</h1>
+        <div className="bg-neutral-50 p-8 rounded-xl text-center">
+          <p className="text-red-600">{error.message}</p>
+          <button 
+            onClick={() => refetch()}
+            className="mt-4 text-sm text-neutral-600 hover:text-neutral-900 underline"
+          >
+            Coba lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -18,7 +153,7 @@ export default function SettingsPage() {
         {/* Avatar */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8">
           <div className="w-20 h-20 rounded-full bg-neutral-200 flex items-center justify-center text-2xl font-medium text-neutral-500">
-            {settings.firstName[0]}
+            {firstName?.[0]?.toUpperCase() || '?'}
           </div>
           <div className="text-center sm:text-left">
             <p className="font-medium mb-1">Foto Profil</p>
@@ -37,8 +172,8 @@ export default function SettingsPage() {
             </label>
             <input
               type="text"
-              value={settings.firstName}
-              onChange={(e) => setSettings({ ...settings, firstName: e.target.value })}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
             />
           </div>
@@ -48,8 +183,8 @@ export default function SettingsPage() {
             </label>
             <input
               type="text"
-              value={settings.lastName}
-              onChange={(e) => setSettings({ ...settings, lastName: e.target.value })}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="w-full px-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
             />
           </div>
@@ -62,7 +197,7 @@ export default function SettingsPage() {
           </label>
           <input
             type="email"
-            value={settings.email}
+            value={profile?.email || ''}
             readOnly
             className="w-full md:max-w-md px-4 py-3 bg-neutral-100 border border-neutral-200 rounded-xl text-sm text-neutral-500 cursor-not-allowed"
           />
@@ -78,14 +213,18 @@ export default function SettingsPage() {
           </label>
           <input
             type="tel"
-            value={settings.phone}
-            onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="w-full md:max-w-md px-4 py-3 bg-white border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
           />
         </div>
 
-        <AnimatedButton className="px-6 py-2.5 text-sm w-full sm:w-auto">
-          Simpan Perubahan
+        <AnimatedButton 
+          onClick={handleSave}
+          disabled={!hasChanges || updateMutation.isPending}
+          className="px-6 py-2.5 text-sm w-full sm:w-auto"
+        >
+          {updateMutation.isPending ? 'Menyimpan...' : 'Simpan Perubahan'}
         </AnimatedButton>
       </div>
 
@@ -104,47 +243,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Notifications Section */}
-      <div className="bg-neutral-50 p-6 md:p-8 rounded-xl mb-6">
-        <h2 className="text-xl font-semibold tracking-tight mb-6">Notifikasi</h2>
-
-        <div className="space-y-6">
-          <ToggleRow
-            label="Email Promosi"
-            description="Terima info promo dan diskon via email"
-            checked={settings.notifications.promoEmail}
-            onChange={(checked) =>
-              setSettings({
-                ...settings,
-                notifications: { ...settings.notifications, promoEmail: checked },
-              })
-            }
-          />
-          <ToggleRow
-            label="Notifikasi Pesanan"
-            description="Update status pesanan via email dan WhatsApp"
-            checked={settings.notifications.orderUpdates}
-            onChange={(checked) =>
-              setSettings({
-                ...settings,
-                notifications: { ...settings.notifications, orderUpdates: checked },
-              })
-            }
-          />
-          <ToggleRow
-            label="Newsletter"
-            description="Newsletter mingguan tentang produk baru"
-            checked={settings.notifications.newsletter}
-            onChange={(checked) =>
-              setSettings({
-                ...settings,
-                notifications: { ...settings.notifications, newsletter: checked },
-              })
-            }
-          />
-        </div>
-      </div>
-
       {/* Danger Zone */}
       <div className="bg-red-50 p-6 md:p-8 rounded-xl border border-red-200">
         <h2 className="text-xl font-semibold tracking-tight text-red-600 mb-4">Zona Bahaya</h2>
@@ -155,37 +253,6 @@ export default function SettingsPage() {
           Hapus Akun Saya
         </button>
       </div>
-    </div>
-  );
-}
-
-interface ToggleRowProps {
-  label: string;
-  description: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}
-
-function ToggleRow({ label, description, checked, onChange }: ToggleRowProps) {
-  return (
-    <div className="flex justify-between items-start sm:items-center gap-4">
-      <div>
-        <p className="font-medium">{label}</p>
-        <p className="text-sm text-neutral-500">{description}</p>
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange(!checked)}
-        className={`w-12 h-6 rounded-full relative transition-colors flex-shrink-0 ${
-          checked ? 'bg-neutral-900' : 'bg-neutral-300'
-        }`}
-      >
-        <div
-          className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-            checked ? 'right-1' : 'left-1'
-          }`}
-        />
-      </button>
     </div>
   );
 }

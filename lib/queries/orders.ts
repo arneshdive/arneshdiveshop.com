@@ -9,7 +9,7 @@ import {
   orderStatusHistory,
 } from '@/lib/db/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
-import type { Order, OrderItem, Payment, NewOrderItem } from '@/lib/db/schema';
+import type { Order, OrderItem, Payment, NewOrderItem, NewOrder } from '@/lib/db/schema';
 import { getCartWithItems } from './cart';
 
 // ============================================================================
@@ -233,29 +233,30 @@ export async function createOrderFromCheckout(input: CreateOrderInput): Promise<
     const orderNumber = await generateOrderNumber(tx);
     
     // 3. Create order record
+    const orderValues: NewOrder = {
+      orderNumber,
+      customerId,
+      status: 'pending_payment',
+      subtotalCents,
+      shippingCents,
+      taxCents: 0,
+      discountCents: 0,
+      totalCents,
+      idempotencyKey: input.idempotencyKey,
+      shippingFirstName: checkoutSession.fullName.split(' ')[0] || checkoutSession.fullName,
+      shippingLastName: checkoutSession.fullName.split(' ').slice(1).join(' ') || '',
+      shippingPhone: checkoutSession.phone,
+      shippingAddress1: checkoutSession.address1,
+      shippingAddress2: checkoutSession.address2,
+      shippingCity: checkoutSession.city ?? '',
+      shippingState: checkoutSession.province,
+      shippingPostalCode: checkoutSession.postalCode ?? '',
+      shippingCountry: checkoutSession.country,
+      notes: checkoutSession.notes,
+    };
     const [order] = await tx
       .insert(orders)
-      .values({
-        orderNumber,
-        customerId,
-        status: 'pending_payment',
-        subtotalCents,
-        shippingCents,
-        taxCents: 0,
-        discountCents: 0,
-        totalCents,
-        idempotencyKey: input.idempotencyKey,
-        shippingFirstName: checkoutSession.fullName.split(' ')[0] || checkoutSession.fullName,
-        shippingLastName: checkoutSession.fullName.split(' ').slice(1).join(' ') || '',
-        shippingPhone: checkoutSession.phone,
-        shippingAddress1: checkoutSession.address1,
-        shippingAddress2: checkoutSession.address2,
-        shippingCity: checkoutSession.city,
-        shippingState: checkoutSession.province,
-        shippingPostalCode: checkoutSession.postalCode,
-        shippingCountry: checkoutSession.country,
-        notes: checkoutSession.notes,
-      })
+      .values(orderValues)
       .returning();
     
     if (!order) {

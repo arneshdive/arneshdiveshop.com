@@ -310,3 +310,75 @@ export async function getExistingSlugs(excludeId?: string) {
     );
   return result.map(r => r.slug);
 }
+
+/**
+ * Get related products (same category, excluding current product)
+ * Limited to 4 products for the related products section
+ */
+export async function getRelatedProducts(productId: string, categoryId: string | null, brandId?: string | null, limit = 4) {
+  const conditions: SQL[] = [
+    isNull(products.deletedAt),
+    eq(products.isActive, true),
+    sql`${products.id} != ${productId}`,
+  ];
+  
+  // Prefer products from the same category
+  if (categoryId) {
+    conditions.push(eq(products.categoryId, categoryId));
+  }
+  
+  const results = await db.query.products.findMany({
+    where: and(...conditions),
+    with: {
+      category: true,
+      brand: true,
+    },
+    orderBy: [desc(products.createdAt)],
+    limit,
+  });
+  
+  // If we don't have enough products from the same category, get more from the same brand
+  if (results.length < limit && brandId && !categoryId) {
+    const brandProducts = await db.query.products.findMany({
+      where: and(
+        isNull(products.deletedAt),
+        eq(products.isActive, true),
+        sql`${products.id} != ${productId}`,
+        eq(products.brandId, brandId),
+        // Exclude products we already have
+        ...results.map(r => sql`${products.id} != ${r.id}`),
+      ),
+      with: {
+        category: true,
+        brand: true,
+      },
+      orderBy: [desc(products.createdAt)],
+      limit: limit - results.length,
+    });
+    
+    results.push(...brandProducts);
+  }
+  
+  // If still not enough, get any active products
+  if (results.length < limit) {
+    const existingIds = results.map(r => r.id);
+    const otherProducts = await db.query.products.findMany({
+      where: and(
+        isNull(products.deletedAt),
+        eq(products.isActive, true),
+        sql`${products.id} != ${productId}`,
+        ...existingIds.map(id => sql`${products.id} != ${id}`),
+      ),
+      with: {
+        category: true,
+        brand: true,
+      },
+      orderBy: [desc(products.createdAt)],
+      limit: limit - results.length,
+    });
+    
+    results.push(...otherProducts);
+  }
+  
+  return results;
+}

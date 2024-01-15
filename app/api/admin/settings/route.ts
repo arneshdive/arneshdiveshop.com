@@ -24,7 +24,14 @@ export async function GET() {
     }
 
     const result = settings[0];
-    
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Failed to get settings' },
+        { status: 500 }
+      );
+    }
+
     // Transform activeCouriers from comma-separated string to array
     return NextResponse.json({
       ...result,

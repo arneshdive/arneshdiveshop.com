@@ -251,7 +251,7 @@ export const useCartStore = create<CartState & CartActions>()(
       isSynced: false,
       lastError: null,
 
-      // Check auth status and sync with server if logged in
+      // Check auth status and sync with server
       checkAuthAndSync: async () => {
         const state = get();
         if (state.isSynced || state.isLoading) return;
@@ -262,18 +262,13 @@ export const useCartStore = create<CartState & CartActions>()(
           const loggedIn = await checkSession();
           set({ isLoggedIn: loggedIn });
 
-          if (loggedIn) {
-            // Fetch cart from server for logged-in users
-            const serverCart = await fetchCart();
-            if (serverCart) {
-              const items = serverCart.items.map(normalizeCartItem);
-              set({ items, isSynced: true });
-            } else {
-              set({ items: [], isSynced: true });
-            }
+          // Always fetch cart from server (works for both logged-in and guests via cookies)
+          const serverCart = await fetchCart();
+          if (serverCart) {
+            const items = serverCart.items.map(normalizeCartItem);
+            set({ items, isSynced: true });
           } else {
-            // For guests, keep localStorage items (already loaded by persist)
-            set({ isSynced: true });
+            set({ items: [], isSynced: true });
           }
         } catch (error) {
           console.error('Error syncing cart:', error);
@@ -285,144 +280,76 @@ export const useCartStore = create<CartState & CartActions>()(
 
       // Add item to cart
       addItem: async (productId, variantId, quantity = 1) => {
-        const state = get();
         set({ isLoading: true, lastError: null });
 
-        // For logged-in users, always sync with server
-        if (state.isLoggedIn) {
-          const result = await addToServerCart(productId, variantId, quantity);
-          set({ isLoading: false });
-          
-          if (result.error) {
-            set({ lastError: result.error });
-            return { success: false, error: result.error };
-          }
-          
-          if (result.cart) {
-            const items = result.cart.items.map(normalizeCartItem);
-            set({ items });
-          }
-          return { success: true };
-        }
-
-        // For guests, use localStorage (optimistic update)
-        // Generate a temporary ID for the new item
-        const tempId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        // Always use server API (works for both logged-in users and guests via cookies)
+        const result = await addToServerCart(productId, variantId, quantity);
+        set({ isLoading: false });
         
-        // Check for existing item with same product+variant
-        const existingIndex = state.items.findIndex(
-          (item) => item.productId === productId && item.variantId === variantId
-        );
-
-        if (existingIndex > -1) {
-          // Update quantity
-          const newItems = [...state.items];
-          newItems[existingIndex] = {
-            ...newItems[existingIndex]!,
-            quantity: newItems[existingIndex]!.quantity + quantity,
-          };
-          set({ items: newItems, isLoading: false });
-        } else {
-          // For guest users, we need product data - this should ideally come from the caller
-          // For now, create a minimal item structure
-          const newItem: CartItem = {
-            id: tempId,
-            productId,
-            variantId,
-            quantity,
-            product: {
-              id: productId,
-              name: 'Loading...',
-              slug: '',
-              priceCents: 0,
-              compareAtPriceCents: null,
-              images: null,
-            },
-          };
-          set({ items: [...state.items, newItem], isLoading: false });
+        if (result.error) {
+          set({ lastError: result.error });
+          return { success: false, error: result.error };
         }
-
+        
+        if (result.cart) {
+          const items = result.cart.items.map(normalizeCartItem);
+          set({ items, isSynced: true });
+        }
         return { success: true };
       },
 
       // Remove item from cart
       removeItem: async (itemId) => {
-        const state = get();
-        set({ lastError: null });
+        set({ lastError: null, isLoading: true });
 
-        // For logged-in users, sync with server
-        if (state.isLoggedIn) {
-          set({ isLoading: true });
-          const result = await removeFromServerCart(itemId);
-          set({ isLoading: false });
-          
-          if (result.error) {
-            set({ lastError: result.error });
-            return { success: false, error: result.error };
-          }
-          
-          if (result.cart) {
-            const items = result.cart.items.map(normalizeCartItem);
-            set({ items });
-          }
-          return { success: true };
+        const result = await removeFromServerCart(itemId);
+        set({ isLoading: false });
+        
+        if (result.error) {
+          set({ lastError: result.error });
+          return { success: false, error: result.error };
         }
-
-        // For guests, update localStorage
-        set({ items: state.items.filter((item) => item.id !== itemId) });
+        
+        if (result.cart) {
+          const items = result.cart.items.map(normalizeCartItem);
+          set({ items });
+        }
         return { success: true };
       },
 
       // Update item quantity
       updateQuantity: async (itemId, quantity) => {
-        const state = get();
-        set({ lastError: null });
-
         if (quantity < 1) {
           return get().removeItem(itemId);
         }
 
-        // For logged-in users, sync with server
-        if (state.isLoggedIn) {
-          set({ isLoading: true });
-          const result = await updateServerCartItem(itemId, quantity);
-          set({ isLoading: false });
-          
-          if (result.error) {
-            set({ lastError: result.error });
-            return { success: false, error: result.error };
-          }
-          
-          if (result.cart) {
-            const items = result.cart.items.map(normalizeCartItem);
-            set({ items });
-          }
-          return { success: true };
-        }
+        set({ lastError: null, isLoading: true });
 
-        // For guests, update localStorage
-        const items = state.items.map((item) =>
-          item.id === itemId ? { ...item, quantity } : item
-        );
-        set({ items });
+        const result = await updateServerCartItem(itemId, quantity);
+        set({ isLoading: false });
+        
+        if (result.error) {
+          set({ lastError: result.error });
+          return { success: false, error: result.error };
+        }
+        
+        if (result.cart) {
+          const items = result.cart.items.map(normalizeCartItem);
+          set({ items });
+        }
         return { success: true };
       },
 
       // Clear cart
       clearCart: async () => {
-        const state = get();
-        set({ lastError: null });
+        set({ lastError: null, isLoading: true });
 
-        // For logged-in users, sync with server
-        if (state.isLoggedIn) {
-          set({ isLoading: true });
-          const result = await clearServerCart();
-          set({ isLoading: false });
-          
-          if (!result.success) {
-            set({ lastError: result.error || 'Failed to clear cart' });
-            return { success: false, error: result.error };
-          }
+        const result = await clearServerCart();
+        set({ isLoading: false });
+        
+        if (!result.success) {
+          set({ lastError: result.error || 'Failed to clear cart' });
+          return { success: false, error: result.error };
         }
 
         set({ items: [], promoCode: null, promoDiscountCents: 0 });
@@ -483,9 +410,8 @@ export const useCartStore = create<CartState & CartActions>()(
     }),
     {
       name: 'arnes-cart',
-      // Only persist items and promo for guests
+      // Only persist promo code (items come from server for both logged-in and guests)
       partialize: (state) => ({
-        items: state.isLoggedIn ? [] : state.items,
         promoCode: state.promoCode,
         promoDiscountCents: state.promoDiscountCents,
       }),

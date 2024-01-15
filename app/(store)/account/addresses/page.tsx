@@ -2,55 +2,199 @@
 
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { AddressCard } from '@/components/account/address-card';
 import { AddressForm } from '@/components/account/address-form';
-import { mockAddresses, type Address } from '@/lib/data/mock-account';
+import { toast } from 'sonner';
+
+// Types matching API response
+interface Address {
+  id: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  address1: string;
+  address2: string | null;
+  rajaongkirCityId: string;
+  rajaongkirCityName: string | null;
+  rajaongkirProvince: string | null;
+  rajaongkirCity: string | null;
+  rajaongkirDistrict: string | null;
+  rajaongkirSubdistrict: string | null;
+  rajaongkirPostalCode: string | null;
+  isDefault: boolean;
+}
+
+// Fetch addresses from API
+async function fetchAddresses(): Promise<{ addresses: Address[] }> {
+  const response = await fetch('/api/addresses');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Silakan login untuk melihat alamat Anda');
+    }
+    throw new Error('Gagal memuat alamat');
+  }
+  return response.json();
+}
+
+// Create address mutation
+async function createAddress(data: Partial<Address>): Promise<{ address: Address }> {
+  const response = await fetch('/api/addresses', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Gagal menambah alamat');
+  }
+  return response.json();
+}
+
+// Update address mutation
+async function updateAddress(id: string, data: Partial<Address>): Promise<{ address: Address }> {
+  const response = await fetch(`/api/addresses/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Gagal mengubah alamat');
+  }
+  return response.json();
+}
+
+// Delete address mutation
+async function deleteAddress(id: string): Promise<void> {
+  const response = await fetch(`/api/addresses/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Gagal menghapus alamat');
+  }
+}
 
 export default function AddressesPage() {
-  const [addresses, setAddresses] = useState<Address[]>(mockAddresses);
+  const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
+  // Fetch addresses
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: fetchAddresses,
+  });
+
+  const addresses = data?.addresses ?? [];
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: createAddress,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+      setIsAdding(false);
+      toast.success('Alamat berhasil ditambahkan');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Address> }) =>
+      updateAddress(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+      setEditingAddress(null);
+      toast.success('Alamat berhasil diubah');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: deleteAddress,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['addresses'] });
+      toast.success('Alamat berhasil dihapus');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleSetDefault = (id: string) => {
-    setAddresses(addresses.map((addr) => ({
-      ...addr,
-      isDefault: addr.id === id,
-    })));
+    updateMutation.mutate({ id, data: { isDefault: true } });
   };
 
   const handleDelete = (id: string) => {
     if (confirm('Apakah Anda yakin ingin menghapus alamat ini?')) {
-      setAddresses(addresses.filter((addr) => addr.id !== id));
+      deleteMutation.mutate(id);
     }
   };
 
   const handleSaveAddress = (addressData: Partial<Address>) => {
     if (editingAddress) {
-      setAddresses(addresses.map((addr) => 
-        addr.id === editingAddress.id ? { ...addr, ...addressData } : addr
-      ));
+      updateMutation.mutate({ id: editingAddress.id, data: addressData });
     } else {
-      const newAddress: Address = {
-        id: Date.now().toString(),
-        name: addressData.name || '',
-        firstName: addressData.firstName || '',
-        lastName: addressData.lastName || '',
-        phone: addressData.phone || '',
-        address1: addressData.address1 || '',
-        address2: addressData.address2,
-        city: addressData.city || '',
-        state: addressData.state || '',
-        postalCode: addressData.postalCode || '',
-        country: 'Indonesia',
-        isDefault: addresses.length === 0,
-      };
-      setAddresses([...addresses, newAddress]);
+      createMutation.mutate(addressData);
     }
-    setIsAdding(false);
-    setEditingAddress(null);
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Alamat Saya</h1>
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-neutral-500">Memuat alamat...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state - not logged in
+  if (error?.message.includes('login')) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Alamat Saya</h1>
+        <EmptyState
+          icon="solar:lock-linear"
+          title="Silakan Login"
+          description="Login untuk mengelola alamat pengiriman Anda"
+          ctaLabel="Login"
+          ctaHref="/auth"
+        />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Alamat Saya</h1>
+        <EmptyState
+          icon="solar:danger-triangle-linear"
+          title="Gagal Memuat"
+          description={error.message}
+          ctaLabel="Coba Lagi"
+          onClick={() => refetch()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -58,6 +202,7 @@ export default function AddressesPage() {
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Alamat Saya</h1>
         <AnimatedButton
           onClick={() => setIsAdding(true)}
+          disabled={isAdding || !!editingAddress}
           className="px-5 py-2.5 text-sm"
         >
           <Icon icon="solar:add-circle-linear" className="w-4 h-4" />
@@ -87,7 +232,10 @@ export default function AddressesPage() {
           {addresses.map((address) => (
             <AddressCard
               key={address.id}
-              address={address}
+              address={{
+                ...address,
+                phone: address.phone || '',
+              }}
               onSetDefault={handleSetDefault}
               onEdit={() => setEditingAddress(address)}
               onDelete={handleDelete}

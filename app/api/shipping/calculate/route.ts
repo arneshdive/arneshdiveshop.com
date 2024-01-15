@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { getCheckoutSessionById } from '@/lib/queries/checkout';
-import { getCartByUserId, getCartByGuestId } from '@/lib/queries/cart';
+import { getCartByUserId, getCartByGuestId, CartItemWithProduct } from '@/lib/queries/cart';
 import { calculateShippingRates } from '@/lib/shipping/calculator';
 import { getSession } from '@/lib/auth/session';
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const destinationCityId = cityId;
 
     // Get cart items - either from checkout session or directly from cart
-    let cartItems: Awaited<ReturnType<typeof getCartByUserId>>['items'] = [];
+    let cartItems: CartItemWithProduct[] = [];
 
     if (checkoutSessionId) {
       const session = await getCheckoutSessionById(checkoutSessionId);

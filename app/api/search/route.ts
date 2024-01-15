@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
           : undefined;
       
       // Calculate price range from variants
-      // Note: priceCents fields store whole Rupiah amounts (not actual cents)
+      // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
       const variantPrices = (product.variants || [])
         .filter((v: any) => v.isActive && v.priceCents !== null)
         .map((v: any) => v.priceCents);
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
       let priceRangeMax: number | undefined;
       
       if (variantPrices.length > 0) {
-        // Variants have their own prices - show range or single price
+        // Variants have their own prices - show only minimum price
         priceRangeMin = Math.min(...variantPrices);
         priceRangeMax = Math.max(...variantPrices);
         
@@ -115,14 +115,10 @@ export async function GET(request: NextRequest) {
         priceRangeMin = effectiveMin;
         priceRangeMax = effectiveMax;
         
-        if (effectiveMin === effectiveMax) {
-          priceDisplay = `Rp ${effectiveMin.toLocaleString('id-ID')}`;
-        } else {
-          priceDisplay = `Rp ${effectiveMin.toLocaleString('id-ID')} - Rp ${effectiveMax.toLocaleString('id-ID')}`;
-        }
+        priceDisplay = `Rp ${(effectiveMin / 100).toLocaleString('id-ID')}`;
       } else {
         // No variant prices - use base price
-        priceDisplay = product.priceCents ? `Rp ${product.priceCents.toLocaleString('id-ID')}` : 'Rp 0';
+        priceDisplay = product.priceCents ? `Rp ${(product.priceCents / 100).toLocaleString('id-ID')}` : 'Rp 0';
       }
       
       return {
@@ -134,7 +130,7 @@ export async function GET(request: NextRequest) {
         priceRangeMin,
         priceRangeMax,
         compareAtPrice: product.compareAtPriceCents 
-          ? `Rp ${product.compareAtPriceCents.toLocaleString('id-ID')}` 
+          ? `Rp ${(product.compareAtPriceCents / 100).toLocaleString('id-ID')}` 
           : undefined,
         badge,
         image: product.images?.[0] || undefined,

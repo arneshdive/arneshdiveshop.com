@@ -6,7 +6,7 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import React, { useRef, isValidElement } from "react";
+import React, { useRef } from "react";
 import { cn } from "@/lib/utils/cn";
 
 interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -170,12 +170,14 @@ export function AnimatedButton({
     </>
   );
 
-  // If asChild is true, render child with styles applied directly
-  if (asChild && isValidElement(children)) {
+  // If asChild is true and children is a valid element, render child with styles applied directly
+  // Note: We check for children existence and props property to determine validity
+  // without using isValidElement which can cause hydration mismatches
+  if (asChild && children && typeof children === 'object' && 'props' in (children as object)) {
     const child = children as React.ReactElement<any>;
     
     // Clone the child element and wrap the content with our animations
-    const childProps = child.props;
+    const childProps = child.props || {};
     const originalClassName = childProps.className || '';
     
     return React.cloneElement(child, {

@@ -6,17 +6,18 @@ import { usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
-import type { Category } from '@/lib/db/schema';
 
-interface CategoryWithChildren extends Category {
-  children: CategoryWithChildren[];
-}
+// Fixed navigation menu items
+const NAV_ITEMS = [
+  { name: 'Semua Katalog', href: '/produk' },
+  { name: 'New Arrivals', href: '/produk?newArrival=true' },
+  { name: 'Sale', href: '/produk?onSale=true', className: 'text-red-600 hover:text-red-700' },
+];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [categories, setCategories] = useState<CategoryWithChildren[]>([]);
   const pathname = usePathname();
   const isHomepage = pathname === '/';
   
@@ -28,14 +29,6 @@ export function Header() {
   // Wait for mount to avoid hydration mismatch with persisted cart
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  // Fetch categories for navigation
-  useEffect(() => {
-    fetch('/api/categories')
-      .then((res) => res.json())
-      .then((data) => setCategories(data.categories || []))
-      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -103,18 +96,18 @@ export function Header() {
               href="/"
               className={`text-2xl font-bold tracking-tight transition-opacity hover:opacity-70 ${textColor}`}
             >
-              ARNES DIVE
+              Arnesh Dive™
             </Link>
 
             {/* Desktop Nav Links */}
             <div className="hidden lg:flex gap-6">
-              {categories.map((cat) => (
+              {NAV_ITEMS.map((item) => (
                 <Link
-                  key={cat.id}
-                  href={`/produk?category=${cat.slug}`}
-                  className={`text-base tracking-wide transition-colors ${linkColor}`}
+                  key={item.href}
+                  href={item.href}
+                  className={`text-base tracking-wide transition-colors ${item.className || linkColor}`}
                 >
-                  {cat.name}
+                  {item.name}
                 </Link>
               ))}
             </div>

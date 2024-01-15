@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useBrands } from '@/lib/hooks/use-brands';
 import type { Brand } from '@/lib/db/schema';
@@ -90,8 +91,14 @@ export default function BrandsPage() {
           },
         },
         {
-          onSuccess: () => closeModal(),
-          onError: (error) => setErrors({ general: error.message }),
+          onSuccess: () => {
+            toast.success('Merek berhasil diperbarui');
+            closeModal();
+          },
+          onError: (error) => {
+            toast.error(error.message || 'Gagal memperbarui merek');
+            setErrors({ general: error.message });
+          },
         }
       );
     } else {
@@ -103,8 +110,14 @@ export default function BrandsPage() {
           logoUrl: form.logoUrl || null,
         },
         {
-          onSuccess: () => closeModal(),
-          onError: (error) => setErrors({ general: error.message }),
+          onSuccess: () => {
+            toast.success('Merek berhasil ditambahkan');
+            closeModal();
+          },
+          onError: (error) => {
+            toast.error(error.message || 'Gagal menambahkan merek');
+            setErrors({ general: error.message });
+          },
         }
       );
     }
@@ -112,8 +125,13 @@ export default function BrandsPage() {
 
   const handleDelete = (id: string) => {
     deleteBrand(id, {
-      onSuccess: () => setDeleteConfirm(null),
-      onError: (error) => alert(error.message),
+      onSuccess: () => {
+        toast.success('Merek berhasil dihapus');
+        setDeleteConfirm(null);
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Gagal menghapus merek');
+      },
     });
   };
 

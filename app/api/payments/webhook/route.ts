@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processWebhookNotification, getMidtransProvider } from '@/lib/payment/midtrans';
-import { db, orders, payments } from '@/lib/db';
+import { db, orders, payments, cartItems } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import type { WebhookPayload } from '@/lib/payment/types';
 import type { PaymentStatus } from '@/lib/db/schema';
+import {
+  getCheckoutSessionById,
+  completeCheckoutSession,
+  revertCheckoutSessionToPending,
+} from '@/lib/queries/checkout';
 
 /**
  * POST /api/payments/webhook
@@ -98,6 +103,26 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date(),
         })
         .where(eq(orders.id, order.id));
+    }
+
+    // The checkout session's idempotency key IS the checkout session ID it
+    // was created from - use it to resolve the session and finalize it now
+    // that we have a definitive payment outcome (creating the order no
+    // longer completes the session or clears the cart - see payments/create).
+    if (order.idempotencyKey) {
+      const checkoutSession = await getCheckoutSessionById(order.idempotencyKey);
+
+      if (checkoutSession) {
+        if (schemaPaymentStatus === 'paid') {
+          await completeCheckoutSession(checkoutSession.id);
+          if (checkoutSession.cartId) {
+            await db.delete(cartItems).where(eq(cartItems.cartId, checkoutSession.cartId));
+          }
+        } else if (schemaPaymentStatus === 'failed' || schemaPaymentStatus === 'expired') {
+          // Let the user retry: session becomes editable/payable again.
+          await revertCheckoutSessionToPending(checkoutSession.id);
+        }
+      }
     }
 
     console.log('Webhook processed successfully:', {

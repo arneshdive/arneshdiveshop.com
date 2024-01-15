@@ -42,3 +42,48 @@ export function formatDateTime(date: Date | string): string {
     timeStyle: 'short',
   }).format(d);
 }
+
+/**
+ * Format Indonesian phone number for display (e.g., "0812-3456-7890")
+ * Takes a raw phone number and formats it with dashes for readability.
+ */
+export function formatPhoneDisplay(phone: string): string {
+  // Remove all non-digits
+  const digits = phone.replace(/\D/g, '');
+  
+  // Handle different formats
+  let normalized = digits;
+  if (digits.startsWith('62') && digits.length >= 10) {
+    normalized = '0' + digits.slice(2);
+  }
+  
+  // Format: 0812-3456-7890 or 0812-3456-789 (for shorter numbers)
+  if (normalized.length === 11 || normalized.length === 12) {
+    return normalized.replace(/^(\d{4})(\d{4})(\d+)$/, '$1-$2-$3');
+  }
+  if (normalized.length === 10) {
+    return normalized.replace(/^(\d{3})(\d{3})(\d{4})$/, '$1-$2-$3');
+  }
+  
+  // Return as-is if doesn't match expected patterns
+  return phone;
+}
+
+/**
+ * Format phone number as user types (for input fields)
+ * Returns a formatted string like "0812-3456-7890"
+ */
+export function formatPhoneInput(value: string): string {
+  // Remove all non-digits
+  const digits = value.replace(/\D/g, '');
+  
+  if (digits.length === 0) return '';
+  
+  // Limit to 13 digits (for numbers like +62...)
+  const limited = digits.slice(0, 13);
+  
+  // Format with dashes as user types
+  if (limited.length <= 4) return limited;
+  if (limited.length <= 8) return `${limited.slice(0, 4)}-${limited.slice(4)}`;
+  return `${limited.slice(0, 4)}-${limited.slice(4, 8)}-${limited.slice(8)}`;
+}

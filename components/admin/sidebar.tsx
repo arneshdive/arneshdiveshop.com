@@ -11,7 +11,7 @@ const navItems = [
   { href: '/admin/categories', label: 'Kategori', icon: 'solar:folder-linear' },
   { href: '/admin/brands', label: 'Merek', icon: 'solar:tag-linear' },
   { href: '/admin/orders', label: 'Pesanan', icon: 'solar:document-text-linear' },
-  { href: '/admin/customers', label: 'Pelanggan', icon: 'solar:users-group-rounded-linear' },
+  { href: '/admin/users', label: 'Pengguna', icon: 'solar:users-group-rounded-linear' },
   { href: '/admin/settings', label: 'Pengaturan', icon: 'solar:settings-linear' },
 ];
 
@@ -28,14 +28,9 @@ export function AdminSidebar() {
       {/* Logo Section */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-800">
         <Link href="/admin" className="group">
-          {collapsed ? (
-            <span className="text-xl font-black tracking-tight text-white">AD</span>
-          ) : (
-            <div className="leading-none">
-              <span className="text-lg font-black tracking-tight text-white block">ARNES</span>
-              <span className="text-lg font-black tracking-tight text-white block">DIVE</span>
-              <span className="text-[10px] uppercase tracking-wider text-neutral-500 mt-1 block">Admin Panel</span>
-            </div>
+          <span className="text-xl font-black tracking-tight text-white">AD</span>
+          {!collapsed && (
+            <span className="text-[10px] uppercase tracking-wider text-neutral-500 ml-2">Admin</span>
           )}
         </Link>
       </div>

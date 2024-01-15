@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { BasicInfoSection } from '@/components/admin/product-form/basic-info-section';
@@ -62,8 +63,6 @@ async function getErrorMessage(response: Response): Promise<string> {
   }
 }
 
-export const dynamic = 'force-dynamic';
-
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -101,6 +100,9 @@ export default function EditProductPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Gagal memperbarui produk');
     },
   });
 
@@ -213,14 +215,16 @@ export default function EditProductPage() {
         await Promise.all(variantPromises);
         
         if (variantErrors.length > 0) {
-          alert(`Produk berhasil diupdate, tapi beberapa varian gagal:\n${variantErrors.join('\n')}`);
+          variantErrors.forEach(err => toast.error(err));
+          toast.warning('Produk berhasil diperbarui, tapi beberapa varian gagal');
         }
       }
       
+      toast.success('Produk berhasil diperbarui');
       router.push('/admin/products');
     } catch (error) {
       console.error('Submit error:', error);
-      alert('Terjadi kesalahan saat menyimpan produk');
+      toast.error('Terjadi kesalahan saat menyimpan produk');
     } finally {
       setIsSubmitting(false);
     }

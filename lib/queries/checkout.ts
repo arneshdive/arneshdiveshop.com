@@ -1,5 +1,5 @@
 import { db, checkoutSessions } from '@/lib/db';
-import { eq, and, gt, isNull, or, lt } from 'drizzle-orm';
+import { eq, and, gt } from 'drizzle-orm';
 import { getCartWithItems } from './cart';
 
 const CHECKOUT_SESSION_DURATION_HOURS = 24;
@@ -253,13 +253,41 @@ export async function updateCheckoutSessionTotals(
 }
 
 /**
- * Mark checkout session as completed
+ * Mark checkout session as completed (payment confirmed by webhook)
  */
 export async function completeCheckoutSession(sessionId: string): Promise<void> {
   await db
     .update(checkoutSessions)
     .set({
       status: 'completed',
+      updatedAt: new Date(),
+    })
+    .where(eq(checkoutSessions.id, sessionId));
+}
+
+/**
+ * Mark checkout session as having a payment attempt in flight
+ * (Snap transaction created, awaiting webhook confirmation)
+ */
+export async function markCheckoutSessionPaymentPending(sessionId: string): Promise<void> {
+  await db
+    .update(checkoutSessions)
+    .set({
+      status: 'payment_pending',
+      updatedAt: new Date(),
+    })
+    .where(eq(checkoutSessions.id, sessionId));
+}
+
+/**
+ * Revert checkout session back to 'pending' after a failed/expired payment,
+ * so the user can retry and the session becomes editable again.
+ */
+export async function revertCheckoutSessionToPending(sessionId: string): Promise<void> {
+  await db
+    .update(checkoutSessions)
+    .set({
+      status: 'pending',
       updatedAt: new Date(),
     })
     .where(eq(checkoutSessions.id, sessionId));

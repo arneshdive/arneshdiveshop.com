@@ -31,7 +31,11 @@ export function ProductActions({
   onPriceChange,
 }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>();
+  // Auto-select first active variant to prevent variantless cart items
+  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(() => {
+    const firstActiveVariant = variants.find(v => v.isActive);
+    return firstActiveVariant?.id;
+  });
   const [added, setAdded] = useState(false);
   
   const addItem = useCartStore((state) => state.addItem);

@@ -1,5 +1,22 @@
 import { cn } from '@/lib/utils/cn';
-import type { Address } from '@/lib/data/mock-account';
+
+interface Address {
+  id: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  address1: string;
+  address2: string | null;
+  rajaongkirCityId: string;
+  rajaongkirCityName: string | null;
+  rajaongkirProvince: string | null;
+  rajaongkirCity: string | null;
+  rajaongkirDistrict: string | null;
+  rajaongkirSubdistrict: string | null;
+  rajaongkirPostalCode: string | null;
+  isDefault: boolean;
+}
 
 interface AddressCardProps {
   address: Address;
@@ -9,6 +26,17 @@ interface AddressCardProps {
 }
 
 export function AddressCard({ address, onSetDefault, onEdit, onDelete }: AddressCardProps) {
+  // Build location string from RajaOngkir fields
+  const locationParts = [
+    address.rajaongkirSubdistrict,
+    address.rajaongkirDistrict,
+    address.rajaongkirCity,
+  ].filter(Boolean);
+  
+  const location = locationParts.length > 0 
+    ? locationParts.join(', ')
+    : address.rajaongkirCityName || '';
+
   return (
     <div className={cn(
       'bg-neutral-50 p-6 rounded-xl',
@@ -34,7 +62,9 @@ export function AddressCard({ address, onSetDefault, onEdit, onDelete }: Address
         {address.address1}
         {address.address2 && <>, {address.address2}</>}
         <br />
-        {address.city}, {address.state} {address.postalCode}
+        {location}
+        {address.rajaongkirPostalCode && <> {address.rajaongkirPostalCode}</>}
+        {address.rajaongkirProvince && <>, {address.rajaongkirProvince}</>}
       </p>
 
       <div className="flex flex-wrap gap-2 mt-4">

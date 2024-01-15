@@ -59,20 +59,22 @@ function getBannerConfig(
   divingType: string | undefined,
   isNewArrival: boolean | undefined,
   isOnSale: boolean | undefined
-): { title: string; description: string; gradient: string } {
+): { title: string; description: string; gradient: string; icon?: string } {
   if (isNewArrival) {
     return {
       title: query ? `New Arrivals: "${query}"` : 'New Arrivals',
       description: 'Produk terbaru untuk petualangan diving Anda.',
       gradient: 'from-emerald-600 to-emerald-500',
+      icon: 'solar:star-bold',
     };
   }
 
   if (isOnSale) {
     return {
-      title: query ? `Promo: "${query}"` : 'Promo Spesial',
+      title: query ? `Promo: "${query}"` : 'Sale',
       description: 'Diskon spesial untuk produk terpilih.',
       gradient: 'from-red-600 to-red-500',
+      icon: 'solar:tag-bold',
     };
   }
 
@@ -81,6 +83,7 @@ function getBannerConfig(
       title: query ? `Freediving: "${query}"` : 'Koleksi Freediving',
       description: 'Peralatan freediving berkualitas untuk petualangan bawah laut.',
       gradient: 'from-blue-600 to-blue-500',
+      icon: 'solar:swimming-bold',
     };
   }
 
@@ -89,6 +92,7 @@ function getBannerConfig(
       title: query ? `Scuba: "${query}"` : 'Koleksi Scuba',
       description: 'Peralatan scuba diving lengkap untuk eksplorasi laut dalam.',
       gradient: 'from-teal-600 to-teal-500',
+      icon: 'solar:swimming-bold',
     };
   }
 
@@ -114,14 +118,16 @@ function getBannerConfig(
       title: `Hasil untuk "${query}"`,
       description: 'Temukan produk yang Anda cari dari koleksi kami.',
       gradient: 'from-neutral-700 to-neutral-500',
+      icon: 'solar:magnifer-bold',
     };
   }
 
   // All products
   return {
-    title: 'Semua Produk',
+    title: 'Semua Katalog',
     description: 'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi.',
     gradient: 'from-neutral-700 to-neutral-500',
+    icon: 'solar:box-bold',
   };
 }
 
@@ -210,10 +216,17 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
       </div>
 
       {/* Banner */}
-      <section className={`bg-gradient-to-r ${banner.gradient} text-white py-12 lg:py-16 px-4 lg:px-12 mt-4`}>
-        <div className="max-w-[1440px] mx-auto">
-          <h1 className="text-2xl lg:text-4xl font-bold tracking-tight mb-2">{banner.title}</h1>
-          <p className="text-white/80 max-w-xl">{banner.description}</p>
+      <section className={`bg-gradient-to-r ${banner.gradient} text-white py-12 lg:py-16 px-4 lg:px-12 mt-4 transition-all duration-300`}>
+        <div className="max-w-[1440px] mx-auto flex items-center gap-4">
+          {banner.icon && (
+            <div className="hidden lg:flex w-16 h-16 rounded-2xl bg-white/20 items-center justify-center">
+              <Icon icon={banner.icon} className="w-8 h-8" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl lg:text-4xl font-bold tracking-tight mb-2">{banner.title}</h1>
+            <p className="text-white/80 max-w-xl">{banner.description}</p>
+          </div>
         </div>
       </section>
 

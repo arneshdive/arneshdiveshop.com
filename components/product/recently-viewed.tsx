@@ -1,17 +1,53 @@
-import { ProductCard } from '@/components/product/product-card';
-import { featuredProducts } from '@/lib/data/mock-products';
+'use client';
 
-export function RecentlyViewed() {
-  const products = featuredProducts.slice(0, 4);
+import { useState, useEffect } from 'react';
+import { ProductCard } from '@/components/product/product-card';
+import {
+  getRecentlyViewed,
+  type RecentlyViewedProduct,
+} from '@/lib/utils/recently-viewed';
+
+interface RecentlyViewedProps {
+  currentProductId?: string; // Optionally exclude current product from list
+}
+
+export function RecentlyViewed({ currentProductId }: RecentlyViewedProps) {
+  const [products, setProducts] = useState<RecentlyViewedProduct[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    
+    // Load recently viewed products
+    const viewed = getRecentlyViewed();
+    
+    // Filter out current product if provided
+    const filtered = currentProductId
+      ? viewed.filter(p => p.id !== currentProductId)
+      : viewed;
+    
+    // Take only 4 for display
+    setProducts(filtered.slice(0, 4));
+  }, [currentProductId]);
+
+  // Don't render anything until client-side hydration is complete
+  // This prevents hydration mismatch
+  if (!mounted) {
+    return null;
+  }
+
+  // Hide section if no products
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-12 lg:py-16 bg-white border-t border-neutral-100">
       <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
-        <div className="flex flex-col mb-10">
-          <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">
+        <div className="flex flex-col mb-8">\          <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">
             Riwayat
           </span>
-          <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter mb-2">
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tighter mb-2">
             Baru{' '}
             <em
               is="highlighted-text"
@@ -20,7 +56,7 @@ export function RecentlyViewed() {
             >
               <span className="relative z-10">Dilihat</span>
               <svg
-                className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-2 left-0 w-full"
+                className="icon icon-squiggle-underline absolute -bottom-1 left-0 w-full"
                 viewBox="-347 -30.1947 694 96.19"
                 stroke="#93c5fd"
                 fill="none"
@@ -44,7 +80,22 @@ export function RecentlyViewed() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={{
+                id: product.id,
+                handle: product.slug,
+                title: product.name,
+                vendor: product.vendor,
+                price: product.price,
+                priceRangeMin: product.priceRangeMin,
+                priceRangeMax: product.priceRangeMax,
+                compareAtPrice: product.compareAtPrice,
+                badge: product.badge,
+                image: product.image,
+                secondaryImage: product.secondaryImage,
+              }}
+            />
           ))}
         </div>
       </div>

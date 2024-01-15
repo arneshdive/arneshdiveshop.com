@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -61,50 +62,36 @@ const statusFilters: { label: string; status?: OrderStatus }[] = [
   { label: 'Selesai', status: 'delivered' },
 ];
 
+// Fetch orders from API
+async function fetchOrders(status?: OrderStatus): Promise<{ orders: Order[] }> {
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+  
+  const response = await fetch(`/api/orders?${params.toString()}`);
+  
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('Silakan login untuk melihat pesanan Anda');
+    }
+    throw new Error('Gagal memuat pesanan');
+  }
+  
+  return response.json();
+}
+
 export default function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState<OrderStatus | undefined>(undefined);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Fetch orders from API
-  const fetchOrders = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Fetch orders with TanStack Query
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['orders', activeFilter],
+    queryFn: () => fetchOrders(activeFilter),
+  });
 
-      const params = new URLSearchParams();
-      if (activeFilter) {
-        params.set('status', activeFilter);
-      }
-
-      const response = await fetch(`/api/orders?${params.toString()}`);
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          setError('Silakan login untuk melihat pesanan Anda');
-        } else {
-          setError('Gagal memuat pesanan');
-        }
-        return;
-      }
-
-      const data = await response.json();
-      setOrders(data.orders || []);
-    } catch (err) {
-      console.error('Error fetching orders:', err);
-      setError('Gagal memuat pesanan');
-    } finally {
-      setLoading(false);
-    }
-  }, [activeFilter]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+  const orders = data?.orders ?? [];
 
   // Loading state
-  if (loading) {
+  if (isLoading) {
     return (
       <div>
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pesanan Saya</h1>
@@ -119,7 +106,7 @@ export default function OrdersPage() {
   }
 
   // Error state - not logged in
-  if (error?.includes('login')) {
+  if (error?.message.includes('login')) {
     return (
       <div>
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">Pesanan Saya</h1>
@@ -128,7 +115,7 @@ export default function OrdersPage() {
           title="Silakan Login"
           description="Login untuk melihat riwayat pesanan Anda"
           ctaLabel="Login"
-          ctaHref="/account/login"
+          ctaHref="/auth"
         />
       </div>
     );
@@ -142,9 +129,9 @@ export default function OrdersPage() {
         <EmptyState
           icon="solar:danger-triangle-linear"
           title="Gagal Memuat"
-          description={error}
+          description={error.message}
           ctaLabel="Coba Lagi"
-          onClick={fetchOrders}
+          onClick={() => refetch()}
         />
       </div>
     );

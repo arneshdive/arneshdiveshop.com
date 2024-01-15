@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { BasicInfoSection } from '@/components/admin/product-form/basic-info-section';
 import { PricingSection } from '@/components/admin/product-form/pricing-section';
@@ -70,7 +71,7 @@ export default function NewProductPage() {
     }
     
     if (errors.length > 0) {
-      alert(errors.join('\n'));
+      errors.forEach(err => toast.error(err));
       return;
     }
     
@@ -113,7 +114,7 @@ export default function NewProductPage() {
           ? Object.values(data.details).join(', ')
           : (data.error || 'Terjadi kesalahan');
         console.error('Failed to create product:', errorMsg);
-        alert(errorMsg);
+        toast.error(errorMsg);
         setIsSubmitting(false);
         return;
       }
@@ -157,14 +158,16 @@ export default function NewProductPage() {
         await Promise.all(variantPromises);
         
         if (variantErrors.length > 0) {
-          alert(`Produk berhasil dibuat, tapi beberapa varian gagal:\n${variantErrors.join('\n')}`);
+          variantErrors.forEach(err => toast.error(err));
+          toast.warning('Produk berhasil dibuat, tapi beberapa varian gagal');
         }
       }
 
+      toast.success('Produk berhasil dibuat');
       router.push('/admin/products');
     } catch (error) {
       console.error('Submit error:', error);
-      alert('Terjadi kesalahan saat menyimpan produk');
+      toast.error('Terjadi kesalahan saat menyimpan produk');
     } finally {
       setIsSubmitting(false);
     }

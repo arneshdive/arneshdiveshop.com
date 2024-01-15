@@ -3,48 +3,9 @@ import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductCard } from '@/components/product/product-card';
 import { ProductInfo } from '@/components/product/product-info';
 import { USPSection } from '@/components/layout/usp-section';
-import { getProductBySlug } from '@/lib/queries/products';
-
-const relatedProducts = [
-  {
-    id: '2',
-    handle: 'masker-low-volume',
-    title: 'Masker Low Volume',
-    vendor: 'Arnes',
-    price: 'Rp 650.000',
-    badge: 'Sale',
-    image: '/product-sample-1.webp',
-    secondaryImage: '/product-sample-2.webp',
-  },
-  {
-    id: '3',
-    handle: 'snorkel-dry-top',
-    title: 'Snorkel Dry Top',
-    vendor: 'Arnes',
-    price: 'Rp 280.000',
-    image: '/product-sample-1.webp',
-    secondaryImage: '/product-sample-2.webp',
-  },
-  {
-    id: '4',
-    handle: 'fin-carbon-pro',
-    title: 'Fin Carbon Pro',
-    vendor: 'Arnes',
-    price: 'Rp 2.500.000',
-    badge: 'Baru',
-    image: '/product-sample-1.webp',
-    secondaryImage: '/product-sample-2.webp',
-  },
-  {
-    id: '5',
-    handle: 'wetsuit-3mm-premium',
-    title: 'Wetsuit 3mm Premium',
-    vendor: 'Arnes',
-    price: 'Rp 1.800.000',
-    image: '/product-sample-1.webp',
-    secondaryImage: '/product-sample-2.webp',
-  },
-];
+import { TrackProductView } from '@/components/product/track-product-view';
+import { RecentlyViewed } from '@/components/product/recently-viewed';
+import { getProductBySlug, getRelatedProducts } from '@/lib/queries/products';
 
 interface ProductPageProps {
   params: Promise<{
@@ -94,6 +55,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
     brand: product.brand,
     divingTypes: product.divingTypes,
   };
+  
+  // Fetch related products
+  const relatedProducts = await getRelatedProducts(
+    product.id, 
+    product.categoryId, 
+    product.brandId
+  );
+  
+  // Format related products for ProductCard
+  const formattedRelatedProducts = relatedProducts.map(p => ({
+    id: p.id,
+    handle: p.slug,
+    title: p.name,
+    vendor: p.brand?.name,
+    price: new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format((p.priceCents || 0) / 100),
+    badge: p.isOnSale ? 'Sale' : p.isNewArrival ? 'Baru' : undefined,
+    image: (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
+    secondaryImage: (p.images as string[] | undefined)?.[1] || (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
+  }));
 
   return (
     <>
@@ -131,6 +115,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </section>
 
+      {/* Track this product view */}
+      <TrackProductView product={product} variants={variants} />
+
       {/* Separator */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
         <hr className="border-neutral-200" />
@@ -139,22 +126,34 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Related Products */}
       <section className="py-12 lg:py-16">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="mb-10">
+          <div className="mb-8">
             <span className="text-[10px] lg:text-xs text-neutral-600 uppercase tracking-widest font-medium mb-2 block">
               Related Products
             </span>
-            <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter">
+            <h2 className="text-3xl lg:text-4xl font-bold tracking-tighter">
               Produk Terkait
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-            {relatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {formattedRelatedProducts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+              {formattedRelatedProducts.map((relatedProduct) => (
+                <ProductCard key={relatedProduct.id} product={relatedProduct} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-neutral-500">Tidak ada produk terkait.</p>
+          )}
         </div>
       </section>
+
+      {/* Separator */}
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <hr className="border-neutral-200" />
+      </div>
+
+      {/* Recently Viewed */}
+      <RecentlyViewed currentProductId={product.id} />
 
       {/* Separator */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12">

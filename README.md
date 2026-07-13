@@ -28,3 +28,5 @@ pnpm lint     # eslint
 - `docs/superpowers/specs/` and `docs/superpowers/plans/` — per-page design specs and implementation plans from past build sessions.
 
 See `CLAUDE.md` for the full architecture and current-state notes.
+
+Last deployment trigger: 2026-07-13

@@ -9,6 +9,7 @@ import { CheckoutProgress } from '@/components/checkout/checkout-progress';
 import { ContactForm } from '@/components/checkout/contact-form';
 import { ShippingAddressForm } from '@/components/checkout/shipping-address-form';
 import { ShippingMethodSelector } from '@/components/checkout/shipping-method-selector';
+import { SavedAddressSelector } from '@/components/checkout/saved-address-selector';
 import { OrderSummaryCard } from '@/components/checkout/order-summary-card';
 import { USPSection } from '@/components/layout/usp-section';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
@@ -25,6 +26,41 @@ export default function CheckoutPage() {
   const { data, setField } = useCheckoutStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+
+  type CheckoutViewer = 'loading' | 'guest' | 'logged-in';
+  const [viewer, setViewer] = useState<CheckoutViewer>('loading');
+
+  // Detect login state once on mount. Any failure (network error, 401,
+  // 500) fails open to the guest view - checkout must never be blocked
+  // by this check.
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function detectViewer() {
+      try {
+        const response = await fetch('/api/account/profile');
+        if (!response.ok) {
+          if (!isCancelled) setViewer('guest');
+          return;
+        }
+
+        const result = await response.json();
+        if (isCancelled) return;
+
+        setField('email', result.profile.email);
+        setViewer('logged-in');
+      } catch {
+        if (!isCancelled) setViewer('guest');
+      }
+    }
+
+    detectViewer();
+
+    return () => {
+      isCancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const validateForm = useCallback((): boolean => {
     if (!data.email || !isValidEmail(data.email)) return false;
@@ -261,8 +297,14 @@ export default function CheckoutPage() {
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16">
             <div className="flex-1">
-              <ContactForm />
-              <ShippingAddressForm />
+              {viewer === 'logged-in' ? (
+                <SavedAddressSelector />
+              ) : (
+                <>
+                  <ContactForm />
+                  <ShippingAddressForm />
+                </>
+              )}
               <ShippingMethodSelector checkoutSessionId={data.checkoutSessionId} />
 
               <div className="mt-8">

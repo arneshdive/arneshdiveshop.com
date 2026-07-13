@@ -29,4 +29,4 @@ pnpm lint     # eslint
 
 See `CLAUDE.md` for the full architecture and current-state notes.
 
-Last deployment trigger: 2026-07-13
+Last deployment trigger: 2026-07-13 (2)

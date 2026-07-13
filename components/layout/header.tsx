@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isHomepage = pathname === '/';
@@ -39,10 +40,23 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close search modal on route change
+  // Close modals on route change
   useEffect(() => {
     setSearchOpen(false);
+    setMobileMenuOpen(false);
   }, [pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   // On homepage: transparent -> white on scroll
   // On other pages: always white with border
@@ -80,17 +94,8 @@ export function Header() {
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBg}`}>
         <nav className="flex items-center justify-between px-6 lg:px-12 py-4 max-w-[1440px] mx-auto w-full">
-          {/* Left: Logo + Nav Links */}
+          {/* Left: Logo + Desktop Nav Links */}
           <div className="flex items-center gap-8">
-            {/* Mobile Menu Button */}
-            <button
-              className={`lg:hidden p-2 -ml-2 transition-colors ${linkColor}`}
-              type="button"
-              aria-label="Menu"
-            >
-              <Icon icon="solar:hamburger-menu-linear" className="w-7 h-7" />
-            </button>
-
             {/* Logo */}
             <Link
               href="/"
@@ -142,9 +147,65 @@ export function Header() {
             >
               <Icon icon="solar:user-linear" className="w-6 h-6" />
             </Link>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className={`lg:hidden p-2 rounded-full transition-all ${iconColor}`}
+              type="button"
+              aria-label="Menu"
+            >
+              <Icon icon="solar:hamburger-menu-linear" className="w-6 h-6" />
+            </button>
           </div>
         </nav>
       </header>
+
+      {/* Mobile Menu Drawer */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          {/* Drawer */}
+          <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-xl">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+              <span className="text-lg font-semibold">Menu</span>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 -mr-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-colors"
+                aria-label="Tutup menu"
+              >
+                <Icon icon="solar:close-circle-linear" className="w-6 h-6" />
+              </button>
+            </div>
+            <nav className="p-6">
+              <ul className="space-y-4">
+                {NAV_ITEMS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`block text-lg font-medium py-2 transition-colors ${item.className || 'text-neutral-700 hover:text-neutral-900'}`}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+                <li className="pt-4 border-t border-neutral-200">
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-3 text-lg font-medium py-2 text-neutral-700 hover:text-neutral-900 transition-colors"
+                  >
+                    <Icon icon="solar:user-linear" className="w-5 h-5" />
+                    Akun Saya
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      )}
 
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

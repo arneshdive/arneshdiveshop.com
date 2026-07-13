@@ -6,7 +6,7 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils/cn";
 
 interface AnimatedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -57,6 +57,12 @@ export function AnimatedButton({
   const isHovered = useRef(false);
 
   const config = variantConfig[variant];
+
+  // Use mounted state to avoid hydration mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleMouseEnter = async () => {
     isHovered.current = true;
@@ -125,22 +131,11 @@ export function AnimatedButton({
     ...safeProps
   } = props as any;
 
-  const motionProps = {
-    whileTap: { scale: 0.98 },
-  };
-
-  const eventHandlers = {
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-    onFocus: handleMouseEnter,
-    onBlur: handleMouseLeave,
-  };
-
   const baseClassName = cn(
     "group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap w-fit",
     config.container,
     sizeConfig[size],
-    className,
+    className
   );
 
   const content = (
@@ -155,10 +150,9 @@ export function AnimatedButton({
         animate={bgControls}
         className={cn(
           "absolute -inset-x-[20%] top-0 h-[150%] w-[140%] pointer-events-none",
-          config.fill,
+          config.fill
         )}
       />
-
       {/* Button content */}
       <motion.span
         initial={{ color: config.textInitial }}
@@ -170,26 +164,19 @@ export function AnimatedButton({
     </>
   );
 
-  // If asChild is true and children is a valid element, render child with styles applied directly
-  // Note: We check for children existence and props property to determine validity
-  // without using isValidElement which can cause hydration mismatches
-  if (asChild && children && typeof children === 'object' && 'props' in (children as object)) {
-    const child = children as React.ReactElement<any>;
-    
-    // Clone the child element and wrap the content with our animations
-    const childProps = child.props || {};
-    const originalClassName = childProps.className || '';
-    
+  // During SSR, always render as button to avoid hydration mismatch
+  // After mount, if asChild, clone the child element with our styles
+  if (asChild && mounted && React.isValidElement(children)) {
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
+    const childProps = child.props;
+
     return React.cloneElement(child, {
-      className: cn(
-        "group relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-[6px] border-2 border-primary! whitespace-nowrap w-fit",
-        config.container,
-        sizeConfig[size],
-        className,
-        originalClassName,
-      ),
+      className: cn(baseClassName, childProps.className),
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
+      onFocus: handleMouseEnter,
+      onBlur: handleMouseLeave,
+      ...safeProps,
       children: (
         <>
           {/* Background fill */}
@@ -202,7 +189,7 @@ export function AnimatedButton({
             animate={bgControls}
             className={cn(
               "absolute -inset-x-[20%] top-0 h-[150%] w-[140%] pointer-events-none",
-              config.fill,
+              config.fill
             )}
           />
           {/* Button content */}
@@ -220,8 +207,11 @@ export function AnimatedButton({
 
   return (
     <motion.button
-      {...motionProps}
-      {...eventHandlers}
+      whileTap={{ scale: 0.98 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleMouseEnter}
+      onBlur={handleMouseLeave}
       className={baseClassName}
       {...safeProps}
     >

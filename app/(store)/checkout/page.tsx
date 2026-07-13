@@ -14,7 +14,6 @@ import { USPSection } from '@/components/layout/usp-section';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
-import { loadSnapScript, openSnapPayment, type SnapResult, type SnapError } from '@/lib/utils/midtrans-snap';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -26,14 +25,6 @@ export default function CheckoutPage() {
   const { data, setField } = useCheckoutStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
-  const [snapLoaded, setSnapLoaded] = useState(false);
-
-  // Preload Snap.js script
-  useEffect(() => {
-    loadSnapScript()
-      .then(() => setSnapLoaded(true))
-      .catch((err) => console.error('Failed to load Snap.js:', err));
-  }, []);
 
   const validateForm = useCallback((): boolean => {
     if (!data.email || !isValidEmail(data.email)) return false;
@@ -212,31 +203,11 @@ export default function CheckoutPage() {
       }
 
       const paymentResult = await paymentResponse.json();
-      const { snapToken, orderId } = paymentResult.data;
+      const { redirectUrl } = paymentResult.data;
 
-      // Ensure Snap.js is loaded
-      if (!snapLoaded) {
-        await loadSnapScript();
-      }
-
-      // Open Midtrans Snap payment
-      openSnapPayment(snapToken, {
-        onSuccess: (_result: SnapResult) => {
-          router.push(`/checkout/success?order_id=${orderId}`);
-        },
-        onPending: (_result: SnapResult) => {
-          router.push(`/checkout/success?order_id=${orderId}&status=pending`);
-        },
-        onError: (error: SnapError) => {
-          console.error('Payment error:', error);
-          alert('Pembayaran gagal, silakan coba lagi');
-          setIsSubmitting(false);
-        },
-        onClose: () => {
-          alert('Anda menutup popup pembayaran. Anda dapat mencoba lagi.');
-          setIsSubmitting(false);
-        },
-      });
+      // Open payment in a new tab and redirect current tab to /account
+      window.open(redirectUrl, '_blank');
+      router.push('/account');
     } catch (error) {
       console.error('Checkout error:', error);
       alert(error instanceof Error ? error.message : 'Terjadi kesalahan, silakan coba lagi');

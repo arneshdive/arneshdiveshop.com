@@ -32,7 +32,7 @@ export function AccordionItem({ title, children, defaultOpen = false }: Accordio
       <div
         className={cn(
           'overflow-hidden transition-all duration-200',
-          isOpen ? 'max-h-96 pb-4' : 'max-h-0'
+          isOpen ? 'max-h-[2000px] pb-4' : 'max-h-0'
         )}
       >
         <div className="text-base text-neutral-700 leading-relaxed">

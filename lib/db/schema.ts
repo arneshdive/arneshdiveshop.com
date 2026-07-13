@@ -279,6 +279,10 @@ export const orders = pgTable('orders', {
   shippingPostalCode: text('shipping_postal_code').notNull(),
   shippingCountry: text('shipping_country').notNull(),
   notes: text('notes'), // Customer notes
+  // Shipping tracking
+  trackingNumber: text('tracking_number'), // Nomor resi
+  shippedAt: timestamp('shipped_at'), // When order was shipped
+  deliveredAt: timestamp('delivered_at'), // When order was delivered
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

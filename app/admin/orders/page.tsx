@@ -29,6 +29,8 @@ interface ApiOrder {
   id: string;
   orderNumber: string;
   status: OrderStatus;
+  trackingNumber: string | null;
+  shippedAt: string | null;
   subtotalCents: number;
   shippingCents: number;
   taxCents: number;
@@ -384,7 +386,7 @@ export default function OrdersPage() {
         </div>
 
         {/* Right: Order Detail */}
-        <div className="flex-1 min-w-0 bg-white rounded-2xl overflow-hidden">
+        <div className="flex-1 min-w-0 bg-white rounded-2xl flex flex-col min-h-0">
           <OrderDetail 
             order={selectedOrder} 
             onStatusUpdate={handleStatusUpdateSuccess}

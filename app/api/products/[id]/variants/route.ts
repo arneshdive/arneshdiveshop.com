@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, productVariants } from '@/lib/db';
 import { getSession } from '@/lib/auth/session';
@@ -91,6 +92,10 @@ export async function POST(
     if (!newVariant) {
       throw new Error('Failed to create variant');
     }
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+    revalidatePath(`/produk/${product.slug}`, 'page');
 
     return NextResponse.json({ variant: newVariant }, { status: 201 });
   } catch (error) {

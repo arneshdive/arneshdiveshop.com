@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductSection } from '@/components/product/product-section';
@@ -6,9 +7,28 @@ import { WaveDivider } from '@/components/layout/wave-divider';
 import { USPSection } from '@/components/layout/usp-section';
 import { HeroBannerCarousel } from '@/components/store/hero-banner-carousel';
 import { getProducts } from '@/lib/queries/products';
-import { db, banners } from '@/lib/db';
-import { eq, and } from 'drizzle-orm';
 import type { MockProduct } from '@/lib/data/mock-products';
+import type { Banner } from '@/lib/db/schema';
+
+// Static hero banners — banner management isn't built yet, so this
+// carousel content is hardcoded rather than sourced from the DB.
+const heroBanners: Banner[] = [
+  {
+    id: 'hero-1',
+    title: 'Berjelajah di kedalaman',
+    subtitle: 'Temukan perlengkapan freediving yang Anda butuhkan.',
+    eyebrow: 'Freediving & Scuba',
+    ctaText: 'Semua Katalog',
+    ctaLink: '/produk',
+    link: '/produk',
+    imageUrl: '/hero-image.webp',
+    position: 'hero',
+    sortOrder: 0,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as Banner,
+];
 
 // Convert DB product to MockProduct format for ProductSection
 function toMockProduct(product: any): MockProduct {
@@ -75,15 +95,6 @@ export default async function HomePage() {
   const allProducts = await getProducts({ isActive: true });
   const latestProducts: MockProduct[] = allProducts.slice(0, 8).map(toMockProduct);
 
-  // Fetch hero banners from DB
-  const heroBanners = await db.query.banners.findMany({
-    where: and(
-      eq(banners.position, 'hero'),
-      eq(banners.isActive, true)
-    ),
-    orderBy: (banners, { asc }) => [asc(banners.sortOrder)],
-  });
-
   return (
     <>
       {/* Hero Section - Dynamic Banner Carousel */}
@@ -105,10 +116,12 @@ export default async function HomePage() {
       <section className="relative grid md:grid-cols-2 mt-20">
         <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-900 flex items-end pb-20 lg:pb-28 pt-8 px-8 lg:px-12 overflow-hidden">
           {/* Freediving Background Image */}
-          <img
-            src="https://images.unsplash.com/photo-1507608616759-54f48f0af0ee?auto=format&fit=crop&w=1200&q=80"
+          <Image
+            src="/freediving-banner.webp"
             alt="Freediving"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(min-width: 768px) 50vw, 100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="relative z-10">
@@ -124,10 +137,12 @@ export default async function HomePage() {
         </div>
         <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-900 flex items-end pb-20 lg:pb-28 pt-8 px-8 lg:px-12 overflow-hidden">
           {/* Scuba Background Image */}
-          <img
-            src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80"
+          <Image
+            src="/scuba-banner.webp"
             alt="Scuba Diving"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(min-width: 768px) 50vw, 100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           <div className="relative z-10">
@@ -172,7 +187,7 @@ export default async function HomePage() {
           <div className="flex flex-col justify-between items-end mb-8">
             <div className="flex flex-col w-full items-center justify-center max-w-3xl mx-auto text-center">
               <span className="text-xs uppercase tracking-widest text-neutral-500 mb-4">Jelajahi Kebebasan Bawah Laut</span>
-              <h2 className="text-2xl lg:text-6xl tracking-tighter font-bold mb-3">Ikuti Perjalanan Kami</h2>
+              <h2 className="text-3xl lg:text-6xl tracking-tighter font-bold mb-3">Ikuti Perjalanan Kami</h2>
               <p className="text-lg font-semibold tracking-tight mb-6">Ikuti bagaimana Arnesh Dive menemani petualangan para diver di seluruh Indonesia.</p>
               <p className="text-lg tracking-tight mb-8">Dari freediving hingga scuba, setiap penyelaman adalah cerita baru. Temukan inspirasi untuk petualangan diving Anda berikutnya.</p>
               <AnimatedButton asChild variant="outline" size="xs">

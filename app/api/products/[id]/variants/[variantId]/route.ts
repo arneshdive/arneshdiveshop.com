@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, productVariants } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 import { getSession } from '@/lib/auth/session';
+import { getProductById } from '@/lib/queries/products';
 
 const updateVariantSchema = z.object({
   sku: z.string().max(100).optional().nullable(),
@@ -113,6 +115,13 @@ export async function PATCH(
       throw new Error('Failed to update variant');
     }
 
+    const product = await getProductById(productId);
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+    if (product) {
+      revalidatePath(`/produk/${product.slug}`, 'page');
+    }
+
     return NextResponse.json({ variant: updatedVariant });
   } catch (error) {
     console.error('Error updating variant:', error);
@@ -151,6 +160,13 @@ export async function DELETE(
     }
 
     await db.delete(productVariants).where(eq(productVariants.id, variantId));
+
+    const product = await getProductById(productId);
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+    if (product) {
+      revalidatePath(`/produk/${product.slug}`, 'page');
+    }
 
     return NextResponse.json({ success: true, message: 'Varian berhasil dihapus' });
   } catch (error) {

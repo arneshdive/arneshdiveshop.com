@@ -98,6 +98,7 @@ export default function NewProductPage() {
       isActive: formData.isActive,
       isNewArrival: formData.isNewArrival,
       isOnSale: formData.isOnSale,
+      weightGrams: formData.weightGrams ? parseInt(formData.weightGrams, 10) : undefined,
     };
 
     try {
@@ -213,7 +214,7 @@ export default function NewProductPage() {
 
       {/* Preview & Actions */}
       <div className="hidden xl:block w-80 flex-shrink-0">
-        <div className="sticky top-24 space-y-4">
+        <div className="sticky top-6 space-y-4">
           {/* Actions */}
           <div className="flex gap-3">
             <AnimatedButton onClick={() => router.push('/admin/products')} variant="outline" size="xs" className="flex-1">

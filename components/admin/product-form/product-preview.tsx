@@ -98,7 +98,7 @@ export function ProductPreview({
           </p>
 
           {/* Title */}
-          <h1 className="text-lg font-bold tracking-tight text-neutral-900 mb-2">
+          <h1 className="text-lg font-bold tracking-tight text-neutral-900 mb-2 truncate">
             {name || 'Nama Produk'}
           </h1>
 

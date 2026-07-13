@@ -22,6 +22,7 @@ const createProductSchema = z.object({
   isActive: z.boolean().default(true),
   isNewArrival: z.boolean().default(false),
   isOnSale: z.boolean().default(false),
+  weightGrams: z.number().int().min(1, 'Berat minimal 1 gram').optional(),
 });
 
 // GET /api/products - List all products

@@ -2,16 +2,19 @@
 
 import { Icon } from '@iconify/react';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
+import { useCheckoutStore } from '@/lib/store/checkout';
 import { formatRupiah } from '@/lib/utils/format';
 
 export function OrderSummaryCard() {
   // Ensure cart is synced
   useCartSync();
-  
-  const { items, promoDiscountCents, getSubtotalCents, getTotalCents } = useCartStore();
-  
+
+  const { items, promoDiscountCents, getSubtotalCents } = useCartStore();
+  const { data: checkoutData } = useCheckoutStore();
+
   const subtotalCents = getSubtotalCents();
-  const totalCents = getTotalCents();
+  const shippingCostCents = checkoutData.shippingCostCents;
+  const totalCents = subtotalCents - promoDiscountCents + (shippingCostCents ?? 0);
 
   // Get image for item
   const getItemImage = (item: typeof items[0]) => {
@@ -70,7 +73,11 @@ export function OrderSummaryCard() {
         )}
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">Ongkos Kirim</span>
-          <span className="text-neutral-400">Dihitung setelah pilih kurir</span>
+          {shippingCostCents !== null ? (
+            <span>{formatRupiah(shippingCostCents)}</span>
+          ) : (
+            <span className="text-neutral-400">Dihitung setelah pilih kurir</span>
+          )}
         </div>
         <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
           <span>Total</span>

@@ -20,6 +20,7 @@ type Product = {
   description: string | null;
   priceCents: number;
   compareAtPriceCents: number | null;
+  weightGrams: number | null;
   categoryId: string;
   brandId: string | null;
   divingTypes: string[];
@@ -118,6 +119,7 @@ export default function EditProductPage() {
         price: (product.priceCents / 100).toString(),
         salePrice: product.compareAtPriceCents ? (product.compareAtPriceCents / 100).toString() : '',
         sku: product.sku || '',
+        weightGrams: product.weightGrams?.toString() || '500',
         isActive: product.isActive,
         divingTypes: product.divingTypes as ('freediving' | 'scuba')[] || [],
         isNewArrival: product.isNewArrival,
@@ -158,6 +160,7 @@ export default function EditProductPage() {
       isActive: formData.isActive,
       isNewArrival: formData.isNewArrival,
       isOnSale: formData.isOnSale,
+      weightGrams: formData.weightGrams ? parseInt(formData.weightGrams, 10) : undefined,
     };
 
     try {
@@ -294,7 +297,7 @@ export default function EditProductPage() {
 
         {/* Preview & Actions */}
         <div className="hidden xl:block w-80 flex-shrink-0">
-          <div className="sticky top-24 space-y-4">
+          <div className="sticky top-6 space-y-4">
             {/* Actions */}
             <div className="flex gap-3">
               <AnimatedButton onClick={() => router.push('/admin/products')} variant="outline" size="xs" className="flex-1">

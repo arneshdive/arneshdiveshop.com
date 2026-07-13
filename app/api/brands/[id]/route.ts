@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, brands } from '@/lib/db';
 import { eq } from 'drizzle-orm';
@@ -92,6 +93,9 @@ export async function PUT(
       throw new Error('Failed to update brand');
     }
 
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+
     return NextResponse.json({ brand: updatedBrand });
   } catch (error) {
     console.error('Error updating brand:', error);
@@ -134,6 +138,9 @@ export async function DELETE(
 
     // Delete brand
     await db.delete(brands).where(eq(brands.id, id));
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
 
     return NextResponse.json({ success: true });
   } catch (error) {

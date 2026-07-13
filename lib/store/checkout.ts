@@ -10,6 +10,7 @@ export interface CheckoutData {
   address2: string;          // Additional details (RT/RW, patokan, etc)
   notes: string;
   shippingMethod: 'jne-regular' | 'jne-yes' | 'sicepat-reg';
+  shippingCostCents: number | null; // Real quoted cost for the selected shippingMethod
   // RajaOngkir destination (subdistrict level)
   rajaongkirCityId: string | null;
   rajaongkirCityName: string | null;  // Full label for display
@@ -40,6 +41,7 @@ const initialData: CheckoutData = {
   address2: '',
   notes: '',
   shippingMethod: 'jne-regular',
+  shippingCostCents: null,
   rajaongkirCityId: null,
   rajaongkirCityName: null,
   rajaongkirProvince: null,

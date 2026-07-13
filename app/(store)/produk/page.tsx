@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { Icon } from '@iconify/react';
 import { SearchFilters } from '@/components/search/search-filters';
 import { SearchResults } from '@/components/search/search-results';
@@ -17,6 +18,26 @@ interface ProdukPageProps {
     minPrice?: string;
     maxPrice?: string;
   }>;
+}
+
+export async function generateMetadata({ searchParams }: ProdukPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const label = (slug: string) =>
+    slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+  let title = 'Semua Katalog';
+  if (params.q) title = `Hasil untuk "${params.q}"`;
+  else if (params.newArrival === 'true') title = 'New Arrivals';
+  else if (params.onSale === 'true') title = 'Sale';
+  else if (params.divingType) title = `Koleksi ${label(params.divingType)}`;
+  else if (params.category) title = label(params.category);
+  else if (params.brand) title = label(params.brand);
+
+  return {
+    title,
+    description:
+      'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi di Arne\'s Dive Shop.',
+  };
 }
 
 // Sort products based on sort parameter

@@ -21,6 +21,7 @@ const RAJAONGKIR_BASE_URL = process.env.RAJAONGKIR_BASE_URL || 'https://rajaongk
 const RAJAONGKIR_API_KEYS = [
   process.env.RAJAONGKIR_API_KEY,
   process.env.RAJAONGKIR_API_KEY_2,
+  process.env.RAJAONGKIR_API_KEY_3,
 ].filter((key): key is string => !!key);
 
 if (RAJAONGKIR_API_KEYS.length === 0) {

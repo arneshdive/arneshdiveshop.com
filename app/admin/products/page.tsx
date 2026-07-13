@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Select } from '@/components/admin/input';
@@ -95,17 +95,10 @@ async function fetchBrands(): Promise<{ brands: Brand[] }> {
   return response.json();
 }
 
-// Delete product mutation
-async function deleteProduct(id: string): Promise<void> {
-  const response = await fetch(`/api/products/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) throw new Error('Failed to delete product');
-}
+
 
 export default function ProductsPage() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   
   const [filters, setFilters] = useState<FilterState>({
     category: '',
@@ -126,13 +119,7 @@ export default function ProductsPage() {
     queryFn: () => fetchProducts(filters),
   });
 
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: deleteProduct,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-    },
-  });
+
 
   const activeFilterCount = Object.values(filters).filter(v => v !== '').length;
 
@@ -140,11 +127,7 @@ export default function ProductsPage() {
     setFilters({ category: '', brand: '', status: '' });
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
-      deleteMutation.mutate(id);
-    }
-  };
+
 
   const products = data?.products ?? [];
 
@@ -281,28 +264,11 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              {/* Availability & Actions */}
-              <div className="hidden sm:flex items-center gap-1">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // Navigate to edit page (handled by link)
-                  }}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-900 hover:bg-neutral-100 transition-colors"
-                  aria-label="Edit produk"
-                >
+              {/* Edit indicator */}
+              <div className="hidden sm:flex items-center">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-neutral-900 group-hover:bg-neutral-100 transition-colors">
                   <Icon icon="solar:pen-linear" className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDelete(product.id);
-                  }}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-900 hover:text-red-600 hover:bg-red-50 transition-colors"
-                  aria-label="Hapus produk"
-                >
-                  <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
-                </button>
+                </div>
               </div>
 
               {/* Mobile Arrow */}

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { db, products, productVariants, categories, brands } from '@/lib/db';
 import { eq, isNull, desc, ilike, and, SQL, sql, or, gte, lte, between } from 'drizzle-orm';
 
@@ -279,8 +280,10 @@ export async function getProductById(id: string) {
 
 /**
  * Get a single product by slug (excluding soft-deleted)
+ * Wrapped in React's cache() so generateMetadata and the page component
+ * share one DB query per request instead of fetching twice.
  */
-export async function getProductBySlug(slug: string) {
+export const getProductBySlug = cache(async (slug: string) => {
   return db.query.products.findFirst({
     where: and(
       eq(products.slug, slug),
@@ -294,7 +297,7 @@ export async function getProductBySlug(slug: string) {
       },
     },
   });
-}
+});
 
 /**
  * Get all existing slugs for uniqueness check

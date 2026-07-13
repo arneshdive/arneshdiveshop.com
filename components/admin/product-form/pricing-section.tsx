@@ -1,4 +1,4 @@
-import { Input, CurrencyInput } from '@/components/admin/input';
+import { Input, CurrencyInput, NumberInput } from '@/components/admin/input';
 import type { ProductFormData } from '@/lib/hooks/use-product-form';
 
 interface PricingSectionProps {
@@ -32,6 +32,17 @@ export function PricingSection({ formData, setFormData }: PricingSectionProps) {
           placeholder="Kosongkan jika tidak ada"
         />
       </div>
+
+      <div className="grid sm:grid-cols-3 gap-4">
+        <NumberInput
+          label="Berat (gram)"
+          value={formData.weightGrams}
+          onChange={(e) => setFormData({ ...formData, weightGrams: e.target.value })}
+          placeholder="500"
+          min={1}
+        />
+      </div>
+
       <p className="text-xs text-neutral-500">SKU wajib diisi untuk produk tanpa varian</p>
     </div>
   );

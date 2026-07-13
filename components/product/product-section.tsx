@@ -55,7 +55,7 @@ export function ProductSection({
             </h2>
             <p className="text-sm lg:text-base max-w-md">{description}</p>
           </div>
-          <AnimatedButton asChild variant="outline" className="hidden sm:flex text-sm font-medium px-6 py-3">
+          <AnimatedButton asChild variant="outline" className="!hidden sm:!flex text-sm font-medium px-6 py-3">
             <Link href={ctaHref} className="inline-flex items-center gap-2.5">
               Lihat Semua
               <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />

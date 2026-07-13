@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Icon } from '@iconify/react';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
+import { ExpandableText } from '@/components/ui/expandable-text';
 import { ProductActions } from '@/components/product/product-actions';
 import { formatRupiah } from '@/lib/utils/format';
 
@@ -110,7 +110,7 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
       {/* Accordion */}
       <Accordion>
         <AccordionItem title="Deskripsi" defaultOpen>
-          <p className="leading-relaxed">{product.description || 'Tidak ada deskripsi.'}</p>
+          <ExpandableText text={product.description || ''} />
         </AccordionItem>
         <AccordionItem title="Spesifikasi">
           <table className="w-full">
@@ -137,22 +137,6 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
               </tr>
             </tbody>
           </table>
-        </AccordionItem>
-        <AccordionItem title="Pengiriman">
-          <ul className="space-y-2">
-            <li className="flex items-start gap-2">
-              <Icon icon="solar:check-circle-linear" className="w-4 h-4 text-green-600 mt-0.5" />
-              Gratis ongkir untuk pembelian di atas Rp 500.000
-            </li>
-            <li className="flex items-start gap-2">
-              <Icon icon="solar:check-circle-linear" className="w-4 h-4 text-green-600 mt-0.5" />
-              Pengiriman 1-3 hari kerja (Jabodetabek)
-            </li>
-            <li className="flex items-start gap-2">
-              <Icon icon="solar:check-circle-linear" className="w-4 h-4 text-green-600 mt-0.5" />
-              Pengiriman 3-7 hari kerja (Luar Jabodetabek)
-            </li>
-          </ul>
         </AccordionItem>
       </Accordion>
     </div>

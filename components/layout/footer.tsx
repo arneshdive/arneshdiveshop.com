@@ -6,7 +6,6 @@ import { WaveDivider } from '@/components/layout/wave-divider';
 const paymentBadges = [
   { label: 'Visa', icon: 'logos:visa' },
   { label: 'Mastercard', icon: 'logos:mastercard' },
-  { label: 'PayPal', icon: 'logos:paypal' },
 ];
 
 const paymentTextBadges = ['QRIS', 'Transfer Bank'];
@@ -77,6 +76,7 @@ export async function Footer() {
               <Link href="/syarat" className="hover:text-white transition-colors">Syarat & Ketentuan</Link>
               <Link href="/faq" className="hover:text-white transition-colors">Bantuan</Link>
               <Link href="/kontak" className="hover:text-white transition-colors">Kontak</Link>
+              <Link href="/admin" className="hover:text-white transition-colors">Admin Portal</Link>
             </div>
           </div>
           <div className="flex items-center gap-2">

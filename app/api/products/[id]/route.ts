@@ -23,6 +23,7 @@ const updateProductSchema = z.object({
   isFeatured: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
   isOnSale: z.boolean().optional(),
+  weightGrams: z.number().int().min(1, 'Berat minimal 1 gram').optional(),
 });
 
 // GET /api/products/[id] - Get single product

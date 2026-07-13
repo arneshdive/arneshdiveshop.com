@@ -81,6 +81,7 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
   useEffect(() => {
     if (!data.rajaongkirCityId) {
       setRates([]);
+      setField('shippingCostCents', null);
       return;
     }
 
@@ -107,12 +108,23 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
         const result = await response.json();
         
         if (!isCancelled) {
-          setRates(result.rates || []);
+          const fetchedRates: ShippingRate[] = result.rates || [];
+          setRates(fetchedRates);
 
-          // Set first rate as default if none selected
-          if (result.rates?.length > 0 && !data.shippingMethod) {
-            const firstRate = result.rates[0];
+          // Keep the selected rate's cost in sync with the freshly fetched rates
+          const currentRate = fetchedRates.find(
+            (rate) => `${rate.courier}-${rate.service}`.toLowerCase() === data.shippingMethod
+          );
+
+          if (currentRate) {
+            setField('shippingCostCents', currentRate.costCents);
+          } else if (fetchedRates.length > 0) {
+            // Set first rate as default if none selected (or previous selection is no longer available)
+            const firstRate = fetchedRates[0]!;
             setField('shippingMethod', `${firstRate.courier}-${firstRate.service}`.toLowerCase() as typeof data.shippingMethod);
+            setField('shippingCostCents', firstRate.costCents);
+          } else {
+            setField('shippingCostCents', null);
           }
         }
       } catch (err) {
@@ -267,7 +279,10 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
                               type="radio"
                               name="shippingMethod"
                               checked={isSelected}
-                              onChange={() => setField('shippingMethod', rateId as typeof data.shippingMethod)}
+                              onChange={() => {
+                                setField('shippingMethod', rateId as typeof data.shippingMethod);
+                                setField('shippingCostCents', rate.costCents);
+                              }}
                               className="sr-only"
                             />
                             <div

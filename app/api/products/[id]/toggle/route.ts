@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, products } from '@/lib/db';
 import { eq } from 'drizzle-orm';
@@ -55,6 +56,10 @@ export async function PATCH(
     if (!updatedProduct) {
       throw new Error('Failed to update product');
     }
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+    revalidatePath(`/produk/${product.slug}`, 'page');
 
     return NextResponse.json({ product: updatedProduct });
   } catch (error) {

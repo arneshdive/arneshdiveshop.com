@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 export interface VariantOption {
   id: string;
@@ -36,6 +36,7 @@ export interface ProductFormData {
   price: string;
   salePrice: string;
   sku: string;
+  weightGrams: string;
   isActive: boolean;
   divingTypes: ('freediving' | 'scuba')[];
   isNewArrival: boolean;
@@ -56,6 +57,7 @@ export function useProductForm() {
     price: '',
     salePrice: '',
     sku: '',
+    weightGrams: '500',
     isActive: true,
     divingTypes: [],
     isNewArrival: false,
@@ -150,7 +152,7 @@ export function useProductForm() {
   };
 
   // Load saved variants from product data
-  const loadSavedVariants = (variants: SavedVariant[]) => {
+  const loadSavedVariants = useCallback((variants: SavedVariant[]) => {
     setSavedVariants(variants);
     if (variants.length > 0) {
       setHasVariants(true);
@@ -183,7 +185,7 @@ export function useProductForm() {
         isNew: false,
       })));
     }
-  };
+  }, []);
 
   return {
     formData,

@@ -10,6 +10,7 @@ import { getMidtransProvider } from '@/lib/payment/midtrans';
 import { db, orders, payments, orderItems } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { createAccountFromCheckout } from '@/lib/auth/seamless-signup';
+import { calculateShippingRates } from '@/lib/shipping/calculator';
 
 const createPaymentSchema = z.object({
   checkoutSessionId: z.string().min(1, 'Checkout session ID is required'),
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
             postalCode: session.rajaongkirPostalCode || '',
             country: 'Indonesia',
           },
-          itemDetails: buildItemDetails(session, existingOrder.shippingCents),
+          itemDetails: buildItemDetails(session, existingOrder.shippingCents, session.shippingMethod),
         });
 
         await db
@@ -179,9 +180,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate totals
+    // Calculate totals. Re-derive the shipping cost from RajaOngkir (the same
+    // source of truth the customer saw in the shipping method selector) rather
+    // than trusting a client-supplied value, so the captured cost always
+    // matches a real, currently-valid courier quote.
     const subtotalCents = session.cart.subtotalCents;
-    const shippingCents = calculateShippingCost(session.shippingMethod, subtotalCents);
+    const { rates: currentRates } = await calculateShippingRates(
+      session.rajaongkirCityId,
+      session.cart.items
+    );
+    const selectedRate = currentRates.find(
+      (rate) => `${rate.courier}-${rate.service}`.toLowerCase() === session.shippingMethod
+    );
+
+    if (!selectedRate) {
+      return NextResponse.json(
+        { error: 'Metode pengiriman tidak lagi tersedia, silakan pilih ulang metode pengiriman.' },
+        { status: 400 }
+      );
+    }
+
+    const shippingCents = selectedRate.costCents;
     const totalCents = subtotalCents + shippingCents;
 
     // Update checkout session with calculated totals
@@ -225,7 +244,7 @@ export async function POST(request: NextRequest) {
         postalCode: session.rajaongkirPostalCode || '',
         country: 'Indonesia',
       },
-      itemDetails: buildItemDetails(session, shippingCents),
+      itemDetails: buildItemDetails(session, shippingCents, `${selectedRate.courier.toUpperCase()} ${selectedRate.name}`),
     });
 
     // Create order record (pending_payment status) WITH idempotency key
@@ -316,7 +335,11 @@ function truncateForMidtrans(name: string): string {
 /**
  * Build Midtrans item_details for a checkout session's cart + shipping
  */
-function buildItemDetails(session: CheckoutSessionWithCart, shippingCents: number) {
+function buildItemDetails(
+  session: CheckoutSessionWithCart,
+  shippingCents: number,
+  shippingLabel?: string | null
+) {
   if (!session.cart) return [];
   return [
     ...session.cart.items.map(item => {
@@ -333,51 +356,11 @@ function buildItemDetails(session: CheckoutSessionWithCart, shippingCents: numbe
     }),
     {
       id: `shipping-${session.shippingMethod || 'standard'}`,
-      name: truncateForMidtrans(`Pengiriman: ${getShippingMethodName(session.shippingMethod)}`),
+      name: truncateForMidtrans(`Pengiriman: ${shippingLabel || session.shippingMethod || 'Standar'}`),
       price: shippingCents,
       quantity: 1,
     },
   ];
-}
-
-/**
- * Calculate shipping cost based on method and order total
- * CONVENTION: All values are in cents (1 Rupiah = 100 cents)
- */
-function calculateShippingCost(shippingMethod: string | null, subtotalCents: number): number {
-  const FREE_SHIPPING_THRESHOLD = 50000000; // Rp 500.000 in cents
-  
-  // Free shipping for orders above threshold
-  if (subtotalCents >= FREE_SHIPPING_THRESHOLD) {
-    return 0;
-  }
-
-  switch (shippingMethod) {
-    case 'jne-regular':
-      return 2500000; // Rp 25.000 in cents
-    case 'jne-yes':
-      return 4500000; // Rp 45.000 in cents
-    case 'sicepat-reg':
-      return 2000000; // Rp 20.000 in cents
-    default:
-      return 2500000; // Default to JNE Regular
-  }
-}
-
-/**
- * Get human-readable shipping method name
- */
-function getShippingMethodName(method: string | null): string {
-  switch (method) {
-    case 'jne-regular':
-      return 'JNE Reguler (3-5 hari)';
-    case 'jne-yes':
-      return 'JNE YES (1-2 hari)';
-    case 'sicepat-reg':
-      return 'SiCepat REG (2-3 hari)';
-    default:
-      return 'Pengiriman Standar';
-  }
 }
 
 /**

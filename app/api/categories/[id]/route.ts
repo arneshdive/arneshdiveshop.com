@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, categories, products } from '@/lib/db';
 import { eq } from 'drizzle-orm';
@@ -85,6 +86,9 @@ export async function PUT(
       .where(eq(categories.id, id))
       .returning();
 
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
+
     return NextResponse.json({ category: updated });
   } catch (error) {
     console.error('Error updating category:', error);
@@ -124,6 +128,9 @@ export async function DELETE(
     }
 
     await db.delete(categories).where(eq(categories.id, id));
+
+    revalidatePath('/', 'layout');
+    revalidatePath('/produk', 'page');
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ProductGallery } from '@/components/product/product-gallery';
 import { ProductCard } from '@/components/product/product-card';
 import { ProductInfo } from '@/components/product/product-info';
@@ -11,6 +12,36 @@ interface ProductPageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    return { title: 'Produk tidak ditemukan' };
+  }
+
+  const description = product.description
+    ? product.description.slice(0, 160)
+    : `Beli ${product.name} di Arne's Dive Shop.`;
+  const image = product.images?.[0];
+
+  return {
+    title: product.name,
+    description,
+    openGraph: {
+      title: product.name,
+      description,
+      images: image ? [image] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
 
 type PaymentStatus = 'success' | 'pending' | 'failed' | 'loading';
 
-export default function CheckoutCallbackPage() {
+function CheckoutCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<PaymentStatus>('loading');
@@ -135,5 +135,17 @@ export default function CheckoutCallbackPage() {
         )}
       </div>
     </section>
+  );
+}
+
+export default function CheckoutCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900" />
+      </div>
+    }>
+      <CheckoutCallbackContent />
+    </Suspense>
   );
 }

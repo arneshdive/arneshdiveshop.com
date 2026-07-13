@@ -5,7 +5,7 @@ import { useCheckoutStore } from '@/lib/store/checkout';
 import { DestinationSearch } from './destination-search';
 
 export function ShippingAddressForm() {
-  const { data, setField } = useCheckoutStore();
+  const { data, setField, touched, setTouched } = useCheckoutStore();
 
   return (
     <div className="pb-8 mb-8 border-b border-neutral-200">
@@ -25,9 +25,22 @@ export function ShippingAddressForm() {
             type="text"
             value={data.fullName}
             onChange={(e) => setField('fullName', e.target.value)}
+            onBlur={() => setTouched('fullName')}
             placeholder="Nama penerima paket"
-            className="py-3 rounded-xl"
+            className={`py-3 rounded-xl ${
+              touched.fullName && !data.fullName.trim()
+                ? 'border-red-400 focus:border-red-500 focus:ring-red-500'
+                : ''
+            }`}
           />
+          {touched.fullName && !data.fullName.trim() && (
+            <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              Nama lengkap wajib diisi
+            </p>
+          )}
         </div>
 
         {/* Destination Search (Kelurahan/Kecamatan) */}
@@ -35,18 +48,32 @@ export function ShippingAddressForm() {
           <label className="block text-sm font-medium text-neutral-700 mb-2">
             Kelurahan/Kecamatan <span className="text-red-500">*</span>
           </label>
-          <DestinationSearch
-            value={data.rajaongkirCityName || ''}
-            onSelect={(destination) => {
-              setField('rajaongkirCityId', destination.id);
-              setField('rajaongkirCityName', destination.fullName);
-              setField('rajaongkirProvince', destination.province);
-              setField('rajaongkirCity', destination.city || null);
-              setField('rajaongkirDistrict', destination.district || null);
-              setField('rajaongkirSubdistrict', destination.name);
-            }}
-            placeholder="Cari kelurahan atau kecamatan..."
-          />
+          <div
+            onFocus={() => setTouched('rajaongkirCityId')}
+            onClick={() => setTouched('rajaongkirCityId')}
+          >
+            <DestinationSearch
+              value={data.rajaongkirCityName || ''}
+              onSelect={(destination) => {
+                setField('rajaongkirCityId', destination.id);
+                setField('rajaongkirCityName', destination.fullName);
+                setField('rajaongkirProvince', destination.province);
+                setField('rajaongkirCity', destination.city || null);
+                setField('rajaongkirDistrict', destination.district || null);
+                setField('rajaongkirSubdistrict', destination.name);
+              }}
+              placeholder="Cari kelurahan atau kecamatan..."
+              className={touched.rajaongkirCityId && !data.rajaongkirCityId ? 'border-red-400' : ''}
+            />
+          </div>
+          {touched.rajaongkirCityId && !data.rajaongkirCityId && (
+            <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              Kelurahan/Kecamatan wajib dipilih
+            </p>
+          )}
           <p className="text-xs text-neutral-400 mt-2">
             Ketik nama kelurahan atau kecamatan tujuan pengiriman
           </p>
@@ -85,10 +112,23 @@ export function ShippingAddressForm() {
           <Textarea
             value={data.address1}
             onChange={(e) => setField('address1', e.target.value)}
+            onBlur={() => setTouched('address1')}
             placeholder="Jalan, nomor rumah, nama gedung, RT/RW..."
             rows={2}
-            className="py-3 rounded-xl"
+            className={`py-3 rounded-xl ${
+              touched.address1 && !data.address1.trim()
+                ? 'border-red-400 focus:border-red-500 focus:ring-red-500'
+                : ''
+            }`}
           />
+          {touched.address1 && !data.address1.trim() && (
+            <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              Alamat lengkap wajib diisi
+            </p>
+          )}
         </div>
 
         {/* Additional Details */}

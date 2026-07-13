@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { CheckoutProgress } from '@/components/checkout/checkout-progress';
 import { ContactForm } from '@/components/checkout/contact-form';
@@ -62,18 +63,22 @@ export default function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const validateForm = useCallback((): boolean => {
-    if (!data.email || !isValidEmail(data.email)) return false;
-    if (!data.phone || !isValidPhone(data.phone)) return false;
-    if (!data.fullName.trim()) return false;
-    if (!data.rajaongkirCityId) return false; // Destination is mandatory
-    if (!data.address1.trim()) return false; // Street address is mandatory
-    return true;
+  const validateForm = useCallback((): { isValid: boolean; missingFields: string[] } => {
+    const missingFields: string[] = [];
+    
+    if (!data.email || !isValidEmail(data.email)) missingFields.push('Email');
+    if (!data.phone || !isValidPhone(data.phone)) missingFields.push('No. Telepon');
+    if (!data.fullName.trim()) missingFields.push('Nama Lengkap');
+    if (!data.rajaongkirCityId) missingFields.push('Kelurahan/Kecamatan');
+    if (!data.address1.trim()) missingFields.push('Alamat Lengkap');
+    
+    return { isValid: missingFields.length === 0, missingFields };
   }, [data.email, data.phone, data.fullName, data.rajaongkirCityId, data.address1]);
 
   // Create checkout session when form is valid
   const createCheckoutSession = useCallback(async () => {
-    if (!validateForm() || data.checkoutSessionId) return;
+    const { isValid } = validateForm();
+    if (!isValid || data.checkoutSessionId) return;
 
     setIsCreatingSession(true);
     try {
@@ -144,7 +149,8 @@ export default function CheckoutPage() {
 
   // Auto-create session when form becomes valid
   useEffect(() => {
-    if (validateForm() && !data.checkoutSessionId && !isCreatingSession) {
+    const { isValid } = validateForm();
+    if (isValid && !data.checkoutSessionId && !isCreatingSession) {
       createCheckoutSession();
     }
   }, [validateForm, data.checkoutSessionId, isCreatingSession, createCheckoutSession]);
@@ -161,12 +167,21 @@ export default function CheckoutPage() {
   }, [data.shippingMethod, data.checkoutSessionId, prevShippingMethod, updateShippingMethod]);
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      alert('Mohon lengkapi semua data yang diperlukan');
+    const { isValid, missingFields } = validateForm();
+    if (!isValid) {
+      toast.error('Lengkapi data yang diperlukan', {
+        description: `Field berikut harus diisi: ${missingFields.join(', ')}`,
+      });
       return;
     }
 
     setIsSubmitting(true);
+
+    // Open new tab synchronously (before async operations) to avoid popup blockers
+    const paymentTab = window.open('', '_blank');
+    if (paymentTab) {
+      paymentTab.document.write('<html><head><title>Memproses...</title></head><body style="display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui,sans-serif;color:#666;"><p>Memproses pembayaran...</p></body></html>');
+    }
 
     try {
       // Ensure we have a checkout session
@@ -241,12 +256,24 @@ export default function CheckoutPage() {
       const paymentResult = await paymentResponse.json();
       const { redirectUrl } = paymentResult.data;
 
-      // Open payment in a new tab and redirect current tab to /account
-      window.open(redirectUrl, '_blank');
+      // Navigate the payment tab to Midtrans
+      if (paymentTab) {
+        paymentTab.location.href = redirectUrl;
+      }
+
+      toast.success('Pembayaran dibuka di tab baru', {
+        description: 'Silakan selesaikan pembayaran Anda',
+      });
       router.push('/account');
     } catch (error) {
       console.error('Checkout error:', error);
-      alert(error instanceof Error ? error.message : 'Terjadi kesalahan, silakan coba lagi');
+      toast.error('Terjadi kesalahan', {
+        description: error instanceof Error ? error.message : 'Silakan coba lagi',
+      });
+      // Close the payment tab if there was an error
+      if (paymentTab) {
+        paymentTab.close();
+      }
       setIsSubmitting(false);
     }
   };

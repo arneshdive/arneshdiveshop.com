@@ -17,9 +17,10 @@ interface DestinationSearchProps {
   value?: string; // Current destination name
   onSelect: (destination: Destination) => void;
   placeholder?: string;
+  className?: string;
 }
 
-export function DestinationSearch({ value, onSelect, placeholder = 'Cari kelurahan atau kecamatan...' }: DestinationSearchProps) {
+export function DestinationSearch({ value, onSelect, placeholder = 'Cari kelurahan atau kecamatan...', className }: DestinationSearchProps) {
   const [search, setSearch] = useState(value || '');
   const [results, setResults] = useState<Destination[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +83,7 @@ export function DestinationSearch({ value, onSelect, placeholder = 'Cari kelurah
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="w-full pl-12 pr-10 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors"
+          className={`w-full pl-12 pr-10 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors ${className || ''}`}
         />
         {isLoading && (
           <Icon icon="solar:spinner" className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-neutral-400" />

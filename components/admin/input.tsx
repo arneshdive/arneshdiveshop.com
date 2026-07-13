@@ -2,7 +2,7 @@ import { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttr
 import { formatCurrencyInput } from '@/lib/utils/format';
 
 const baseInputStyles = `
-  w-full px-4 py-2.5 text-sm 
+  w-full px-4 py-2.5 text-base 
   bg-white border border-neutral-200 rounded-lg 
   focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900
   transition-colors

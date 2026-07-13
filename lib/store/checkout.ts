@@ -23,12 +23,22 @@ export interface CheckoutData {
   checkoutSessionId: string | null;
 }
 
+interface TouchedFields {
+  email: boolean;
+  phone: boolean;
+  fullName: boolean;
+  address1: boolean;
+  rajaongkirCityId: boolean;
+}
+
 interface CheckoutState {
   data: CheckoutData;
+  touched: TouchedFields;
 }
 
 interface CheckoutActions {
   setField: <K extends keyof CheckoutData>(field: K, value: CheckoutData[K]) => void;
+  setTouched: (field: keyof TouchedFields) => void;
   setData: (data: Partial<CheckoutData>) => void;
   reset: () => void;
 }
@@ -52,14 +62,29 @@ const initialData: CheckoutData = {
   checkoutSessionId: null,
 };
 
+const initialTouched: TouchedFields = {
+  email: false,
+  phone: false,
+  fullName: false,
+  address1: false,
+  rajaongkirCityId: false,
+};
+
 export const useCheckoutStore = create<CheckoutState & CheckoutActions>()(
   persist(
     (set) => ({
       data: initialData,
+      touched: initialTouched,
 
       setField: (field, value) => {
         set((state) => ({
           data: { ...state.data, [field]: value },
+        }));
+      },
+
+      setTouched: (field) => {
+        set((state) => ({
+          touched: { ...state.touched, [field]: true },
         }));
       },
 
@@ -70,7 +95,7 @@ export const useCheckoutStore = create<CheckoutState & CheckoutActions>()(
       },
 
       reset: () => {
-        set({ data: initialData });
+        set({ data: initialData, touched: initialTouched });
       },
     }),
     {

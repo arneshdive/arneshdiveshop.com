@@ -15,6 +15,7 @@ interface Product {
   badge?: string;
   image?: string;
   secondaryImage?: string;
+  variantId?: string;
   categoryId?: string;
   brandId?: string;
   isActive?: boolean;
@@ -39,16 +40,16 @@ export function SearchResults({ products, total, sortBy }: SearchResultsProps) {
   return (
     <div className="flex-1">
       {/* Header with count and sort */}
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-base text-neutral-600">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+        <p className="text-sm sm:text-base text-neutral-600">
           Menampilkan <span className="font-medium text-neutral-900">{total}</span> produk
         </p>
         <select
           value={sortBy}
           onChange={(e) => handleSortChange(e.target.value)}
-          className="border border-neutral-300 px-4 py-2.5 text-base rounded focus:outline-none focus:ring-1 focus:ring-neutral-900"
+          className="border border-neutral-300 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base rounded focus:outline-none focus:ring-1 focus:ring-neutral-900 w-full sm:w-auto"
         >
-          <option value="newest">Urutkan: Terbaru</option>
+          <option value="newest">Terbaru</option>
           <option value="price-asc">Harga: Rendah ke Tinggi</option>
           <option value="price-desc">Harga: Tinggi ke Rendah</option>
           <option value="popular">Paling Populer</option>

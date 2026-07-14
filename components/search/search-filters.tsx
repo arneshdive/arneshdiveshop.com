@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
 
@@ -250,7 +251,28 @@ export function SearchFilters({
 }: SearchFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
   const hasActiveFilters = selectedCategory || selectedBrand || selectedDivingType || minPrice || maxPrice;
+  const activeFilterCount = [
+    selectedCategory,
+    selectedBrand,
+    selectedDivingType,
+    minPrice,
+    maxPrice,
+  ].filter(Boolean).length;
+
+  // Lock body scroll when drawer is open
+  useEffect(() => {
+    if (isDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isDrawerOpen]);
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -270,35 +292,87 @@ export function SearchFilters({
 
   return (
     <>
-      {/* Mobile Filter */}
+      {/* Mobile Filter Button */}
       <div className="lg:hidden mb-4">
-        <details className="border border-neutral-200 rounded-lg">
-          <summary className="py-3 px-4 text-base cursor-pointer flex items-center gap-2">
-            <Icon icon="solar:filter-linear" className="w-5 h-5" />
-            Filter
-            {hasActiveFilters && (
-              <span className="bg-neutral-900 text-white text-xs px-1.5 py-0.5 rounded-full">
-                !
-              </span>
-            )}
-          </summary>
-          <div className="p-4 pt-0 border-t border-neutral-200 mt-3">
-            <FilterContent
-              categories={categories}
-              brands={brands}
-              categoryDistribution={categoryDistribution}
-              brandDistribution={brandDistribution}
-              selectedCategory={selectedCategory}
-              selectedBrand={selectedBrand}
-              selectedDivingType={selectedDivingType}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              updateFilter={updateFilter}
-              clearFilters={clearFilters}
-              hasActiveFilters={!!hasActiveFilters}
-            />
-          </div>
-        </details>
+        <button
+          onClick={() => setIsDrawerOpen(true)}
+          className="w-full py-3 px-4 text-base border border-neutral-200 rounded-lg flex items-center justify-center gap-2 bg-white hover:bg-neutral-50 transition-colors"
+        >
+          <Icon icon="solar:filter-linear" className="w-5 h-5" />
+          Filter
+          {activeFilterCount > 0 && (
+            <span className="bg-neutral-900 text-white text-xs px-2 py-0.5 rounded-full">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer */}
+      <div
+        className={`fixed inset-y-0 left-0 w-full max-w-xs bg-white z-50 transform transition-transform duration-300 ease-out lg:hidden shadow-2xl ${
+          isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between p-4 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold">Filter</h2>
+          <button
+            onClick={() => setIsDrawerOpen(false)}
+            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+          >
+            <Icon icon="solar:close-circle-linear" className="w-6 h-6 text-neutral-500" />
+          </button>
+        </div>
+
+        {/* Drawer Content */}
+        <div className="p-4 overflow-y-auto h-[calc(100%-140px)]">
+          <FilterContent
+            categories={categories}
+            brands={brands}
+            categoryDistribution={categoryDistribution}
+            brandDistribution={brandDistribution}
+            selectedCategory={selectedCategory}
+            selectedBrand={selectedBrand}
+            selectedDivingType={selectedDivingType}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            updateFilter={(key, value) => {
+              updateFilter(key, value);
+            }}
+            clearFilters={clearFilters}
+            hasActiveFilters={!!hasActiveFilters}
+          />
+        </div>
+
+        {/* Drawer Footer */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-neutral-200 bg-white flex gap-3">
+          {hasActiveFilters && (
+            <button
+              onClick={() => {
+                clearFilters();
+                setIsDrawerOpen(false);
+              }}
+              className="flex-1 py-3 px-4 border border-neutral-300 rounded-lg text-neutral-600 hover:bg-neutral-50 transition-colors"
+            >
+              Hapus Filter
+            </button>
+          )}
+          <button
+            onClick={() => setIsDrawerOpen(false)}
+            className={`${hasActiveFilters ? 'flex-1' : 'w-full'} py-3 px-4 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors`}
+          >
+            Terapkan
+          </button>
+        </div>
       </div>
 
       {/* Desktop Sidebar */}

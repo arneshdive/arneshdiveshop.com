@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -41,6 +42,7 @@ interface Order {
   payments: {
     status: string;
     paymentMethod: string | null;
+    metadata: Record<string, unknown> | null;
   }[];
 }
 
@@ -188,9 +190,20 @@ interface OrderCardProps {
 function OrderCard({ order }: OrderCardProps) {
   const status = customerStatusConfig[order.status];
   const isPendingPayment = order.status === 'pending_payment';
+  const redirectUrl = order.payments[0]?.metadata?.redirectUrl as string | undefined;
 
   const copyOrderId = () => {
     navigator.clipboard.writeText(order.orderNumber);
+  };
+
+  const handleBayarSekarang = () => {
+    if (!redirectUrl) {
+      toast.error('Link pembayaran tidak tersedia', {
+        description: 'Silakan hubungi customer service untuk bantuan.',
+      });
+      return;
+    }
+    window.open(redirectUrl, '_blank');
   };
 
   return (
@@ -263,7 +276,7 @@ function OrderCard({ order }: OrderCardProps) {
         </p>
         <div className="flex gap-2">
           {isPendingPayment && (
-            <AnimatedButton className="px-5 py-2.5 text-sm">
+            <AnimatedButton onClick={handleBayarSekarang} className="px-5 py-2.5 text-sm">
               Bayar Sekarang
             </AnimatedButton>
           )}

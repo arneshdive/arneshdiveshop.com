@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
 
@@ -13,6 +13,13 @@ const navItems = [
 
 export function AccountSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
+  };
 
   return (
     <aside className="w-full lg:w-56 flex-shrink-0">
@@ -36,13 +43,13 @@ export function AccountSidebar() {
             </Link>
           );
         })}
-        <Link
-          href="/"
-          className="flex items-center gap-2 lg:gap-3 py-2.5 px-4 rounded-xl text-neutral-600 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0"
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 lg:gap-3 py-2.5 px-4 rounded-xl text-neutral-600 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0 cursor-pointer"
         >
           <Icon icon="solar:logout-2-linear" className="w-5 h-5" />
           <span className="text-sm lg:text-base">Keluar</span>
-        </Link>
+        </button>
       </nav>
     </aside>
   );

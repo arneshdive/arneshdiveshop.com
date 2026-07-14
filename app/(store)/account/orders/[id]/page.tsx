@@ -4,6 +4,7 @@ import { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { cn } from '@/lib/utils/cn';
 import { orderStatusConfig } from '@/lib/constants/order-status';
@@ -183,6 +184,17 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const billKey = payment?.metadata?.bill_key as string | undefined;
   const billCode = payment?.metadata?.biller_code as string | undefined;
   const paymentDeadline = payment?.expiredAt ? new Date(payment.expiredAt) : null;
+  const redirectUrl = payment?.metadata?.redirectUrl as string | undefined;
+
+  const handleBayarSekarang = () => {
+    if (!redirectUrl) {
+      toast.error('Link pembayaran tidak tersedia', {
+        description: 'Silakan hubungi customer service untuk bantuan.',
+      });
+      return;
+    }
+    window.open(redirectUrl, '_blank');
+  };
 
   return (
     <div>
@@ -302,7 +314,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             </div>
           )}
 
-          <AnimatedButton className="w-full mt-4 py-3 text-sm uppercase tracking-wider">
+          <AnimatedButton
+            onClick={handleBayarSekarang}
+            className="w-full mt-4 py-3 text-sm uppercase tracking-wider"
+          >
             Bayar Sekarang
           </AnimatedButton>
         </div>

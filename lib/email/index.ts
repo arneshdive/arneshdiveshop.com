@@ -6,6 +6,8 @@ export {
   sendEmail,
   sendPasswordResetEmail,
   sendVerificationEmail,
+  sendOrderEmail,
   generatePasswordResetEmail,
   generateVerificationEmail,
+  generateOrderEmail,
 } from './resend';

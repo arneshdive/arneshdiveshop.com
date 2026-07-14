@@ -9,6 +9,7 @@ import {
   completeCheckoutSession,
   revertCheckoutSessionToPending,
 } from '@/lib/queries/checkout';
+import { sendOrderEmail } from '@/lib/email';
 
 /**
  * POST /api/payments/webhook
@@ -103,6 +104,37 @@ export async function POST(request: NextRequest) {
           updatedAt: new Date(),
         })
         .where(eq(orders.id, order.id));
+    }
+
+    // Send order confirmation email when payment is successful
+    if (schemaPaymentStatus === 'paid' && order.idempotencyKey) {
+      const checkoutSession = await getCheckoutSessionById(order.idempotencyKey);
+      
+      if (checkoutSession) {
+        // Get order items for email
+        const orderWithItems = await db.query.orders.findFirst({
+          where: eq(orders.id, order.id),
+          with: {
+            items: true,
+          },
+        });
+        
+        if (orderWithItems) {
+          await sendOrderEmail(checkoutSession.email, {
+            orderNumber: order.orderNumber,
+            customerName: checkoutSession.fullName,
+            items: orderWithItems.items.map(item => ({
+              name: item.name,
+              quantity: item.quantity,
+              priceCents: item.priceCents,
+            })),
+            subtotalCents: order.subtotalCents,
+            shippingCents: order.shippingCents,
+            totalCents: order.totalCents,
+            status: 'processing',
+          });
+        }
+      }
     }
 
     // The checkout session's idempotency key IS the checkout session ID it

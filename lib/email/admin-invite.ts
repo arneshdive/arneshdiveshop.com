@@ -18,8 +18,8 @@ export function generateAdminInviteEmail(
   const acceptUrl = inviteToken ? `${APP_URL}/accept-invite?token=${inviteToken}` : `${APP_URL}/admin`;
 
   const text = isExistingUser
-    ? `Anda telah diundang menjadi ${roleLabel} di Arne's Dive Shop. Silakan login untuk mengakses panel admin.`
-    : `Anda telah diundang menjadi ${roleLabel} di Arne's Dive Shop. Gunakan link berikut untuk menyelesaikan pendaftaran: ${acceptUrl}`;
+    ? `Anda telah diundang menjadi ${roleLabel} di Arnesh Dive. Silakan login untuk mengakses panel admin.`
+    : `Anda telah diundang menjadi ${roleLabel} di Arnesh Dive. Gunakan link berikut untuk menyelesaikan pendaftaran: ${acceptUrl}`;
 
   const html = `
 <!DOCTYPE html>
@@ -31,12 +31,12 @@ export function generateAdminInviteEmail(
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 40px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-    <h1 style="color: #1f2937; font-size: 24px; margin: 0 0 8px 0; text-align: center;">Arne's Dive Shop</h1>
+    <h1 style="color: #1f2937; font-size: 24px; margin: 0 0 8px 0; text-align: center;">Arnesh Dive</h1>
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 0 0 32px 0;">Toko Perlengkapan Selam</p>
     
     <h2 style="color: #1f2937; font-size: 20px; margin: 0 0 16px 0;">Undangan ${roleLabel}</h2>
     <p style="color: #4b5563; font-size: 16px; margin: 0 0 24px 0;">
-      Anda telah diundang untuk menjadi <strong>${roleLabel}</strong> di Arne's Dive Shop.
+      Anda telah diundang untuk menjadi <strong>${roleLabel}</strong> di Arnesh Dive.
     </p>
     
     ${isExistingUser ? `
@@ -61,7 +61,7 @@ export function generateAdminInviteEmail(
     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;">
     
     <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">
-      Email ini dikirim dari Arne's Dive Shop. Jika Anda tidak mengetahui undangan ini, Anda dapat mengabaikannya.
+      Email ini dikirim dari Arnesh Dive. Jika Anda tidak mengetahui undangan ini, Anda dapat mengabaikannya.
     </p>
   </div>
 </body>
@@ -84,7 +84,7 @@ export async function sendAdminInviteEmail(
 
   return sendEmail({
     to: email,
-    subject: `Undangan Admin - Arne's Dive Shop`,
+    subject: `Undangan Admin - Arnesh Dive`,
     html,
     text,
   });

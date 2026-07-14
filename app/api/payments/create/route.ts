@@ -11,6 +11,7 @@ import { db, orders, payments, orderItems } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { createAccountFromCheckout } from '@/lib/auth/seamless-signup';
 import { calculateShippingRates } from '@/lib/shipping/calculator';
+import { sendOrderEmail } from '@/lib/email';
 
 const createPaymentSchema = z.object({
   checkoutSessionId: z.string().min(1, 'Checkout session ID is required'),
@@ -305,6 +306,24 @@ export async function POST(request: NextRequest) {
     // editable-but-locked until the Midtrans webhook confirms the outcome.
     // Completing the session and clearing the cart happens there, not here.
     await markCheckoutSessionPaymentPending(checkoutSessionId);
+
+    // Send order confirmation email with payment link
+    await sendOrderEmail(session.email, {
+      orderNumber,
+      customerName: session.fullName,
+      items: session.cart.items.map(item => ({
+        name: item.variant
+          ? `${item.product.name} - ${item.variant.name}`
+          : item.product.name,
+        quantity: item.quantity,
+        priceCents: item.variant?.priceCents ?? item.product.priceCents,
+      })),
+      subtotalCents,
+      shippingCents,
+      totalCents,
+      paymentUrl: transaction.redirectUrl,
+      status: 'pending_payment',
+    });
 
     return NextResponse.json({
       success: true,

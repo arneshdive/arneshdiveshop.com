@@ -56,6 +56,29 @@ body {
   scrollbar-color: #d4d4d4 transparent;
 }
 
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animated underline - left to right, supports multi-line */
+.underline-animated {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  transition: background-size 300ms ease;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.underline-animated:hover {
+  background-size: 100% 1px;
+}
+
 /* Drawer animation */
 @keyframes drawer-up {
   from {

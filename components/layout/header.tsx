@@ -110,7 +110,7 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-base tracking-wide transition-colors ${item.className || linkColor}`}
+                  className={`text-base tracking-wide underline-animated ${item.className || linkColor}`}
                 >
                   {item.name}
                 </Link>
@@ -186,7 +186,7 @@ export function Header() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`block text-lg font-medium py-2 transition-colors ${item.className || 'text-neutral-700 hover:text-neutral-900'}`}
+                      className={`block text-lg font-medium py-2 underline-animated ${item.className || 'text-neutral-700 hover:text-neutral-900'}`}
                     >
                       {item.name}
                     </Link>
@@ -195,7 +195,7 @@ export function Header() {
                 <li className="pt-4 border-t border-neutral-200">
                   <Link
                     href="/account"
-                    className="flex items-center gap-3 text-lg font-medium py-2 text-neutral-700 hover:text-neutral-900 transition-colors"
+                    className="flex items-center gap-3 text-lg font-medium py-2 text-neutral-700 hover:text-neutral-900 underline-animated"
                   >
                     <Icon icon="solar:user-linear" className="w-5 h-5" />
                     Akun Saya

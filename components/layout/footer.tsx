@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { getPublicShopSettings } from '@/lib/queries/settings';
 import { WaveDivider } from '@/components/layout/wave-divider';
+import { getSession } from '@/lib/auth/session';
+import { NewsletterForm } from '@/components/layout/newsletter-form';
 
 const paymentBadges = [
   { label: 'Visa', icon: 'logos:visa' },
@@ -13,6 +15,8 @@ const paymentTextBadges = ['QRIS', 'Transfer Bank'];
 export async function Footer() {
   const year = new Date().getFullYear();
   const settings = await getPublicShopSettings();
+  const session = await getSession();
+  const isAdmin = session?.role === 'admin' || session?.role === 'super_admin';
 
   return (
     <>
@@ -40,30 +44,12 @@ export async function Footer() {
             </div>
 
             {/* Newsletter */}
-            <div className="flex flex-col justify-end">
-              <p className="text-xl lg:text-2xl font-bold text-white tracking-tighter mb-5">
-                Dapatkan info produk & promo terbaru
-              </p>
-              <form className="flex items-center bg-neutral-900 border border-neutral-800 rounded-full p-1.5 pl-5">
-                <input
-                  type="email"
-                  placeholder="Email Anda"
-                  className="flex-1 bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  aria-label="Langganan"
-                  className="w-9 h-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-200 transition-colors flex-shrink-0"
-                >
-                  <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
-                </button>
-              </form>
-            </div>
+            <NewsletterForm />
           </div>
         </div>
 
         {/* Wave Divider - torn edge at bottom of footer top, overflowing downward */}
-        <WaveDivider fill="#171717" className="absolute bottom-0 left-0 right-0 translate-y-[20px] lg:translate-y-[30px] rotate-180" />
+        <WaveDivider fill="#171717" className="absolute bottom-0 left-0 right-0 translate-y-[20px] lg:translate-y-[30px] rotate-180 pointer-events-none" />
       </footer>
 
       {/* Legal / payment bar */}
@@ -72,11 +58,11 @@ export async function Footer() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
             <span>© {year} Arnes Dive Shop. All rights reserved.</span>
             <div className="flex flex-wrap gap-4">
-              <Link href="/privasi" className="hover:text-white transition-colors">Kebijakan Privasi</Link>
-              <Link href="/syarat" className="hover:text-white transition-colors">Syarat & Ketentuan</Link>
-              <Link href="/faq" className="hover:text-white transition-colors">Bantuan</Link>
-              <Link href="/kontak" className="hover:text-white transition-colors">Kontak</Link>
-              <Link href="/admin" className="hover:text-white transition-colors">Admin Portal</Link>
+              <Link href="/privasi" className="underline-animated hover:text-white transition-colors">Kebijakan Privasi</Link>
+              <Link href="/syarat" className="underline-animated hover:text-white transition-colors">Syarat & Ketentuan</Link>
+              <Link href="/faq" className="underline-animated hover:text-white transition-colors">Bantuan</Link>
+              <Link href="/kontak" className="underline-animated hover:text-white transition-colors">Kontak</Link>
+              {isAdmin && <Link href="/admin" className="underline-animated hover:text-white transition-colors">Portal Admin</Link>}
             </div>
           </div>
           <div className="flex items-center gap-2">

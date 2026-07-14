@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { WaveDivider } from '@/components/layout/wave-divider';
@@ -24,9 +24,24 @@ const fallbackBanner = {
 export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [parallaxOffset, setParallaxOffset] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
   
   // Use fallback if no banners from DB
   const displayBanners = banners.length > 0 ? banners : [fallbackBanner as Banner];
+  
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const scrollProgress = -rect.top / rect.height;
+      setParallaxOffset(scrollProgress * 150); // Adjust multiplier for parallax intensity
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   // Auto-advance carousel every 5 seconds
   useEffect(() => {
@@ -59,9 +74,12 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
   }
   
   return (
-    <section className="relative min-h-[650px] lg:min-h-[740px]">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+    <section ref={sectionRef} className="relative min-h-[650px] lg:min-h-[740px] overflow-hidden">
+      {/* Background Image with Parallax */}
+      <div 
+        className="absolute inset-0 z-0 will-change-transform"
+        style={{ transform: `translateY(${parallaxOffset}px) scale(1.1)` }}
+      >
         <img
           src={currentBanner.imageUrl}
           alt={currentBanner.title || 'Hero'}
@@ -74,10 +92,10 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
       </div>
 
       {/* Content */}
-      <div className="absolute inset-0 z-10 flex items-center">
+      <div className="absolute inset-0 z-10 flex items-center justify-center">
         <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 min-h-[650px] lg:min-h-[740px] items-center gap-8 lg:gap-12">
-            <div className={`py-12 lg:py-0 transition-all duration-300 ${
+          <div className="flex flex-col items-center justify-center text-center min-h-[650px] lg:min-h-[740px]">
+            <div className={`transition-all duration-300 ${
               isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
             }`}>
               {currentBanner.eyebrow && (
@@ -85,15 +103,15 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                   {currentBanner.eyebrow}
                 </span>
               )}
-              <h1 className="text-4xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tighter">
+              <h1 className="text-4xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tighter whitespace-pre-line">
                 {currentBanner.title || 'Berjelajah di kedalaman'}
               </h1>
               {currentBanner.subtitle && (
-                <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed">
+                <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed mx-auto">
                   {currentBanner.subtitle}
                 </p>
               )}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 justify-center">
                 <AnimatedButton
                   asChild
                   variant="white"
@@ -104,7 +122,6 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                 </AnimatedButton>
               </div>
             </div>
-            <div className="hidden lg:block" />
           </div>
         </div>
       </div>

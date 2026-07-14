@@ -15,8 +15,8 @@ import type { Banner } from '@/lib/db/schema';
 const heroBanners: Banner[] = [
   {
     id: 'hero-1',
-    title: 'Berjelajah di kedalaman',
-    subtitle: 'Temukan perlengkapan freediving yang Anda butuhkan.',
+    title: 'Explore the Deep.\nDive with Confidence.',
+    subtitle: 'Jelajahi kedalaman tanpa keraguan.',
     eyebrow: 'Freediving & Scuba',
     ctaText: 'Semua Katalog',
     ctaLink: '/produk',
@@ -40,10 +40,11 @@ function toMockProduct(product: any): MockProduct {
 
   // Calculate price range from variants
   // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
-  const variantPrices = (product.variants || [])
-    .filter((v: any) => v.isActive && v.priceCents !== null)
+  const activeVariants = (product.variants || []).filter((v: any) => v.isActive);
+  const variantPrices = activeVariants
+    .filter((v: any) => v.priceCents !== null)
     .map((v: any) => v.priceCents);
-  
+
   let priceDisplay: string;
   let priceRangeMin: number | undefined;
   let priceRangeMax: number | undefined;
@@ -79,6 +80,7 @@ function toMockProduct(product: any): MockProduct {
     badge,
     image: product.images?.[0] || undefined,
     secondaryImage: product.images?.[1] || undefined,
+    variantId: activeVariants[0]?.id,
   };
 }
 

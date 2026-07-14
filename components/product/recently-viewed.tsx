@@ -44,7 +44,8 @@ export function RecentlyViewed({ currentProductId }: RecentlyViewedProps) {
   return (
     <section className="py-12 lg:py-16 bg-white border-t border-neutral-100">
       <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
-        <div className="flex flex-col mb-8">\          <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">
+        <div className="flex flex-col mb-8">
+          <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">
             Riwayat
           </span>
           <h2 className="text-3xl lg:text-4xl font-bold tracking-tighter mb-2">
@@ -78,24 +79,29 @@ export function RecentlyViewed({ currentProductId }: RecentlyViewedProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+        <div className="flex overflow-x-auto gap-4 lg:gap-6 pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-4 scrollbar-hide snap-x snap-mandatory">
           {products.map((product) => (
-            <ProductCard
+            <div
               key={product.id}
-              product={{
-                id: product.id,
-                handle: product.slug,
-                title: product.name,
-                vendor: product.vendor,
-                price: product.price,
-                priceRangeMin: product.priceRangeMin,
-                priceRangeMax: product.priceRangeMax,
-                compareAtPrice: product.compareAtPrice,
-                badge: product.badge,
-                image: product.image,
-                secondaryImage: product.secondaryImage,
-              }}
-            />
+              className="flex-shrink-0 w-[calc(50%-8px)] snap-start md:w-auto"
+            >
+              <ProductCard
+                product={{
+                  id: product.id,
+                  handle: product.slug,
+                  title: product.name,
+                  vendor: product.vendor,
+                  price: product.price,
+                  priceRangeMin: product.priceRangeMin,
+                  priceRangeMax: product.priceRangeMax,
+                  compareAtPrice: product.compareAtPrice,
+                  badge: product.badge,
+                  image: product.image,
+                  secondaryImage: product.secondaryImage,
+                  variantId: product.variantId,
+                }}
+              />
+            </div>
           ))}
         </div>
       </div>

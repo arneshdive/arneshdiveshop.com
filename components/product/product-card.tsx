@@ -19,6 +19,11 @@ interface ProductCardProps {
     image?: string;
     secondaryImage?: string;
     swatches?: { name: string; handle: string; image: string }[];
+    // First active variant's id, when the product has variants (mirrors the
+    // PDP's own default-selection behavior). Variant-priced products store
+    // priceCents=0 on the base product, so omitting this would silently add
+    // a Rp 0 item.
+    variantId?: string;
   };
 }
 
@@ -29,12 +34,12 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     setAdded(true);
-    
-    // Use product ID - the cart store will handle API call for logged-in users
-    const result = await addItem(product.id);
-    
+
+    // Use product ID (+ resolved variant, if any) - the cart store will handle API call for logged-in users
+    const result = await addItem(product.id, product.variantId);
+
     if (result.success) {
       setTimeout(() => setAdded(false), 2000);
     } else {

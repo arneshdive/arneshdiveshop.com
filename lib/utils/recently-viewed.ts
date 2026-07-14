@@ -17,6 +17,7 @@ export interface RecentlyViewedProduct {
   badge?: string;
   image?: string;
   secondaryImage?: string;
+  variantId?: string;
   viewedAt: number; // Unix timestamp
 }
 

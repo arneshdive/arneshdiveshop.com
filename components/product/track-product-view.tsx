@@ -16,6 +16,7 @@ interface TrackProductViewProps {
     isOnSale: boolean;
   };
   variants: Array<{
+    id: string;
     priceCents: number | null;
     isActive: boolean;
   }>;
@@ -29,10 +30,11 @@ export function TrackProductView({ product, variants }: TrackProductViewProps) {
   useEffect(() => {
     // Calculate price display
     // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
-    const variantPrices = variants
-      .filter(v => v.isActive && v.priceCents !== null)
+    const activeVariants = variants.filter(v => v.isActive);
+    const variantPrices = activeVariants
+      .filter(v => v.priceCents !== null)
       .map(v => v.priceCents as number);
-    
+
     let priceDisplay: string;
     let priceRangeMin: number | undefined;
     let priceRangeMax: number | undefined;
@@ -74,6 +76,7 @@ export function TrackProductView({ product, variants }: TrackProductViewProps) {
       badge,
       image: product.images?.[0],
       secondaryImage: product.images?.[1],
+      variantId: activeVariants[0]?.id,
     });
   }, [product, variants]);
 

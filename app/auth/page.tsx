@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { isValidEmail } from '@/lib/utils/validators';
@@ -152,7 +153,9 @@ function AuthForm() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="text-center mb-8">
-            <span className="text-2xl font-bold tracking-tight">ARNES DIVE</span>
+            <Link href="/" className="text-2xl font-bold tracking-tight hover:opacity-70 transition-opacity">
+              ARNES DIVE
+            </Link>
           </div>
 
           {/* Header */}
@@ -241,6 +244,14 @@ function AuthForm() {
           >
             ← Kembali ke login
           </button>
+
+          {/* Back to store */}
+          <Link
+            href="/"
+            className="w-full text-center text-sm text-neutral-400 hover:text-neutral-600 mt-4 block"
+          >
+            ← Kembali ke toko
+          </Link>
         </div>
       </div>
     );
@@ -252,7 +263,9 @@ function AuthForm() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <span className="text-2xl font-bold tracking-tight">ARNES DIVE</span>
+          <Link href="/" className="text-2xl font-bold tracking-tight hover:opacity-70 transition-opacity">
+            ARNES DIVE
+          </Link>
         </div>
 
         {/* Mode Toggle */}
@@ -353,14 +366,22 @@ function AuthForm() {
         {/* Terms */}
         <p className="text-xs text-neutral-400 text-center mt-6">
           Dengan melanjutkan, Anda menyetujui{' '}
-          <a
-            href="/syarat-ketentuan"
+          <Link
+            href="/syarat"
             className="text-neutral-600 hover:text-neutral-900 underline"
           >
             Syarat & Ketentuan
-          </a>{' '}
+          </Link>{' '}
           kami
         </p>
+
+        {/* Back to store */}
+        <Link
+          href="/"
+          className="w-full text-center text-sm text-neutral-400 hover:text-neutral-600 mt-6 block"
+        >
+          ← Kembali ke toko
+        </Link>
       </div>
     </div>
   );

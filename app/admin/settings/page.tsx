@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Input, Textarea } from '@/components/admin/input';
 import { formatPhoneInput } from '@/lib/utils/format';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 interface RajaongkirCity {
   id: string;
@@ -51,6 +52,7 @@ export default function SettingsPage() {
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [citySearch, setCitySearch] = useState('');
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Available couriers for toggle UI
   const AVAILABLE_COURIERS = [
@@ -181,6 +183,13 @@ export default function SettingsPage() {
     setShowCityDropdown(false);
   };
 
+  const handleDeleteLocation = () => {
+    setSettings(prev => ({ ...prev, rajaongkirCityId: null, rajaongkirCityName: null }));
+    setCitySearch('');
+    setShowDeleteDialog(false);
+    toast.success('Lokasi berhasil dihapus');
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -190,7 +199,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div>
+    <div className="pb-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Pengaturan</h1>
@@ -290,11 +299,8 @@ export default function SettingsPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSettings(prev => ({ ...prev, rajaongkirCityId: null, rajaongkirCityName: null }));
-                    setCitySearch('');
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition-colors cursor-pointer"
                 >
                   <Icon icon="solar:trash-bin-trash-linear" className="w-4 h-4" />
                   Hapus Lokasi
@@ -381,26 +387,18 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        {/* Social Media */}
-        <div className="bg-white rounded-xl p-6 space-y-4">
-          <h2 className="text-base font-medium tracking-tight text-neutral-900">Media Sosial</h2>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Instagram"
-              value={settings.instagram || ''}
-              onChange={(e) => setSettings({ ...settings, instagram: e.target.value })}
-              placeholder="username (tanpa @)"
-            />
-            <Input
-              label="TikTok"
-              value={settings.tiktok || ''}
-              onChange={(e) => setSettings({ ...settings, tiktok: e.target.value })}
-              placeholder="username (tanpa @)"
-            />
-          </div>
-        </div>
       </form>
+
+      {/* Delete Location Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDeleteLocation}
+        title="Hapus Lokasi"
+        message="Apakah Anda yakin ingin menghapus lokasi pengiriman? Anda perlu mengatur ulang untuk menghitung ongkir."
+        confirmText="Hapus"
+        variant="danger"
+      />
     </div>
   );
 }

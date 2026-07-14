@@ -47,10 +47,9 @@ export function CartItem({ item }: CartItemProps) {
         <div>
           <Link 
             href={`/produk/${item.product.slug}`}
-            className="text-base lg:text-lg font-medium tracking-tight relative inline-block cursor-pointer"
+            className="text-base lg:text-lg font-medium tracking-tight cursor-pointer inline underline-animated"
           >
-            <span className="transition-colors">{item.product.name}</span>
-            <span className="absolute left-0 bottom-0 w-0 h-px bg-neutral-900 transition-all duration-300 group-hover/item:w-full" />
+            {item.product.name}
           </Link>
           {item.variant && (
             <p className="text-sm text-neutral-400 mt-0.5 lg:mt-1 cursor-default">

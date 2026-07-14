@@ -203,6 +203,22 @@ export async function addCartItem(
     return { success: false, error: 'Produk tidak tersedia' };
   }
 
+  // Products with active variants store priceCents=0 as a base-price sentinel
+  // (real price lives per-variant) — adding without a variant would silently
+  // create a Rp 0 cart item, so require one whenever an active variant exists.
+  if (!variantId) {
+    const activeVariant = await db.query.productVariants.findFirst({
+      where: and(
+        eq(productVariants.productId, productId),
+        eq(productVariants.isActive, true)
+      ),
+    });
+
+    if (activeVariant) {
+      return { success: false, error: 'Pilih varian terlebih dahulu' };
+    }
+  }
+
   // If variant specified, verify it exists and is active
   if (variantId) {
     const variant = await db.query.productVariants.findFirst({

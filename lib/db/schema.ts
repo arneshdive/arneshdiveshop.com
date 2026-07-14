@@ -65,6 +65,18 @@ export const userRoleEnum = pgEnum('user_role', ['customer', 'admin', 'super_adm
 export const divingTypeEnum = pgEnum('diving_type', ['freediving', 'scuba']);
 
 // ============================================================================
+// Newsletter Subscribers
+// ============================================================================
+
+export const subscribers = pgTable('subscribers', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  email: text('email').notNull().unique(),
+  isActive: boolean('is_active').default(true).notNull(),
+  unsubscribedAt: timestamp('unsubscribed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// ============================================================================
 // Users & Authentication
 // ============================================================================
 
@@ -606,6 +618,9 @@ export type NewRajaongkirProvince = typeof rajaongkirProvinces.$inferInsert;
 
 export type RajaongkirCity = typeof rajaongkirCities.$inferSelect;
 export type NewRajaongkirCity = typeof rajaongkirCities.$inferInsert;
+
+export type Subscriber = typeof subscribers.$inferSelect;
+export type NewSubscriber = typeof subscribers.$inferInsert;
 
 // Enum type exports
 export type OrderStatus = (typeof orderStatusEnum.enumValues)[number];

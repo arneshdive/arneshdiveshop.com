@@ -335,6 +335,9 @@ export async function getRelatedProducts(productId: string, categoryId: string |
     with: {
       category: true,
       brand: true,
+      variants: {
+        where: eq(productVariants.isActive, true),
+      },
     },
     orderBy: [desc(products.createdAt)],
     limit,
@@ -354,6 +357,9 @@ export async function getRelatedProducts(productId: string, categoryId: string |
       with: {
         category: true,
         brand: true,
+        variants: {
+          where: eq(productVariants.isActive, true),
+        },
       },
       orderBy: [desc(products.createdAt)],
       limit: limit - results.length,
@@ -375,6 +381,9 @@ export async function getRelatedProducts(productId: string, categoryId: string |
       with: {
         category: true,
         brand: true,
+        variants: {
+          where: eq(productVariants.isActive, true),
+        },
       },
       orderBy: [desc(products.createdAt)],
       limit: limit - results.length,

@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
+import { useQuery } from '@tanstack/react-query';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'solar:chart-2-linear' },
@@ -17,7 +18,24 @@ const navItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+ const res = await fetch('/api/account/profile');
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.profile;
+    },
+  });
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
+  };
 
   return (
     <aside
@@ -26,13 +44,20 @@ export function AdminSidebar() {
       }`}
     >
       {/* Logo Section */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-neutral-800">
-        <Link href="/admin" className="group">
-          <span className="text-xl font-black tracking-tight text-white">AD</span>
-          {!collapsed && (
-            <span className="text-[10px] uppercase tracking-wider text-neutral-500 ml-2">Admin</span>
-          )}
+      <div className="flex items-center justify-between px-3 py-5 border-b border-neutral-800">
+        <Link href="/admin" className="group px-3">
+          <Icon icon="solar:widget-5-bold" className="w-6 h-6 text-white" />
         </Link>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="p-2 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <Icon
+            icon={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-left-linear'}
+            className="w-5 h-5"
+          />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -67,36 +92,30 @@ export function AdminSidebar() {
 
       {/* User Menu */}
       <div className="border-t border-neutral-800 p-3">
-        <button
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
-          aria-label="User menu"
-        >
+        <div className="flex items-center gap-3 px-3 py-2.5">
           <div className="w-8 h-8 rounded-full bg-neutral-700 flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-sm font-medium">A</span>
+            <span className="text-white text-sm font-medium">
+              {profile?.email?.[0]?.toUpperCase() || 'A'}
+            </span>
           </div>
           {!collapsed && (
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="text-sm font-medium tracking-wide truncate">Admin</span>
-              <Icon icon="solar:alt-arrow-down-linear" className="w-4 h-4 flex-shrink-0" />
-            </div>
+            <span className="text-sm text-neutral-400 truncate flex-1 min-w-0">
+              {profile?.email || 'admin'}
+            </span>
           )}
-        </button>
+          {!collapsed && (
+            <button
+              onClick={handleLogout}
+              className="p-1.5 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+              aria-label="Logout"
+            >
+              <Icon icon="solar:logout-2-linear" className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Collapse Toggle */}
-      <div className="border-t border-neutral-800 p-4">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <Icon
-            icon={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-left-linear'}
-            className="w-5 h-5"
-          />
-          {!collapsed && <span className="text-sm tracking-wide">Collapse</span>}
-        </button>
-      </div>
+
     </aside>
   );
 }

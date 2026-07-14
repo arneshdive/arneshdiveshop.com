@@ -65,6 +65,9 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
     setCurrentCompareAtPriceCents(priceInfo.compareAtPriceCents);
   }, []);
 
+  // Only a real discount if the compare-at price is actually higher than the selling price
+  const hasDiscount = !!currentCompareAtPriceCents && currentCompareAtPriceCents > product.priceCents;
+
   return (
     <div className="lg:sticky lg:top-24 max-w-md">
       {/* Vendor */}
@@ -84,15 +87,15 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
 
       {/* Price */}
       <p className="text-xl lg:text-2xl font-semibold tracking-tight mb-6">
-        {currentCompareAtPriceCents ? (
+        {hasDiscount ? (
           <>
             <span className="text-red-500">
-              {isPriceRange 
+              {isPriceRange
                 ? `${formatRupiah(priceRangeMin)} - ${formatRupiah(priceRangeMax)}`
                 : formatRupiah(displayPrice)
               }
             </span>{' '}
-            <s className="text-neutral-400 font-normal">{formatRupiah(currentCompareAtPriceCents)}</s>
+            <s className="text-neutral-400 font-normal">{formatRupiah(currentCompareAtPriceCents!)}</s>
           </>
         ) : (
           isPriceRange 

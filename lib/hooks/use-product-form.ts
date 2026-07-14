@@ -34,7 +34,7 @@ export interface ProductFormData {
   category: string;
   brand: string;
   price: string;
-  salePrice: string;
+  compareAtPrice: string;
   sku: string;
   weightGrams: string;
   isActive: boolean;
@@ -55,7 +55,7 @@ export function useProductForm() {
     category: '',
     brand: '',
     price: '',
-    salePrice: '',
+    compareAtPrice: '',
     sku: '',
     weightGrams: '500',
     isActive: true,

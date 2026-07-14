@@ -117,7 +117,7 @@ export default function EditProductPage() {
         category: product.categoryId,
         brand: product.brandId || '',
         price: (product.priceCents / 100).toString(),
-        salePrice: product.compareAtPriceCents ? (product.compareAtPriceCents / 100).toString() : '',
+        compareAtPrice: product.compareAtPriceCents ? (product.compareAtPriceCents / 100).toString() : '',
         sku: product.sku || '',
         weightGrams: product.weightGrams?.toString() || '500',
         isActive: product.isActive,
@@ -137,14 +137,25 @@ export default function EditProductPage() {
     e.preventDefault();
     
     if (isSubmitting) return;
+
+    // Validate harga coret - must be strictly higher than the selling price
+    if (formData.compareAtPrice) {
+      const priceValue = parseFloat(formData.price.replace(/[^\d.]/g, '')) || 0;
+      const compareAtValue = parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) || 0;
+      if (compareAtValue <= priceValue) {
+        toast.error('Harga coret harus lebih besar dari Harga');
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     // Convert price strings to cents
-    const priceCents = formData.price 
+    const priceCents = formData.price
       ? Math.round(parseFloat(formData.price.replace(/[^\d.]/g, '')) * 100)
       : 0;
-    const compareAtPriceCents = formData.salePrice
-      ? Math.round(parseFloat(formData.salePrice.replace(/[^\d.]/g, '')) * 100)
+    const compareAtPriceCents = formData.compareAtPrice
+      ? Math.round(parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) * 100)
       : null;
 
     const payload = {
@@ -318,11 +329,12 @@ export default function EditProductPage() {
             <ProductPreview
               name={formData.name}
               price={formData.price}
-              salePrice={formData.salePrice}
+              compareAtPrice={formData.compareAtPrice}
               category={formData.category}
               brand={formData.brand}
               description={formData.description}
               isActive={formData.isActive}
+              isOnSale={formData.isOnSale}
               images={images}
               variantOptions={variantOptions}
             />

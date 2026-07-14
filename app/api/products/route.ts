@@ -81,6 +81,13 @@ export async function POST(request: NextRequest) {
 
     const { name, slug: providedSlug, categoryId, brandId, ...rest } = result.data;
 
+    if (rest.compareAtPriceCents != null && rest.compareAtPriceCents <= (rest.priceCents ?? 0)) {
+      return NextResponse.json(
+        { error: 'Data tidak valid', details: { compareAtPriceCents: 'Harga coret harus lebih besar dari harga jual' } },
+        { status: 400 }
+      );
+    }
+
     // Generate slug if not provided
     const baseSlug = providedSlug || slugify(name);
     const existingSlugs = await getExistingSlugs();

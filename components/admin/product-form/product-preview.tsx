@@ -8,11 +8,12 @@ import { formatCurrencyInput } from '@/lib/utils/format';
 interface ProductPreviewProps {
   name: string;
   price: string;
-  salePrice: string;
+  compareAtPrice: string;
   category: string;
   brand: string;
   description: string;
   isActive: boolean;
+  isOnSale: boolean;
   images: string[];
   variantOptions: VariantOption[];
 }
@@ -20,14 +21,20 @@ interface ProductPreviewProps {
 export function ProductPreview({
   name,
   price,
-  salePrice,
+  compareAtPrice,
   brand,
   description,
   isActive,
+  isOnSale,
   images,
   variantOptions,
 }: ProductPreviewProps) {
   const formatPrice = (val: string) => (val ? `Rp ${formatCurrencyInput(val)}` : 'Rp 0');
+  const parsePriceValue = (val: string) => parseInt(val.replace(/\D/g, ''), 10) || 0;
+
+  // Only treat compareAtPrice as a real discount if it's actually higher than the selling price —
+  // otherwise a mistyped value would show an inverted "discount".
+  const hasDiscount = compareAtPrice !== '' && parsePriceValue(compareAtPrice) > parsePriceValue(price);
 
   const hasVariants = variantOptions.length > 0 && variantOptions.some(opt => opt.name && opt.values.some(v => v));
 
@@ -59,7 +66,7 @@ export function ProductPreview({
                 Nonaktif
               </span>
             )}
-            {salePrice && (
+            {isOnSale && (
               <span className="absolute top-2 right-2 px-2 py-0.5 text-[10px] uppercase tracking-wider bg-red-500 text-white rounded">
                 Sale
               </span>
@@ -104,10 +111,10 @@ export function ProductPreview({
 
           {/* Price */}
           <p className="text-base font-semibold tracking-tight mb-4">
-            {salePrice ? (
+            {hasDiscount ? (
               <>
                 <span className="text-red-500">{formatPrice(price)}</span>{' '}
-                <s className="text-neutral-400 font-normal text-sm">{formatPrice(salePrice)}</s>
+                <s className="text-neutral-400 font-normal text-sm">{formatPrice(compareAtPrice)}</s>
               </>
             ) : (
               formatPrice(price)

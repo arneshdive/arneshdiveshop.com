@@ -30,7 +30,9 @@ export function OrderSummaryCard() {
         {items.map((item) => {
           const image = getItemImage(item);
           const priceCents = item.variant?.priceCents ?? item.product.priceCents;
-          
+          const compareAtPriceCents = item.variant ? null : item.product.compareAtPriceCents;
+          const hasDiscount = compareAtPriceCents !== null && compareAtPriceCents > item.product.priceCents;
+
           return (
             <div key={item.id} className="flex gap-4 items-center">
               <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0">
@@ -53,7 +55,14 @@ export function OrderSummaryCard() {
                 )}
                 <p className="text-xs text-neutral-400">Qty: {item.quantity}</p>
               </div>
-              <p className="text-sm font-medium">{formatRupiah(priceCents * item.quantity)}</p>
+              <div className="text-right">
+                <p className="text-sm font-medium">{formatRupiah(priceCents * item.quantity)}</p>
+                {hasDiscount && (
+                  <p className="text-xs text-neutral-400 line-through">
+                    {formatRupiah(compareAtPriceCents! * item.quantity)}
+                  </p>
+                )}
+              </div>
             </div>
           );
         })}

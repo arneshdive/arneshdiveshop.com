@@ -9,6 +9,7 @@ import { HeroBannerCarousel } from '@/components/store/hero-banner-carousel';
 import { getProducts } from '@/lib/queries/products';
 import type { MockProduct } from '@/lib/data/mock-products';
 import type { Banner } from '@/lib/db/schema';
+import { formatRupiah } from '@/lib/utils/format';
 
 // Static hero banners — banner management isn't built yet, so this
 // carousel content is hardcoded rather than sourced from the DB.
@@ -60,12 +61,15 @@ function toMockProduct(product: any): MockProduct {
     
     priceRangeMin = effectiveMin;
     priceRangeMax = effectiveMax;
-    priceDisplay = `Rp ${(effectiveMin / 100).toLocaleString('id-ID')}`;
+    priceDisplay = formatRupiah(effectiveMin);
   } else {
     // No variant prices - use base price
-    priceDisplay = product.priceCents ? `Rp ${(product.priceCents / 100).toLocaleString('id-ID')}` : 'Rp 0';
+    priceDisplay = formatRupiah(product.priceCents || 0);
   }
-      
+
+  // Only a real discount if the compare-at price is actually higher than the selling price
+  const hasDiscount = !!product.compareAtPriceCents && product.compareAtPriceCents > product.priceCents;
+
   return {
     id: product.id,
     handle: product.slug,
@@ -74,9 +78,7 @@ function toMockProduct(product: any): MockProduct {
     price: priceDisplay,
     priceRangeMin,
     priceRangeMax,
-    compareAtPrice: product.compareAtPriceCents
-      ? `Rp ${(product.compareAtPriceCents / 100).toLocaleString('id-ID')}`
-      : undefined,
+    compareAtPrice: hasDiscount ? formatRupiah(product.compareAtPriceCents!) : undefined,
     badge,
     image: product.images?.[0] || undefined,
     secondaryImage: product.images?.[1] || undefined,

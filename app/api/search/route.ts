@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchProducts, searchProductsCount } from '@/lib/queries/products';
 import { db, categories, brands } from '@/lib/db';
 import { desc } from 'drizzle-orm';
+import { formatRupiah } from '@/lib/utils/format';
 
 /**
  * GET /api/search - Search products with filters
@@ -115,13 +116,16 @@ export async function GET(request: NextRequest) {
         
         priceRangeMin = effectiveMin;
         priceRangeMax = effectiveMax;
-        
-        priceDisplay = `Rp ${(effectiveMin / 100).toLocaleString('id-ID')}`;
+
+        priceDisplay = formatRupiah(effectiveMin);
       } else {
         // No variant prices - use base price
-        priceDisplay = product.priceCents ? `Rp ${(product.priceCents / 100).toLocaleString('id-ID')}` : 'Rp 0';
+        priceDisplay = formatRupiah(product.priceCents || 0);
       }
-      
+
+      // Only a real discount if the compare-at price is actually higher than the selling price
+      const hasDiscount = !!product.compareAtPriceCents && product.compareAtPriceCents > product.priceCents;
+
       return {
         id: product.id,
         handle: product.slug,
@@ -130,9 +134,7 @@ export async function GET(request: NextRequest) {
         price: priceDisplay,
         priceRangeMin,
         priceRangeMax,
-        compareAtPrice: product.compareAtPriceCents 
-          ? `Rp ${(product.compareAtPriceCents / 100).toLocaleString('id-ID')}` 
-          : undefined,
+        compareAtPrice: hasDiscount ? formatRupiah(product.compareAtPriceCents!) : undefined,
         badge,
         image: product.images?.[0] || undefined,
         secondaryImage: product.images?.[1] || undefined,

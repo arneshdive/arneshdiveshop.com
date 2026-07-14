@@ -17,6 +17,11 @@ export function CartItem({ item }: CartItemProps) {
   // Use variant price if available, otherwise product price
   const priceCents = item.variant?.priceCents ?? item.product.priceCents;
   const totalPriceCents = priceCents * item.quantity;
+
+  // Variants don't have their own compare-at price, so only show the discount
+  // when no variant is selected — matches the PDP's rule for the same product.
+  const compareAtPriceCents = item.variant ? null : item.product.compareAtPriceCents;
+  const hasDiscount = compareAtPriceCents !== null && compareAtPriceCents > item.product.priceCents;
   
   // Get image URL
   const imageUrl = item.product.images?.[0] || null;
@@ -90,9 +95,20 @@ export function CartItem({ item }: CartItemProps) {
 
           {/* Price */}
           <div className="text-right">
-            <p className="text-base lg:text-lg font-semibold tracking-tight cursor-default">
-              {formatRupiah(totalPriceCents)}
-            </p>
+            {hasDiscount ? (
+              <>
+                <p className="text-base lg:text-lg font-semibold tracking-tight text-red-500 cursor-default">
+                  {formatRupiah(totalPriceCents)}
+                </p>
+                <p className="text-xs text-neutral-400 line-through cursor-default">
+                  {formatRupiah(compareAtPriceCents! * item.quantity)}
+                </p>
+              </>
+            ) : (
+              <p className="text-base lg:text-lg font-semibold tracking-tight cursor-default">
+                {formatRupiah(totalPriceCents)}
+              </p>
+            )}
           </div>
         </div>
       </div>

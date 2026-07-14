@@ -10,6 +10,7 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Select } from '@/components/admin/input';
 import { categories } from '@/lib/constants/product-options';
+import { formatRupiah } from '@/lib/utils/format';
 
 // Types
 type Brand = {
@@ -45,23 +46,15 @@ type FilterState = {
   status: string;
 };
 
-// Format price from cents to Rupiah
-function formatPrice(cents: number): string {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    }).format(cents / 100);
-}
-
 // Get price display - shows range for products with variants
 function getPriceDisplay(product: Product): { main: string; compare?: string } {
   const activeVariants = (product.variants || []).filter(v => v.isActive && v.priceCents);
-  
+
   if (activeVariants.length === 0) {
+    const hasDiscount = !!product.compareAtPriceCents && product.compareAtPriceCents > product.priceCents;
     return {
-      main: formatPrice(product.priceCents),
-      compare: product.compareAtPriceCents ? formatPrice(product.compareAtPriceCents) : undefined,
+      main: formatRupiah(product.priceCents),
+      compare: hasDiscount ? formatRupiah(product.compareAtPriceCents!) : undefined,
     };
   }
   
@@ -70,10 +63,10 @@ function getPriceDisplay(product: Product): { main: string; compare?: string } {
   const maxPrice = Math.max(...prices);
   
   if (minPrice === maxPrice) {
-    return { main: formatPrice(minPrice) };
+    return { main: formatRupiah(minPrice) };
   }
   
-  return { main: `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}` };
+  return { main: `${formatRupiah(minPrice)} - ${formatRupiah(maxPrice)}` };
 }
 
 // Fetch products from API

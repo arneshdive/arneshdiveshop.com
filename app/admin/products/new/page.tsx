@@ -56,7 +56,18 @@ export default function NewProductPage() {
       if (!formData.price || parseFloat(formData.price.replace(/[^\d.]/g, '')) === 0) {
         errors.push('Harga produk wajib diisi');
       }
-    } else {
+    }
+
+    // Validate harga coret - must be strictly higher than the selling price
+    if (formData.compareAtPrice) {
+      const priceValue = parseFloat(formData.price.replace(/[^\d.]/g, '')) || 0;
+      const compareAtValue = parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) || 0;
+      if (compareAtValue <= priceValue) {
+        errors.push('Harga coret harus lebih besar dari Harga');
+      }
+    }
+
+    if (hasVariants) {
       // Validate variants - each active variant needs a price
       const activeVariantsWithoutPrice = editableVariants.filter(v => v.isActive && !v.price);
       if (activeVariantsWithoutPrice.length > 0) {
@@ -81,8 +92,8 @@ export default function NewProductPage() {
     const priceCents = formData.price 
       ? Math.round(parseFloat(formData.price.replace(/[^\d.]/g, '')) * 100)
       : 0;
-    const compareAtPriceCents = formData.salePrice
-      ? Math.round(parseFloat(formData.salePrice.replace(/[^\d.]/g, '')) * 100)
+    const compareAtPriceCents = formData.compareAtPrice
+      ? Math.round(parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) * 100)
       : null;
 
     const payload = {
@@ -235,11 +246,12 @@ export default function NewProductPage() {
           <ProductPreview
             name={formData.name}
             price={formData.price}
-            salePrice={formData.salePrice}
+            compareAtPrice={formData.compareAtPrice}
             category={formData.category}
             brand={formData.brand}
             description={formData.description}
             isActive={formData.isActive}
+            isOnSale={formData.isOnSale}
             images={images}
             variantOptions={variantOptions}
           />

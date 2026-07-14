@@ -26,9 +26,9 @@ export function PricingSection({ formData, setFormData }: PricingSectionProps) {
           required
         />
         <CurrencyInput
-          label="Harga sale"
-          value={formData.salePrice}
-          onChange={(val) => setFormData({ ...formData, salePrice: val })}
+          label="Harga coret"
+          value={formData.compareAtPrice}
+          onChange={(val) => setFormData({ ...formData, compareAtPrice: val })}
           placeholder="Kosongkan jika tidak ada"
         />
       </div>
@@ -44,6 +44,9 @@ export function PricingSection({ formData, setFormData }: PricingSectionProps) {
       </div>
 
       <p className="text-xs text-neutral-500">SKU wajib diisi untuk produk tanpa varian</p>
+      <p className="text-xs text-neutral-500">
+        &quot;Harga coret&quot; adalah harga asli sebelum diskon — akan ditampilkan tercoret di samping Harga. Harus lebih besar dari Harga, atau kosongkan jika produk tidak sedang diskon.
+      </p>
     </div>
   );
 }

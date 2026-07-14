@@ -90,6 +90,16 @@ export async function PATCH(
 
     const updates = result.data;
 
+    if (updates.compareAtPriceCents != null) {
+      const effectivePriceCents = updates.priceCents ?? product.priceCents;
+      if (updates.compareAtPriceCents <= effectivePriceCents) {
+        return NextResponse.json(
+          { error: 'Data tidak valid', details: { compareAtPriceCents: 'Harga coret harus lebih besar dari harga jual' } },
+          { status: 400 }
+        );
+      }
+    }
+
     // If name is being updated and slug not provided, regenerate slug
     if (updates.name && !updates.slug) {
       const baseSlug = slugify(updates.name);

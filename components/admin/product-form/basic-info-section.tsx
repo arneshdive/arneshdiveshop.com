@@ -173,6 +173,9 @@ export function BasicInfoSection({ formData, setFormData }: BasicInfoSectionProp
             <span className="text-sm text-neutral-700">On Sale</span>
           </label>
         </div>
+        <p className="text-xs text-neutral-500 mt-2">
+          Mengontrol badge &quot;Sale&quot; di toko — independen dari harga coret di bagian Harga &amp; SKU.
+        </p>
       </div>
     </div>
   );

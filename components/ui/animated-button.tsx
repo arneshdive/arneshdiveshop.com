@@ -65,6 +65,7 @@ export function AnimatedButton({
   }, []);
 
   const handleMouseEnter = async () => {
+    if (!mounted) return;
     isHovered.current = true;
     bgControls.stop();
 
@@ -98,6 +99,7 @@ export function AnimatedButton({
   };
 
   const handleMouseLeave = async () => {
+    if (!mounted) return;
     isHovered.current = false;
     bgControls.stop();
 

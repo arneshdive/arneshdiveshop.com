@@ -95,10 +95,11 @@ export async function GET(request: NextRequest) {
       
       // Calculate price range from variants
       // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
-      const variantPrices = (product.variants || [])
-        .filter((v: any) => v.isActive && v.priceCents !== null)
+      const activeVariants = (product.variants || []).filter((v: any) => v.isActive);
+      const variantPrices = activeVariants
+        .filter((v: any) => v.priceCents !== null)
         .map((v: any) => v.priceCents);
-      
+
       let priceDisplay: string;
       let priceRangeMin: number | undefined;
       let priceRangeMax: number | undefined;
@@ -135,6 +136,7 @@ export async function GET(request: NextRequest) {
         badge,
         image: product.images?.[0] || undefined,
         secondaryImage: product.images?.[1] || undefined,
+        variantId: activeVariants[0]?.id,
         categoryId: product.categoryId,
         brandId: product.brandId,
         divingTypes: product.divingTypes,

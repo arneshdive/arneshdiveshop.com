@@ -12,6 +12,8 @@ export interface MockProduct {
   secondaryImage?: string;
   category?: 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
   diveType?: 'freediving' | 'scuba' | 'both';
+  // First active variant's id, when the product has variants.
+  variantId?: string;
   // Admin-only fields (catalog management, not shown on the storefront) —
   // optional since most consumers of MockProduct are storefront-only mock
   // objects that never populate them.

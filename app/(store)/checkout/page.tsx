@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { EmptyCart } from '@/components/cart/empty-cart';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
@@ -288,16 +289,13 @@ export default function CheckoutPage() {
                 Checkout
               </span>
               <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter mb-4">
-                Keranjang Kosong
+                Checkout
               </h1>
-              <p className="text-neutral-500 max-w-md mx-auto mb-8">
-                Tambahkan produk ke keranjang untuk melanjutkan checkout.
-              </p>
-              <AnimatedButton asChild className="px-8 py-4 text-sm uppercase tracking-wider">
-                <Link href="/produk">Mulai Belanja <Icon icon="solar:arrow-right-linear" className="w-4 h-4" /></Link>
-              </AnimatedButton>
             </div>
           </div>
+        </section>
+        <section className="py-12 lg:py-16">
+          <EmptyCart />
         </section>
       </>
     );

@@ -95,20 +95,25 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
   
   // Format related products for ProductCard
-  const formattedRelatedProducts = relatedProducts.map(p => ({
-    id: p.id,
-    handle: p.slug,
-    title: p.name,
-    vendor: p.brand?.name,
-    price: new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format((p.priceCents || 0) / 100),
-    badge: p.isOnSale ? 'Sale' : p.isNewArrival ? 'Baru' : undefined,
-    image: (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
-    secondaryImage: (p.images as string[] | undefined)?.[1] || (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
-  }));
+  const formattedRelatedProducts = relatedProducts.map(p => {
+    // Query already filters to active variants (getRelatedProducts)
+    const activeVariants = p.variants || [];
+    return {
+      id: p.id,
+      handle: p.slug,
+      title: p.name,
+      vendor: p.brand?.name,
+      price: new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format((p.priceCents || 0) / 100),
+      badge: p.isOnSale ? 'Sale' : p.isNewArrival ? 'Baru' : undefined,
+      image: (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
+      secondaryImage: (p.images as string[] | undefined)?.[1] || (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
+      variantId: activeVariants[0]?.id,
+    };
+  });
 
   return (
     <>

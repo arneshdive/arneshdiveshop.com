@@ -99,9 +99,9 @@ export function Header() {
             {/* Logo */}
             <Link
               href="/"
-              className={`text-2xl font-bold tracking-tight transition-opacity hover:opacity-70 ${textColor}`}
+              className={`text-2xl font-bold tracking-tighter transition-opacity hover:opacity-70 ${textColor}`}
             >
-              Arnesh Dive™
+              <span className="italic">ArneshDive</span>®
             </Link>
 
             {/* Desktop Nav Links */}

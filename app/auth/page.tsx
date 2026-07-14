@@ -153,8 +153,8 @@ function AuthForm() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link href="/" className="text-2xl font-bold tracking-tight hover:opacity-70 transition-opacity">
-              ARNES DIVE
+            <Link href="/" className="text-2xl font-bold tracking-tighter hover:opacity-70 transition-opacity">
+              <span className="italic">ArneshDive</span>®
             </Link>
           </div>
 
@@ -263,8 +263,8 @@ function AuthForm() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold tracking-tight hover:opacity-70 transition-opacity">
-            ARNES DIVE
+          <Link href="/" className="text-2xl font-bold tracking-tighter hover:opacity-70 transition-opacity">
+            <span className="italic">ArneshDive</span>®
           </Link>
         </div>
 

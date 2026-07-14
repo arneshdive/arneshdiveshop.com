@@ -65,18 +65,16 @@ body {
   display: none;
 }
 
-/* Animated underline - left to right, supports multi-line */
+/* Animated underline - text width only */
 .underline-animated {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-position: left bottom;
-  background-repeat: no-repeat;
-  transition: background-size 300ms ease;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 0;
+  transition: text-decoration-thickness 200ms ease;
 }
 .underline-animated:hover {
-  background-size: 100% 1px;
+  text-decoration-thickness: 1px;
 }
 
 /* Drawer animation */

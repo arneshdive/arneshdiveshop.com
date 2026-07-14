@@ -43,9 +43,9 @@ export function ProductCard({ product }: ProductCardProps) {
     const result = await addItem(product.id, product.variantId);
 
     if (result.success) {
-      toast.success('Ditambahkan ke keranjang', {
+      toast.success('Ditambahkan', {
         action: {
-          label: 'Lihat Keranjang',
+          label: 'Lihat',
           onClick: () => window.location.href = '/cart',
         },
       });

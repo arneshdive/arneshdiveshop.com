@@ -67,14 +67,13 @@ body {
 
 /* Animated underline - text width only */
 .underline-animated {
-  text-decoration: underline;
+  text-decoration: none;
   text-underline-offset: 2px;
   text-decoration-color: currentColor;
-  text-decoration-thickness: 0;
-  transition: text-decoration-thickness 200ms ease;
+  transition: text-decoration 200ms ease;
 }
 .underline-animated:hover {
-  text-decoration-thickness: 1px;
+  text-decoration: underline;
 }
 
 /* Drawer animation */

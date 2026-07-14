@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
 
@@ -28,10 +29,18 @@ export function AddToCartButton({
     const result = await addItem(productId, variantId, 1);
     
     if (result.success) {
+      toast.success('Ditambahkan', {
+        action: {
+          label: 'Lihat',
+          onClick: () => window.location.href = '/cart',
+        },
+      });
       setTimeout(() => setAdded(false), 2000);
     } else {
       setAdded(false);
-      console.error('Failed to add item:', result.error);
+      toast.error('Gagal menambahkan', {
+        description: result.error || 'Terjadi kesalahan',
+      });
     }
   };
 

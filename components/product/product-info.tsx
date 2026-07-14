@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { ExpandableText } from '@/components/ui/expandable-text';
 import { ProductActions } from '@/components/product/product-actions';
@@ -68,9 +69,12 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
     <div className="lg:sticky lg:top-24 max-w-md">
       {/* Vendor */}
       {product.brand && (
-        <p className="text-xs uppercase tracking-widest text-neutral-400 mb-2">
+        <Link
+          href={`/produk?brand=${product.brand.name.toLowerCase().replace(/\s+/g, '-')}`}
+          className="text-xs uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-colors mb-2"
+        >
           {product.brand.name}
-        </p>
+        </Link>
       )}
 
       {/* Title */}

@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cart';
 
 interface ProductCardProps {
@@ -41,11 +43,18 @@ export function ProductCard({ product }: ProductCardProps) {
     const result = await addItem(product.id, product.variantId);
 
     if (result.success) {
+      toast.success('Ditambahkan ke keranjang', {
+        action: {
+          label: 'Lihat Keranjang',
+          onClick: () => window.location.href = '/cart',
+        },
+      });
       setTimeout(() => setAdded(false), 2000);
     } else {
       setAdded(false);
-      // Could show error toast here
-      console.error('Failed to add item:', result.error);
+      toast.error('Gagal menambahkan item', {
+        description: result.error || 'Terjadi kesalahan, silakan coba lagi.',
+      });
     }
   };
 
@@ -61,13 +70,6 @@ export function ProductCard({ product }: ProductCardProps) {
             }`}
           >
             {product.badge}
-          </span>
-        )}
-
-        {/* Added to cart badge */}
-        {added && (
-          <span className="absolute top-3 right-3 z-10 px-2 py-1 text-[10px] uppercase tracking-wider font-medium rounded bg-green-500 text-white">
-            Ditambahkan ✓
           </span>
         )}
 
@@ -109,13 +111,20 @@ export function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={handleAddToCart}
             disabled={added}
-            className={`pointer-events-auto text-sm lg:text-base w-fit px-4 lg:px-6 py-2 font-medium rounded-md transition-all duration-300 ${
+            className={`pointer-events-auto text-sm lg:text-base w-fit px-4 lg:px-6 py-2 font-medium rounded-md transition-all duration-300 flex items-center gap-1.5 ${
               added
                 ? 'bg-green-500 text-white'
                 : 'bg-neutral-900 text-white hover:bg-neutral-800 translate-y-[180%] group-hover:translate-y-[-8px] sm:translate-y-[180%] sm:group-hover:translate-y-[-8px] translate-y-0 sm:translate-y-[180%]'
             }`}
           >
-            {added ? 'Ditambahkan ✓' : 'Tambahkan'}
+            {added ? (
+              <>
+                <Icon icon="solar:check-circle-bold" className="w-4 h-4" />
+                Ditambahkan
+              </>
+            ) : (
+              'Tambahkan'
+            )}
           </button>
         </div>
       </div>
@@ -125,7 +134,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Brand */}
         {product.vendor && (
           <Link
-            href={`/vendor/${product.vendor.toLowerCase().replace(/\s+/g, '-')}`}
+            href={`/produk?brand=${product.vendor.toLowerCase().replace(/\s+/g, '-')}`}
             className="text-[10px] uppercase tracking-widest text-neutral-500 hover:text-neutral-700 transition-colors leading-none mb-2"
           >
             {product.vendor}

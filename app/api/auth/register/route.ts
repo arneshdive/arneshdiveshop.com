@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
-      // If user exists but not verified, resend OTP
+      // If user exists but not verified, resend OTP with 'register' purpose
       if (!existingUser.emailVerified) {
         const otp = generateOtp();
-        await storeOtp(email, otp);
+        await storeOtp(email, otp, 'register');
         await sendVerificationEmail(email, otp, getOtpExpiryMinutes());
         
         return NextResponse.json({ 
@@ -71,9 +71,9 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to create user');
     }
 
-    // Generate OTP and send verification email
+    // Generate OTP with 'register' purpose and send verification email
     const otp = generateOtp();
-    await storeOtp(email, otp);
+    await storeOtp(email, otp, 'register');
     const emailResult = await sendVerificationEmail(email, otp, getOtpExpiryMinutes());
 
     if (!emailResult.success) {

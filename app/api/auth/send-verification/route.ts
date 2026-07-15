@@ -103,9 +103,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate OTP and store it
+    // Generate OTP with 'verify' purpose and store it
     const otp = generateOtp();
-    await storeOtp(email, otp);
+    await storeOtp(email, otp, 'verify');
     
     // Send verification email
     const emailResult = await sendVerificationEmail(email, otp, getOtpExpiryMinutes());

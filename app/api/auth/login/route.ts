@@ -61,9 +61,9 @@ export async function POST(request: NextRequest) {
     // Always return success to prevent email enumeration
     // But only send email if user exists
     if (user) {
-      // Generate OTP and send
+      // Generate OTP and send with 'login' purpose
       const otp = generateOtp();
-      await storeOtp(normalizedEmail, otp);
+      await storeOtp(normalizedEmail, otp, 'login');
       await sendVerificationEmail(normalizedEmail, otp, getOtpExpiryMinutes());
     }
 

@@ -6,11 +6,13 @@ import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { BasicInfoSection } from '@/components/admin/product-form/basic-info-section';
+import { ProductAttributesSection } from '@/components/admin/product-form/product-attributes-section';
 import { PricingSection } from '@/components/admin/product-form/pricing-section';
 import { VariantsSection } from '@/components/admin/product-form/variants-section';
 import { ImagesSection } from '@/components/admin/product-form/images-section';
 import { ProductPreview } from '@/components/admin/product-form/product-preview';
 import { useProductForm, type SavedVariant } from '@/lib/hooks/use-product-form';
+import type { DivingType } from '@/lib/db/schema';
 
 type Product = {
   id: string;
@@ -87,6 +89,7 @@ export default function EditProductPage() {
     removeVariantValue,
     updateEditableVariant,
     loadSavedVariants,
+    resetPricingFields,
   } = useProductForm();
 
   // Fetch product data
@@ -121,7 +124,7 @@ export default function EditProductPage() {
         sku: product.sku || '',
         weightGrams: product.weightGrams?.toString() || '500',
         isActive: product.isActive,
-        divingTypes: product.divingTypes as ('freediving' | 'scuba')[] || [],
+        divingTypes: product.divingTypes as DivingType[] || [],
         isNewArrival: product.isNewArrival,
         isOnSale: product.isOnSale,
       });
@@ -137,6 +140,14 @@ export default function EditProductPage() {
     e.preventDefault();
     
     if (isSubmitting) return;
+
+    // Validate harga coret - required when product is on sale
+    if (formData.isOnSale) {
+      if (!formData.compareAtPrice || parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) === 0) {
+        toast.error('Harga coret wajib diisi ketika produk sedang promo');
+        return;
+      }
+    }
 
     // Validate harga coret - must be strictly higher than the selling price
     if (formData.compareAtPrice) {
@@ -281,7 +292,9 @@ export default function EditProductPage() {
           <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
             <BasicInfoSection formData={formData} setFormData={setFormData} />
 
-            {!hasVariants && <PricingSection formData={formData} setFormData={setFormData} />}
+            <ProductAttributesSection formData={formData} setFormData={setFormData} />
+
+            {!hasVariants && <PricingSection formData={formData} setFormData={setFormData} isOnSale={formData.isOnSale} />}
 
             <VariantsSection
               hasVariants={hasVariants}
@@ -295,6 +308,7 @@ export default function EditProductPage() {
               removeVariantValue={removeVariantValue}
               updateEditableVariant={updateEditableVariant}
               isLocked={true}
+              onHasVariantsChange={resetPricingFields}
             />
 
             <ImagesSection

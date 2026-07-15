@@ -77,6 +77,14 @@ export default function BrandsPage() {
     });
   };
 
+  const handleSlugChange = (slug: string) => {
+    // Only allow lowercase letters, numbers, and hyphens
+    const sanitizedSlug = slug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '');
+    setForm((prev) => ({ ...prev, slug: sanitizedSlug }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -299,15 +307,40 @@ export default function BrandsPage() {
                 <label className="block text-sm font-medium text-neutral-700 mb-1.5">
                   Slug
                 </label>
-                <input
-                  type="text"
-                  value={form.slug}
-                  disabled
-                  className="w-full px-4 py-2.5 text-sm bg-neutral-100 border border-neutral-200 rounded-xl text-neutral-500 font-mono cursor-not-allowed"
-                />
-                <p className="text-xs text-neutral-500 mt-1">
-                  Slug dibuat otomatis dari nama merek
-                </p>
+                {editingBrand ? (
+                  <>
+                    <input
+                      type="text"
+                      value={form.slug}
+                      onChange={(e) => handleSlugChange(e.target.value)}
+                      placeholder="slug-merek"
+                      className="w-full px-4 py-2.5 text-sm bg-neutral-50 border border-neutral-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+                    />
+                    <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                      <div className="flex items-start gap-2">
+                        <Icon icon="solar:danger-triangle-linear" className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-xs font-medium text-amber-800">Peringatan SEO</p>
+                          <p className="text-xs text-amber-700 mt-0.5">
+                            Mengubah slug terlalu sering dapat merusak peringkat SEO. Mesin pencari membutuhkan waktu untuk mengindeks URL baru. Hanya ubah jika benar-benar diperlukan.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={form.slug}
+                      disabled
+                      className="w-full px-4 py-2.5 text-sm bg-neutral-100 border border-neutral-200 rounded-xl text-neutral-500 font-mono cursor-not-allowed"
+                    />
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Slug dibuat otomatis dari nama merek
+                    </p>
+                  </>
+                )}
               </div>
 
               <div>

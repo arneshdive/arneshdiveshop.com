@@ -24,7 +24,6 @@ interface ShopSettingsData {
   phone: string;
   whatsapp: string;
   businessHours: string;
-  about: string;
   rajaongkirCityId: string | null;
   rajaongkirCityName: string | null;
   instagram: string | null;
@@ -39,7 +38,6 @@ export default function SettingsPage() {
     phone: '',
     whatsapp: '',
     businessHours: '',
-    about: '',
     rajaongkirCityId: null,
     rajaongkirCityName: null,
     instagram: null,
@@ -98,7 +96,6 @@ export default function SettingsPage() {
             phone: data.phone || '',
             whatsapp: data.whatsapp || '',
             businessHours: data.businessHours || '',
-            about: data.about || '',
             rajaongkirCityId: data.rajaongkirCityId || null,
             rajaongkirCityName: data.rajaongkirCityName || null,
             instagram: data.instagram || '',
@@ -251,20 +248,15 @@ export default function SettingsPage() {
               }}
               placeholder="0812-3456-7890"
             />
-            <Input
-              label="Jam operasional"
-              value={settings.businessHours}
-              onChange={(e) => setSettings({ ...settings, businessHours: e.target.value })}
-              placeholder="Senin – Jumat: 09:00 – 17:00 WIB"
-            />
           </div>
 
           <Textarea
-            label="Tentang toko"
-            value={settings.about || ''}
-            onChange={(e) => setSettings({ ...settings, about: e.target.value })}
-            placeholder="Deskripsi singkat tentang toko Anda"
-            rows={3}
+            label="Jam operasional"
+            value={settings.businessHours}
+            onChange={(e) => setSettings({ ...settings, businessHours: e.target.value })}
+            placeholder="Senin – Jumat: 09:00 – 17:00 WIB&#10;Sabtu: 09:00 – 14:00 WIB&#10;Minggu: Tutup"
+            rows={4}
+            maxLength={200}
           />
         </div>
 

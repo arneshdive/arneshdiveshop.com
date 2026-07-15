@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { BasicInfoSection } from '@/components/admin/product-form/basic-info-section';
+import { ProductAttributesSection } from '@/components/admin/product-form/product-attributes-section';
 import { PricingSection } from '@/components/admin/product-form/pricing-section';
 import { VariantsSection } from '@/components/admin/product-form/variants-section';
 import { ImagesSection } from '@/components/admin/product-form/images-section';
@@ -29,6 +30,7 @@ export default function NewProductPage() {
     addVariantValue,
     removeVariantValue,
     updateEditableVariant,
+    resetPricingFields,
   } = useProductForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,10 +53,21 @@ export default function NewProductPage() {
       errors.push('Kategori wajib dipilih');
     }
     
+    if (!formData.brand) {
+      errors.push('Merek wajib dipilih');
+    }
+    
     // Validate price - required when no variants
     if (!hasVariants) {
       if (!formData.price || parseFloat(formData.price.replace(/[^\d.]/g, '')) === 0) {
         errors.push('Harga produk wajib diisi');
+      }
+    }
+
+    // Validate harga coret - required when product is on sale
+    if (formData.isOnSale) {
+      if (!formData.compareAtPrice || parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) === 0) {
+        errors.push('Harga coret wajib diisi ketika produk sedang promo');
       }
     }
 
@@ -199,7 +212,9 @@ export default function NewProductPage() {
         <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
           <BasicInfoSection formData={formData} setFormData={setFormData} />
 
-          {!hasVariants && <PricingSection formData={formData} setFormData={setFormData} />}
+          <ProductAttributesSection formData={formData} setFormData={setFormData} />
+
+          {!hasVariants && <PricingSection formData={formData} setFormData={setFormData} isOnSale={formData.isOnSale} />}
 
           <VariantsSection
             hasVariants={hasVariants}
@@ -212,6 +227,7 @@ export default function NewProductPage() {
             addVariantValue={addVariantValue}
             removeVariantValue={removeVariantValue}
             updateEditableVariant={updateEditableVariant}
+            onHasVariantsChange={resetPricingFields}
           />
 
           <ImagesSection

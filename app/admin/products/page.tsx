@@ -8,15 +8,8 @@ import { Plus, Loader } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Select } from '@/components/admin/input';
-import { categories } from '@/lib/constants/product-options';
+import { ProductFilters, type ProductFilterState } from '@/components/admin/product-filters';
 import { formatRupiah } from '@/lib/utils/format';
-
-// Types
-type Brand = {
-  id: string;
-  name: string;
-};
 
 type Product = {
   id: string;
@@ -40,13 +33,6 @@ type Product = {
   variants: { id: string; name: string; priceCents: number | null; isActive: boolean }[];
 };
 
-type FilterState = {
-  category: string;
-  brand: string;
-  status: string;
-};
-
-// Get price display - shows range for products with variants
 function getPriceDisplay(product: Product): { main: string; compare?: string } {
   const activeVariants = (product.variants || []).filter(v => v.isActive && v.priceCents);
 
@@ -69,68 +55,56 @@ function getPriceDisplay(product: Product): { main: string; compare?: string } {
   return { main: `${formatRupiah(minPrice)} - ${formatRupiah(maxPrice)}` };
 }
 
-// Fetch products from API
-async function fetchProducts(filters: FilterState): Promise<{ products: Product[] }> {
+async function fetchProducts(filters: ProductFilterState): Promise<{ products: Product[] }> {
   const params = new URLSearchParams();
   if (filters.category) params.set('category', filters.category);
   if (filters.brand) params.set('brand', filters.brand);
-  if (filters.status) params.set('isActive', filters.status);
+  if (filters.divingType) params.set('divingType', filters.divingType);
+  if (filters.status) params.set('isActive', filters.status === 'active' ? 'true' : 'false');
+  if (filters.isNewArrival) params.set('isNewArrival', 'true');
+  if (filters.isOnSale) params.set('isOnSale', 'true');
 
   const response = await fetch(`/api/products?${params.toString()}`);
   if (!response.ok) throw new Error('Failed to fetch products');
   return response.json();
 }
 
-// Fetch brands from API
-async function fetchBrands(): Promise<{ brands: Brand[] }> {
-  const response = await fetch('/api/brands');
-  if (!response.ok) throw new Error('Failed to fetch brands');
-  return response.json();
-}
-
-
-
 export default function ProductsPage() {
   const router = useRouter();
   
-  const [filters, setFilters] = useState<FilterState>({
+  const [filters, setFilters] = useState<ProductFilterState>({
     category: '',
     brand: '',
+    divingType: '',
     status: '',
+    isNewArrival: false,
+    isOnSale: false,
   });
 
-  // Fetch brands for filter dropdown
-  const { data: brandsData } = useQuery({
-    queryKey: ['brands'],
-    queryFn: fetchBrands,
-  });
-  const brands = brandsData?.brands ?? [];
-
-  // Fetch products
   const { data, isLoading, error } = useQuery({
     queryKey: ['products', filters],
     queryFn: () => fetchProducts(filters),
   });
 
-
-
-  const activeFilterCount = Object.values(filters).filter(v => v !== '').length;
-
-  const clearFilters = () => {
-    setFilters({ category: '', brand: '', status: '' });
-  };
-
-
-
   const products = data?.products ?? [];
+  const activeFilterCount = [
+    filters.category,
+    filters.brand,
+    filters.divingType,
+    filters.status,
+    filters.isNewArrival,
+    filters.isOnSale,
+  ].filter((v) => v && v !== '').length;
 
   return (
     <div>
       {/* Page Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Produk</h1>
-          <p className="text-sm text-neutral-500 mt-1">Kelola katalog produk toko Anda</p>
+          <p className="text-sm text-neutral-500 mt-1">
+            {products.length > 0 ? `${products.length} produk` : 'Kelola katalog produk toko Anda'}
+          </p>
         </div>
         <AnimatedButton onClick={() => router.push('/admin/products/new')} size="xs">
           <Plus className="w-4 h-4" />
@@ -138,151 +112,123 @@ export default function ProductsPage() {
         </AnimatedButton>
       </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
-          <Select
-            value={filters.category}
-            onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-            options={categories}
-            placeholder="Semua Kategori"
-            inline
-          />
-
-          <Select
-            value={filters.brand}
-            onChange={(e) => setFilters({ ...filters, brand: e.target.value })}
-            options={brands}
-            placeholder="Semua Merek"
-            inline
-          />
-
-          <Select
-            value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            placeholder="Semua Status"
-            inline
-          >
-            <option value="">Semua Status</option>
-            <option value="true">Aktif</option>
-            <option value="false">Nonaktif</option>
-          </Select>
-        </div>
-        {activeFilterCount > 0 && (
-          <button
-            onClick={clearFilters}
-            className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors whitespace-nowrap"
-          >
-            Reset
-          </button>
-        )}
+      {/* Mobile Filters */}
+      <div className="lg:hidden mb-6">
+        <ProductFilters filters={filters} onChange={setFilters} />
       </div>
 
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex items-center justify-center py-16">
-          <Loader className="w-8 h-8 text-neutral-400 animate-spin" />
+      {/* Content: Filters + List */}
+      <div className="flex gap-6">
+        {/* Desktop Filters */}
+        <div className="hidden lg:block w-64 flex-shrink-0">
+          <ProductFilters filters={filters} onChange={setFilters} />
         </div>
-      )}
 
-      {/* Error State */}
-      {error && (
-        <div className="text-center py-16">
-          <p className="text-red-600">Gagal memuat produk. Silakan coba lagi.</p>
-        </div>
-      )}
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-16">
+              <Loader className="w-8 h-8 text-neutral-400 animate-spin" />
+            </div>
+          )}
 
-      {/* Product List */}
-      {!isLoading && !error && (
-        <div className="space-y-2">
-          {products.map((product) => (
-            <Link
-              key={product.id}
-              href={`/admin/products/${product.id}`}
-              className="flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-neutral-50 transition-colors group"
-            >
-              {/* Product Image */}
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-neutral-100 flex-shrink-0 overflow-hidden">
-                {product.images[0] ? (
-                  <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-400">
-                    <Icon icon="solar:gallery-minimalistic-linear" className="w-6 h-6" />
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-16">
+              <p className="text-red-600">Gagal memuat produk. Silakan coba lagi.</p>
+            </div>
+          )}
+
+          {/* Product List */}
+          {!isLoading && !error && (
+            <div className="space-y-2">
+              {products.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/admin/products/${product.id}`}
+                  className="flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-neutral-50 transition-colors group"
+                >
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-neutral-100 flex-shrink-0 overflow-hidden">
+                    {product.images[0] ? (
+                      <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                        <Icon icon="solar:gallery-minimalistic-linear" className="w-6 h-6" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Product Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-[10px] uppercase tracking-widest text-neutral-500">
-                    {product.category?.name ?? '-'}
-                  </span>
-                  {product.brand && (
-                    <>
-                      <span className="text-[10px] text-neutral-300">•</span>
-                      <span className="text-[10px] uppercase tracking-widest text-neutral-400">
-                        {product.brand.name}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="text-[10px] uppercase tracking-widest text-neutral-500">
+                        {product.category?.name ?? '-'}
                       </span>
-                    </>
-                  )}
-                  {!product.isActive && (
-                    <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-neutral-200 text-neutral-600 rounded-full">
-                      Nonaktif
-                    </span>
-                  )}
-                  {product.isNewArrival && (
-                    <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
-                      New
-                    </span>
-                  )}
-                  {product.isOnSale && (
-                    <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-red-100 text-red-700 rounded-full">
-                      Sale
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-base font-medium tracking-tight text-neutral-900 truncate">
-                  {product.name}
-                </h3>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-sm text-neutral-700">
-                    {getPriceDisplay(product).main}
-                  </span>
-                  {getPriceDisplay(product).compare && (
-                    <span className="text-sm text-neutral-400 line-through">
-                      {getPriceDisplay(product).compare}
-                    </span>
-                  )}
-                </div>
-              </div>
+                      {product.brand && (
+                        <>
+                          <span className="text-[10px] text-neutral-300">•</span>
+                          <span className="text-[10px] uppercase tracking-widest text-neutral-400">
+                            {product.brand.name}
+                          </span>
+                        </>
+                      )}
+                      {!product.isActive && (
+                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-neutral-200 text-neutral-600 rounded-full">
+                          Nonaktif
+                        </span>
+                      )}
+                      {product.isNewArrival && (
+                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
+                          New
+                        </span>
+                      )}
+                      {product.isOnSale && (
+                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-red-100 text-red-700 rounded-full">
+                          Sale
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-base font-medium tracking-tight text-neutral-900 truncate">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="text-sm text-neutral-700">
+                        {getPriceDisplay(product).main}
+                      </span>
+                      {getPriceDisplay(product).compare && (
+                        <span className="text-sm text-neutral-400 line-through">
+                          {getPriceDisplay(product).compare}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Edit indicator */}
-              <div className="hidden sm:flex items-center">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-neutral-900 group-hover:bg-neutral-100 transition-colors">
-                  <Icon icon="solar:pen-linear" className="w-4 h-4" />
-                </div>
-              </div>
+                  <div className="hidden sm:flex items-center">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-neutral-900 group-hover:bg-neutral-100 transition-colors">
+                      <Icon icon="solar:pen-linear" className="w-4 h-4" />
+                    </div>
+                  </div>
 
-              {/* Mobile Arrow */}
-              <Icon icon="solar:alt-arrow-right-linear" className="w-5 h-5 text-neutral-900 flex-shrink-0 sm:hidden" />
-            </Link>
-          ))}
+                  <Icon icon="solar:alt-arrow-right-linear" className="w-5 h-5 text-neutral-900 flex-shrink-0 sm:hidden" />
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && products.length === 0 && (
+            <EmptyState
+              icon="solar:box-linear"
+              title={activeFilterCount > 0 ? "Tidak ada produk yang cocok" : "Belum ada produk"}
+              description={activeFilterCount > 0 ? "Coba ubah filter pencarian" : "Mulai tambahkan produk ke katalog toko Anda"}
+              ctaLabel={activeFilterCount > 0 ? undefined : "Tambah Produk"}
+              onClick={activeFilterCount > 0 ? undefined : () => router.push('/admin/products/new')}
+              ctaIcon={activeFilterCount > 0 ? undefined : <Plus className="w-4 h-4" />}
+              size="xs"
+            />
+          )}
         </div>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && !error && products.length === 0 && (
-        <EmptyState
-          icon="solar:box-linear"
-          title="Belum ada produk"
-          description="Mulai tambahkan produk ke katalog toko Anda"
-          ctaLabel="Tambah Produk"
-          onClick={() => router.push('/admin/products/new')}
-          ctaIcon={<Plus className="w-4 h-4" />}
-          size="xs"
-        />
-      )}
+      </div>
     </div>
   );
 }

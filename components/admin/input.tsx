@@ -8,6 +8,19 @@ const baseInputStyles = `
   transition-colors
 `;
 
+// Helper to render label with red asterisk
+function renderLabel(label: string) {
+  if (label.endsWith(' *')) {
+    const text = label.slice(0, -2);
+    return <>{text}<span className="text-red-500"> *</span></>;
+  }
+  if (label.endsWith('*')) {
+    const text = label.slice(0, -1);
+    return <>{text}<span className="text-red-500">*</span></>;
+  }
+  return label;
+}
+
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
 }
@@ -18,7 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div>
         {label && (
           <label className="block text-xs text-neutral-500 mb-1.5">
-            {label}
+            {renderLabel(label)}
           </label>
         )}
         <input
@@ -43,7 +56,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div>
         {label && (
           <label className="block text-xs text-neutral-500 mb-1.5">
-            {label}
+            {renderLabel(label)}
           </label>
         )}
         <textarea
@@ -96,7 +109,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <div>
         {label && (
           <label className="block text-xs text-neutral-500 mb-1.5">
-            {label}
+            {renderLabel(label)}
           </label>
         )}
         {selectElement}
@@ -117,7 +130,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       <div>
         {label && (
           <label className="block text-xs text-neutral-500 mb-1.5">
-            {label}
+            {renderLabel(label)}
           </label>
         )}
         <input
@@ -156,7 +169,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
       <div>
         {label && (
           <label className="block text-xs text-neutral-500 mb-1.5">
-            {label}
+            {renderLabel(label)}
           </label>
         )}
         <div className="relative">

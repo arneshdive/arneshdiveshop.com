@@ -33,6 +33,12 @@ const roleLabels: Record<UserRole, string> = {
   super_admin: 'Super Admin',
 };
 
+const roleTabs: { value: '' | 'customer' | 'admin'; label: string }[] = [
+  { value: '', label: 'Semua' },
+  { value: 'customer', label: 'Pelanggan' },
+  { value: 'admin', label: 'Admin' },
+];
+
 const orderStatusLabels: Record<string, string> = {
   pending_payment: 'Menunggu Pembayaran',
   processing: 'Diproses',
@@ -502,8 +508,9 @@ function UserDetailDrawer({
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
+  const [roleFilter, setRoleFilter] = useState<'' | 'customer' | 'admin'>('');
   const { users, pagination, isLoading, blockUser, inviteAdmin, resendInvitation, isBlocking, isInviting, isResending, inviteError } =
-    useUsers(page);
+    useUsers(page, roleFilter || undefined);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -523,7 +530,7 @@ export default function UsersPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Pengguna</h1>
           <p className="text-sm text-neutral-500 mt-1">Kelola pengguna dan role akses</p>
@@ -532,6 +539,26 @@ export default function UsersPage() {
           <UserPlus className="w-4 h-4" />
           <span className="text-sm font-medium tracking-wide">Undang Admin</span>
         </AnimatedButton>
+      </div>
+
+      {/* Role Filter */}
+      <div className="flex gap-1 p-1 bg-neutral-100 rounded-lg w-fit mb-6">
+        {roleTabs.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => {
+              setRoleFilter(tab.value);
+              setPage(1); // Reset to first page when filter changes
+            }}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+              roleFilter === tab.value
+                ? 'bg-white text-neutral-900 shadow-sm'
+                : 'text-neutral-500 hover:text-neutral-700'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Loading State */}

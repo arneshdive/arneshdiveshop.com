@@ -13,6 +13,7 @@ interface VariantsSectionProps {
   removeVariantValue: (optionIndex: number, valueIndex: number) => void;
   updateEditableVariant: (id: string, field: 'sku' | 'price' | 'isActive', value: string | boolean) => void;
   isLocked?: boolean; // Prevents structural changes when editing existing product
+  onHasVariantsChange?: (value: boolean) => void; // Callback when hasVariants is toggled
 }
 
 export function VariantsSection({
@@ -27,7 +28,14 @@ export function VariantsSection({
   removeVariantValue,
   updateEditableVariant,
   isLocked = false,
+  onHasVariantsChange,
 }: VariantsSectionProps) {
+
+  const handleHasVariantsChange = (value: boolean) => {
+    setHasVariants(value);
+    onHasVariantsChange?.(value);
+  };
+
   return (
     <div className="bg-white rounded-xl p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -39,7 +47,7 @@ export function VariantsSection({
             <input
               type="checkbox"
               checked={hasVariants}
-              onChange={(e) => setHasVariants(e.target.checked)}
+              onChange={(e) => handleHasVariantsChange(e.target.checked)}
               className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
             />
             <span className="text-sm text-neutral-700">Produk punya varian</span>

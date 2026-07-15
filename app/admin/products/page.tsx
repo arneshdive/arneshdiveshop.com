@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ProductFilters, type ProductFilterState } from '@/components/admin/product-filters';
+import { ProductBadge } from '@/components/ui/product-badge';
 import { formatRupiah } from '@/lib/utils/format';
 
 type Product = {
@@ -173,19 +174,13 @@ export default function ProductsPage() {
                         </>
                       )}
                       {!product.isActive && (
-                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-neutral-200 text-neutral-600 rounded-full">
-                          Nonaktif
-                        </span>
+                        <ProductBadge type="inactive" context="list">Nonaktif</ProductBadge>
                       )}
                       {product.isNewArrival && (
-                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full">
-                          New
-                        </span>
+                        <ProductBadge type="new" context="list">New</ProductBadge>
                       )}
                       {product.isOnSale && (
-                        <span className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-red-100 text-red-700 rounded-full">
-                          Sale
-                        </span>
+                        <ProductBadge type="sale" context="list">Sale</ProductBadge>
                       )}
                     </div>
                     <h3 className="text-base font-medium tracking-tight text-neutral-900 truncate">

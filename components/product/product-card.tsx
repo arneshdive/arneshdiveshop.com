@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cart';
+import { ProductBadge, type BadgeType } from '@/components/ui/product-badge';
 
 interface ProductCardProps {
   product: {
@@ -65,16 +66,14 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Badge */}
         {product.badges && product.badges.length > 0 && (
           <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
-            {product.badges.map((badge) => (
-              <span
-                key={badge}
-                className={`px-1.5 py-1 text-[10px] uppercase tracking-wider font-medium ${
-                  badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'
-                }`}
-              >
-                {badge}
-              </span>
-            ))}
+            {product.badges.map((badge) => {
+              const badgeType: BadgeType = badge.toLowerCase() === 'sale' ? 'sale' : 'new';
+              return (
+                <ProductBadge key={badge} type={badgeType} context="card">
+                  {badge}
+                </ProductBadge>
+              );
+            })}
           </div>
         )}
 

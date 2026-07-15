@@ -7,7 +7,7 @@ import { db, verificationTokens } from '@/lib/db';
 import { eq, and, gt } from 'drizzle-orm';
 
 const OTP_LENGTH = 6;
-const OTP_EXPIRY_MINUTES = 15;
+const OTP_EXPIRY_MINUTES = 60;
 
 /**
  * Generate a random numeric OTP of specified length
@@ -36,6 +36,16 @@ export function generateOtp(length: number = OTP_LENGTH): string {
 export async function storeOtp(email: string, otp: string): Promise<void> {
   const expires = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
   
+  // Debug logging for production troubleshooting
+  console.log('[OTP Store] Creating OTP:', {
+    email: email.toLowerCase(),
+    otp,
+    serverTime: new Date().toISOString(),
+    expiryTime: expires.toISOString(),
+    expiryMinutes: OTP_EXPIRY_MINUTES,
+    serverTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+  
   // Delete any existing tokens for this email
   await db.delete(verificationTokens).where(eq(verificationTokens.identifier, email.toLowerCase()));
   
@@ -45,6 +55,8 @@ export async function storeOtp(email: string, otp: string): Promise<void> {
     token: otp,
     expires,
   });
+  
+  console.log('[OTP Store] OTP stored successfully');
 }
 
 /**
@@ -56,15 +68,48 @@ export async function storeOtp(email: string, otp: string): Promise<void> {
 export async function verifyOtp(email: string, otp: string): Promise<boolean> {
   const now = new Date();
   
-  const token = await db.query.verificationTokens.findFirst({
+  // Debug logging for production troubleshooting
+  console.log('[OTP Verify] Checking OTP:', {
+    email: email.toLowerCase(),
+    otpProvided: otp,
+    serverTime: now.toISOString(),
+    serverTimeLocal: now.toString(),
+  serverTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+  
+  // First, find the token without expiry check to see what's stored
+  const storedToken = await db.query.verificationTokens.findFirst({
     where: and(
       eq(verificationTokens.identifier, email.toLowerCase()),
-      eq(verificationTokens.token, otp),
-      gt(verificationTokens.expires, now)
+      eq(verificationTokens.token, otp)
     ),
   });
   
-  return !!token;
+  if (!storedToken) {
+    console.log('[OTP Verify] No token found for email/otp combination');
+    return false;
+  }
+  
+  console.log('[OTP Verify] Found token:', {
+    tokenIdentifier: storedToken.identifier,
+    tokenExpires: storedToken.expires,
+    tokenExpiresISO: storedToken.expires instanceof Date ? storedToken.expires.toISOString() : storedToken.expires,
+    tokenExpiresType: typeof storedToken.expires,
+    isExpired: storedToken.expires instanceof Date ? storedToken.expires < now : new Date(storedToken.expires) < now,
+  });
+  
+  // Check if expired
+  const isExpired = storedToken.expires instanceof Date 
+    ? storedToken.expires < now 
+    : new Date(storedToken.expires) < now;
+  
+  if (isExpired) {
+    console.log('[OTP Verify] Token is expired');
+    return false;
+  }
+  
+  console.log('[OTP Verify] Token is valid');
+  return true;
 }
 
 /**

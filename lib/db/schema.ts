@@ -95,7 +95,7 @@ export const users = pgTable('users', {
 export const verificationTokens = pgTable('verification_tokens', {
   identifier: text('identifier').notNull(), // Usually email
   token: text('token').notNull().unique(),
-  expires: timestamp('expires').notNull(),
+  expires: timestamp('expires', { withTimezone: true, mode: 'date' }).notNull(),
 });
 
 // ============================================================================

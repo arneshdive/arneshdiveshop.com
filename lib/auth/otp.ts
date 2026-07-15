@@ -4,7 +4,7 @@
  */
 
 import { db, verificationTokens } from '@/lib/db';
-import { eq, and, gt } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 const OTP_LENGTH = 6;
 const OTP_EXPIRY_MINUTES = 60;

@@ -1,4 +1,3 @@
-import { Snap, CoreApi, type TransactionRequestBody } from 'midtrans-client';
 import crypto from 'crypto';
 import type {
   PaymentProvider,
@@ -9,14 +8,54 @@ import type {
   PaymentStatusType,
 } from './types';
 
+// Local type for Midtrans transaction request
+// The midtrans-client package doesn't export types properly
+interface TransactionRequestBody {
+  transaction_details: {
+    order_id: string;
+    gross_amount: number;
+  };
+  customer_details?: {
+    email?: string;
+    phone?: string;
+    first_name?: string;
+    last_name?: string;
+    billing_address?: {
+      address?: string;
+      city?: string;
+      postal_code?: string;
+      country_code?: string;
+    };
+  };
+  item_details?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
+  enabled_payments?: string[];
+  callbacks?: {
+    finish: string;
+  };
+  expiry?: {
+    unit: string;
+    duration: number;
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { Snap, CoreApi } = require('midtrans-client');
+
 /**
  * Midtrans Snap API Client
  * Handles transaction creation and webhook verification
  */
 class MidtransProvider implements PaymentProvider {
   readonly name = 'midtrans';
-  private snap: Snap;
-  private coreApi: CoreApi;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private snap: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private coreApi: any;
   private serverKey: string;
   private isProduction: boolean;
 

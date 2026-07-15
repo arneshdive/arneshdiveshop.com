@@ -89,6 +89,8 @@ const paymentStatusConfig: Record<PaymentStatus, { label: string; color: string 
   paid: { label: 'Dibayar', color: 'text-green-600' },
   failed: { label: 'Gagal', color: 'text-red-600' },
   expired: { label: 'Kadaluarsa', color: 'text-neutral-500' },
+  cancelled: { label: 'Dibatalkan', color: 'text-red-600' },
+  refunded: { label: 'Dikembalikan', color: 'text-neutral-500' },
 };
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {

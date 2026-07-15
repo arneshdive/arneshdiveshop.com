@@ -27,6 +27,8 @@ export const paymentStatusEnum = pgEnum('payment_status', [
   'paid',
   'failed',
   'expired',
+  'cancelled',
+  'refunded',
 ]);
 
 // ============================================================================

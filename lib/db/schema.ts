@@ -64,7 +64,13 @@ export const bannerPositionEnum = pgEnum('banner_position', [
 
 export const userRoleEnum = pgEnum('user_role', ['customer', 'admin', 'super_admin']);
 
-export const divingTypeEnum = pgEnum('diving_type', ['freediving', 'scuba']);
+export const divingTypeEnum = pgEnum('diving_type', [
+  'freediving',
+  'scuba',
+  'spearfishing',
+  'surfing',
+  'swimming',
+]);
 
 // ============================================================================
 // Newsletter Subscribers

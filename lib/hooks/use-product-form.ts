@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
+import type { DivingType } from '@/lib/db/schema';
 
 export interface VariantOption {
   id: string;
@@ -38,7 +39,7 @@ export interface ProductFormData {
   sku: string;
   weightGrams: string;
   isActive: boolean;
-  divingTypes: ('freediving' | 'scuba')[];
+  divingTypes: DivingType[];
   isNewArrival: boolean;
   isOnSale: boolean;
 }
@@ -187,6 +188,16 @@ export function useProductForm() {
     }
   }, []);
 
+  // Reset pricing fields when hasVariants is toggled
+  const resetPricingFields = useCallback(() => {
+    setFormData(prev => ({
+      ...prev,
+      price: '',
+      compareAtPrice: '',
+      sku: '',
+    }));
+  }, []);
+
   return {
     formData,
     setFormData,
@@ -204,5 +215,6 @@ export function useProductForm() {
     editableVariants,
     savedVariants,
     loadSavedVariants,
+    resetPricingFields,
   };
 }

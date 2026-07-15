@@ -23,9 +23,15 @@ export interface UserWithDetails extends User {
   }) | null;
 }
 
-// Fetch users with pagination
-async function fetchUsers(page: number = 1): Promise<{ users: UserWithCustomer[]; pagination: PaginationInfo }> {
-  const response = await fetch(`/api/users?page=${page}`);
+// Fetch users with pagination and optional role filter
+async function fetchUsers(
+  page: number = 1,
+  role?: 'customer' | 'admin'
+): Promise<{ users: UserWithCustomer[]; pagination: PaginationInfo }> {
+  const params = new URLSearchParams();
+  params.set('page', page.toString());
+  if (role) params.set('role', role);
+  const response = await fetch(`/api/users?${params.toString()}`);
   if (!response.ok) throw new Error('Failed to fetch users');
   return response.json();
 }
@@ -79,12 +85,12 @@ async function resendInvitation(userId: string): Promise<{ success: boolean; mes
   return response.json();
 }
 
-export function useUsers(page: number = 1) {
+export function useUsers(page: number = 1, role?: 'customer' | 'admin') {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['users', page],
-    queryFn: () => fetchUsers(page),
+    queryKey: ['users', page, role],
+    queryFn: () => fetchUsers(page, role),
   });
 
   const blockMutation = useMutation({

@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { addresses } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { isDuplicateAddress } from '@/lib/addresses/is-duplicate-address';
 
 // ============================================================================
 // Types
@@ -120,6 +121,25 @@ export async function createAddress(
     .returning();
 
   return address as AddressWithDetails;
+}
+
+/**
+ * Save an order's shipping address to the customer's address book, unless
+ * they already have a matching one saved (same street address, destination,
+ * and recipient phone). This is how guest checkouts - who never touch
+ * `SavedAddressSelector` - end up with a saved address for their next visit.
+ */
+export async function saveAddressFromOrder(
+  customerId: string,
+  input: CreateAddressInput
+): Promise<void> {
+  const existingAddresses = await getCustomerAddresses(customerId);
+
+  if (isDuplicateAddress(existingAddresses, input)) {
+    return;
+  }
+
+  await createAddress(customerId, input);
 }
 
 /**

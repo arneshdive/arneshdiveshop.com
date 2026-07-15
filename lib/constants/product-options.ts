@@ -13,8 +13,4 @@ export const brands = [
   { id: 'salvimar', name: 'Salvimar' },
 ];
 
-export const diveTypes = [
-  { id: 'freediving', name: 'Freediving' },
-  { id: 'scuba', name: 'Scuba' },
-  { id: 'both', name: 'Keduanya' },
-];
+// Diving types moved to lib/constants/diving-types.ts

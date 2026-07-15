@@ -1,4 +1,4 @@
-# Arne's Dive Shop
+# Arnesh Dive Shop
 
 Freediving/scuba e-commerce platform. Storefront (ISR + Server Components) and admin dashboard (CSR + TanStack Query) built on Next.js 16.
 

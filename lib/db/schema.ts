@@ -397,8 +397,8 @@ export const banners = pgTable('banners', {
 export const shopSettings = pgTable('shop_settings', {
   id: text('id').primaryKey().default('default'),
   // Shop info
-  storeName: text('store_name').notNull().default("Arne's Dive Shop"),
-  email: text('email').notNull().default('support@arnesdive.com'),
+  storeName: text('store_name').notNull().default("Arnesh Dive Shop"),
+  email: text('email').notNull().default('support@arneshdive.com'),
   phone: text('phone').notNull().default('+62 812-3456-7890'),
   whatsapp: text('whatsapp').notNull().default('6281234567890'),
   businessHours: text('business_hours').notNull().default('Senin – Jumat: 09:00 – 17:00 WIB'),

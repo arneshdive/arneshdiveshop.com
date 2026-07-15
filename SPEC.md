@@ -1,4 +1,4 @@
-# Arne's Dive Shop - Project Foundation
+# Arnesh Dive Shop - Project Foundation
 
 > E-commerce platform for a dive shop with ISR-powered storefront and dynamic admin dashboard.
 

@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { Pagination } from '@/components/ui/pagination';
 import { useBrands } from '@/lib/hooks/use-brands';
 import type { Brand } from '@/lib/db/schema';
 
@@ -30,7 +31,8 @@ function generateSlug(name: string): string {
 }
 
 export default function BrandsPage() {
-  const { brands, isLoading, createBrand, updateBrand, deleteBrand, isCreating, isUpdating } = useBrands();
+  const [page, setPage] = useState(1);
+  const { brands, pagination, isLoading, createBrand, updateBrand, deleteBrand, isCreating, isUpdating } = useBrands(page);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [form, setForm] = useState<BrandFormData>(emptyForm);
@@ -177,76 +179,83 @@ export default function BrandsPage() {
 
       {/* Brand List */}
       {!isLoading && brands.length > 0 && (
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-neutral-100">
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Merek
-                </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
-                  Deskripsi
-                </th>
-                <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {brands.map((brand) => (
-                <tr key={brand.id} className="hover:bg-neutral-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      {brand.logoUrl ? (
-                        <img
-                          src={brand.logoUrl}
-                          alt={brand.name}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
-                          <Icon icon="solar:tag-linear" className="w-5 h-5 text-neutral-400" />
-                        </div>
-                      )}
-                      <span className="font-medium text-neutral-900">{brand.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <code className="text-sm text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
-                      {brand.slug}
-                    </code>
-                  </td>
-                  <td className="px-6 py-4 hidden md:table-cell">
-                    <span className="text-sm text-neutral-500 line-clamp-1">
-                      {brand.description || '-'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEditModal(brand)}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
-                        aria-label="Edit merek"
-                      >
-                        <Icon icon="solar:pen-linear" className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(brand.id)}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                        aria-label="Hapus merek"
-                      >
-                        <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-neutral-100">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Merek
+                  </th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Slug
+                  </th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
+                    Deskripsi
+                  </th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {brands.map((brand) => (
+                  <tr key={brand.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        {brand.logoUrl ? (
+                          <img
+                            src={brand.logoUrl}
+                            alt={brand.name}
+                            className="w-10 h-10 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
+                            <Icon icon="solar:tag-linear" className="w-5 h-5 text-neutral-400" />
+                          </div>
+                        )}
+                        <span className="font-medium text-neutral-900">{brand.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <code className="text-sm text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
+                        {brand.slug}
+                      </code>
+                    </td>
+                    <td className="px-6 py-4 hidden md:table-cell">
+                      <span className="text-sm text-neutral-500 line-clamp-1">
+                        {brand.description || '-'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openEditModal(brand)}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                          aria-label="Edit merek"
+                        >
+                          <Icon icon="solar:pen-linear" className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(brand.id)}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          aria-label="Hapus merek"
+                        >
+                          <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={setPage}
+          />
+        </>
       )}
 
       {/* Create/Edit Modal */}

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db, categories } from '@/lib/db';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, count } from 'drizzle-orm';
+
+const ITEMS_PER_PAGE = 10;
 
 const categorySchema = z.object({
   name: z.string().min(1, 'Nama kategori wajib diisi').max(100),
@@ -9,13 +11,34 @@ const categorySchema = z.object({
   description: z.string().max(500).nullable().optional(),
 });
 
-// GET /api/categories - List all categories
-export async function GET() {
+// GET /api/categories - List categories with pagination
+export async function GET(request: NextRequest) {
   try {
-    const allCategories = await db.query.categories.findMany({
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = ITEMS_PER_PAGE;
+    const offset = (page - 1) * limit;
+
+    // Get total count
+    const totalResult = await db.select({ total: count() }).from(categories);
+    const total = totalResult[0]?.total ?? 0;
+
+    // Get paginated categories
+    const paginatedCategories = await db.query.categories.findMany({
       orderBy: [desc(categories.createdAt)],
+      limit,
+      offset,
     });
-    return NextResponse.json({ categories: allCategories });
+
+    return NextResponse.json({
+      categories: paginatedCategories,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error('Error fetching categories:', error);
     return NextResponse.json(

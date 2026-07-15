@@ -101,7 +101,7 @@ export default function PrivasiPage() {
               Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi kami melalui:
             </p>
             <ul className="list-none text-neutral-700 space-y-1 mt-3">
-              <li>Email: support@arnesdive.com</li>
+              <li>Email: support@arneshdive.com</li>
               <li>WhatsApp: +62 812-3456-7890</li>
             </ul>
           </section>

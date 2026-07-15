@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db, brands } from '@/lib/db';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, count } from 'drizzle-orm';
+
+const ITEMS_PER_PAGE = 10;
 
 const createBrandSchema = z.object({
   name: z.string().min(1, 'Nama merek wajib diisi').max(100),
@@ -10,13 +12,34 @@ const createBrandSchema = z.object({
   logoUrl: z.string().url('URL tidak valid').nullable().optional().or(z.literal('')),
 });
 
-// GET /api/brands - List all brands
-export async function GET() {
+// GET /api/brands - List brands with pagination
+export async function GET(request: NextRequest) {
   try {
-    const allBrands = await db.query.brands.findMany({
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = ITEMS_PER_PAGE;
+    const offset = (page - 1) * limit;
+
+    // Get total count
+    const totalResult = await db.select({ total: count() }).from(brands);
+    const total = totalResult[0]?.total ?? 0;
+
+    // Get paginated brands
+    const paginatedBrands = await db.query.brands.findMany({
       orderBy: [desc(brands.createdAt)],
+      limit,
+      offset,
     });
-    return NextResponse.json({ brands: allBrands });
+
+    return NextResponse.json({
+      brands: paginatedBrands,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error('Error fetching brands:', error);
     return NextResponse.json(

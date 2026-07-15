@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project State
 
-This is **Arne's Dive Shop**, a freediving/scuba e-commerce platform. Per `docs/RFP-COMPLETION.md` (2026-07-12), the project is ~40% complete:
+This is **Arnesh Dive Shop**, a freediving/scuba e-commerce platform. Per `docs/RFP-COMPLETION.md` (2026-07-12), the project is ~40% complete:
 
 - **Done:** full storefront UI (`app/(store)/`), full admin UI (`app/admin/`), the component library (`components/`).
 - **Missing:** DB schema/connection, backend API routes/server actions, real authentication, Midtrans payment, working admin CRUD, order processing, transactional email, deployment.

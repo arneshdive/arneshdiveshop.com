@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { Pagination } from '@/components/ui/pagination';
 import { useCategories } from '@/lib/hooks/use-categories';
 import type { Category } from '@/lib/db/schema';
 
@@ -28,7 +29,8 @@ function generateSlug(name: string): string {
 }
 
 export default function CategoriesPage() {
-  const { categories, isLoading, createCategory, updateCategory, deleteCategory, isCreating, isUpdating } = useCategories();
+  const [page, setPage] = useState(1);
+  const { categories, pagination, isLoading, createCategory, updateCategory, deleteCategory, isCreating, isUpdating } = useCategories(page);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [form, setForm] = useState<CategoryFormData>(emptyForm);
@@ -172,63 +174,70 @@ export default function CategoriesPage() {
 
       {/* Category List */}
       {!isLoading && categories.length > 0 && (
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-neutral-100">
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Kategori
-                </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
-                  Deskripsi
-                </th>
-                <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {categories.map((category) => (
-                <tr key={category.id} className="hover:bg-neutral-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <span className="font-medium text-neutral-900">{category.name}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <code className="text-sm text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
-                      {category.slug}
-                    </code>
-                  </td>
-                  <td className="px-6 py-4 hidden md:table-cell">
-                    <span className="text-sm text-neutral-500 line-clamp-1">
-                      {category.description || '-'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => openEditModal(category)}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
-                        aria-label="Edit kategori"
-                      >
-                        <Icon icon="solar:pen-linear" className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(category.id)}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
-                        aria-label="Hapus kategori"
-                      >
-                        <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-neutral-100">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Kategori
+                  </th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Slug
+                  </th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
+                    Deskripsi
+                  </th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {categories.map((category) => (
+                  <tr key={category.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <span className="font-medium text-neutral-900">{category.name}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <code className="text-sm text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
+                        {category.slug}
+                      </code>
+                    </td>
+                    <td className="px-6 py-4 hidden md:table-cell">
+                      <span className="text-sm text-neutral-500 line-clamp-1">
+                        {category.description || '-'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openEditModal(category)}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                          aria-label="Edit kategori"
+                        >
+                          <Icon icon="solar:pen-linear" className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(category.id)}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          aria-label="Hapus kategori"
+                        >
+                          <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={setPage}
+          />
+        </>
       )}
 
       {/* Create/Edit Modal */}

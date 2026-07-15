@@ -91,8 +91,8 @@ export const getShopSettings = unstable_cache(
     if (result.length === 0) {
       // Return defaults matching schema defaults
       return {
-        storeName: "Arne's Dive Shop",
-        email: 'support@arnesdive.com',
+        storeName: "Arnesh Dive Shop",
+        email: 'support@arneshdive.com',
         phone: '+62 812-3456-7890',
         whatsapp: '6281234567890',
         businessHours: 'Senin – Jumat: 09:00 – 17:00 WIB',
@@ -120,8 +120,8 @@ export async function getPublicShopSettings() {
   
   if (!settings) {
     return {
-      storeName: "Arne's Dive Shop",
-      email: 'support@arnesdive.com',
+      storeName: "Arnesh Dive Shop",
+      email: 'support@arneshdive.com',
       phone: '+62 812-3456-7890',
       whatsapp: '6281234567890',
       businessHours: 'Senin – Jumat: 09:00 – 17:00 WIB',

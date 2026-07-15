@@ -1,11 +1,19 @@
 {
   "schemaVersion": 1,
-  "name": "Arne's Dive Shop E-Commerce Platform",
+  "name": "Arnesh Dive Shop E-Commerce Platform",
   "briefHashes": {
     "prd": "eb06fa6cdd8def75",
     "userFlows": "167ae8f0183ae863",
     "technicalNotes": "80f05b81d486df94",
     "clientQuestions": "7d9b3a777e26ae00"
+  },
+  "gates": {
+    "briefApproved": {
+      "passed": false
+    },
+    "queueApproved": {
+      "passed": false
+    }
   },
   "createdAt": "2026-07-12T10:21:30.000Z",
   "updatedAt": "2026-07-12T10:21:30.000Z"

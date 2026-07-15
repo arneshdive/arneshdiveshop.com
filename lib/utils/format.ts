@@ -44,6 +44,23 @@ export function formatDateTime(date: Date | string): string {
 }
 
 /**
+ * Convert an ALL CAPS string (e.g. city/province names from the RajaOngkir API,
+ * snapshotted verbatim onto orders at checkout) into Title Case for display.
+ * Tokens of 3 chars or fewer are kept upper-case since they're usually
+ * abbreviations in Indonesian region names (e.g. "DKI", "DI").
+ */
+export function toTitleCase(value: string): string {
+  return value
+    .split(' ')
+    .map((word) => {
+      if (word.length === 0) return word;
+      if (word.length <= 3) return word.toUpperCase();
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ');
+}
+
+/**
  * Format Indonesian phone number for display (e.g., "0812-3456-7890")
  * Takes a raw phone number and formats it with dashes for readability.
  */

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Icon } from '@iconify/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { OrderListItem } from '@/components/admin/orders/order-list-item';
 import { OrderDetail } from '@/components/admin/orders/order-detail';
 import type { OrderStatus } from '@/lib/db/schema';
@@ -16,6 +16,8 @@ const statusTabs: { value: OrderStatus | ''; label: string }[] = [
   { value: 'shipped', label: 'Dikirim' },
   { value: 'delivered', label: 'Selesai' },
 ];
+
+const ORDERS_PAGE_SIZE = 20;
 
 const dateFilterOptions: { value: DateFilter; label: string }[] = [
   { value: '', label: 'Semua Tanggal' },
@@ -106,17 +108,49 @@ export default function OrdersPage() {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  // Fetch orders from real API
-  const { data, isLoading, error, refetch } = useQuery({
+  // Fetch orders from real API, paged via infinite scroll
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
     queryKey: ['admin-orders', statusFilter],
-    queryFn: () => fetchOrders({ 
-      status: statusFilter || undefined, 
-      page: 1, 
-      pageSize: 100 
-    }),
+    queryFn: ({ pageParam }) =>
+      fetchOrders({
+        status: statusFilter || undefined,
+        page: pageParam,
+        pageSize: ORDERS_PAGE_SIZE,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
   });
 
-  const orders = data?.orders ?? [];
+  const orders = data?.pages.flatMap((p) => p.orders) ?? [];
+
+  // Sentinel for infinite scroll — fetches the next page once it enters view
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '150px' }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Client-side filtering for date and search (API handles status)
   const filteredOrders = orders.filter((order) => {
@@ -372,14 +406,22 @@ export default function OrdersPage() {
                   <p className="text-neutral-500 text-sm">Tidak ada pesanan</p>
                 </div>
               ) : (
-                filteredOrders.map((order) => (
-                  <OrderListItem
-                    key={order.id}
-                    order={order}
-                    isSelected={selectedOrderId === order.id}
-                    onClick={() => setSelectedOrderId(order.id)}
-                  />
-                ))
+                <>
+                  {filteredOrders.map((order) => (
+                    <OrderListItem
+                      key={order.id}
+                      order={order}
+                      isSelected={selectedOrderId === order.id}
+                      onClick={() => setSelectedOrderId(order.id)}
+                    />
+                  ))}
+                  {/* Infinite scroll sentinel */}
+                  <div ref={loadMoreRef} className="flex items-center justify-center py-4">
+                    {isFetchingNextPage && (
+                      <Icon icon="solar:spinner-line" className="w-5 h-5 text-neutral-400 animate-spin" />
+                    )}
+                  </div>
+                </>
               )}
             </div>
           )}

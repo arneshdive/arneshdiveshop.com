@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { cn } from '@/lib/utils/cn';
 import { orderStatusConfig } from '@/lib/constants/order-status';
-import { formatRupiah, formatDate, formatDateTime } from '@/lib/utils/format';
+import { formatRupiah, formatDate, formatDateTime, toTitleCase } from '@/lib/utils/format';
 import type { OrderStatus, PaymentStatus } from '@/lib/db/schema';
 
 interface OrderItem {
@@ -172,8 +172,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const fullAddress = [
     order.shippingAddress1,
     order.shippingAddress2,
-    order.shippingCity,
-    order.shippingState,
+    toTitleCase(order.shippingCity),
+    order.shippingState && toTitleCase(order.shippingState),
     order.shippingPostalCode,
   ].filter(Boolean).join(', ');
 

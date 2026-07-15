@@ -1,5 +1,5 @@
 # Dokumen Handover Platform
-## Arne's Dive Shop - E-Commerce Platform
+## Arnesh Dive Shop - E-Commerce Platform
 
 ---
 
@@ -158,7 +158,7 @@ Website yang bagus tidak berguna jika tidak bisa diakses orang lain. Vercel memb
 Website Anda akan mendapat alamat seperti:
 - `https://arneshdiveshop.vercel.app`
 
-Jika ingin menggunakan domain sendiri (misalnya `arnesdive.com`), bisa dikonfigurasikan di dashboard Vercel.
+Jika ingin menggunakan domain sendiri (misalnya `arneshdive.com`), bisa dikonfigurasikan di dashboard Vercel.
 
 ---
 
@@ -356,4 +356,4 @@ Semua platform yang digunakan saat ini:
 
 *Dokumen dibuat: Juli 2026*  
 *Developer: [Nama Developer]*  
-*Client: Arne's Dive Shop*
+*Client: Arnesh Dive Shop*

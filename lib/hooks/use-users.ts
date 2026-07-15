@@ -3,6 +3,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { User, Customer, Address, Order } from '@/lib/db/schema';
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 // User with customer profile for list view
 export interface UserWithCustomer extends User {
   customer: Customer | null;
@@ -16,9 +23,9 @@ export interface UserWithDetails extends User {
   }) | null;
 }
 
-// Fetch all users
-async function fetchUsers(): Promise<{ users: UserWithCustomer[] }> {
-  const response = await fetch('/api/users');
+// Fetch users with pagination
+async function fetchUsers(page: number = 1): Promise<{ users: UserWithCustomer[]; pagination: PaginationInfo }> {
+  const response = await fetch(`/api/users?page=${page}`);
   if (!response.ok) throw new Error('Failed to fetch users');
   return response.json();
 }
@@ -58,12 +65,12 @@ async function inviteAdmin(email: string, role: 'admin' | 'super_admin'): Promis
   return response.json();
 }
 
-export function useUsers() {
+export function useUsers(page: number = 1) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryKey: ['users', page],
+    queryFn: () => fetchUsers(page),
   });
 
   const blockMutation = useMutation({
@@ -83,6 +90,7 @@ export function useUsers() {
 
   return {
     users: query.data?.users ?? [],
+    pagination: query.data?.pagination ?? { page: 1, limit: 10, total: 0, totalPages: 0 },
     isLoading: query.isLoading,
     error: query.error,
     blockUser: blockMutation.mutate,

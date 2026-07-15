@@ -5,7 +5,7 @@ import { verifySession, type SessionPayload } from '@/lib/auth/session';
 const protectedRoutes = ['/account'];
 
 // Routes that require admin role
-const adminRoutes = ['/admin'];
+const adminRoutes = ['/admin', '/print/orders'];
 const adminApiRoutes = ['/api/admin'];
 
 export async function middleware(request: NextRequest) {

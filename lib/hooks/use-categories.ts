@@ -3,9 +3,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Category } from '@/lib/db/schema';
 
-// Fetch all categories
-async function fetchCategories(): Promise<{ categories: Category[] }> {
-  const response = await fetch('/api/categories');
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+// Fetch categories with pagination
+async function fetchCategories(page: number = 1): Promise<{ categories: Category[]; pagination: PaginationInfo }> {
+  const response = await fetch(`/api/categories?page=${page}`);
   if (!response.ok) throw new Error('Failed to fetch categories');
   return response.json();
 }
@@ -49,12 +56,12 @@ async function deleteCategory(id: string): Promise<void> {
   }
 }
 
-export function useCategories() {
+export function useCategories(page: number = 1) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
+    queryKey: ['categories', page],
+    queryFn: () => fetchCategories(page),
   });
 
   const createMutation = useMutation({
@@ -81,6 +88,7 @@ export function useCategories() {
 
   return {
     categories: query.data?.categories ?? [],
+    pagination: query.data?.pagination ?? { page: 1, limit: 10, total: 0, totalPages: 0 },
     isLoading: query.isLoading,
     error: query.error,
     createCategory: createMutation.mutate,

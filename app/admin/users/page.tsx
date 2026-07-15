@@ -6,6 +6,7 @@ import { Loader, UserPlus, Ban } from 'lucide-react';
 import { useUsers, useUser } from '@/lib/hooks/use-users';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { Pagination } from '@/components/ui/pagination';
 import { formatDistanceToNow, format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import type { UserRole } from '@/lib/db/schema';
@@ -479,8 +480,9 @@ function UserDetailDrawer({
 }
 
 export default function UsersPage() {
-  const { users, isLoading, blockUser, inviteAdmin, isBlocking, isInviting, inviteError } =
-    useUsers();
+  const [page, setPage] = useState(1);
+  const { users, pagination, isLoading, blockUser, inviteAdmin, isBlocking, isInviting, inviteError } =
+    useUsers(page);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -529,74 +531,81 @@ export default function UsersPage() {
 
       {/* User List */}
       {!isLoading && users.length > 0 && (
-        <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-neutral-100">
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Pengguna
-                </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
-                  Status
-                </th>
-                <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Aksi
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {users.map((user) => (
-                <tr
-                  key={user.id}
-                  className={`hover:bg-neutral-50 transition-colors ${user.blockedAt ? 'opacity-50' : ''}`}
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
-                        {user.blockedAt ? (
-                          <Icon icon="solar:user-block-linear" className="w-5 h-5 text-red-400" />
-                        ) : (
-                          <Icon icon="solar:user-linear" className="w-5 h-5 text-neutral-400" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium text-neutral-900">
-                          {user.name || 'Tanpa Nama'}
-                          {user.blockedAt && (
-                            <span className="ml-2 text-xs text-red-500">(Diblokir)</span>
-                          )}
-                        </p>
-                        <p className="text-sm text-neutral-500">{user.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-neutral-600">{roleLabels[user.role]}</span>
-                  </td>
-                  <td className="px-6 py-4 hidden md:table-cell">
-                    <span className="text-sm text-neutral-500">
-                      {user.emailVerified ? 'Terverifikasi' : 'Belum terverifikasi'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => setSelectedUserId(user.id)}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
-                        aria-label="Lihat detail pengguna"
-                      >
-                        <Icon icon="solar:eye-linear" className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-neutral-100">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Pengguna
+                  </th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
+                    Status
+                  </th>
+                  <th className="text-right px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-neutral-100">
+                {users.map((user) => (
+                  <tr
+                    key={user.id}
+                    className={`hover:bg-neutral-50 transition-colors ${user.blockedAt ? 'opacity-50' : ''}`}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
+                          {user.blockedAt ? (
+                            <Icon icon="solar:user-block-linear" className="w-5 h-5 text-red-400" />
+                          ) : (
+                            <Icon icon="solar:user-linear" className="w-5 h-5 text-neutral-400" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-neutral-900">
+                            {user.name || 'Tanpa Nama'}
+                            {user.blockedAt && (
+                              <span className="ml-2 text-xs text-red-500">(Diblokir)</span>
+                            )}
+                          </p>
+                          <p className="text-sm text-neutral-500">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-neutral-600">{roleLabels[user.role]}</span>
+                    </td>
+                    <td className="px-6 py-4 hidden md:table-cell">
+                      <span className="text-sm text-neutral-500">
+                        {user.emailVerified ? 'Terverifikasi' : 'Belum terverifikasi'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setSelectedUserId(user.id)}
+                          className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 transition-colors"
+                          aria-label="Lihat detail pengguna"
+                        >
+                          <Icon icon="solar:eye-linear" className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={setPage}
+          />
+        </>
       )}
 
       {/* User Detail Drawer */}

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
-import { formatRupiah, formatDate } from '@/lib/utils/format';
+import { formatRupiah, formatDate, toTitleCase } from '@/lib/utils/format';
 import { orderStatusConfig } from '@/lib/constants/order-status';
 import { cn } from '@/lib/utils/cn';
 import type { OrderStatus } from '@/lib/db/schema';
@@ -11,9 +11,10 @@ import type { OrderStatus } from '@/lib/db/schema';
 type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
 
 // Valid status transitions
+// Note: pending_payment -> processing is NOT allowed manually
+// Payment confirmation comes from Midtrans webhook
 const VALID_TRANSITIONS: Record<OrderStatus, { status: OrderStatus; label: string }[]> = {
   pending_payment: [
-    { status: 'processing', label: 'Tandai Dibayar' },
     { status: 'cancelled', label: 'Batalkan' },
   ],
   processing: [
@@ -95,8 +96,8 @@ interface OrderDetailProps {
 export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
   const [trackingNumber, setTrackingNumber] = useState('');
   const [isUpdatingTracking, setIsUpdatingTracking] = useState(false);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState<OrderStatus | null>(null);
+  const [isSyncingPayment, setIsSyncingPayment] = useState(false);
 
   if (!order) {
     return (
@@ -141,8 +142,7 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
   };
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
-    setShowStatusMenu(false);
-    setIsUpdatingStatus(true);
+    setUpdatingStatus(newStatus);
     
     try {
       const response = await fetch(`/api/orders/${order.id}/status`, {
@@ -162,7 +162,36 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
       console.error('Error updating status:', error);
       toast.error('Gagal memperbarui status pesanan');
     } finally {
-      setIsUpdatingStatus(false);
+      setUpdatingStatus(null);
+    }
+  };
+
+  const handleSyncPayment = async () => {
+    setIsSyncingPayment(true);
+    
+    try {
+      const response = await fetch(`/api/orders/${order.id}/sync-payment`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to sync payment');
+      }
+
+      const result = await response.json();
+      
+      if (result.message === 'Status sudah sinkron dengan Midtrans') {
+        toast.info(result.message);
+      } else {
+        toast.success(`Status diperbarui: ${result.previousPaymentStatus} → ${result.newPaymentStatus}`);
+        onStatusUpdate?.();
+      }
+    } catch (error) {
+      console.error('Error syncing payment:', error);
+      toast.error('Gagal mengecek status pembayaran');
+    } finally {
+      setIsSyncingPayment(false);
     }
   };
 
@@ -225,7 +254,10 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
               <div className="w-8 h-8 rounded-full bg-neutral-900 flex items-center justify-center">
                 <Icon icon="solar:cart-check-linear" className="w-4 h-4 text-white" />
               </div>
-              <div className="w-px h-8 bg-neutral-300" />
+              <div className={cn(
+                'w-px h-8',
+                order.payments[0]?.status === 'paid' ? 'bg-neutral-900' : 'bg-neutral-200'
+              )} />
             </div>
             <div className="flex-1 pb-6">
               <p className="font-medium tracking-tight text-neutral-900">Pesanan Dibuat</p>
@@ -247,16 +279,32 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
               </div>
               <div className={cn(
                 'w-px h-8',
-                order.payments[0]?.status === 'paid' && ['shipped', 'delivered'].includes(order.status) ? 'bg-neutral-300' : 'bg-neutral-200'
+                ['processing', 'shipped', 'delivered'].includes(order.status) ? 'bg-neutral-900' : 'bg-neutral-200'
               )} />
             </div>
             <div className="flex-1 pb-6">
-              <p className={cn(
-                'font-medium tracking-tight',
-                order.payments[0]?.status === 'paid' ? 'text-neutral-900' : 'text-neutral-400'
-              )}>
-                Pembayaran Dikonfirmasi
-              </p>
+              <div className="flex items-center gap-3">
+                <p className={cn(
+                  'font-medium tracking-tight',
+                  order.payments[0]?.status === 'paid' ? 'text-neutral-900' : 'text-neutral-400'
+                )}>
+                  Pembayaran Dikonfirmasi
+                </p>
+                {order.status === 'pending_payment' && (
+                  <button
+                    onClick={handleSyncPayment}
+                    disabled={isSyncingPayment}
+                    className="px-2 py-0.5 text-xs font-medium text-neutral-500 border border-neutral-300 rounded hover:bg-neutral-50 hover:text-neutral-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  >
+                    {isSyncingPayment ? (
+                      <Icon icon="solar:spinner-line" className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Icon icon="solar:refresh-linear" className="w-3 h-3" />
+                    )}
+                    Cek
+                  </button>
+                )}
+              </div>
               <p className="text-sm text-neutral-500 mt-0.5">
                 {order.payments[0]?.paidAt ? formatDate(order.payments[0].paidAt) : 'Menunggu pembayaran'}
               </p>
@@ -268,27 +316,27 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
             <div className="flex flex-col items-center">
               <div className={cn(
                 'w-8 h-8 rounded-full flex items-center justify-center',
-                order.payments[0]?.status === 'paid' && !['pending_payment'].includes(order.status) ? 'bg-neutral-900' : 'bg-neutral-200'
+                ['processing', 'shipped', 'delivered'].includes(order.status) ? 'bg-neutral-900' : 'bg-neutral-200'
               )}>
                 <Icon icon="solar:box-linear" className={cn(
                   'w-4 h-4',
-                  order.payments[0]?.status === 'paid' && !['pending_payment'].includes(order.status) ? 'text-white' : 'text-neutral-400'
+                  ['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-white' : 'text-neutral-400'
                 )} />
               </div>
               <div className={cn(
                 'w-px h-8',
-                ['shipped', 'delivered'].includes(order.status) ? 'bg-neutral-300' : 'bg-neutral-200'
+                ['shipped', 'delivered'].includes(order.status) ? 'bg-neutral-900' : 'bg-neutral-200'
               )} />
             </div>
             <div className="flex-1 pb-6">
               <p className={cn(
                 'font-medium tracking-tight',
-                order.payments[0]?.status === 'paid' && !['pending_payment', 'cancelled', 'refunded'].includes(order.status) ? 'text-neutral-900' : 'text-neutral-400'
+                ['processing', 'shipped', 'delivered'].includes(order.status) ? 'text-neutral-900' : 'text-neutral-400'
               )}>
                 Sedang Dikemas
               </p>
               <p className="text-sm text-neutral-500 mt-0.5">
-                {order.payments[0]?.status === 'paid' && !['pending_payment', 'cancelled', 'refunded'].includes(order.status)
+                {['processing', 'shipped', 'delivered'].includes(order.status)
                   ? 'Pesanan sedang disiapkan'
                   : 'Menunggu konfirmasi pembayaran'}
               </p>
@@ -309,7 +357,7 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
               </div>
               <div className={cn(
                 'w-px h-8',
-                order.status === 'delivered' ? 'bg-neutral-300' : 'bg-neutral-200'
+                order.status === 'delivered' ? 'bg-neutral-900' : 'bg-neutral-200'
               )} />
             </div>
             <div className="flex-1 pb-6">
@@ -415,11 +463,8 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
           {order.shippingAddress1}{order.shippingAddress2 && `, ${order.shippingAddress2}`}
         </p>
         <p className="text-sm text-neutral-600">
-          {order.shippingCity}{order.shippingState && `, ${order.shippingState}`} {order.shippingPostalCode}
+          {toTitleCase(order.shippingCity)}{order.shippingState && `, ${toTitleCase(order.shippingState)}`} {order.shippingPostalCode}
         </p>
-        {order.shippingPhone && (
-          <p className="text-sm text-neutral-600 mt-2">{order.shippingPhone}</p>
-        )}
       </div>
 
       {/* Order Items */}
@@ -428,12 +473,22 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
         <div className="space-y-4">
           {order.items.map((item) => (
             <div key={item.id} className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex-shrink-0 flex items-center justify-center">
-                <Icon icon="solar:gallery-minimalistic-linear" className="w-5 h-5 text-neutral-400" />
+              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                {item.product.images?.[0] ? (
+                  <img
+                    src={item.product.images[0]}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Icon icon="solar:gallery-minimalistic-linear" className="w-5 h-5 text-neutral-400" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium tracking-tight text-neutral-900 truncate">{item.name}</p>
-                <p className="text-sm text-neutral-500">Qty: {item.quantity}</p>
+                <p className="text-sm text-neutral-500">
+                  {item.variant?.name && <>{item.variant.name} · </>}Qty: {item.quantity}
+                </p>
               </div>
               <p className="text-sm font-medium text-neutral-700">{formatRupiah(item.priceCents * item.quantity)}</p>
             </div>
@@ -466,38 +521,33 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
-        {/* Status Update Button */}
-        <div className="relative flex-1">
-          <button
-            onClick={() => setShowStatusMenu(!showStatusMenu)}
-            disabled={isUpdatingStatus || availableTransitions.length === 0}
-            className="w-full px-4 py-3 text-sm font-medium tracking-wide bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {isUpdatingStatus ? (
-              <Icon icon="solar:spinner-line" className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                Update Status
-                <Icon icon="solar:alt-arrow-down-linear" className="w-4 h-4" />
-              </>
-            )}
-          </button>
-          
-          {showStatusMenu && availableTransitions.length > 0 && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowStatusMenu(false)} />
-              <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-neutral-200 rounded-xl shadow-lg z-20 overflow-hidden">
-                {availableTransitions.map((transition) => (
-                  <button
-                    key={transition.status}
-                    onClick={() => handleStatusChange(transition.status)}
-                    className={cn(
-                      'w-full px-4 py-3 text-sm text-left hover:bg-neutral-50 transition-colors flex items-center gap-3',
-                      transition.status === 'cancelled' && 'text-red-600',
-                      transition.status === 'refunded' && 'text-red-600'
-                    )}
-                  >
+      <div className="space-y-3">
+        {/* Primary Actions - Quick buttons based on current status */}
+        {availableTransitions.length > 0 && (
+          <div className={cn(
+            "flex gap-2",
+            availableTransitions.length > 2 && "flex-wrap"
+          )}>
+            {availableTransitions.map((transition) => (
+              <button
+                key={transition.status}
+                onClick={() => handleStatusChange(transition.status)}
+                disabled={updatingStatus !== null}
+                className={cn(
+                  "flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition-all flex items-center justify-center gap-2",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  // Primary action styling
+                  transition.status === 'processing' && "bg-blue-600 text-white hover:bg-blue-700",
+                  transition.status === 'shipped' && "bg-amber-500 text-white hover:bg-amber-600",
+                  transition.status === 'delivered' && "bg-green-600 text-white hover:bg-green-700",
+                  // Destructive actions
+                  (transition.status === 'cancelled' || transition.status === 'refunded') && "bg-white text-red-600 border border-red-200 hover:bg-red-50"
+                )}
+              >
+                {updatingStatus === transition.status ? (
+                  <Icon icon="solar:spinner-line" className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
                     <Icon icon={
                       transition.status === 'processing' ? 'solar:wallet-check-linear' :
                       transition.status === 'shipped' ? 'solar:delivery-linear' :
@@ -507,16 +557,27 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
                       'solar:arrow-right-linear'
                     } className="w-4 h-4" />
                     {transition.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+                  </>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Secondary Actions */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => window.open(`/print/orders/${order.id}`, '_blank')}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-neutral-700 bg-neutral-100 rounded-xl hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2"
+          >
+            <Icon icon="solar:printer-linear" className="w-4 h-4" />
+            Cetak
+          </button>
+          <button className="flex-1 px-4 py-2.5 text-sm font-medium text-neutral-700 bg-neutral-100 rounded-xl hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2">
+            <Icon icon="solar:copy-linear" className="w-4 h-4" />
+            Salin Info
+          </button>
         </div>
-        
-        <button className="px-4 py-3 text-sm font-medium text-neutral-700 bg-white rounded-xl hover:bg-neutral-100 transition-colors border border-neutral-200">
-          Cetak
-        </button>
       </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-# Arne's Dive Shop - Project Completion Request
+# Arnesh Dive Shop - Project Completion Request
 ## One-Page Summary
 
 ---

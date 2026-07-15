@@ -1,5 +1,5 @@
 {
-  "projectName": "Arne's Dive Shop E-Commerce Platform",
+  "projectName": "Arnesh Dive Shop E-Commerce Platform",
   "mode": "answer",
   "overview": "E-commerce platform for a dive shop selling dive equipment. Frontend UI is 100% complete (storefront + admin dashboard). Requires backend implementation: database setup, authentication system, product APIs, shopping cart, checkout flow, Midtrans payment integration, and admin functionality.",
   "projectState": {
@@ -169,7 +169,7 @@
     { "text": "No product reviews/ratings for initial delivery", "confidence": "stated" }
   ],
   "stakeholders": [
-    { "name": "Arne's Dive Shop", "role": "Client" }
+    { "name": "Arnesh Dive Shop", "role": "Client" }
   ],
   "timeline": "8-12 weeks",
   "openQuestionsCount": 0

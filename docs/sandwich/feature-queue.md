@@ -1,4 +1,4 @@
-# Feature Queue — Arne's Dive Shop E-Commerce Platform
+# Feature Queue — Arnesh Dive Shop E-Commerce Platform
 
 > Projection of `.sandwich/registry/` · 22 features · generated 2026-07-12
 

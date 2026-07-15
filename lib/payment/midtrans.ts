@@ -1,4 +1,4 @@
-import { Snap, type TransactionRequestBody } from 'midtrans-client';
+import { Snap, CoreApi, type TransactionRequestBody } from 'midtrans-client';
 import crypto from 'crypto';
 import type {
   PaymentProvider,
@@ -16,6 +16,7 @@ import type {
 class MidtransProvider implements PaymentProvider {
   readonly name = 'midtrans';
   private snap: Snap;
+  private coreApi: CoreApi;
   private serverKey: string;
   private isProduction: boolean;
 
@@ -28,6 +29,12 @@ class MidtransProvider implements PaymentProvider {
     }
 
     this.snap = new Snap({
+      isProduction: this.isProduction,
+      serverKey: this.serverKey,
+      clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
+    });
+
+    this.coreApi = new CoreApi({
       isProduction: this.isProduction,
       serverKey: this.serverKey,
       clientKey: process.env.MIDTRANS_CLIENT_KEY || '',
@@ -172,6 +179,23 @@ class MidtransProvider implements PaymentProvider {
         console.warn(`Unknown Midtrans transaction status: ${transactionStatus}`);
         return 'pending';
     }
+  }
+
+  /**
+   * Get transaction status from Midtrans API
+   * Used for manual sync when webhook fails
+   */
+  async getTransactionStatus(orderId: string) {
+    const response = await this.coreApi.transaction.status(orderId);
+
+    return {
+      transactionStatus: response.transaction_status,
+      paymentType: response.payment_type,
+      transactionId: response.transaction_id,
+      transactionTime: response.transaction_time,
+      grossAmount: response.gross_amount,
+      fraudStatus: response.fraud_status,
+    };
   }
 
   /**

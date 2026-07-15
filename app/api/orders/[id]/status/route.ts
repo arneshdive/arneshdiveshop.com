@@ -10,7 +10,7 @@ import type { OrderStatus } from '@/lib/db/schema';
 // ============================================================================
 
 const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-  pending_payment: ['processing', 'cancelled'],
+  pending_payment: ['cancelled'], // Only cancel - payment confirmation comes from Midtrans webhook
   processing: ['shipped', 'cancelled'],
   shipped: ['delivered', 'cancelled'],
   delivered: ['refunded'],

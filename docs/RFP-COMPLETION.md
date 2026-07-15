@@ -1,8 +1,8 @@
 # Request for Proposal (RFP)
-## Arne's Dive Shop E-Commerce Platform - Backend Completion
+## Arnesh Dive Shop E-Commerce Platform - Backend Completion
 
 **Date:** July 12, 2026  
-**Project:** Arne's Dive Shop E-Commerce Platform  
+**Project:** Arnesh Dive Shop E-Commerce Platform  
 **Status:** UI Complete, Backend Required  
 **Est. Timeline:** 8-12 weeks  
 
@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary
 
-Arne's Dive Shop requires the completion of a modern e-commerce platform for selling dive equipment and related products. The frontend user interface has been fully developed. This RFP seeks qualified developers/agencies to implement the backend infrastructure, database integration, authentication system, payment processing, and administrative functionality.
+Arnesh Dive Shop requires the completion of a modern e-commerce platform for selling dive equipment and related products. The frontend user interface has been fully developed. This RFP seeks qualified developers/agencies to implement the backend infrastructure, database integration, authentication system, payment processing, and administrative functionality.
 
 ---
 
@@ -431,7 +431,7 @@ This is an estimate based on the scope. Proposals outside this range with strong
 
 ## 12. Terms and Conditions
 
-1. All code developed becomes property of Arne's Dive Shop
+1. All code developed becomes property of Arnesh Dive Shop
 2. Vendor must sign NDA before accessing full codebase
 3. Vendor must maintain code confidentiality
 4. Late delivery may result in penalty clauses

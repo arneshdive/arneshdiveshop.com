@@ -102,7 +102,7 @@ export function useProductForm() {
       setEditableVariants(prev => {
         // If no previous variants, use generated
         if (prev.length === 0) return generatedVariants;
-        
+
         // Merge: keep existing values for matching variants, add new ones, remove old ones
         return generatedVariants.map(gen => {
           const existing = prev.find(v => v.name === gen.name);
@@ -111,6 +111,23 @@ export function useProductForm() {
       });
     }
   }, [generatedVariants]);
+
+  // Saved (DB-backed) variants whose combination no longer exists in the current
+  // option/value editor, or that should disappear because "hasVariants" was
+  // turned off entirely. These are never hard-deleted (order/cart rows may
+  // reference them) - the caller should PATCH them to isActive: false instead.
+  const removedVariantIds = useMemo(() => {
+    if (savedVariants.length === 0) return [];
+
+    if (!hasVariants) {
+      return savedVariants.filter(v => v.isActive).map(v => v.id);
+    }
+
+    const currentNames = new Set(generatedVariants.map(g => g.name));
+    return savedVariants
+      .filter(v => v.isActive && !currentNames.has(v.name))
+      .map(v => v.id);
+  }, [savedVariants, generatedVariants, hasVariants]);
 
   const addVariantOption = () => {
     setVariantOptions([...variantOptions, { id: crypto.randomUUID(), name: '', values: [''] }]);
@@ -214,6 +231,7 @@ export function useProductForm() {
     updateEditableVariant,
     editableVariants,
     savedVariants,
+    removedVariantIds,
     loadSavedVariants,
     resetPricingFields,
   };

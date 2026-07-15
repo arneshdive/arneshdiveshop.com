@@ -12,8 +12,8 @@ interface VariantsSectionProps {
   addVariantValue: (optionIndex: number) => void;
   removeVariantValue: (optionIndex: number, valueIndex: number) => void;
   updateEditableVariant: (id: string, field: 'sku' | 'price' | 'isActive', value: string | boolean) => void;
-  isLocked?: boolean; // Prevents structural changes when editing existing product
   onHasVariantsChange?: (value: boolean) => void; // Callback when hasVariants is toggled
+  hasSavedVariants?: boolean; // True when editing a product that already has variants saved in the DB
 }
 
 export function VariantsSection({
@@ -27,8 +27,8 @@ export function VariantsSection({
   addVariantValue,
   removeVariantValue,
   updateEditableVariant,
-  isLocked = false,
   onHasVariantsChange,
+  hasSavedVariants = false,
 }: VariantsSectionProps) {
 
   const handleHasVariantsChange = (value: boolean) => {
@@ -40,19 +40,15 @@ export function VariantsSection({
     <div className="bg-white rounded-xl p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-medium tracking-tight text-neutral-900">Varian Produk</h2>
-        {isLocked ? (
-          <span className="text-xs text-neutral-400">Struktur varian tidak dapat diubah</span>
-        ) : (
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={hasVariants}
-              onChange={(e) => handleHasVariantsChange(e.target.checked)}
-              className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-            />
-            <span className="text-sm text-neutral-700">Produk punya varian</span>
-          </label>
-        )}
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={hasVariants}
+            onChange={(e) => handleHasVariantsChange(e.target.checked)}
+            className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+          />
+          <span className="text-sm text-neutral-700">Produk punya varian</span>
+        </label>
       </div>
 
       {hasVariants && (
@@ -64,11 +60,16 @@ export function VariantsSection({
             updateVariantOption={updateVariantOption}
             addVariantValue={addVariantValue}
             removeVariantValue={removeVariantValue}
-            isLocked={isLocked}
           />
 
           {editableVariants.length > 0 && (
             <VariantGrid variants={editableVariants} updateEditableVariant={updateEditableVariant} />
+          )}
+
+          {hasSavedVariants && (
+            <p className="text-xs text-neutral-500">
+              Menghapus opsi/nilai varian di atas hanya menonaktifkan varian terkait saat disimpan — datanya tetap tersimpan agar riwayat pesanan tidak terpengaruh.
+            </p>
           )}
         </div>
       )}
@@ -83,7 +84,6 @@ function VariantOptions({
   updateVariantOption,
   addVariantValue,
   removeVariantValue,
-  isLocked,
 }: Omit<VariantsSectionProps, 'hasVariants' | 'setHasVariants' | 'editableVariants' | 'updateEditableVariant'>) {
   return (
     <div className="space-y-4">
@@ -95,18 +95,15 @@ function VariantOptions({
               placeholder="Nama opsi (contoh: Warna, Ukuran)"
               value={option.name}
               onChange={(e) => updateVariantOption(optionIndex, 'name', e.target.value)}
-              disabled={isLocked}
-              className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all disabled:bg-neutral-100 disabled:text-neutral-500 disabled:cursor-not-allowed"
+              className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all"
             />
-            {!isLocked && (
-              <button
-                type="button"
-                onClick={() => removeVariantOption(optionIndex)}
-                className="w-9 h-9 flex items-center justify-center text-neutral-400 hover:text-red-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => removeVariantOption(optionIndex)}
+              className="w-9 h-9 flex items-center justify-center text-neutral-400 hover:text-red-600 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
           <div className="flex flex-wrap gap-2">
             {option.values.map((value, valueIndex) => (
@@ -119,42 +116,35 @@ function VariantOptions({
                     values[valueIndex] = e.target.value;
                     updateVariantOption(optionIndex, 'values', values);
                   }}
-                  disabled={isLocked}
-                  className="px-3 py-1.5 text-sm bg-white border border-neutral-200 rounded-l-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all w-20 disabled:bg-neutral-100 disabled:text-neutral-500 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 text-sm bg-white border border-neutral-200 rounded-l-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all w-20"
                 />
-                {!isLocked && (
-                  <button
-                    type="button"
-                    onClick={() => removeVariantValue(optionIndex, valueIndex)}
-                    className="h-9 px-2 border border-l-0 border-neutral-200 text-neutral-400 hover:text-red-600 hover:border-red-300 rounded-r-lg transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => removeVariantValue(optionIndex, valueIndex)}
+                  className="h-9 px-2 border border-l-0 border-neutral-200 text-neutral-400 hover:text-red-600 hover:border-red-300 rounded-r-lg transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </div>
             ))}
-            {!isLocked && (
-              <button
-                type="button"
-                onClick={() => addVariantValue(optionIndex)}
-                className="h-9 px-3 text-sm border border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 rounded-lg transition-colors"
-              >
-                + Tambah
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => addVariantValue(optionIndex)}
+              className="h-9 px-3 text-sm border border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 rounded-lg transition-colors"
+            >
+              + Tambah
+            </button>
           </div>
         </div>
       ))}
 
-      {!isLocked && (
-        <button
-          type="button"
-          onClick={addVariantOption}
-          className="w-full p-3 text-sm border border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 rounded-lg transition-colors"
-        >
-          + Tambah Opsi Varian (Warna, Ukuran, dll)
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={addVariantOption}
+        className="w-full p-3 text-sm border border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 rounded-lg transition-colors"
+      >
+        + Tambah Opsi Varian (Warna, Ukuran, dll)
+      </button>
     </div>
   );
 }

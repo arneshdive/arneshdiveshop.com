@@ -88,6 +88,8 @@ export default function EditProductPage() {
     addVariantValue,
     removeVariantValue,
     updateEditableVariant,
+    savedVariants,
+    removedVariantIds,
     loadSavedVariants,
     resetPricingFields,
   } = useProductForm();
@@ -238,13 +240,39 @@ export default function EditProductPage() {
         });
         
         await Promise.all(variantPromises);
-        
+
         if (variantErrors.length > 0) {
           variantErrors.forEach(err => toast.error(err));
           toast.warning('Produk berhasil diperbarui, tapi beberapa varian gagal');
         }
       }
-      
+
+      // Deactivate variants that were removed from the option editor (or left
+      // over from turning "hasVariants" off) - never hard-deleted, since order
+      // and cart rows may still reference them.
+      if (removedVariantIds.length > 0) {
+        const removalErrors: string[] = [];
+
+        await Promise.all(
+          removedVariantIds.map(async (variantId) => {
+            const response = await fetch(`/api/products/${productId}/variants/${variantId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ isActive: false }),
+            });
+            if (!response.ok) {
+              const errorMsg = await getErrorMessage(response);
+              removalErrors.push(errorMsg);
+            }
+          })
+        );
+
+        if (removalErrors.length > 0) {
+          removalErrors.forEach(err => toast.error(err));
+          toast.warning('Produk berhasil diperbarui, tapi beberapa varian gagal dinonaktifkan');
+        }
+      }
+
       toast.success('Produk berhasil diperbarui');
       router.push('/admin/products');
     } catch (error) {
@@ -307,7 +335,7 @@ export default function EditProductPage() {
               addVariantValue={addVariantValue}
               removeVariantValue={removeVariantValue}
               updateEditableVariant={updateEditableVariant}
-              isLocked={true}
+              hasSavedVariants={savedVariants.length > 0}
               onHasVariantsChange={resetPricingFields}
             />
 

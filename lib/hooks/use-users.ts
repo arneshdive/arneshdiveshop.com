@@ -65,6 +65,20 @@ async function inviteAdmin(email: string, role: 'admin' | 'super_admin'): Promis
   return response.json();
 }
 
+// Resend invitation
+async function resendInvitation(userId: string): Promise<{ success: boolean; message?: string }> {
+  const response = await fetch('/api/invitations/resend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to resend invitation');
+  }
+  return response.json();
+}
+
 export function useUsers(page: number = 1) {
   const queryClient = useQueryClient();
 
@@ -88,6 +102,13 @@ export function useUsers(page: number = 1) {
     },
   });
 
+  const resendMutation = useMutation({
+    mutationFn: ({ userId }: { userId: string }) => resendInvitation(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+
   return {
     users: query.data?.users ?? [],
     pagination: query.data?.pagination ?? { page: 1, limit: 10, total: 0, totalPages: 0 },
@@ -95,10 +116,13 @@ export function useUsers(page: number = 1) {
     error: query.error,
     blockUser: blockMutation.mutate,
     inviteAdmin: inviteMutation.mutate,
+    resendInvitation: resendMutation.mutate,
     isBlocking: blockMutation.isPending,
     isInviting: inviteMutation.isPending,
+    isResending: resendMutation.isPending,
     blockError: blockMutation.error,
     inviteError: inviteMutation.error,
+    resendError: resendMutation.error,
   };
 }
 

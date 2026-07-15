@@ -215,12 +215,16 @@ function UserDetailDrawer({
   userId,
   onClose,
   onBlock,
+  onResend,
   isBlocking,
+  isResending,
 }: {
   userId: string | null;
   onClose: () => void;
   onBlock: (id: string, blocked: boolean) => void;
+  onResend: (id: string) => void;
   isBlocking: boolean;
+  isResending: boolean;
 }) {
   const { user, isLoading } = useUser(userId);
   const [showBlockConfirm, setShowBlockConfirm] = useState(false);
@@ -311,6 +315,23 @@ function UserDetailDrawer({
                   </div>
                 </div>
               </div>
+
+              {/* Resend Invitation Button (for pending users) */}
+              {user.role !== 'customer' && !user.emailVerified && (
+                <div className="mb-6">
+                  <button
+                    onClick={() => onResend(user.id)}
+                    disabled={isResending}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-50"
+                  >
+                    <Icon icon="solar:letter-linear" className="w-4 h-4" />
+                    {isResending ? 'Mengirim...' : 'Kirim Ulang Undangan'}
+                  </button>
+                  <p className="text-xs text-neutral-500 mt-2 text-center">
+                    Pengguna belum menerima undangan atau link sudah kadaluarsa
+                  </p>
+                </div>
+              )}
 
               {/* Block/Unblock Button */}
               {user.role !== 'super_admin' && (
@@ -481,7 +502,7 @@ function UserDetailDrawer({
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
-  const { users, pagination, isLoading, blockUser, inviteAdmin, isBlocking, isInviting, inviteError } =
+  const { users, pagination, isLoading, blockUser, inviteAdmin, resendInvitation, isBlocking, isInviting, isResending, inviteError } =
     useUsers(page);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -493,6 +514,10 @@ export default function UsersPage() {
   const handleInvite = (email: string, role: 'admin' | 'super_admin') => {
     inviteAdmin({ email, role });
     setIsInviteModalOpen(false);
+  };
+
+  const handleResend = (id: string) => {
+    resendInvitation({ userId: id });
   };
 
   return (
@@ -580,8 +605,13 @@ export default function UsersPage() {
                       <span className="text-sm text-neutral-600">{roleLabels[user.role]}</span>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
-                      <span className="text-sm text-neutral-500">
-                        {user.emailVerified ? 'Terverifikasi' : 'Belum terverifikasi'}
+                      <span className={`text-sm ${user.emailVerified ? 'text-neutral-500' : 'text-yellow-600'}`}>
+                        {user.emailVerified ? 'Terverifikasi' : (
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                            Pending
+                          </span>
+                        )}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -613,7 +643,9 @@ export default function UsersPage() {
         userId={selectedUserId}
         onClose={() => setSelectedUserId(null)}
         onBlock={handleBlock}
+        onResend={handleResend}
         isBlocking={isBlocking}
+        isResending={isResending}
       />
 
       {/* Invite Admin Modal */}

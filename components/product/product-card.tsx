@@ -17,7 +17,7 @@ interface ProductCardProps {
     priceRangeMin?: number;
     priceRangeMax?: number;
     compareAtPrice?: string;
-    badge?: string;
+    badges?: string[];
     image?: string;
     secondaryImage?: string;
     swatches?: { name: string; handle: string; image: string }[];
@@ -63,14 +63,19 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Media Section */}
       <div className="product-card__media relative rounded-t-lg overflow-hidden">
         {/* Badge */}
-        {product.badge && (
-          <span
-            className={`absolute top-3 left-3 z-10 px-2 py-1 text-[10px] uppercase tracking-wider font-medium rounded ${
-              product.badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'
-            }`}
-          >
-            {product.badge}
-          </span>
+        {product.badges && product.badges.length > 0 && (
+          <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
+            {product.badges.map((badge) => (
+              <span
+                key={badge}
+                className={`px-1.5 py-1 text-[10px] uppercase tracking-wider font-medium ${
+                  badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'
+                }`}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
         )}
 
         {/* Product Image Link */}

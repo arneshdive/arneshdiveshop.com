@@ -95,7 +95,7 @@ export function RecentlyViewed({ currentProductId }: RecentlyViewedProps) {
                   priceRangeMin: product.priceRangeMin,
                   priceRangeMax: product.priceRangeMax,
                   compareAtPrice: product.compareAtPrice,
-                  badge: product.badge,
+                  badges: product.badges,
                   image: product.image,
                   secondaryImage: product.secondaryImage,
                   variantId: product.variantId,

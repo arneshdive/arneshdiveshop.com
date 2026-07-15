@@ -104,3 +104,30 @@ export function formatPhoneInput(value: string): string {
   if (limited.length <= 8) return `${limited.slice(0, 4)}-${limited.slice(4)}`;
   return `${limited.slice(0, 4)}-${limited.slice(4, 8)}-${limited.slice(8)}`;
 }
+
+/**
+ * Normalize a phone number for WhatsApp wa.me links.
+ * Converts to international format without + sign:
+ * - "0812-3456-7890" → "6281234567890"
+ * - "6281234567890" → "6281234567890" (unchanged)
+ * - "+6281234567890" → "6281234567890"
+ */
+export function normalizeWhatsAppNumber(phone: string): string {
+  // Remove all non-digits
+  const digits = phone.replace(/\D/g, '');
+  
+  if (digits.length === 0) return '';
+  
+  // If starts with 62, it's already in international format
+  if (digits.startsWith('62')) {
+    return digits;
+  }
+  
+  // If starts with 0, convert to international format (Indonesian numbers)
+  if (digits.startsWith('0')) {
+    return '62' + digits.slice(1);
+  }
+  
+  // Otherwise return as-is (might be a different format)
+  return digits;
+}

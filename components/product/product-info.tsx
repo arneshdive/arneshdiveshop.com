@@ -6,6 +6,8 @@ import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { ExpandableText } from '@/components/ui/expandable-text';
 import { ProductActions } from '@/components/product/product-actions';
 import { formatRupiah } from '@/lib/utils/format';
+import { formatDivingType } from '@/lib/constants/diving-types';
+import type { DivingType } from '@/lib/db/schema';
 
 interface Variant {
   id: string;
@@ -130,7 +132,7 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
                 <td className="py-1.5 text-neutral-500 w-1/3">Tipe Diving</td>
                 <td className="py-1.5">
                   {(product.divingTypes?.length ?? 0) > 0 
-                    ? product.divingTypes!.map(t => t === 'freediving' ? 'Freediving' : 'Scuba').join(', ')
+                    ? product.divingTypes!.map(t => formatDivingType(t as DivingType)).join(', ')
                     : '-'}
                 </td>
               </tr>

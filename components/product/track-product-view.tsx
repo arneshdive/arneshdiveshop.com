@@ -54,12 +54,10 @@ export function TrackProductView({ product, variants }: TrackProductViewProps) {
         : 'Rp 0';
     }
     
-    // Determine badge
-    const badge = product.isNewArrival 
-      ? 'New Arrival' 
-      : product.isOnSale 
-        ? 'Sale' 
-        : undefined;
+    // Determine badges
+    const badges = [];
+    if (product.isNewArrival) badges.push('Baru');
+    if (product.isOnSale) badges.push('Sale');
     
     // Add to recently viewed
     addToRecentlyViewed({
@@ -73,7 +71,7 @@ export function TrackProductView({ product, variants }: TrackProductViewProps) {
       compareAtPrice: product.compareAtPriceCents 
         ? `Rp ${(product.compareAtPriceCents / 100).toLocaleString('id-ID')}` 
         : undefined,
-      badge,
+      badges,
       image: product.images?.[0],
       secondaryImage: product.images?.[1],
       variantId: activeVariants[0]?.id,

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/admin';
 import { IMAGE_CONFIG } from '@/lib/utils/image-config';
 
 // POST /api/upload - Upload image to Vercel Blob
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
     // Get form data

@@ -204,6 +204,6 @@ export const featuredProducts: MockProduct[] = [
 
 export const valueProps = [
   { icon: 'solar:verified-check-linear', title: 'Produk Original', desc: '100% kualitas terjamin' },
-  { icon: 'solar:refresh-linear', title: 'Easy Return', desc: '14 hari pengembalian' },
-  { icon: 'solar:chat-round-dots-linear', title: 'Support 24/7', desc: 'Siap membantu' },
+  { icon: 'solar:shield-check-linear', title: 'Pembayaran Aman', desc: 'Transaksi terlindungi' },
+  { icon: 'solar:map-linear', title: 'Kirim Seluruh Indonesia', desc: 'Jangkauan luas' },
 ];

@@ -270,7 +270,9 @@ export async function createOrderFromCheckout(input: CreateOrderInput): Promise<
       variantId: item.variantId,
       name: item.product.name,
       quantity: item.quantity,
-      priceCents: item.variant?.priceCents ?? item.product.priceCents,
+      priceCents: item.variant?.isActive && item.variant.priceCents !== null
+        ? item.variant.priceCents
+        : item.product.priceCents,
     }));
     
     await tx.insert(orderItems).values(orderItemsData);

@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, products } from '@/lib/db';
 import { eq } from 'drizzle-orm';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/admin';
 import { getProductById } from '@/lib/queries/products';
 
 const toggleSchema = z.object({
@@ -17,9 +17,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
     const { id } = await params;

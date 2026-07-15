@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db, categories } from '@/lib/db';
 import { eq, desc, count } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/auth/admin';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -15,6 +16,16 @@ const categorySchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const all = searchParams.get('all') === 'true';
+    
+    // Return all categories for filter dropdowns
+    if (all) {
+      const allCategories = await db.query.categories.findMany({
+        orderBy: [desc(categories.createdAt)],
+      });
+      return NextResponse.json({ categories: allCategories });
+    }
+    
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = ITEMS_PER_PAGE;
     const offset = (page - 1) * limit;
@@ -51,6 +62,11 @@ export async function GET(request: NextRequest) {
 // POST /api/categories - Create new category
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
+    }
+
     const body = await request.json();
     const result = categorySchema.safeParse(body);
 

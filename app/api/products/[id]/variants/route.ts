@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, productVariants } from '@/lib/db';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/admin';
 import { getProductById } from '@/lib/queries/products';
 
 const createVariantSchema = z.object({
@@ -48,9 +48,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
     const { id: productId } = await params;

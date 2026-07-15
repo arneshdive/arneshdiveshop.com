@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, categories, products } from '@/lib/db';
 import { eq } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/auth/admin';
 
 const updateCategorySchema = z.object({
   name: z.string().min(1, 'Nama kategori wajib diisi').max(100).optional(),
@@ -43,6 +44,11 @@ export async function PUT(
   { params }: { params: Params }
 ) {
   try {
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const result = updateCategorySchema.safeParse(body);
@@ -105,6 +111,11 @@ export async function DELETE(
   { params }: { params: Params }
 ) {
   try {
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
+    }
+
     const { id } = await params;
 
     const existing = await db.query.categories.findFirst({

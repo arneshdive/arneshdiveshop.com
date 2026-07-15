@@ -88,11 +88,9 @@ export async function GET(request: NextRequest) {
     
     // Format products for storefront
     const formattedProducts = products.map(product => {
-      const badge = product.isNewArrival 
-        ? 'New Arrival' 
-        : product.isOnSale 
-          ? 'Sale' 
-          : undefined;
+      const badges = [];
+      if (product.isNewArrival) badges.push('Baru');
+      if (product.isOnSale) badges.push('Sale');
       
       // Calculate price range from variants
       // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
@@ -135,7 +133,7 @@ export async function GET(request: NextRequest) {
         priceRangeMin,
         priceRangeMax,
         compareAtPrice: hasDiscount ? formatRupiah(product.compareAtPriceCents!) : undefined,
-        badge,
+        badges,
         image: product.images?.[0] || undefined,
         secondaryImage: product.images?.[1] || undefined,
         variantId: activeVariants[0]?.id,

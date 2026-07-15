@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { getOrderById, getOrderByNumber, getCustomerIdByUserId } from '@/lib/queries/orders';
+import { getPublicShopSettings } from '@/lib/queries/settings';
 
 // ============================================================================
 // GET /api/orders/[id] - Get order details
@@ -28,7 +29,8 @@ export async function GET(
     // Authorization check
     // Admin can view any order
     if (session?.role === 'admin' || session?.role === 'super_admin') {
-      return NextResponse.json({ order });
+      const shopSettings = await getPublicShopSettings();
+      return NextResponse.json({ order, shopSettings });
     }
     
     // Logged-in customer can view their own orders
@@ -36,7 +38,8 @@ export async function GET(
       const customerId = await getCustomerIdByUserId(session.userId);
       
       if (customerId === order.customerId) {
-        return NextResponse.json({ order });
+        const shopSettings = await getPublicShopSettings();
+        return NextResponse.json({ order, shopSettings });
       }
     }
     
@@ -46,7 +49,8 @@ export async function GET(
     const email = searchParams.get('email');
     
     if (email && email.toLowerCase() === order.customer.email.toLowerCase()) {
-      return NextResponse.json({ order });
+      const shopSettings = await getPublicShopSettings();
+      return NextResponse.json({ order, shopSettings });
     }
     
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });

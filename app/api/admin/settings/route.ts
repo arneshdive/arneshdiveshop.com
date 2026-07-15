@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { shopSettings } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { validateCourierCodes } from '@/lib/queries/settings';
+import { normalizeWhatsAppNumber } from '@/lib/utils/format';
 
 // GET /api/admin/settings - Fetch shop settings
 export async function GET() {
@@ -68,9 +69,9 @@ export async function PUT(request: Request) {
       storeName: body.storeName,
       email: body.email,
       phone: body.phone,
-      whatsapp: body.whatsapp,
+      // Normalize WhatsApp: remove dashes, convert 08xx to 628xx
+      whatsapp: body.whatsapp ? normalizeWhatsAppNumber(body.whatsapp) : undefined,
       businessHours: body.businessHours,
-      about: body.about,
       rajaongkirCityId: body.rajaongkirCityId || null,
       rajaongkirCityName: body.rajaongkirCityName || null,
       activeCouriers: body.activeCouriers

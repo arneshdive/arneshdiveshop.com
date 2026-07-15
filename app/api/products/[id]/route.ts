@@ -3,9 +3,10 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, products } from '@/lib/db';
 import { eq } from 'drizzle-orm';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/admin';
 import { slugify, generateUniqueSlug } from '@/lib/utils/slugify';
 import { getProductById, getExistingSlugs } from '@/lib/queries/products';
+import { DIVING_TYPES } from '@/lib/constants/diving-types';
 
 const updateProductSchema = z.object({
   name: z.string().min(1, 'Nama produk wajib diisi').max(200).optional(),
@@ -17,7 +18,7 @@ const updateProductSchema = z.object({
   costPriceCents: z.number().int().min(0).optional().nullable(),
   categoryId: z.string().min(1).optional(),
   brandId: z.string().optional().nullable(),
-  divingTypes: z.array(z.enum(['freediving', 'scuba'])).min(1, 'Pilih minimal satu tipe diving').optional(),
+  divingTypes: z.array(z.enum(DIVING_TYPES)).min(1, 'Pilih minimal satu tipe diving').optional(),
   images: z.array(z.string().url()).max(10).optional(),
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
@@ -58,9 +59,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
     const { id } = await params;
@@ -142,9 +143,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
     const { id } = await params;

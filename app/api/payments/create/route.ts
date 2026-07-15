@@ -12,6 +12,7 @@ import { eq } from 'drizzle-orm';
 import { createAccountFromCheckout } from '@/lib/auth/seamless-signup';
 import { calculateShippingRates } from '@/lib/shipping/calculator';
 import { sendOrderEmail } from '@/lib/email';
+import { saveAddressFromOrder } from '@/lib/queries/addresses';
 
 const createPaymentSchema = z.object({
   checkoutSessionId: z.string().min(1, 'Checkout session ID is required'),
@@ -219,6 +220,30 @@ export async function POST(request: NextRequest) {
       fullName: session.fullName,
       userId: session.userId,
     });
+
+    // Save this shipping address to the customer's address book (unless it's
+    // a duplicate of one they already have) so it's available to pick on
+    // their next checkout instead of retyping it. Best-effort: a failure here
+    // must never block the actual purchase.
+    try {
+      await saveAddressFromOrder(customerId, {
+        name: 'Alamat Utama',
+        firstName: session.fullName.split(' ')[0] || session.fullName,
+        lastName: session.fullName.split(' ').slice(1).join(' ') || '',
+        phone: session.phone,
+        address1: session.address1,
+        address2: session.address2 || undefined,
+        rajaongkirCityId: session.rajaongkirCityId,
+        rajaongkirCityName: session.rajaongkirCityName || '',
+        rajaongkirProvince: session.rajaongkirProvince || undefined,
+        rajaongkirCity: session.rajaongkirCity || undefined,
+        rajaongkirDistrict: session.rajaongkirDistrict || undefined,
+        rajaongkirSubdistrict: session.rajaongkirSubdistrict || undefined,
+        rajaongkirPostalCode: session.rajaongkirPostalCode || undefined,
+      });
+    } catch (err) {
+      console.error('Failed to save address to address book:', err);
+    }
 
     // Generate order number: ARD-YYYY-NNNN
     const orderNumber = await generateOrderNumber();

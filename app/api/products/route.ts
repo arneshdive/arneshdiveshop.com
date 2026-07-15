@@ -3,9 +3,10 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, products, categories, brands } from '@/lib/db';
 import { eq } from 'drizzle-orm';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/admin';
 import { slugify, generateUniqueSlug } from '@/lib/utils/slugify';
 import { getProducts, getExistingSlugs } from '@/lib/queries/products';
+import { DIVING_TYPES } from '@/lib/constants/diving-types';
 
 const createProductSchema = z.object({
   name: z.string().min(1, 'Nama produk wajib diisi').max(200),
@@ -17,7 +18,7 @@ const createProductSchema = z.object({
   costPriceCents: z.number().int().min(0).optional().nullable(),
   categoryId: z.string().min(1, 'Kategori wajib dipilih'),
   brandId: z.string().optional().nullable(),
-  divingTypes: z.array(z.enum(['freediving', 'scuba'])).min(1, 'Pilih minimal satu tipe diving'),
+  divingTypes: z.array(z.enum(DIVING_TYPES)).min(1, 'Pilih minimal satu tipe diving'),
   images: z.array(z.string()).min(1, 'Minimal 1 gambar wajib diupload'),
   isActive: z.boolean().default(true),
   isNewArrival: z.boolean().default(false),
@@ -58,10 +59,10 @@ export async function GET(request: NextRequest) {
 // POST /api/products - Create new product
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Check admin authorization
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+      return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
     const body = await request.json();

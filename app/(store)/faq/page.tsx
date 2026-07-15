@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { USPSection } from '@/components/layout/usp-section';
+import { getPublicShopSettings } from '@/lib/queries/settings';
 
 export const metadata: Metadata = {
   title: 'Pusat Bantuan | Arnes Dive Shop',
@@ -111,7 +112,9 @@ const faqData = {
   ],
 };
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const settings = await getPublicShopSettings();
+
   return (
     <>
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 lg:py-24">
@@ -181,7 +184,7 @@ export default function FAQPage() {
               </Link>
             </AnimatedButton>
             <AnimatedButton asChild size="sm">
-              <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer">
+              <a href={`https://wa.me/${settings.whatsapp}`} target="_blank" rel="noopener noreferrer">
                 <Icon icon="solar:chat-round-dots-linear" className="w-4 h-4" />
                 WhatsApp
               </a>

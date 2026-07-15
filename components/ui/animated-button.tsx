@@ -58,14 +58,23 @@ export function AnimatedButton({
 
   const config = variantConfig[variant];
 
-  // Use mounted state to avoid hydration mismatch
+  // Track mount state for asChild hydration
   const [mounted, setMounted] = useState(false);
+  // Use ref for synchronous guards in event handlers (avoids timing issues with Framer Motion)
+  const mountedRef = useRef(false);
+  
   useEffect(() => {
+    mountedRef.current = true;
+    // Standard pattern for hydration tracking
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   const handleMouseEnter = async () => {
-    if (!mounted) return;
+    if (!mountedRef.current) return;
     isHovered.current = true;
     bgControls.stop();
 
@@ -99,7 +108,7 @@ export function AnimatedButton({
   };
 
   const handleMouseLeave = async () => {
-    if (!mounted) return;
+    if (!mountedRef.current) return;
     isHovered.current = false;
     bgControls.stop();
 

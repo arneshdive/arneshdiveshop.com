@@ -82,7 +82,7 @@ export default async function KontakPage() {
                 </div>
                 <div>
                   <p className="text-sm text-neutral-500 mb-1">Jam Operasional</p>
-                  <p className="text-base font-medium text-neutral-900">{settings.businessHours}</p>
+                  <p className="text-base font-medium text-neutral-900 whitespace-pre-line">{settings.businessHours}</p>
                 </div>
               </div>
 

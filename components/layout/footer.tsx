@@ -40,7 +40,7 @@ export async function Footer() {
               >
                 {settings.email}
               </a>
-              <span className="text-sm text-neutral-500 mt-2">{settings.businessHours}</span>
+              <span className="text-sm text-neutral-500 mt-2 whitespace-pre-line">{settings.businessHours}</span>
             </div>
 
             {/* Newsletter */}

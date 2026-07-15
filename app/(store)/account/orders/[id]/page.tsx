@@ -74,6 +74,11 @@ interface Order {
   payments: Payment[];
 }
 
+interface ShopSettings {
+  whatsapp: string;
+  phone: string;
+}
+
 // Status config for customer-facing view
 const customerStatusConfig: Record<OrderStatus, { label: string; textClass: string; dotClass: string; pingClass: string }> = {
   pending_payment: { label: 'Perlu Dibayar', textClass: 'text-amber-700', dotClass: 'bg-amber-500', pingClass: 'bg-amber-400' },
@@ -96,6 +101,7 @@ const paymentStatusConfig: Record<PaymentStatus, { label: string; color: string 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [order, setOrder] = useState<Order | null>(null);
+  const [shopSettings, setShopSettings] = useState<ShopSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -120,6 +126,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
         const data = await response.json();
         setOrder(data.order);
+        setShopSettings(data.shopSettings || null);
       } catch (err) {
         console.error('Error fetching order:', err);
         setError('Gagal memuat pesanan');
@@ -518,7 +525,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           Hubungi customer service kami jika ada pertanyaan tentang pesanan Anda.
         </p>
         <a
-          href="https://wa.me/6281234567890"
+          href={`https://wa.me/${shopSettings?.whatsapp || '6281234567890'}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm font-medium hover:text-neutral-300 transition-colors"

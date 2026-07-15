@@ -26,6 +26,7 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('login');
+  const [verifyMode, setVerifyMode] = useState<'login' | 'register'>('login'); // Track which flow we're in
   const [form, setForm] = useState<AuthForm>({
     email: '',
     name: '',
@@ -104,11 +105,14 @@ function AuthForm() {
 
         // After login/register, go to verify email
         setVerifyEmail(form.email.toLowerCase());
+        setVerifyMode(mode); // Remember which flow we're in
         setOtpExpires(data.expires || 15);
         setMode('verify-email');
         setForm((prev) => ({ ...prev, otp: '' }));
       } else if (mode === 'verify-email') {
-        const response = await fetch('/api/auth/verify-email', {
+        // Call the correct verification endpoint based on original flow
+        const endpoint = verifyMode === 'login' ? '/api/auth/verify-login' : '/api/auth/verify-register';
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -142,6 +146,7 @@ function AuthForm() {
 
   const handleBackToLogin = () => {
     setMode('login');
+    setVerifyMode('login');
     setErrors({});
     setForm({ email: '', name: '', otp: '' });
   };
@@ -215,10 +220,16 @@ function AuthForm() {
             onClick={async () => {
               setIsLoading(true);
               try {
-                const response = await fetch('/api/auth/send-verification', {
+                // Use the same endpoint as the original flow
+                const endpoint = verifyMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+                const body = verifyMode === 'login'
+                  ? { email: verifyEmail }
+                  : { email: verifyEmail, name: form.name || '' };
+                
+                const response = await fetch(endpoint, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email: verifyEmail }),
+                  body: JSON.stringify(body),
                 });
                 const data = await response.json();
                 if (response.ok) {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@iconify/react';
+import { DIVING_TYPE_OPTIONS } from '@/lib/constants/diving-types';
 
 interface Category {
   id: string;
@@ -69,38 +70,25 @@ function FilterContent({
           Tipe Diving
         </h3>
         <div className="space-y-3">
-          <label
-            className="flex items-center justify-between gap-3 text-base cursor-pointer group"
-          >
-            <div className="flex items-center gap-3">
-              <input
-                type="radio"
-                name="divingType"
-                checked={selectedDivingType === 'freediving'}
-                onChange={() => updateFilter('divingType', selectedDivingType === 'freediving' ? '' : 'freediving')}
-                className="accent-neutral-900 w-4 h-4"
-              />
-              <span className="text-neutral-600 group-hover:text-neutral-900">
-                Freediving
-              </span>
-            </div>
-          </label>
-          <label
-            className="flex items-center justify-between gap-3 text-base cursor-pointer group"
-          >
-            <div className="flex items-center gap-3">
-              <input
-                type="radio"
-                name="divingType"
-                checked={selectedDivingType === 'scuba'}
-                onChange={() => updateFilter('divingType', selectedDivingType === 'scuba' ? '' : 'scuba')}
-                className="accent-neutral-900 w-4 h-4"
-              />
-              <span className="text-neutral-600 group-hover:text-neutral-900">
-                Scuba
-              </span>
-            </div>
-          </label>
+          {DIVING_TYPE_OPTIONS.map((option) => (
+            <label
+              key={option.id}
+              className="flex items-center justify-between gap-3 text-base cursor-pointer group"
+            >
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  name="divingType"
+                  checked={selectedDivingType === option.id}
+                  onChange={() => updateFilter('divingType', selectedDivingType === option.id ? '' : option.id)}
+                  className="accent-neutral-900 w-4 h-4"
+                />
+                <span className="text-neutral-600 group-hover:text-neutral-900">
+                  {option.name}
+                </span>
+              </div>
+            </label>
+          ))}
           {selectedDivingType && (
             <button
               onClick={() => updateFilter('divingType', '')}

@@ -33,11 +33,9 @@ const heroBanners: Banner[] = [
 
 // Convert DB product to MockProduct format for ProductSection
 function toMockProduct(product: any): MockProduct {
-  const badge = product.isNewArrival
-    ? 'New Arrival'
-    : product.isOnSale
-      ? 'Sale'
-      : undefined;
+  const badges = [];
+  if (product.isNewArrival) badges.push('Baru');
+  if (product.isOnSale) badges.push('Sale');
 
   // Calculate price range from variants
   // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
@@ -79,7 +77,7 @@ function toMockProduct(product: any): MockProduct {
     priceRangeMin,
     priceRangeMax,
     compareAtPrice: hasDiscount ? formatRupiah(product.compareAtPriceCents!) : undefined,
-    badge,
+    badges,
     image: product.images?.[0] || undefined,
     secondaryImage: product.images?.[1] || undefined,
     variantId: activeVariants[0]?.id,

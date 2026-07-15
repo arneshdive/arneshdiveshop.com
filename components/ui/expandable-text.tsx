@@ -30,7 +30,7 @@ export function ExpandableText({ text, maxLines = 3, className = '' }: Expandabl
     <div className={className}>
       <div
         ref={textRef}
-        className={`leading-relaxed overflow-hidden transition-all duration-200 ${
+        className={`leading-relaxed overflow-hidden transition-all duration-200 whitespace-pre-line ${
           !isExpanded ? `line-clamp-${maxLines}` : ''
         }`}
       >

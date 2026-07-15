@@ -12,7 +12,7 @@ interface Product {
   priceRangeMin?: number;
   priceRangeMax?: number;
   compareAtPrice?: string;
-  badge?: string;
+  badges?: string[];
   image?: string;
   secondaryImage?: string;
   variantId?: string;

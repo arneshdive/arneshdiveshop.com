@@ -6,6 +6,7 @@ import { Minus, Plus, X } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { CartItem as CartItemType, useCartStore } from '@/lib/store/cart';
 import { formatRupiah } from '@/lib/utils/format';
+import { AnimatedUnderline } from '@/components/ui/animated-underline';
 
 interface CartItemProps {
   item: CartItemType;
@@ -50,11 +51,11 @@ export function CartItem({ item }: CartItemProps) {
       {/* Product Info */}
       <div className="flex-1 flex flex-col justify-between py-0.5 lg:py-1">
         <div>
-          <Link 
+          <Link
             href={`/produk/${item.product.slug}`}
-            className="text-base lg:text-lg font-medium tracking-tight cursor-pointer inline underline-animated"
+            className="text-base lg:text-lg font-medium tracking-tight cursor-pointer inline"
           >
-            {item.product.name}
+            <AnimatedUnderline>{item.product.name}</AnimatedUnderline>
           </Link>
           {item.variant && (
             <p className="text-sm text-neutral-400 mt-0.5 lg:mt-1 cursor-default">

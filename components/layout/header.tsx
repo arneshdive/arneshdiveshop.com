@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
+import { AnimatedUnderline } from '@/components/ui/animated-underline';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
 
 // Fixed navigation menu items
@@ -110,9 +111,9 @@ export function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`text-base tracking-wide underline-animated ${item.className || linkColor}`}
+                  className={`text-base tracking-wide ${item.className || linkColor}`}
                 >
-                  {item.name}
+                  <AnimatedUnderline>{item.name}</AnimatedUnderline>
                 </Link>
               ))}
             </div>
@@ -186,19 +187,19 @@ export function Header() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`block text-lg font-medium py-2 underline-animated ${item.className || 'text-neutral-700 hover:text-neutral-900'}`}
+                      className={`block text-lg font-medium py-2 ${item.className || 'text-neutral-700 hover:text-neutral-900'}`}
                     >
-                      {item.name}
+                      <AnimatedUnderline>{item.name}</AnimatedUnderline>
                     </Link>
                   </li>
                 ))}
                 <li className="pt-4 border-t border-neutral-200">
                   <Link
                     href="/account"
-                    className="flex items-center gap-3 text-lg font-medium py-2 text-neutral-700 hover:text-neutral-900 underline-animated"
+                    className="flex items-center gap-3 text-lg font-medium py-2 text-neutral-700 hover:text-neutral-900"
                   >
                     <Icon icon="solar:user-linear" className="w-5 h-5" />
-                    Akun Saya
+                    <AnimatedUnderline>Akun Saya</AnimatedUnderline>
                   </Link>
                 </li>
               </ul>

@@ -4,6 +4,7 @@ import { getPublicShopSettings } from '@/lib/queries/settings';
 import { WaveDivider } from '@/components/layout/wave-divider';
 import { getSession } from '@/lib/auth/session';
 import { NewsletterForm } from '@/components/layout/newsletter-form';
+import { AnimatedUnderline } from '@/components/ui/animated-underline';
 
 const paymentBadges = [
   { label: 'Visa', icon: 'logos:visa' },
@@ -58,11 +59,11 @@ export async function Footer() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
             <span>© {year} Arnes Dive Shop. All rights reserved.</span>
             <div className="flex flex-wrap gap-4">
-              <Link href="/privasi" className="underline-animated hover:text-white transition-colors">Kebijakan Privasi</Link>
-              <Link href="/syarat" className="underline-animated hover:text-white transition-colors">Syarat & Ketentuan</Link>
-              <Link href="/faq" className="underline-animated hover:text-white transition-colors">Bantuan</Link>
-              <Link href="/kontak" className="underline-animated hover:text-white transition-colors">Kontak</Link>
-              {isAdmin && <Link href="/admin" className="underline-animated hover:text-white transition-colors">Portal Admin</Link>}
+              <Link href="/privasi" className="hover:text-white transition-colors"><AnimatedUnderline>Kebijakan Privasi</AnimatedUnderline></Link>
+              <Link href="/syarat" className="hover:text-white transition-colors"><AnimatedUnderline>Syarat & Ketentuan</AnimatedUnderline></Link>
+              <Link href="/faq" className="hover:text-white transition-colors"><AnimatedUnderline>Bantuan</AnimatedUnderline></Link>
+              <Link href="/kontak" className="hover:text-white transition-colors"><AnimatedUnderline>Kontak</AnimatedUnderline></Link>
+              {isAdmin && <Link href="/admin" className="hover:text-white transition-colors"><AnimatedUnderline>Portal Admin</AnimatedUnderline></Link>}
             </div>
           </div>
           <div className="flex items-center gap-2">

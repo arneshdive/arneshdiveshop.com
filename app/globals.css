@@ -65,17 +65,6 @@ body {
   display: none;
 }
 
-/* Animated underline - text width only */
-.underline-animated {
-  text-decoration: none;
-  text-underline-offset: 2px;
-  text-decoration-color: currentColor;
-  transition: text-decoration 200ms ease;
-}
-.underline-animated:hover {
-  text-decoration: underline;
-}
-
 /* Drawer animation */
 @keyframes drawer-up {
   from {

@@ -29,7 +29,7 @@ export default function AdminLayout({
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex justify-center bg-neutral-100">
         {/* Centered Container */}
-        <div className="w-full max-w-[1920px] flex bg-neutral-50">
+        <div className="w-full max-w-[1920px] flex bg-gradient-to-b from-neutral-50 to-neutral-100">
           {/* Sidebar */}
           <AdminSidebar />
 

@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ProductFilters, type ProductFilterState } from '@/components/admin/product-filters';
 import { ProductBadge } from '@/components/ui/product-badge';
 import { formatRupiah } from '@/lib/utils/format';
+import { cn } from '@/lib/utils/cn';
 
 type Product = {
   id: string;
@@ -77,7 +78,7 @@ export default function ProductsPage() {
     category: '',
     brand: '',
     divingType: '',
-    status: '',
+    status: 'active',
     isNewArrival: false,
     isOnSale: false,
   });
@@ -122,7 +123,9 @@ export default function ProductsPage() {
       <div className="flex gap-6">
         {/* Desktop Filters */}
         <div className="hidden lg:block w-64 flex-shrink-0">
-          <ProductFilters filters={filters} onChange={setFilters} />
+          <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+            <ProductFilters filters={filters} onChange={setFilters} />
+          </div>
         </div>
 
         {/* Main Content */}
@@ -143,12 +146,15 @@ export default function ProductsPage() {
 
           {/* Product List */}
           {!isLoading && !error && (
-            <div className="space-y-2">
+            <div className="space-y-2 pb-8">
               {products.map((product) => (
                 <Link
                   key={product.id}
                   href={`/admin/products/${product.id}`}
-                  className="flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-neutral-50 transition-colors group"
+                  className={cn(
+                    "flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-neutral-50 transition-colors group",
+                    !product.isActive && "opacity-50"
+                  )}
                 >
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-neutral-100 flex-shrink-0 overflow-hidden">
                     {product.images[0] ? (
@@ -174,13 +180,13 @@ export default function ProductsPage() {
                         </>
                       )}
                       {!product.isActive && (
-                        <ProductBadge type="inactive" context="list">Nonaktif</ProductBadge>
+                        <ProductBadge type="inactive" context="card">Nonaktif</ProductBadge>
                       )}
                       {product.isNewArrival && (
-                        <ProductBadge type="new" context="list">New</ProductBadge>
+                        <ProductBadge type="new" context="card">Baru</ProductBadge>
                       )}
                       {product.isOnSale && (
-                        <ProductBadge type="sale" context="list">Sale</ProductBadge>
+                        <ProductBadge type="sale" context="card">Sale</ProductBadge>
                       )}
                     </div>
                     <h3 className="text-base font-medium tracking-tight text-neutral-900 truncate">

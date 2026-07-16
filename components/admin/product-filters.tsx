@@ -168,12 +168,12 @@ function FilterSections({
   brands: Brand[];
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-5">
       <FilterGroup label="Status" value={filters.status} onChange={(v) => onChange('status', v)} options={STATUS_OPTIONS} />
       
       {/* Special Flags */}
-      <div className="pt-2">
-        <h4 className="text-xs font-medium text-neutral-900 uppercase tracking-wider mb-3">Label Khusus</h4>
+      <div>
+        <h4 className="text-xs font-medium text-neutral-900 tracking-tight mb-3">Label Khusus</h4>
         <div className="space-y-2">
           <label className="flex items-center gap-3 text-sm cursor-pointer group">
             <input
@@ -210,7 +210,7 @@ function FilterSections({
 function FilterGroup({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: { id: string; name: string }[] }) {
   return (
     <div>
-      <h4 className="text-xs font-medium text-neutral-900 uppercase tracking-wider mb-3">{label}</h4>
+      <h4 className="text-xs font-medium text-neutral-900 tracking-tight mb-3">{label}</h4>
       <div className="space-y-2">
         {options.map((opt) => (
           <label key={opt.id} className="flex items-center gap-3 text-sm cursor-pointer group">
@@ -234,7 +234,7 @@ function CollapsibleFilterGroup({ label, value, onChange, options, defaultOpen =
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full py-1"
       >
-        <span className="text-xs font-medium text-neutral-900 uppercase tracking-wider">{label}</span>
+        <span className="text-xs font-medium text-neutral-900 tracking-tight">{label}</span>
         <div className="flex items-center gap-2">
           {hasSelection && <span className="w-2 h-2 rounded-full bg-neutral-900" />}
           <Icon icon={isOpen ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} className="w-4 h-4 text-neutral-400" />

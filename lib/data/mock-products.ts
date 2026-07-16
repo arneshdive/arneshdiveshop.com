@@ -7,7 +7,7 @@ export interface MockProduct {
   priceRangeMin?: number;
   priceRangeMax?: number;
   compareAtPrice?: string;
-  badge?: string;
+  badges?: string[];
   image?: string;
   secondaryImage?: string;
   category?: 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
@@ -29,7 +29,7 @@ export const featuredProducts: MockProduct[] = [
     title: 'Masker Freediving Pro',
     vendor: 'Arnes',
     price: 'Rp 850.000',
-    badge: 'Baru',
+    badges: ['Baru'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'masker',
@@ -44,7 +44,7 @@ export const featuredProducts: MockProduct[] = [
     title: 'Fin Carbon Pro',
     vendor: 'Arnes',
     price: 'Rp 2.500.000',
-    badge: 'Baru',
+    badges: ['Baru'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'fin',
@@ -74,7 +74,7 @@ export const featuredProducts: MockProduct[] = [
     vendor: 'Arnes',
     price: 'Rp 250.000',
     compareAtPrice: 'Rp 320.000',
-    badge: 'Sale',
+    badges: ['Sale'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
@@ -117,7 +117,7 @@ export const featuredProducts: MockProduct[] = [
     title: 'Fin Socks 3mm',
     vendor: 'Arnes',
     price: 'Rp 200.000',
-    badge: 'Baru',
+    badges: ['Baru'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',
@@ -133,7 +133,7 @@ export const featuredProducts: MockProduct[] = [
     vendor: 'Arnes',
     price: 'Rp 650.000',
     compareAtPrice: 'Rp 750.000',
-    badge: 'Sale',
+    badges: ['Sale'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'masker',
@@ -162,7 +162,7 @@ export const featuredProducts: MockProduct[] = [
     title: 'Fin Fiberglass',
     vendor: 'Arnes',
     price: 'Rp 1.900.000',
-    badge: 'Best Seller',
+    badges: ['Best Seller'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'fin',
@@ -191,7 +191,7 @@ export const featuredProducts: MockProduct[] = [
     title: 'Underwater Camera',
     vendor: 'Arnes',
     price: 'Rp 4.200.000',
-    badge: 'Baru',
+    badges: ['Baru'],
     image: '/product-sample-1.webp',
     secondaryImage: '/product-sample-2.webp',
     category: 'aksesoris',

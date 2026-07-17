@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/config/site';
@@ -7,6 +7,13 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
 });
+
+// Force light mode: the storefront/admin UI has no dark theme, so native
+// browser UI (scrollbars, form controls) shouldn't switch on OS/browser dark
+// mode either.
+export const viewport: Viewport = {
+  colorScheme: 'light',
+};
 
 export const metadata: Metadata = {
   title: {

@@ -1,6 +1,6 @@
 import type { MockProduct } from './mock-products';
 
-export type CategoryKey = 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
+export type CategoryKey = 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris' | 'freediving' | 'scuba' | 'sale' | 'search';
 
 export interface SearchFilters {
   query: string;
@@ -84,6 +84,10 @@ export function searchProducts(
     wetsuit: baseFiltered.filter((p) => p.category === 'wetsuit').length,
     'sabuk-pemberat': baseFiltered.filter((p) => p.category === 'sabuk-pemberat').length,
     aksesoris: baseFiltered.filter((p) => p.category === 'aksesoris').length,
+    freediving: 0,
+    scuba: 0,
+    sale: 0,
+    search: 0,
   };
 
   return {
@@ -107,6 +111,10 @@ export const CATEGORY_CONFIG: Record<CategoryKey, { label: string; description: 
   wetsuit: { label: 'Wetsuit', description: 'Wetsuit dan rashguard untuk kenyamanan dan perlindungan saat menyelam.', gradient: 'from-indigo-600 to-indigo-500' },
   'sabuk-pemberat': { label: 'Sabuk Pemberat', description: 'Sabuk pemberat dan aksesoris pendukung untuk keseimbangan saat menyelam.', gradient: 'from-neutral-700 to-neutral-500' },
   aksesoris: { label: 'Aksesoris', description: 'Berbagai aksesoris freediving dan scuba untuk melengkapi peralatan Anda.', gradient: 'from-neutral-700 to-neutral-500' },
+  freediving: { label: 'Freediving', description: 'Koleksi peralatan freediving lengkap untuk penyelaman tanpa tabung.', gradient: 'from-blue-700 to-cyan-500' },
+  scuba: { label: 'Scuba', description: 'Peralatan scuba diving berkualitas untuk eksplorasi bawah laut.', gradient: 'from-teal-700 to-emerald-500' },
+  sale: { label: 'Sale', description: 'Penawaran spesial peralatan diving dengan harga terbaik.', gradient: 'from-red-600 to-rose-500' },
+  search: { label: 'Cari', description: 'Cari peralatan diving sesuai kebutuhan Anda.', gradient: 'from-neutral-700 to-neutral-500' },
 };
 
 export const DIVE_TYPE_CONFIG = {

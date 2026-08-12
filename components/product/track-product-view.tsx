@@ -55,7 +55,7 @@ export function TrackProductView({ product, variants }: TrackProductViewProps) {
     }
     
     // Determine badges
-    const badges = [];
+    const badges: string[] = [];
     if (product.isNewArrival) badges.push('Baru');
     if (product.isOnSale) badges.push('Sale');
     

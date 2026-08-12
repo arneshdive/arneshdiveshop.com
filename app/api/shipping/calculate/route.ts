@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { getCheckoutSessionById } from '@/lib/queries/checkout';
-import { getCartByUserId, getCartByGuestId, CartItemWithProduct } from '@/lib/queries/cart';
+import { getCartByUserId, getCartByGuestId, CartItemWithProduct, type CartWithItems } from '@/lib/queries/cart';
 import { calculateShippingRates } from '@/lib/shipping/calculator';
 import { getSession } from '@/lib/auth/session';
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       const cookieStore = await cookies();
       const guestId = cookieStore.get('guest_id')?.value;
 
-      let cart = null;
+      let cart: CartWithItems | null = null;
       if (session) {
         cart = await getCartByUserId(session.userId);
       } else if (guestId) {

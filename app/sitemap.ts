@@ -1,9 +1,17 @@
 import type { MetadataRoute } from 'next';
 import { siteConfig } from '@/config/site';
-import { getProducts } from '@/lib/queries/products';
+
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await getProducts({ isActive: true });
+  // Dynamic import so the DB module is only loaded at runtime
+  const { getProducts } = await import('@/lib/queries/products');
+  let products: Array<{ slug: string; updatedAt?: string | Date | null }> = [];
+  try {
+    products = await getProducts({ isActive: true });
+  } catch {
+    // DB not available — skip dynamic product routes
+  }
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: siteConfig.url, changeFrequency: 'daily', priority: 1 },

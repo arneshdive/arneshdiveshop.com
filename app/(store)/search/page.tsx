@@ -7,7 +7,6 @@ import { SearchResults } from '@/components/search/search-results';
 import { EmptySearch } from '@/components/search/empty-search';
 import {
   searchProducts,
-  getAvailableBrands,
   type SearchFilters as SearchFiltersType,
   type CategoryKey,
 } from '@/lib/data/search-utils';
@@ -43,8 +42,8 @@ function sortProducts(products: typeof featuredProducts, sortBy: string) {
     case 'popular':
       // Mock: prioritize products with badges
       return sorted.sort((a, b) => {
-        if (a.badge && !b.badge) return -1;
-        if (!a.badge && b.badge) return 1;
+        if (a.badges?.length && !b.badges?.length) return -1;
+        if (!a.badges?.length && b.badges?.length) return 1;
         return 0;
       });
     default: // 'newest'
@@ -67,7 +66,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   const { products, total, categoryDistribution } = searchProducts(featuredProducts, filters);
   const sortedProducts = sortProducts(products, sortBy);
-  const availableBrands = getAvailableBrands(featuredProducts);
 
   return (
     <>
@@ -102,9 +100,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           total > 0 ? (
             <div className="flex flex-col lg:flex-row gap-8">
               <SearchFilters
-                filters={filters}
+                categories={[]} brands={[]}
                 categoryDistribution={categoryDistribution}
-                availableBrands={availableBrands}
+                brandDistribution={{}}
                 totalResults={total}
               />
               <SearchResults products={sortedProducts} total={total} sortBy={sortBy} />

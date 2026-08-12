@@ -58,8 +58,8 @@ function sortProducts(products: any[], sortBy: string) {
       });
     case 'popular':
       return sorted.sort((a, b) => {
-        if (a.badge && !b.badge) return -1;
-        if (!a.badge && b.badge) return 1;
+        if (a.badges?.length && !b.badges?.length) return -1;
+        if (!a.badges?.length && b.badges?.length) return 1;
         return 0;
       });
     default:

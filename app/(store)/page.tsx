@@ -33,7 +33,7 @@ const heroBanners: Banner[] = [
 
 // Convert DB product to MockProduct format for ProductSection
 function toMockProduct(product: any): MockProduct {
-  const badges = [];
+  const badges: string[] = [];
   if (product.isNewArrival) badges.push('Baru');
   if (product.isOnSale) badges.push('Sale');
 

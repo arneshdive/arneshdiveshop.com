@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
   
   // Prepare variants for the client component
-  const variants = (product.variants || []).map(v => ({
+  const variants = (product.variants || []).map((v: any) => ({
     id: v.id,
     name: v.name,
     options: v.options,
@@ -95,7 +95,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
   
   // Format related products for ProductCard
-  const formattedRelatedProducts = relatedProducts.map(p => {
+  const formattedRelatedProducts = relatedProducts.map((p: any) => {
     // Query already filters to active variants (getRelatedProducts)
     const activeVariants = p.variants || [];
     return {

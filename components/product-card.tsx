@@ -15,7 +15,7 @@ interface ProductCardProps {
     compareAtPrice?: string;
     image?: string;
     secondaryImage?: string;
-    badge?: string;
+    badges?: string[];
     swatches?: { name: string; handle: string; image: string }[];
   };
 }
@@ -27,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product);
+    addItem(product.id);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -37,14 +37,19 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Media Section */}
       <div className="product-card__media relative rounded-t-lg overflow-hidden">
         {/* Badge */}
-        {product.badge && (
-          <span
-            className={`absolute top-3 left-3 z-10 px-2 py-1 text-[10px] uppercase tracking-wider font-medium rounded ${
-              product.badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'
-            }`}
-          >
-            {product.badge}
-          </span>
+        {product.badges && product.badges.length > 0 && (
+          <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
+            {product.badges.map((badge) => (
+              <span
+                key={badge}
+                className={`px-2 py-1 text-[10px] uppercase tracking-wider font-medium rounded ${
+                  badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'
+                }`}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
         )}
 
         {/* Added to cart badge */}

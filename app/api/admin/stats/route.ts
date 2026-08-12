@@ -127,7 +127,7 @@ export async function GET() {
     });
 
     // Get sales chart data (last 7 days)
-    const salesChartData = [];
+    const salesChartData: Array<{ date: string; revenue: number }> = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
       const dateStart = new Date(date.setHours(0, 0, 0, 0));
@@ -143,7 +143,7 @@ export async function GET() {
         ));
       
       salesChartData.push({
-        date: dateStart.toISOString().split('T')[0],
+        date: dateStart.toISOString().split('T')[0] ?? '',
         revenue: (dayRevenue?.total ?? 0) / 100,
       });
     }

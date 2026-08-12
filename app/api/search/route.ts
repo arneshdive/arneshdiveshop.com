@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     
     // Format products for storefront
     const formattedProducts = products.map(product => {
-      const badges = [];
+      const badges: string[] = [];
       if (product.isNewArrival) badges.push('Baru');
       if (product.isOnSale) badges.push('Sale');
 

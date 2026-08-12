@@ -2,6 +2,8 @@ import { StoreLayoutClient } from '@/components/layout/store-layout-client';
 import { Footer } from '@/components/layout/footer';
 import { Toast } from '@/components/ui/toast';
 
+export const dynamic = 'force-dynamic';
+
 export default function StoreLayout({
   children,
 }: {

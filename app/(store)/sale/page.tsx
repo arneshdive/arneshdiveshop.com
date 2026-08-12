@@ -3,7 +3,6 @@ import { SearchFilters } from '@/components/search/search-filters';
 import { SearchResults } from '@/components/search/search-results';
 import {
   searchProducts,
-  getAvailableBrands,
   CATEGORY_CONFIG,
   type SearchFilters as SearchFiltersType,
   type CategoryKey,
@@ -37,8 +36,8 @@ function sortProducts(products: typeof featuredProducts, sortBy: string) {
       });
     case 'popular':
       return sorted.sort((a, b) => {
-        if (a.badge && !b.badge) return -1;
-        if (!a.badge && b.badge) return 1;
+        if (a.badges?.length && !b.badges?.length) return -1;
+        if (!a.badges?.length && b.badges?.length) return 1;
         return 0;
       });
     default:
@@ -62,7 +61,6 @@ export default async function SalePage({ searchParams }: CategoryPageProps) {
 
   const { products, total, categoryDistribution } = searchProducts(featuredProducts, filters);
   const sortedProducts = sortProducts(products, sortBy);
-  const availableBrands = getAvailableBrands(featuredProducts);
 
   return (
     <>
@@ -87,9 +85,9 @@ export default async function SalePage({ searchParams }: CategoryPageProps) {
       <div className="max-w-[1440px] mx-auto px-4 lg:px-12 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           <SearchFilters
-            filters={filters}
+            categories={[]} brands={[]}
             categoryDistribution={categoryDistribution}
-            availableBrands={availableBrands}
+            brandDistribution={{}}
             totalResults={total}
           />
           <SearchResults products={sortedProducts} total={total} sortBy={sortBy} />

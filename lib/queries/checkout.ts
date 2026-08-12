@@ -1,6 +1,6 @@
 import { db, checkoutSessions } from '@/lib/db';
 import { eq, and, gt } from 'drizzle-orm';
-import { getCartWithItems } from './cart';
+import { getCartWithItems, type CartWithItems } from './cart';
 
 const CHECKOUT_SESSION_DURATION_HOURS = 24;
 
@@ -105,7 +105,7 @@ export async function createCheckoutSession(
     throw new Error('Failed to create checkout session');
   }
 
-  let cart = null;
+  let cart: CartWithItems | null = null;
   if (data.cartId) {
     cart = await getCartWithItems(data.cartId);
   }
@@ -130,7 +130,7 @@ export async function getCheckoutSessionById(
     return null;
   }
 
-  let cart = null;
+  let cart: CartWithItems | null = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
   }
@@ -160,7 +160,7 @@ export async function getCheckoutSessionByUserId(
     return null;
   }
 
-  let cart = null;
+  let cart: CartWithItems | null = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
   }
@@ -190,7 +190,7 @@ export async function getCheckoutSessionByGuestId(
     return null;
   }
 
-  let cart = null;
+  let cart: CartWithItems | null = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
   }
@@ -221,7 +221,7 @@ export async function updateCheckoutSession(
     return null;
   }
 
-  let cart = null;
+  let cart: CartWithItems | null = null;
   if (session.cartId) {
     cart = await getCartWithItems(session.cartId);
   }

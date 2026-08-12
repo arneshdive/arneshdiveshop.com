@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
-import type { VariantOption } from '@/lib/hooks/use-product-form';
+import type { VariantOption, EditableVariant } from '@/lib/hooks/use-product-form';
 import { formatCurrencyInput } from '@/lib/utils/format';
 
 interface ProductPreviewProps {
@@ -16,6 +16,7 @@ interface ProductPreviewProps {
   isOnSale: boolean;
   images: string[];
   variantOptions: VariantOption[];
+  editableVariants?: EditableVariant[];
 }
 
 export function ProductPreview({
@@ -28,15 +29,37 @@ export function ProductPreview({
   isOnSale,
   images,
   variantOptions,
+  editableVariants = [],
 }: ProductPreviewProps) {
   const formatPrice = (val: string) => (val ? `Rp ${formatCurrencyInput(val)}` : 'Rp 0');
   const parsePriceValue = (val: string) => parseInt(val.replace(/\D/g, ''), 10) || 0;
 
+  const hasVariants = variantOptions.length > 0 && variantOptions.some(opt => opt.name && opt.values.some(v => v));
+
+  // When variants exist, compute the minimum price from active editable variants
+  const variantMinPrice = hasVariants
+    ? (() => {
+        const activePrices = editableVariants
+          .filter(v => v.isActive && v.price)
+          .map(v => parsePriceValue(v.price))
+          .filter(p => p > 0);
+        if (activePrices.length === 0) return null;
+        return Math.min(...activePrices);
+      })()
+    : null;
+
+  const hasVariantPriceRange = hasVariants && variantMinPrice !== null && (() => {
+    const prices = editableVariants
+      .filter(v => v.isActive && v.price)
+      .map(v => parsePriceValue(v.price))
+      .filter(p => p > 0);
+    return prices.length > 1 && Math.min(...prices) !== Math.max(...prices);
+  })();
+
   // Only treat compareAtPrice as a real discount if it's actually higher than the selling price —
   // otherwise a mistyped value would show an inverted "discount".
-  const hasDiscount = compareAtPrice !== '' && parsePriceValue(compareAtPrice) > parsePriceValue(price);
-
-  const hasVariants = variantOptions.length > 0 && variantOptions.some(opt => opt.name && opt.values.some(v => v));
+  // Discount only applies to non-variant products (variants don't support compare-at).
+  const hasDiscount = !hasVariants && compareAtPrice !== '' && parsePriceValue(compareAtPrice) > parsePriceValue(price);
 
   return (
     <div>
@@ -111,7 +134,14 @@ export function ProductPreview({
 
           {/* Price */}
           <p className="text-base font-semibold tracking-tight mb-4">
-            {hasDiscount ? (
+            {hasVariants && variantMinPrice !== null ? (
+              <>
+                {hasVariantPriceRange && (
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wide block">Mulai dari</span>
+                )}
+                {formatPrice(variantMinPrice.toString())}
+              </>
+            ) : hasDiscount ? (
               <>
                 <span className="text-red-500">{formatPrice(price)}</span>{' '}
                 <s className="text-neutral-400 font-normal text-sm">{formatPrice(compareAtPrice)}</s>

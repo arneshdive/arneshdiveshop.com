@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ProductFilters, type ProductFilterState } from '@/components/admin/product-filters';
@@ -74,6 +74,8 @@ async function fetchProducts(filters: ProductFilterState): Promise<{ products: P
 export default function ProductsPage() {
   const router = useRouter();
   
+  const queryClient = useQueryClient();
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [filters, setFilters] = useState<ProductFilterState>({
     category: '',
     brand: '',
@@ -89,6 +91,28 @@ export default function ProductsPage() {
   });
 
   const products = data?.products ?? [];
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Gagal menghapus produk');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success('Produk berhasil dihapus');
+      setDeleteConfirm(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
+  };
   const activeFilterCount = [
     filters.category,
     filters.brand,
@@ -148,11 +172,11 @@ export default function ProductsPage() {
           {!isLoading && !error && (
             <div className="space-y-2 pb-8">
               {products.map((product) => (
-                <Link
+                <div
                   key={product.id}
-                  href={`/admin/products/${product.id}`}
+                  onClick={() => router.push(`/admin/products/${product.id}`)}
                   className={cn(
-                    "flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-neutral-50 transition-colors group",
+                    "flex items-center gap-4 p-4 bg-white rounded-xl hover:bg-neutral-50 transition-colors group cursor-pointer",
                     !product.isActive && "opacity-50"
                   )}
                 >
@@ -204,6 +228,14 @@ export default function ProductsPage() {
                     </div>
                   </div>
 
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setDeleteConfirm(product.id); }}
+                    className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors flex-shrink-0"
+                    aria-label="Hapus produk"
+                  >
+                    <Icon icon="solar:trash-bin-minimalistic-linear" className="w-4 h-4" />
+                  </button>
+
                   <div className="hidden sm:flex items-center">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-neutral-900 group-hover:bg-neutral-100 transition-colors">
                       <Icon icon="solar:pen-linear" className="w-4 h-4" />
@@ -211,7 +243,7 @@ export default function ProductsPage() {
                   </div>
 
                   <Icon icon="solar:alt-arrow-right-linear" className="w-5 h-5 text-neutral-900 flex-shrink-0 sm:hidden" />
-                </Link>
+                </div>
               ))}
             </div>
           )}
@@ -230,6 +262,39 @@ export default function ProductsPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setDeleteConfirm(null)} />
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <Icon icon="solar:trash-bin-minimalistic-linear" className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-2">Hapus Produk?</h3>
+              <p className="text-sm text-neutral-500 mb-6">
+                Produk akan dinonaktifkan dan disembunyikan dari toko. Data order yang sudah ada tetap aman.
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={() => handleDelete(deleteConfirm)}
+                  disabled={deleteMutation.isPending}
+                  className="px-6 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {deleteMutation.isPending ? 'Menghapus...' : 'Hapus'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

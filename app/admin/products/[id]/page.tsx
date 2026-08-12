@@ -379,6 +379,7 @@ export default function EditProductPage() {
               isOnSale={formData.isOnSale}
               images={images}
               variantOptions={variantOptions}
+              editableVariants={editableVariants}
             />
           </div>
         </div>

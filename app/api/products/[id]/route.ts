@@ -19,7 +19,7 @@ const updateProductSchema = z.object({
   categoryId: z.string().min(1).optional(),
   brandId: z.string().optional().nullable(),
   divingTypes: z.array(z.enum(DIVING_TYPES)).min(1, 'Pilih minimal satu tipe diving').optional(),
-  images: z.array(z.string().url()).max(10).optional(),
+  images: z.array(z.string().url()).max(30).optional(),
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
@@ -161,7 +161,7 @@ export async function DELETE(
     // Soft delete by setting deletedAt
     await db
       .update(products)
-      .set({ deletedAt: new Date(), updatedAt: new Date() })
+      .set({ deletedAt: new Date(), isActive: false, updatedAt: new Date() })
       .where(eq(products.id, id));
 
     return NextResponse.json({ success: true, message: 'Produk berhasil dihapus' });

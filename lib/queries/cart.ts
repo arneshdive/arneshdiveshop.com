@@ -1,5 +1,5 @@
 import { db, carts, cartItems, products, productVariants } from '@/lib/db';
-import { eq, and, isNull } from 'drizzle-orm';
+import { eq, and, isNull, asc } from 'drizzle-orm';
 
 const MAX_QUANTITY = 99;
 
@@ -77,6 +77,7 @@ export async function getCartWithItems(cartId: string): Promise<CartWithItems | 
     where: eq(carts.id, cartId),
     with: {
       items: {
+        orderBy: (items) => [asc(items.createdAt)],
         with: {
           product: {
             columns: {

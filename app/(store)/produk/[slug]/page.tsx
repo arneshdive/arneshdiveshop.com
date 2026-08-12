@@ -7,6 +7,7 @@ import { USPSection } from '@/components/layout/usp-section';
 import { TrackProductView } from '@/components/product/track-product-view';
 import { RecentlyViewed } from '@/components/product/recently-viewed';
 import { getProductBySlug, getRelatedProducts } from '@/lib/queries/products';
+import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 
 interface ProductPageProps {
   params: Promise<{
@@ -96,22 +97,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
   
   // Format related products for ProductCard
   const formattedRelatedProducts = relatedProducts.map((p: any) => {
-    // Query already filters to active variants (getRelatedProducts)
-    const activeVariants = p.variants || [];
+    const priceInfo = computeProductPriceDisplay({
+      priceCents: p.priceCents,
+      compareAtPriceCents: p.compareAtPriceCents ?? null,
+      variants: (p.variants || []).map((v: any) => ({
+        isActive: v.isActive,
+        priceCents: v.priceCents,
+      })),
+    });
+
     return {
       id: p.id,
       handle: p.slug,
       title: p.name,
       vendor: p.brand?.name,
-      price: new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format((p.priceCents || 0) / 100),
+      price: priceInfo.priceDisplay,
+      compareAtPrice: priceInfo.compareAtPriceDisplay,
       badge: p.isOnSale ? 'Sale' : p.isNewArrival ? 'Baru' : undefined,
       image: (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
       secondaryImage: (p.images as string[] | undefined)?.[1] || (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
-      variantId: activeVariants[0]?.id,
+      variantId: (p.variants || []).find((v: any) => v.isActive)?.id,
     };
   });
 

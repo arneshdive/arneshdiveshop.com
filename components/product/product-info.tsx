@@ -6,6 +6,7 @@ import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { ExpandableText } from '@/components/ui/expandable-text';
 import { ProductActions } from '@/components/product/product-actions';
 import { formatRupiah } from '@/lib/utils/format';
+import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 import { formatDivingType } from '@/lib/constants/diving-types';
 import type { DivingType } from '@/lib/db/schema';
 
@@ -39,23 +40,19 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
     product.compareAtPriceCents
   );
   
-  // Calculate price range from variants
-  const variantPrices = variants
-    .filter(v => v.isActive && v.priceCents !== null)
-    .map(v => v.priceCents as number);
+  // Calculate base price range using shared utility
+  const basePrice = computeProductPriceDisplay({
+    priceCents: product.priceCents,
+    compareAtPriceCents: product.compareAtPriceCents,
+    variants: variants.map(v => ({
+      isActive: v.isActive,
+      priceCents: v.priceCents,
+    })),
+  });
   
-  const hasVariantPricing = variantPrices.length > 0;
-  
-  // Calculate min/max prices for range display
-  let priceRangeMin = product.priceCents;
-  let priceRangeMax = product.priceCents;
-  
-  if (hasVariantPricing) {
-    const minVariant = Math.min(...variantPrices);
-    const maxVariant = Math.max(...variantPrices);
-    priceRangeMin = Math.min(product.priceCents, minVariant);
-    priceRangeMax = Math.max(product.priceCents, maxVariant);
-  }
+  const hasVariantPricing = basePrice.priceRangeMin !== undefined;
+  const priceRangeMin = basePrice.priceRangeMin ?? product.priceCents;
+  const priceRangeMax = basePrice.priceRangeMax ?? product.priceCents;
   
   // Determine what to display
   const displayPrice = currentPriceCents ?? priceRangeMin;
@@ -67,8 +64,9 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
     setCurrentCompareAtPriceCents(priceInfo.compareAtPriceCents);
   }, []);
 
-  // Only a real discount if the compare-at price is actually higher than the selling price
-  const hasDiscount = !!currentCompareAtPriceCents && currentCompareAtPriceCents > product.priceCents;
+  // Only a real discount if the compare-at price is higher than the selling price
+  const effectivePrice = currentPriceCents ?? priceRangeMin;
+  const hasDiscount = !!currentCompareAtPriceCents && currentCompareAtPriceCents > effectivePrice;
 
   return (
     <div className="lg:sticky lg:top-24 max-w-md">

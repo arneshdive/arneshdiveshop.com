@@ -9,7 +9,7 @@ import { HeroBannerCarousel } from '@/components/store/hero-banner-carousel';
 import { getProducts } from '@/lib/queries/products';
 import type { MockProduct } from '@/lib/data/mock-products';
 import type { Banner } from '@/lib/db/schema';
-import { formatRupiah } from '@/lib/utils/format';
+import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 
 // Static hero banners — banner management isn't built yet, so this
 // carousel content is hardcoded rather than sourced from the DB.
@@ -37,50 +37,28 @@ function toMockProduct(product: any): MockProduct {
   if (product.isNewArrival) badges.push('Baru');
   if (product.isOnSale) badges.push('Sale');
 
-  // Calculate price range from variants
-  // Note: priceCents stores actual cents (100 cents = 1 Rupiah)
-  const activeVariants = (product.variants || []).filter((v: any) => v.isActive);
-  const variantPrices = activeVariants
-    .filter((v: any) => v.priceCents !== null)
-    .map((v: any) => v.priceCents);
-
-  let priceDisplay: string;
-  let priceRangeMin: number | undefined;
-  let priceRangeMax: number | undefined;
-  
-  if (variantPrices.length > 0) {
-    // Variants have their own prices - show only minimum price
-    const minPrice = Math.min(...variantPrices);
-    const maxPrice = Math.max(...variantPrices);
-    
-    // Use base price as minimum if it's lower than variant prices
-    const effectiveMin = product.priceCents ? Math.min(product.priceCents, minPrice) : minPrice;
-    const effectiveMax = Math.max(minPrice, product.priceCents || 0, maxPrice);
-    
-    priceRangeMin = effectiveMin;
-    priceRangeMax = effectiveMax;
-    priceDisplay = formatRupiah(effectiveMin);
-  } else {
-    // No variant prices - use base price
-    priceDisplay = formatRupiah(product.priceCents || 0);
-  }
-
-  // Only a real discount if the compare-at price is actually higher than the selling price
-  const hasDiscount = !!product.compareAtPriceCents && product.compareAtPriceCents > product.priceCents;
+  const priceInfo = computeProductPriceDisplay({
+    priceCents: product.priceCents,
+    compareAtPriceCents: product.compareAtPriceCents ?? null,
+    variants: (product.variants || []).map((v: any) => ({
+      isActive: v.isActive,
+      priceCents: v.priceCents,
+    })),
+  });
 
   return {
     id: product.id,
     handle: product.slug,
     title: product.name,
     vendor: product.brand?.name,
-    price: priceDisplay,
-    priceRangeMin,
-    priceRangeMax,
-    compareAtPrice: hasDiscount ? formatRupiah(product.compareAtPriceCents!) : undefined,
+    price: priceInfo.priceDisplay,
+    priceRangeMin: priceInfo.priceRangeMin,
+    priceRangeMax: priceInfo.priceRangeMax,
+    compareAtPrice: priceInfo.compareAtPriceDisplay,
     badges,
     image: product.images?.[0] || undefined,
     secondaryImage: product.images?.[1] || undefined,
-    variantId: activeVariants[0]?.id,
+    variantId: (product.variants || []).find((v: any) => v.isActive)?.id,
   };
 }
 

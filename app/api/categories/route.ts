@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db, categories } from '@/lib/db';
-import { eq, desc, count } from 'drizzle-orm';
+import { db, categories, products } from '@/lib/db';
+import { eq, desc, count, inArray } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/admin';
 
 const ITEMS_PER_PAGE = 10;
@@ -41,8 +41,26 @@ export async function GET(request: NextRequest) {
       offset,
     });
 
+    // Attach product counts per category
+    const categoryIds = paginatedCategories.map((c) => c.id);
+    const productCounts =
+      categoryIds.length > 0
+        ? await db
+            .select({ categoryId: products.categoryId, count: count() })
+            .from(products)
+            .where(inArray(products.categoryId, categoryIds))
+            .groupBy(products.categoryId)
+        : [];
+
+    const countMap = new Map(productCounts.map((r) => [r.categoryId, r.count]));
+
+    const categoriesWithCount = paginatedCategories.map((c) => ({
+      ...c,
+      productCount: countMap.get(c.id) ?? 0,
+    }));
+
     return NextResponse.json({
-      categories: paginatedCategories,
+      categories: categoriesWithCount,
       pagination: {
         page,
         limit,

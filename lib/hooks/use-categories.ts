@@ -3,6 +3,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Category } from '@/lib/db/schema';
 
+export interface CategoryWithCount extends Category {
+  productCount: number;
+}
+
 interface PaginationInfo {
   page: number;
   limit: number;
@@ -11,7 +15,7 @@ interface PaginationInfo {
 }
 
 // Fetch categories with pagination
-async function fetchCategories(page: number = 1): Promise<{ categories: Category[]; pagination: PaginationInfo }> {
+async function fetchCategories(page: number = 1): Promise<{ categories: CategoryWithCount[]; pagination: PaginationInfo }> {
   const response = await fetch(`/api/categories?page=${page}`);
   if (!response.ok) throw new Error('Failed to fetch categories');
   return response.json();
@@ -45,14 +49,22 @@ async function updateCategory(id: string, data: { name: string; slug: string; de
   return response.json();
 }
 
+export interface CategoryDeleteError extends Error {
+  productCount?: number;
+}
+
 // Delete category
 async function deleteCategory(id: string): Promise<void> {
   const response = await fetch(`/api/categories/${id}`, {
     method: 'DELETE',
   });
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to delete category');
+    const body = await response.json();
+    const error = new Error(body.error || 'Failed to delete category') as CategoryDeleteError;
+    if (body.productCount !== undefined) {
+      error.productCount = body.productCount;
+    }
+    throw error;
   }
 }
 

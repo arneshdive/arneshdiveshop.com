@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { db, categories, products } from '@/lib/db';
-import { eq } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/admin';
 
 const updateCategorySchema = z.object({
@@ -126,14 +126,20 @@ export async function DELETE(
       return NextResponse.json({ error: 'Kategori tidak ditemukan' }, { status: 404 });
     }
 
-    // Check if category has products
-    const hasProducts = await db.query.products.findFirst({
-      where: eq(products.categoryId, id),
-    });
+    // Check how many products reference this category
+    const [productCountResult] = await db
+      .select({ count: count() })
+      .from(products)
+      .where(eq(products.categoryId, id));
 
-    if (hasProducts) {
+    const productCount = productCountResult?.count ?? 0;
+
+    if (productCount > 0) {
       return NextResponse.json(
-        { error: 'Tidak dapat menghapus kategori yang memiliki produk terkait' },
+        {
+          error: `Tidak dapat menghapus kategori yang masih memiliki ${productCount} produk terkait`,
+          productCount,
+        },
         { status: 400 }
       );
     }

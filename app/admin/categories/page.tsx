@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Pagination } from '@/components/ui/pagination';
-import { useCategories } from '@/lib/hooks/use-categories';
+import { useCategories, type CategoryWithCount } from '@/lib/hooks/use-categories';
 import type { Category } from '@/lib/db/schema';
 
 interface CategoryFormData {
@@ -35,7 +36,7 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [form, setForm] = useState<CategoryFormData>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<CategoryWithCount | null>(null);
 
   const openCreateModal = () => {
     setEditingCategory(null);
@@ -134,7 +135,7 @@ export default function CategoriesPage() {
         toast.success('Kategori berhasil dihapus');
         setDeleteConfirm(null);
       },
-      onError: (error) => {
+      onError: (error: any) => {
         toast.error(error.message || 'Gagal menghapus kategori');
       },
     });
@@ -193,6 +194,9 @@ export default function CategoriesPage() {
                   <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">
                     Slug
                   </th>
+                  <th className="text-center px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider w-20">
+                    Produk
+                  </th>
                   <th className="text-left px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider hidden md:table-cell">
                     Deskripsi
                   </th>
@@ -212,6 +216,18 @@ export default function CategoriesPage() {
                         {category.slug}
                       </code>
                     </td>
+                    <td className="px-6 py-4 text-center">
+                      {(category as CategoryWithCount).productCount > 0 ? (
+                        <Link
+                          href={`/admin/products?category=${category.id}`}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        >
+                          {(category as CategoryWithCount).productCount}
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-neutral-400">0</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 hidden md:table-cell">
                       <span className="text-sm text-neutral-500 line-clamp-1">
                         {category.description || '-'}
@@ -227,7 +243,7 @@ export default function CategoriesPage() {
                           <Icon icon="solar:pen-linear" className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => setDeleteConfirm(category.id)}
+                          onClick={() => setDeleteConfirm(category as CategoryWithCount)}
                           className="w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-600 hover:bg-red-50 transition-colors"
                           aria-label="Hapus kategori"
                         >
@@ -366,23 +382,54 @@ export default function CategoriesPage() {
                 <Icon icon="solar:trash-bin-minimalistic-linear" className="w-6 h-6 text-red-600" />
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 mb-2">Hapus Kategori?</h3>
-              <p className="text-sm text-neutral-500 mb-6">
-                Tindakan ini tidak dapat dibatalkan. Kategori dengan produk terkait tidak dapat dihapus.
-              </p>
-              <div className="flex justify-center gap-3">
-                <button
-                  onClick={() => setDeleteConfirm(null)}
-                  className="px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
-                >
-                  Batal
-                </button>
-                <button
-                  onClick={() => handleDelete(deleteConfirm)}
-                  className="px-6 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
-                >
-                  Hapus
-                </button>
-              </div>
+              {deleteConfirm.productCount > 0 ? (
+                <>
+                  <p className="text-sm text-neutral-500 mb-2">
+                    Kategori <strong>{deleteConfirm.name}</strong> masih digunakan oleh{' '}
+                    <strong>{deleteConfirm.productCount} produk</strong>.
+                  </p>
+                  <p className="text-sm text-neutral-500 mb-4">
+                    Pindahkan atau hapus produk terkait terlebih dahulu sebelum menghapus kategori ini.
+                  </p>
+                  <div className="mb-5">
+                    <Link
+                      href={`/admin/products?category=${deleteConfirm.id}`}
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      <Icon icon="solar:link-circle-linear" className="w-4 h-4" />
+                      Lihat {deleteConfirm.productCount} produk terkait
+                    </Link>
+                  </div>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => setDeleteConfirm(null)}
+                      className="px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-neutral-500 mb-6">
+                    Tindakan ini tidak dapat dibatalkan.
+                  </p>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => setDeleteConfirm(null)}
+                      className="px-4 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      onClick={() => handleDelete(deleteConfirm.id)}
+                      className="px-6 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

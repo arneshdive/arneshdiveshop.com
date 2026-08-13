@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useCartStore } from '@/lib/store/cart';
 import { formatRupiah } from '@/lib/utils/format';
@@ -86,10 +87,12 @@ export function OrderSummary() {
               <div key={item.id} className="flex gap-4 items-center">
                 <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0">
                   {image ? (
-                    <img
+                    <Image
                       src={image}
                       alt={item.product.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="48px"
+                      className="object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-neutral-300">

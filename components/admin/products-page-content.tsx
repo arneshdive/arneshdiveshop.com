@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -181,9 +182,9 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
                     !product.isActive && "opacity-50"
                   )}
                 >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-neutral-100 flex-shrink-0 overflow-hidden">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-neutral-100 flex-shrink-0 overflow-hidden relative">
                     {product.images[0] ? (
-                      <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                      <Image src={product.images[0]} alt={product.name} fill sizes="80px" className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-neutral-400">
                         <Icon icon="solar:gallery-minimalistic-linear" className="w-6 h-6" />

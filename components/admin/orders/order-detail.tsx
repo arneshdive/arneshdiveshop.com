@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import { formatRupiah, formatDate, toTitleCase } from '@/lib/utils/format';
 import { orderStatusConfig } from '@/lib/constants/order-status';
@@ -473,12 +474,14 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
         <div className="space-y-4">
           {order.items.map((item) => (
             <div key={item.id} className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-neutral-100 flex-shrink-0 overflow-hidden relative flex items-center justify-center">
                 {item.product.images?.[0] ? (
-                  <img
+                  <Image
                     src={item.product.images[0]}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="48px"
+                    className="object-cover"
                   />
                 ) : (
                   <Icon icon="solar:gallery-minimalistic-linear" className="w-5 h-5 text-neutral-400" />

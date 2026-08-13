@@ -206,10 +206,12 @@ export default async function HomePage() {
                 rel="noopener noreferrer"
                 className="aspect-[4/6] bg-neutral-100 rounded-lg overflow-hidden group relative"
               >
-                <img
+                <Image
                   src={post.image}
                   alt="Instagram post"
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                  fill
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-3 right-3">
                   <Icon icon="mdi:instagram" className="w-6 h-6 text-white drop-shadow-lg" />

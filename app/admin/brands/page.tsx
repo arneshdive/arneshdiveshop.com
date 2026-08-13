@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
+import Image from 'next/image';
 import { Plus, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
@@ -212,9 +213,12 @@ export default function BrandsPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {brand.logoUrl ? (
-                          <img
+                          <Image
                             src={brand.logoUrl}
                             alt={brand.name}
+                            width={40}
+                            height={40}
+                            unoptimized
                             className="w-10 h-10 rounded-lg object-cover"
                           />
                         ) : (

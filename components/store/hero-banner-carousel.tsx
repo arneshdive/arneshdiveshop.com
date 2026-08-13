@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { WaveDivider } from '@/components/layout/wave-divider';
 import type { Banner } from '@/lib/db/schema';
@@ -80,10 +81,13 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
         className="absolute inset-0 z-0 will-change-transform"
         style={{ transform: `translateY(${parallaxOffset}px) scale(1.1)` }}
       >
-        <img
+        <Image
           src={currentBanner.imageUrl}
           alt={currentBanner.title || 'Hero'}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
+          fill
+          priority
+          sizes="100vw"
+          className={`object-cover transition-opacity duration-300 ${
             isTransitioning ? 'opacity-0' : 'opacity-100'
           }`}
         />

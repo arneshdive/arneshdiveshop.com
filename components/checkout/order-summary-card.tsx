@@ -1,6 +1,7 @@
 'use client';
 
 import { Icon } from '@iconify/react';
+import Image from 'next/image';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { formatRupiah } from '@/lib/utils/format';
@@ -37,10 +38,12 @@ export function OrderSummaryCard() {
             <div key={item.id} className="flex gap-4 items-center">
               <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0">
                 {image ? (
-                  <img
+                  <Image
                     src={image}
                     alt={item.product.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="48px"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-neutral-300">

@@ -101,10 +101,10 @@ export function ProductFilters({ filters, onChange }: ProductFiltersProps) {
       {/* Mobile: Active Filter Pills */}
       {activeFilterCount > 0 && (
         <div className="lg:hidden flex flex-wrap gap-2 mt-3">
-          {filters.status && <FilterPill label={STATUS_OPTIONS.find(o => o.id === filters.status)?.name!} onRemove={() => handleChange('status', '')} />}
-          {filters.category && <FilterPill label={categories.find(c => c.id === filters.category)?.name!} onRemove={() => handleChange('category', '')} />}
-          {filters.brand && <FilterPill label={brands.find(b => b.id === filters.brand)?.name!} onRemove={() => handleChange('brand', '')} />}
-          {filters.divingType && <FilterPill label={DIVING_TYPE_OPTIONS.find(o => o.id === filters.divingType)?.name!} onRemove={() => handleChange('divingType', '')} />}
+          {filters.status && <FilterPill label={STATUS_OPTIONS.find(o => o.id === filters.status)?.name ?? ''} onRemove={() => handleChange('status', '')} />}
+          {filters.category && <FilterPill label={categories.find(c => c.id === filters.category)?.name ?? ''} onRemove={() => handleChange('category', '')} />}
+          {filters.brand && <FilterPill label={brands.find(b => b.id === filters.brand)?.name ?? ''} onRemove={() => handleChange('brand', '')} />}
+          {filters.divingType && <FilterPill label={DIVING_TYPE_OPTIONS.find(o => o.id === filters.divingType)?.name ?? ''} onRemove={() => handleChange('divingType', '')} />}
           {filters.isNewArrival && <FilterPill label="Produk Baru" onRemove={() => handleChange('isNewArrival', false)} />}
           {filters.isOnSale && <FilterPill label="Sedang Sale" onRemove={() => handleChange('isOnSale', false)} />}
         </div>

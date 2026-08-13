@@ -148,7 +148,7 @@ export default function NewProductPage() {
 
       // Create variants if enabled
       if (hasVariants && editableVariants.length > 0 && variantOptions.length > 0) {
-        let variantErrors: string[] = [];
+        const variantErrors: string[] = [];
         
         const variantPromises = editableVariants.map(async (variant) => {
           // Build options object from variantOptions

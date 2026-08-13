@@ -94,7 +94,7 @@ export function StatusHistory({ history, isLoading }: StatusHistoryProps) {
                 
                 {entry.note && (
                   <p className="text-sm text-neutral-600 mt-2 italic">
-                    "{entry.note}"
+                    &ldquo;{entry.note}&rdquo;
                   </p>
                 )}
               </div>

@@ -42,7 +42,7 @@ export async function GET() {
   try {
     const session = await getSession();
     const cookieStore = await cookies();
-    let guestId = cookieStore.get(GUEST_COOKIE_NAME)?.value;
+    const guestId = cookieStore.get(GUEST_COOKIE_NAME)?.value;
 
     // For authenticated users
     if (session) {

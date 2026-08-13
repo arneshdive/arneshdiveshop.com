@@ -7,6 +7,7 @@ import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
+import { useHydrated } from '@/lib/hooks/use-hydrated';
 
 // Fixed navigation menu items
 const NAV_ITEMS = [
@@ -19,7 +20,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrated();
   const pathname = usePathname();
   const isHomepage = pathname === '/';
   
@@ -27,11 +28,6 @@ export function Header() {
   useCartSync();
   
   const itemCount = useCartStore((state) => state.getItemCount());
-
-  // Wait for mount to avoid hydration mismatch with persisted cart
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

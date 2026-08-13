@@ -41,6 +41,9 @@ export function DestinationSearch({ value, onSelect, placeholder = 'Cari kelurah
   // Search destinations
   useEffect(() => {
     if (!search.trim() || search.length < 3) {
+      // Clear stale results when the query is emptied/shortened. This is
+      // input-driven state synchronization, not a render-driven update.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults([]);
       return;
     }

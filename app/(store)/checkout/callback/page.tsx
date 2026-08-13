@@ -12,6 +12,10 @@ function CheckoutCallbackContent() {
   const [status, setStatus] = useState<PaymentStatus>('loading');
   const [orderId, setOrderId] = useState<string | null>(null);
 
+  // Derive payment status once from Midtrans redirect params and drive the
+  // UI state from them. These setState calls run synchronously in the effect
+  // because the callback page only needs to parse the URL a single time.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const orderIdParam = searchParams.get('order_id');
     const transactionStatus = searchParams.get('transaction_status');
@@ -38,6 +42,7 @@ function CheckoutCallbackContent() {
       setStatus('failed');
     }
   }, [searchParams, router]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (status === 'loading') {
     return (

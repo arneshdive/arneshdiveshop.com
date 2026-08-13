@@ -1,40 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { ProductCard } from '@/components/product/product-card';
-import {
-  getRecentlyViewed,
-  type RecentlyViewedProduct,
-} from '@/lib/utils/recently-viewed';
+import { useHydrated } from '@/lib/hooks/use-hydrated';
+import { getRecentlyViewed } from '@/lib/utils/recently-viewed';
 
 interface RecentlyViewedProps {
   currentProductId?: string; // Optionally exclude current product from list
 }
 
 export function RecentlyViewed({ currentProductId }: RecentlyViewedProps) {
-  const [products, setProducts] = useState<RecentlyViewedProduct[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrated();
 
-  useEffect(() => {
-    setMounted(true);
-    
-    // Load recently viewed products
-    const viewed = getRecentlyViewed();
-    
-    // Filter out current product if provided
-    const filtered = currentProductId
-      ? viewed.filter(p => p.id !== currentProductId)
-      : viewed;
-    
-    // Take only 4 for display
-    setProducts(filtered.slice(0, 4));
-  }, [currentProductId]);
-
-  // Don't render anything until client-side hydration is complete
-  // This prevents hydration mismatch
+  // Don't render anything until client-side hydration is complete.
+  // localStorage is browser-only, so reading it during SSR would cause a
+  // hydration mismatch.
   if (!mounted) {
     return null;
   }
+
+  // Read on the client and derive the list directly during render.
+  const viewed = getRecentlyViewed();
+  const filtered = currentProductId
+    ? viewed.filter(p => p.id !== currentProductId)
+    : viewed;
+  const products = filtered.slice(0, 4);
 
   // Hide section if no products
   if (products.length === 0) {

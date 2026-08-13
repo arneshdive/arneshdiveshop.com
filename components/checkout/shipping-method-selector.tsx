@@ -80,6 +80,9 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
   // Fetch shipping rates when destination changes
   useEffect(() => {
     if (!data.rajaongkirCityId) {
+      // No destination selected yet: clear rates. This is input-driven
+      // synchronization, not a render-driven update.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRates([]);
       setField('shippingCostCents', null);
       return;

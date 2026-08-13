@@ -17,6 +17,9 @@ function AcceptInviteForm() {
 
   useEffect(() => {
     if (!token) {
+      // Token is read from the URL once on mount; these are initial
+      // error-state derivations, not render-driven updates.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus('error');
       setError('Token undangan tidak ditemukan');
       return;

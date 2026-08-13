@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useHydrated } from '@/lib/hooks/use-hydrated';
 import { Icon } from '@iconify/react';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -266,7 +267,7 @@ export function SettingsMapModal({
   initialLng,
   initialAddress,
 }: SettingsMapModalProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrated();
   const [addressInput, setAddressInput] = useState(initialAddress || '');
   const [cityInput, setCityInput] = useState('');
   const [provinceInput, setProvinceInput] = useState('');
@@ -278,10 +279,6 @@ export function SettingsMapModal({
     }
     return L.latLng(DEFAULT_CENTER_LAT, DEFAULT_CENTER_LNG);
   });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Reset position when modal opens with new initial values
   useEffect(() => {

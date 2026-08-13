@@ -152,6 +152,8 @@ export default function CheckoutPage() {
   useEffect(() => {
     const { isValid } = validateForm();
     if (isValid && !data.checkoutSessionId && !isCreatingSession) {
+      // Side effect triggered by form validity, not by render.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       createCheckoutSession();
     }
   }, [validateForm, data.checkoutSessionId, isCreatingSession, createCheckoutSession]);

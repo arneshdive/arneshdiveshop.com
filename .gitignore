@@ -48,3 +48,6 @@ vitest.config.ts.timestamp-*
 
 # playwright mcp debug output
 /.playwright-mcp/
+
+# git worktrees (local scratch branches)
+/.work/

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
+import { getVariantOptionGroups, findMatchingVariant } from '@/lib/utils/variant-selection';
 
 interface Variant {
   id: string;
@@ -32,15 +33,24 @@ export function ProductActions({
   onPriceChange,
 }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1);
-  // Auto-select first active variant to prevent variantless cart items
-  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(() => {
+  // Track selected option values per dimension instead of a single variant id.
+  // This lets multi-dimensional variants (e.g. stiffness × size) combine
+  // correctly instead of one dimension's click overwriting the other.
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const firstActiveVariant = variants.find(v => v.isActive);
-    return firstActiveVariant?.id;
+    return firstActiveVariant ? { ...firstActiveVariant.options } : {};
   });
   const [added, setAdded] = useState(false);
   
   const addItem = useCartStore((state) => state.addItem);
   const isLoading = useCartStore((state) => state.isLoading);
+
+  // Derive the currently selected variant from the option-value combination.
+  const selectedVariant = useMemo(
+    () => findMatchingVariant(variants, selectedOptions),
+    [variants, selectedOptions],
+  );
+  const selectedVariantId = selectedVariant?.id;
 
   const handleAddToCart = async () => {
     if (added || isLoading) return;
@@ -78,9 +88,6 @@ export function ProductActions({
   };
 
   // Get selected variant price
-  const selectedVariant = selectedVariantId 
-    ? variants.find(v => v.id === selectedVariantId) 
-    : null;
   const currentPriceCents = selectedVariant?.priceCents ?? basePriceCents;
   
   // Notify parent of price changes
@@ -93,52 +100,35 @@ export function ProductActions({
     }
   }, [currentPriceCents, selectedVariant, compareAtPriceCents, onPriceChange]);
   
-  // Extract variant options grouped by option name
-  const variantOptionsMap = new Map<string, { label: string; value: string; variantId: string }[]>();
-  
-  if (variants.length > 0) {
-    const optionNames = new Set<string>();
-    variants.forEach(v => {
-      Object.keys(v.options).forEach(name => optionNames.add(name));
-    });
-    
-    optionNames.forEach(optionName => {
-      const values = new Map<string, { label: string; value: string; variantId: string }>();
-      variants.forEach(variant => {
-        const value = variant.options[optionName];
-        if (value && !values.has(value) && variant.isActive) {
-          values.set(value, {
-            label: value,
-            value: value.toLowerCase().replace(/\s+/g, '-'),
-            variantId: variant.id,
-          });
-        }
-      });
-      variantOptionsMap.set(optionName, Array.from(values.values()));
-    });
-  }
+  // Group option values by dimension for rendering
+  const variantOptionGroups = useMemo(
+    () => getVariantOptionGroups(variants),
+    [variants],
+  );
 
   return (
     <>
       {/* Variant Selection */}
-      {variantOptionsMap.size > 0 && Array.from(variantOptionsMap.entries()).map(([optionName, options]) => (
-        <div key={optionName} className="mb-6">
+      {variantOptionGroups.map((group) => (
+        <div key={group.name} className="mb-6">
           <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">
-            {optionName}{selectedVariant ? '' : <span className="text-red-500 ml-1">*</span>}
+            {group.name}{selectedVariant ? '' : <span className="text-red-500 ml-1">*</span>}
           </p>
           <div className="flex flex-wrap gap-3">
-            {options.map((option) => (
+            {group.values.map((value) => (
               <button
-                key={option.value}
+                key={value}
                 type="button"
-                onClick={() => setSelectedVariantId(option.variantId)}
+                onClick={() =>
+                  setSelectedOptions((prev) => ({ ...prev, [group.name]: value }))
+                }
                 className={`min-w-[48px] h-12 px-4 rounded-md border text-sm font-medium transition-colors ${
-                  selectedVariantId === option.variantId
+                  selectedOptions[group.name] === value
                     ? 'border-neutral-900 bg-neutral-900 text-white'
                     : 'border-neutral-300 hover:border-neutral-900'
                 }`}
               >
-                {option.label}
+                {value}
               </button>
             ))}
           </div>

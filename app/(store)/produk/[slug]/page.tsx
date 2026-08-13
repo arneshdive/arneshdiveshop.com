@@ -151,7 +151,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Product Info */}
           <div className="w-full lg:w-2/5">
-            <ProductInfo product={productData} variants={variants} />
+            <ProductInfo key={product.id} product={productData} variants={variants} />
           </div>
         </div>
       </section>

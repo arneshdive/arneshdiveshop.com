@@ -9,6 +9,7 @@ import { formatRupiah } from '@/lib/utils/format';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 import { formatDivingType } from '@/lib/constants/diving-types';
 import type { DivingType } from '@/lib/db/schema';
+import type { VariantOptionDefinition } from '@/lib/utils/variant-selection';
 
 interface Variant {
   id: string;
@@ -32,9 +33,10 @@ interface ProductInfoProps {
     divingTypes?: string[];
   };
   variants: Variant[];
+  variantOptions?: VariantOptionDefinition[];
 }
 
-export function ProductInfo({ product, variants }: ProductInfoProps) {
+export function ProductInfo({ product, variants, variantOptions }: ProductInfoProps) {
   const [currentPriceCents, setCurrentPriceCents] = useState<number | null>(null);
   const [currentCompareAtPriceCents, setCurrentCompareAtPriceCents] = useState<number | null>(
     product.compareAtPriceCents
@@ -108,6 +110,7 @@ export function ProductInfo({ product, variants }: ProductInfoProps) {
       <ProductActions 
         productId={product.id}
         variants={variants}
+        variantOptions={variantOptions}
         basePriceCents={product.priceCents}
         compareAtPriceCents={product.compareAtPriceCents}
         isActive={product.isActive}

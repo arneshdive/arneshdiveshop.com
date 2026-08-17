@@ -1,5 +1,6 @@
-import { X } from 'lucide-react';
-import type { VariantOption, EditableVariant } from '@/lib/hooks/use-product-form';
+import { GripVertical, X } from 'lucide-react';
+import { Reorder, useDragControls } from 'framer-motion';
+import type { VariantOption, VariantValue, EditableVariant } from '@/lib/hooks/use-product-form';
 
 interface VariantsSectionProps {
   hasVariants: boolean;
@@ -8,9 +9,11 @@ interface VariantsSectionProps {
   editableVariants: EditableVariant[];
   addVariantOption: () => void;
   removeVariantOption: (index: number) => void;
-  updateVariantOption: (index: number, field: 'name' | 'values', value: string | string[]) => void;
+  updateVariantOption: (index: number, field: 'name' | 'values', value: string | VariantValue[]) => void;
   addVariantValue: (optionIndex: number) => void;
   removeVariantValue: (optionIndex: number, valueIndex: number) => void;
+  reorderVariantOption: (next: VariantOption[]) => void;
+  reorderVariantValue: (optionIndex: number, next: VariantValue[]) => void;
   updateEditableVariant: (id: string, field: 'sku' | 'price' | 'isActive', value: string | boolean) => void;
   onHasVariantsChange?: (value: boolean) => void; // Callback when hasVariants is toggled
   hasSavedVariants?: boolean; // True when editing a product that already has variants saved in the DB
@@ -26,6 +29,8 @@ export function VariantsSection({
   updateVariantOption,
   addVariantValue,
   removeVariantValue,
+  reorderVariantOption,
+  reorderVariantValue,
   updateEditableVariant,
   onHasVariantsChange,
   hasSavedVariants = false,
@@ -60,6 +65,8 @@ export function VariantsSection({
             updateVariantOption={updateVariantOption}
             addVariantValue={addVariantValue}
             removeVariantValue={removeVariantValue}
+            reorderVariantOption={reorderVariantOption}
+            reorderVariantValue={reorderVariantValue}
           />
 
           {editableVariants.length > 0 && (
@@ -77,6 +84,26 @@ export function VariantsSection({
   );
 }
 
+function GripHandle({ className = '' }: { className?: string }) {
+  return (
+    <GripVertical
+      className={`w-4 h-4 shrink-0 cursor-grab text-neutral-300 hover:text-neutral-600 transition-colors ${className}`}
+    />
+  );
+}
+
+type VariantOptionsProps = Pick<
+  VariantsSectionProps,
+  | 'variantOptions'
+  | 'addVariantOption'
+  | 'removeVariantOption'
+  | 'updateVariantOption'
+  | 'addVariantValue'
+  | 'removeVariantValue'
+  | 'reorderVariantOption'
+  | 'reorderVariantValue'
+>;
+
 function VariantOptions({
   variantOptions,
   addVariantOption,
@@ -84,59 +111,29 @@ function VariantOptions({
   updateVariantOption,
   addVariantValue,
   removeVariantValue,
-}: Omit<VariantsSectionProps, 'hasVariants' | 'setHasVariants' | 'editableVariants' | 'updateEditableVariant'>) {
+  reorderVariantOption,
+  reorderVariantValue,
+}: VariantOptionsProps) {
   return (
     <div className="space-y-4">
-      {variantOptions.map((option, optionIndex) => (
-        <div key={option.id} className="p-4 bg-neutral-50 rounded-lg">
-          <div className="flex items-center gap-3 mb-3">
-            <input
-              type="text"
-              placeholder="Nama opsi (contoh: Warna, Ukuran)"
-              value={option.name}
-              onChange={(e) => updateVariantOption(optionIndex, 'name', e.target.value)}
-              className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all"
-            />
-            <button
-              type="button"
-              onClick={() => removeVariantOption(optionIndex)}
-              className="w-9 h-9 flex items-center justify-center text-neutral-400 hover:text-red-600 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {option.values.map((value, valueIndex) => (
-              <div key={valueIndex} className="flex items-center">
-                <input
-                  type="text"
-                  value={value}
-                  onChange={(e) => {
-                    const values = [...option.values];
-                    values[valueIndex] = e.target.value;
-                    updateVariantOption(optionIndex, 'values', values);
-                  }}
-                  className="px-3 py-1.5 text-sm bg-white border border-neutral-200 rounded-l-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all w-20"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeVariantValue(optionIndex, valueIndex)}
-                  className="h-9 px-2 border border-l-0 border-neutral-200 text-neutral-400 hover:text-red-600 hover:border-red-300 rounded-r-lg transition-colors"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => addVariantValue(optionIndex)}
-              className="h-9 px-3 text-sm border border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 rounded-lg transition-colors"
-            >
-              + Tambah
-            </button>
-          </div>
-        </div>
-      ))}
+      <Reorder.Group
+        axis="y"
+        values={variantOptions}
+        onReorder={reorderVariantOption}
+      >
+        {variantOptions.map((option, optionIndex) => (
+          <OptionRow
+            key={option.id}
+            option={option}
+            optionIndex={optionIndex}
+            updateVariantOption={updateVariantOption}
+            removeVariantOption={removeVariantOption}
+            addVariantValue={addVariantValue}
+            removeVariantValue={removeVariantValue}
+            reorderVariantValue={reorderVariantValue}
+          />
+        ))}
+      </Reorder.Group>
 
       <button
         type="button"
@@ -146,6 +143,138 @@ function VariantOptions({
         + Tambah Opsi Varian (Warna, Ukuran, dll)
       </button>
     </div>
+  );
+}
+
+function OptionRow({
+  option,
+  optionIndex,
+  updateVariantOption,
+  removeVariantOption,
+  addVariantValue,
+  removeVariantValue,
+  reorderVariantValue,
+}: {
+  option: VariantOption;
+  optionIndex: number;
+  updateVariantOption: VariantsSectionProps['updateVariantOption'];
+  removeVariantOption: VariantsSectionProps['removeVariantOption'];
+  addVariantValue: VariantsSectionProps['addVariantValue'];
+  removeVariantValue: VariantsSectionProps['removeVariantValue'];
+  reorderVariantValue: VariantsSectionProps['reorderVariantValue'];
+}) {
+  const dragControls = useDragControls();
+
+  const handleValueChange = (valueIndex: number, rawValue: string) => {
+    const values = option.values.map((v, i) =>
+      i === valueIndex ? { ...v, value: rawValue } : v
+    );
+    updateVariantOption(optionIndex, 'values', values);
+  };
+
+  return (
+    <Reorder.Item
+      value={option}
+      dragListener={false}
+      dragControls={dragControls}
+      className="p-4 bg-neutral-50 rounded-lg mb-4"
+    >
+      <div className="flex items-center gap-3 mb-3">
+        <button
+          type="button"
+          onPointerDown={(e) => dragControls.start(e)}
+          className="p-1 -ml-1 touch-none cursor-grab"
+          aria-label="Geser untuk mengurutkan opsi"
+        >
+          <GripHandle />
+        </button>
+        <input
+          type="text"
+          placeholder="Nama opsi (contoh: Warna, Ukuran)"
+          value={option.name}
+          onChange={(e) => updateVariantOption(optionIndex, 'name', e.target.value)}
+          className="flex-1 px-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-inset focus:ring-neutral-900 transition-all"
+        />
+        <button
+          type="button"
+          onClick={() => removeVariantOption(optionIndex)}
+          className="w-9 h-9 flex items-center justify-center text-neutral-400 hover:text-red-600 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="flex flex-wrap gap-2 items-center">
+        <Reorder.Group
+          axis="x"
+          values={option.values}
+          onReorder={(next) => reorderVariantValue(optionIndex, next)}
+          className="flex flex-wrap gap-2 items-center"
+        >
+          {option.values.map((v, valueIndex) => (
+            <ValuePillItem
+              key={v.id}
+              item={v}
+              onValueChange={(raw) => handleValueChange(valueIndex, raw)}
+              onRemove={() => removeVariantValue(optionIndex, valueIndex)}
+            />
+          ))}
+        </Reorder.Group>
+
+        <button
+          type="button"
+          onClick={() => addVariantValue(optionIndex)}
+          className="h-9 px-3 text-sm border border-dashed border-neutral-300 text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 rounded-lg transition-colors"
+        >
+          + Tambah
+        </button>
+      </div>
+    </Reorder.Item>
+  );
+}
+
+function ValuePillItem({
+  item,
+  onValueChange,
+  onRemove,
+}: {
+  item: VariantValue;
+  onValueChange: (value: string) => void;
+  onRemove: () => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={item}
+      dragListener={false}
+      dragControls={dragControls}
+      className="flex items-center"
+    >
+      <div className="flex items-center rounded-md border border-neutral-300 bg-white overflow-hidden">
+        <button
+          type="button"
+          onPointerDown={(e) => dragControls.start(e)}
+          className="pl-2 py-1.5 touch-none cursor-grab"
+          aria-label="Geser untuk mengurutkan nilai"
+        >
+          <GripVertical className="w-3.5 h-3.5 text-neutral-300 hover:text-neutral-600 transition-colors" />
+        </button>
+        <input
+          type="text"
+          value={item.value}
+          onChange={(e) => onValueChange(e.target.value)}
+          className="w-20 px-2 py-1.5 text-sm bg-transparent focus:outline-none"
+        />
+        <button
+          type="button"
+          onClick={onRemove}
+          className="h-9 px-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      </div>
+    </Reorder.Item>
   );
 }
 

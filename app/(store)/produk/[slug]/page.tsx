@@ -87,6 +87,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     brand: product.brand,
     divingTypes: product.divingTypes,
   };
+
+  // Admin-controlled display order for variant dimensions and values
+  const variantOptions = (product.variantOptions ?? []).map((o: any) => ({
+    name: o.name,
+    values: o.values,
+  }));
   
   // Fetch related products
   const relatedProducts = await getRelatedProducts(
@@ -151,7 +157,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Product Info */}
           <div className="w-full lg:w-2/5">
-            <ProductInfo key={product.id} product={productData} variants={variants} />
+            <ProductInfo key={product.id} product={productData} variants={variants} variantOptions={variantOptions} />
           </div>
         </div>
       </section>

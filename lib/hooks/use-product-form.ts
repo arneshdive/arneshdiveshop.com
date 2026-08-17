@@ -3,10 +3,15 @@
 import { useState, useMemo, useCallback } from 'react';
 import type { DivingType } from '@/lib/db/schema';
 
+export interface VariantValue {
+  id: string;
+  value: string;
+}
+
 export interface VariantOption {
   id: string;
   name: string;
-  values: string[];
+  values: VariantValue[];
 }
 
 export interface EditableVariant {
@@ -44,12 +49,17 @@ export interface ProductFormData {
   isOnSale: boolean;
 }
 
+// Manual overrides the admin applies to the editable grid (sku / price / active),
+// keyed by variant id. Kept separate from the generated variants so the grid can
+// be a pure derivation of (generatedVariants + overrides) with no setState-in-render.
+type VariantOverrides = Record<string, { sku?: string; price?: string; isActive?: boolean }>;
+
 export function useProductForm() {
   const [images, setImages] = useState<string[]>([]);
   const [hasVariants, setHasVariants] = useState(false);
   const [variantOptions, setVariantOptions] = useState<VariantOption[]>([]);
-  const [editableVariants, setEditableVariants] = useState<EditableVariant[]>([]);
   const [savedVariants, setSavedVariants] = useState<SavedVariant[]>([]);
+  const [variantOverrides, setVariantOverrides] = useState<VariantOverrides>({});
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
@@ -66,12 +76,14 @@ export function useProductForm() {
   });
 
   // Generate variants from options (with memoization)
-  const generatedVariants = useMemo(() => {
+  const generatedVariants = useMemo<EditableVariant[]>(() => {
     if (!hasVariants || variantOptions.length === 0) return [];
 
     const getCombinations = (options: VariantOption[], index: number): string[][] => {
       if (index === options.length) return [[]];
-      const currentValues = options[index]!.values.filter(v => v.trim());
+      const currentValues = options[index]!.values
+        .map(v => v.value)
+        .filter(v => v.trim());
       if (currentValues.length === 0) return [[]];
       const restCombinations = getCombinations(options, index + 1);
       return currentValues.flatMap((value) =>
@@ -96,21 +108,19 @@ export function useProductForm() {
     });
   }, [hasVariants, variantOptions, formData.sku, savedVariants]);
 
-  // Sync editableVariants when generatedVariants changes - but preserve existing edits
-  useMemo(() => {
-    if (generatedVariants.length > 0) {
-      setEditableVariants(prev => {
-        // If no previous variants, use generated
-        if (prev.length === 0) return generatedVariants;
-
-        // Merge: keep existing values for matching variants, add new ones, remove old ones
-        return generatedVariants.map(gen => {
-          const existing = prev.find(v => v.name === gen.name);
-          return existing ? { ...gen, sku: existing.sku, price: existing.price, isActive: existing.isActive } : gen;
-        });
-      });
-    }
-  }, [generatedVariants]);
+  // Derived grid: generated variants + admin's manual overrides.
+  const editableVariants = useMemo<EditableVariant[]>(() => {
+    return generatedVariants.map(gen => {
+      const override = variantOverrides[gen.id];
+      if (!override) return gen;
+      return {
+        ...gen,
+        ...(override.sku !== undefined ? { sku: override.sku } : {}),
+        ...(override.price !== undefined ? { price: override.price } : {}),
+        ...(override.isActive !== undefined ? { isActive: override.isActive } : {}),
+      };
+    });
+  }, [generatedVariants, variantOverrides]);
 
   // Saved (DB-backed) variants whose combination no longer exists in the current
   // option/value editor, or that should disappear because "hasVariants" was
@@ -130,26 +140,30 @@ export function useProductForm() {
   }, [savedVariants, generatedVariants, hasVariants]);
 
   const addVariantOption = () => {
-    setVariantOptions([...variantOptions, { id: crypto.randomUUID(), name: '', values: [''] }]);
+    setVariantOptions([...variantOptions, {
+      id: crypto.randomUUID(),
+      name: '',
+      values: [{ id: crypto.randomUUID(), value: '' }],
+    }]);
   };
 
   const removeVariantOption = (index: number) => {
     setVariantOptions(variantOptions.filter((_, i) => i !== index));
   };
 
-  const updateVariantOption = (index: number, field: 'name' | 'values', value: string | string[]) => {
+  const updateVariantOption = (index: number, field: 'name' | 'values', value: string | VariantValue[]) => {
     const updated = [...variantOptions];
     if (field === 'name') {
       updated[index]!.name = value as string;
     } else {
-      updated[index]!.values = value as string[];
+      updated[index]!.values = value as VariantValue[];
     }
     setVariantOptions(updated);
   };
 
   const addVariantValue = (optionIndex: number) => {
     const updated = [...variantOptions];
-    updated[optionIndex]!.values = [...updated[optionIndex]!.values, ''];
+    updated[optionIndex]!.values = [...updated[optionIndex]!.values, { id: crypto.randomUUID(), value: '' }];
     setVariantOptions(updated);
   };
 
@@ -159,49 +173,95 @@ export function useProductForm() {
     setVariantOptions(updated);
   };
 
-  // Update an editable variant's field
+  // Reorder variant option dimensions (framer-motion supplies the new array)
+  const reorderVariantOption = (next: VariantOption[]) => {
+    setVariantOptions(next);
+  };
+
+  // Reorder values within a dimension (framer-motion supplies the new array)
+  const reorderVariantValue = (optionIndex: number, next: VariantValue[]) => {
+    setVariantOptions(prev => {
+      const option = prev[optionIndex];
+      if (!option) return prev;
+      const updated = [...prev];
+      updated[optionIndex] = { ...option, values: next };
+      return updated;
+    });
+  };
+
+  // Update an editable variant's field (stored as an override keyed by variant id)
   const updateEditableVariant = (id: string, field: 'sku' | 'price' | 'isActive', value: string | boolean) => {
-    setEditableVariants(prev => prev.map(v => {
-      if (v.id === id) {
-        return { ...v, [field]: value };
-      }
-      return v;
+    setVariantOverrides(prev => ({
+      ...prev,
+      [id]: { ...prev[id], [field]: value },
     }));
   };
 
-  // Load saved variants from product data
-  const loadSavedVariants = useCallback((variants: SavedVariant[]) => {
+  // Load saved variants from product data.
+  // `orderedOptions` (the product's persisted variantOptions) supplies the
+  // admin-set display order when present; otherwise we fall back to
+  // first-appearance order reconstructed from the variant rows.
+  const loadSavedVariants = useCallback((variants: SavedVariant[], orderedOptions?: { name: string; values: string[] }[]) => {
     setSavedVariants(variants);
+    setVariantOverrides({});
     if (variants.length > 0) {
       setHasVariants(true);
-      // Reconstruct variantOptions from saved variants
-      const optionsMap = new Map<string, string[]>();
-      variants.forEach(v => {
-        Object.entries(v.options).forEach(([key, value]) => {
-          if (!optionsMap.has(key)) {
-            optionsMap.set(key, []);
-          }
-          const values = optionsMap.get(key)!;
-          if (!values.includes(value)) {
-            values.push(value);
-          }
+
+      let reconstructedOptions: VariantOption[];
+
+      if (orderedOptions && orderedOptions.length > 0) {
+        // Use persisted order, but only keep dimensions/values that actually
+        // exist on the saved variants.
+        const available = new Map<string, Set<string>>();
+        variants.forEach(v => {
+          Object.entries(v.options).forEach(([key, value]) => {
+            if (!available.has(key)) available.set(key, new Set());
+            available.get(key)!.add(value);
+          });
         });
-      });
-      const reconstructedOptions = Array.from(optionsMap.entries()).map(([name, values]) => ({
-        id: crypto.randomUUID(),
-        name,
-        values,
-      }));
+
+        reconstructedOptions = orderedOptions
+          .filter(opt => available.has(opt.name))
+          .map(opt => ({
+            id: crypto.randomUUID(),
+            name: opt.name,
+            values: opt.values
+              .filter(value => available.get(opt.name)!.has(value))
+              .map(value => ({ id: crypto.randomUUID(), value })),
+          }));
+
+        // Append any active dimensions not listed in orderedOptions.
+        for (const [key, values] of available) {
+          if (!reconstructedOptions.some(o => o.name === key)) {
+            reconstructedOptions.push({
+              id: crypto.randomUUID(),
+              name: key,
+              values: Array.from(values).map(value => ({ id: crypto.randomUUID(), value })),
+            });
+          }
+        }
+      } else {
+        // Fallback: reconstruct from saved variant rows in first-appearance order.
+        const optionsMap = new Map<string, string[]>();
+        variants.forEach(v => {
+          Object.entries(v.options).forEach(([key, value]) => {
+            if (!optionsMap.has(key)) {
+              optionsMap.set(key, []);
+            }
+            const values = optionsMap.get(key)!;
+            if (!values.includes(value)) {
+              values.push(value);
+            }
+          });
+        });
+        reconstructedOptions = Array.from(optionsMap.entries()).map(([name, values]) => ({
+          id: crypto.randomUUID(),
+          name,
+          values: values.map(value => ({ id: crypto.randomUUID(), value })),
+        }));
+      }
+
       setVariantOptions(reconstructedOptions);
-      // Also set editable variants
-      setEditableVariants(variants.map(v => ({
-        id: v.id,
-        name: v.name,
-        sku: v.sku || '',
-        price: v.priceCents ? (v.priceCents / 100).toString() : '',
-        isActive: v.isActive,
-        isNew: false,
-      })));
     }
   }, []);
 
@@ -223,11 +283,14 @@ export function useProductForm() {
     hasVariants,
     setHasVariants,
     variantOptions,
+    setVariantOptions,
     addVariantOption,
     removeVariantOption,
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
+    reorderVariantOption,
+    reorderVariantValue,
     updateEditableVariant,
     editableVariants,
     savedVariants,

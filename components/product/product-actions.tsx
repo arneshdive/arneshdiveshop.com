@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
 import { getVariantOptionGroups, findMatchingVariant } from '@/lib/utils/variant-selection';
+import type { VariantOptionDefinition } from '@/lib/utils/variant-selection';
 
 interface Variant {
   id: string;
@@ -18,6 +19,7 @@ interface Variant {
 interface ProductActionsProps {
   productId: string;
   variants: Variant[];
+  variantOptions?: VariantOptionDefinition[];
   basePriceCents: number;
   compareAtPriceCents: number | null;
   isActive: boolean;
@@ -27,6 +29,7 @@ interface ProductActionsProps {
 export function ProductActions({ 
   productId,
   variants = [],
+  variantOptions,
   basePriceCents,
   compareAtPriceCents,
   isActive,
@@ -102,8 +105,8 @@ export function ProductActions({
   
   // Group option values by dimension for rendering
   const variantOptionGroups = useMemo(
-    () => getVariantOptionGroups(variants),
-    [variants],
+    () => getVariantOptionGroups(variants, variantOptions),
+    [variants, variantOptions],
   );
 
   return (

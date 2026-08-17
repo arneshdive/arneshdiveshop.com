@@ -27,6 +27,7 @@ type Product = {
   brandId: string | null;
   divingTypes: string[];
   images: string[];
+  variantOptions?: { name: string; values: string[] }[];
   isActive: boolean;
   isNewArrival: boolean;
   isOnSale: boolean;
@@ -87,10 +88,13 @@ export default function EditProductPage() {
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
+    reorderVariantOption,
+    reorderVariantValue,
     updateEditableVariant,
     savedVariants,
     removedVariantIds,
     loadSavedVariants,
+    setVariantOptions,
     resetPricingFields,
   } = useProductForm();
 
@@ -131,12 +135,19 @@ export default function EditProductPage() {
         isOnSale: product.isOnSale,
       });
       setImages(product.images);
-      // Load existing variants
+      // Load existing variants (pass persisted order so admin sees the current display order)
       if (product.variants && product.variants.length > 0) {
-        loadSavedVariants(product.variants);
+        loadSavedVariants(product.variants, product.variantOptions);
+      } else if (product.variantOptions && product.variantOptions.length > 0) {
+        setHasVariants(true);
+        setVariantOptions(product.variantOptions.map((o: { name: string; values: string[] }) => ({
+          id: crypto.randomUUID(),
+          name: o.name,
+          values: o.values.map(value => ({ id: crypto.randomUUID(), value })),
+        })));
       }
     }
-  }, [data, setFormData, setImages, loadSavedVariants]);
+  }, [data, setFormData, setImages, loadSavedVariants, setHasVariants, setVariantOptions]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +192,9 @@ export default function EditProductPage() {
       brandId: formData.brand || null,
       divingTypes: formData.divingTypes,
       images,
+      variantOptions: variantOptions
+        .filter(opt => opt.name.trim())
+        .map(opt => ({ name: opt.name, values: opt.values.map(v => v.value).filter(v => v.trim()) })),
       isActive: formData.isActive,
       isNewArrival: formData.isNewArrival,
       isOnSale: formData.isOnSale,
@@ -334,6 +348,8 @@ export default function EditProductPage() {
               updateVariantOption={updateVariantOption}
               addVariantValue={addVariantValue}
               removeVariantValue={removeVariantValue}
+              reorderVariantOption={reorderVariantOption}
+              reorderVariantValue={reorderVariantValue}
               updateEditableVariant={updateEditableVariant}
               hasSavedVariants={savedVariants.length > 0}
               onHasVariantsChange={resetPricingFields}

@@ -29,6 +29,8 @@ export default function NewProductPage() {
     updateVariantOption,
     addVariantValue,
     removeVariantValue,
+    reorderVariantOption,
+    reorderVariantValue,
     updateEditableVariant,
     resetPricingFields,
   } = useProductForm();
@@ -88,7 +90,7 @@ export default function NewProductPage() {
       }
       
       // Check if variant options are properly defined
-      const emptyOptions = variantOptions.filter(opt => !opt.name.trim() || opt.values.filter(v => v.trim()).length === 0);
+      const emptyOptions = variantOptions.filter(opt => !opt.name.trim() || opt.values.filter(v => v.value.trim()).length === 0);
       if (emptyOptions.length > 0) {
         errors.push('Lengkapi semua opsi varian (nama dan nilai)');
       }
@@ -119,6 +121,9 @@ export default function NewProductPage() {
       brandId: formData.brand || null,
       divingTypes: formData.divingTypes,
       images,
+      variantOptions: variantOptions
+        .filter(opt => opt.name.trim())
+        .map(opt => ({ name: opt.name, values: opt.values.map(v => v.value).filter(v => v.trim()) })),
       isActive: formData.isActive,
       isNewArrival: formData.isNewArrival,
       isOnSale: formData.isOnSale,
@@ -226,6 +231,8 @@ export default function NewProductPage() {
             updateVariantOption={updateVariantOption}
             addVariantValue={addVariantValue}
             removeVariantValue={removeVariantValue}
+            reorderVariantOption={reorderVariantOption}
+            reorderVariantValue={reorderVariantValue}
             updateEditableVariant={updateEditableVariant}
             onHasVariantsChange={resetPricingFields}
           />

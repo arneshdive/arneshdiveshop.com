@@ -8,6 +8,11 @@ import { slugify, generateUniqueSlug } from '@/lib/utils/slugify';
 import { getProducts, getExistingSlugs } from '@/lib/queries/products';
 import { DIVING_TYPES } from '@/lib/constants/diving-types';
 
+const variantOptionDefinitionSchema = z.object({
+  name: z.string().min(1).max(100),
+  values: z.array(z.string().min(1).max(100)).min(1),
+});
+
 const createProductSchema = z.object({
   name: z.string().min(1, 'Nama produk wajib diisi').max(200),
   slug: z.string().max(200).optional(),
@@ -20,6 +25,7 @@ const createProductSchema = z.object({
   brandId: z.string().optional().nullable(),
   divingTypes: z.array(z.enum(DIVING_TYPES)).min(1, 'Pilih minimal satu tipe diving'),
   images: z.array(z.string()).min(1, 'Minimal 1 gambar wajib diupload'),
+  variantOptions: z.array(variantOptionDefinitionSchema).default([]),
   isActive: z.boolean().default(true),
   isNewArrival: z.boolean().default(false),
   isOnSale: z.boolean().default(false),

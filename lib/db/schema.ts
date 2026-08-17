@@ -146,6 +146,11 @@ export const products = pgTable('products', {
   brandId: text('brand_id').references(() => brands.id),
   divingTypes: divingTypeEnum('diving_types').array().notNull(), // ['freediving', 'scuba'] or just one
   images: jsonb('images').$type<string[]>().default([]),
+  // Ordered definition of variant option dimensions and values, controlled by
+  // the admin via drag-and-drop. Source of truth for storefront display order.
+  variantOptions: jsonb('variant_options')
+    .$type<{ name: string; values: string[] }[]>()
+    .default([]),
   isActive: boolean('is_active').default(true).notNull(), // Sole availability flag (no stock qty tracking)
   isFeatured: boolean('is_featured').default(false),
   isNewArrival: boolean('is_new_arrival').default(false).notNull(),

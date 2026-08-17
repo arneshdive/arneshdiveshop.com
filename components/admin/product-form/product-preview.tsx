@@ -34,7 +34,7 @@ export function ProductPreview({
   const formatPrice = (val: string) => (val ? `Rp ${formatCurrencyInput(val)}` : 'Rp 0');
   const parsePriceValue = (val: string) => parseInt(val.replace(/\D/g, ''), 10) || 0;
 
-  const hasVariants = variantOptions.length > 0 && variantOptions.some(opt => opt.name && opt.values.some(v => v));
+  const hasVariants = variantOptions.length > 0 && variantOptions.some(opt => opt.name && opt.values.some(v => v.value));
 
   // When variants exist, compute the minimum price from active editable variants
   const variantMinPrice = hasVariants
@@ -155,19 +155,19 @@ export function ProductPreview({
           {hasVariants && (
             <div className="mb-4">
               {variantOptions.map((option) => (
-                option.name && option.values.some(v => v) && (
+                option.name && option.values.some(v => v.value) && (
                   <div key={option.id}>
                     <p className="text-[10px] uppercase tracking-widest text-neutral-600 font-medium mb-2">
                       {option.name}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {option.values.filter(v => v).map((value, idx) => (
+                      {option.values.filter(v => v.value).map((v) => (
                         <button
-                          key={idx}
+                          key={v.id}
                           type="button"
                           className="min-w-[40px] h-10 px-3 rounded-md border border-neutral-300 text-xs font-medium hover:border-neutral-900 transition-colors"
                         >
-                          {value}
+                          {v.value}
                         </button>
                       ))}
                     </div>

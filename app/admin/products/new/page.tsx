@@ -140,9 +140,9 @@ export default function NewProductPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        const errorMsg = data.details 
+        const errorMsg = data.details && typeof data.details === 'object'
           ? Object.values(data.details).join(', ')
-          : (data.error || 'Terjadi kesalahan');
+          : (data.details || data.error || 'Terjadi kesalahan');
         console.error('Failed to create product:', errorMsg);
         toast.error(errorMsg);
         setIsSubmitting(false);

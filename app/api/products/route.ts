@@ -18,9 +18,9 @@ const createProductSchema = z.object({
   slug: z.string().max(200).optional(),
   sku: z.string().max(100).optional(),
   description: z.string().max(5000).optional(),
-  priceCents: z.number().int().min(0).optional(),
-  compareAtPriceCents: z.number().int().min(0).optional().nullable(),
-  costPriceCents: z.number().int().min(0).optional().nullable(),
+  priceCents: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional(),
+  compareAtPriceCents: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional().nullable(),
+  costPriceCents: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional().nullable(),
   categoryId: z.string().min(1, 'Kategori wajib dipilih'),
   brandId: z.string().optional().nullable(),
   divingTypes: z.array(z.enum(DIVING_TYPES)).min(1, 'Pilih minimal satu tipe diving'),
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json(
-      { error: 'Terjadi kesalahan pada server', details: error instanceof Error ? error.message : undefined },
+      { error: 'Terjadi kesalahan pada server' },
       { status: 500 }
     );
   }

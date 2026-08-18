@@ -1,4 +1,4 @@
-import { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { forwardRef, useLayoutEffect, useRef, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
 import { formatCurrencyInput } from '@/lib/utils/format';
 
 const baseInputStyles = `
@@ -159,10 +159,34 @@ function parseCurrency(value: string): string {
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
   ({ label, className = '', value, onChange, ...props }, ref) => {
     const displayValue = formatCurrencyInput(value);
+    const inputRef = useRef<HTMLInputElement>(null);
+    // Digit count before the caret, captured on the raw (pre-format) value so the
+    // caret can be restored to the equivalent position after re-formatting below.
+    const pendingCaretDigits = useRef<number | null>(null);
+
+    useLayoutEffect(() => {
+      if (pendingCaretDigits.current === null || !inputRef.current) return;
+      const target = pendingCaretDigits.current;
+      pendingCaretDigits.current = null;
+      let digitCount = 0;
+      let pos = displayValue.length;
+      for (let i = 0; i < displayValue.length; i++) {
+        if (/\d/.test(displayValue.charAt(i))) {
+          digitCount++;
+          if (digitCount === target) {
+            pos = i + 1;
+            break;
+          }
+        }
+      }
+      if (target === 0) pos = 0;
+      inputRef.current.setSelectionRange(pos, pos);
+    }, [displayValue]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const parsed = parseCurrency(e.target.value);
-      onChange(parsed);
+      const caretPos = e.target.selectionStart ?? e.target.value.length;
+      pendingCaretDigits.current = e.target.value.slice(0, caretPos).replace(/\D/g, '').length;
+      onChange(parseCurrency(e.target.value));
     };
 
     return (
@@ -177,7 +201,11 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
             Rp
           </span>
           <input
-            ref={ref}
+            ref={(node) => {
+              inputRef.current = node;
+              if (typeof ref === 'function') ref(node);
+              else if (ref) ref.current = node;
+            }}
             type="text"
             inputMode="numeric"
             value={displayValue}

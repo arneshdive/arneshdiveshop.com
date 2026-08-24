@@ -64,16 +64,16 @@ function toMockProduct(product: any): MockProduct {
 
 export default async function HomePage() {
   // Fetch new arrival products
-  const newArrivals = await getProducts({ isActive: true, isNewArrival: true });
-  const newArrivalProducts: MockProduct[] = newArrivals.slice(0, 4).map(toMockProduct);
+  const newArrivals = await getProducts({ isActive: true, isNewArrival: true, limit: 4 });
+  const newArrivalProducts: MockProduct[] = newArrivals.map(toMockProduct);
 
   // Fetch on sale products
-  const onSaleProducts = await getProducts({ isActive: true, isOnSale: true });
-  const saleProducts: MockProduct[] = onSaleProducts.slice(0, 4).map(toMockProduct);
+  const onSaleProducts = await getProducts({ isActive: true, isOnSale: true, limit: 4 });
+  const saleProducts: MockProduct[] = onSaleProducts.map(toMockProduct);
 
   // Fetch all latest products for the "explore" section
-  const allProducts = await getProducts({ isActive: true });
-  const latestProducts: MockProduct[] = allProducts.slice(0, 8).map(toMockProduct);
+  const allProducts = await getProducts({ isActive: true, limit: 8 });
+  const latestProducts: MockProduct[] = allProducts.map(toMockProduct);
 
   return (
     <>
@@ -158,7 +158,7 @@ export default async function HomePage() {
         headingHighlight="Lainnya"
         description="Temukan perlengkapan diving untuk kebutuhan Anda."
         ctaHref="/produk"
-        products={latestProducts.slice(0, 8)}
+        products={latestProducts}
       />
 
       {/* Community - Instagram Feed */}

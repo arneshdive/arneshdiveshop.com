@@ -10,10 +10,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is **Arnesh Dive Shop**, a freediving/scuba e-commerce platform. Per `docs/RFP-COMPLETION.md` (2026-07-12), the project is ~40% complete:
 
-- **Done:** full storefront UI (`app/(store)/`), full admin UI (`app/admin/`), the component library (`components/`).
-- **Missing:** DB schema/connection, backend API routes/server actions, real authentication, Midtrans payment, working admin CRUD, order processing, transactional email, deployment.
+- **Done:** full storefront UI (`app/(store)/`), full admin UI (`app/admin/`), the component library (`components/`), DB schema/connection, and product-related backend (catalog CRUD, storefront product listing/search/pagination, categories, brands).
+- **Missing/unverified:** real authentication, Midtrans payment, order processing, transactional email, deployment. Check `lib/queries/`, `app/api/`, and `app/admin/` directly for what's wired up in other domains (orders, users) before assuming a feature is missing — this list may lag actual progress.
 
-All pages currently render from mock data in `lib/data/mock-*.ts`. There is no `lib/db` and no Drizzle schema — an earlier draft schema was removed as stale; **do not assume any DB schema exists or reference one from memory.** The database layer, ORM setup, and auth are all still to be designed/built from scratch. `lib/auth/password.ts` (PBKDF2 hashing, no dependencies) is the only auth-related code left and isn't wired to anything yet.
+The DB layer is built and live: `lib/db/index.ts` (Drizzle + Neon Postgres client), `lib/db/schema.ts`, and migrations exist and are actively used. `lib/queries/products.ts` (and sibling files under `lib/queries/`) provide the direct-import query layer used by Server Components (`/produk`, homepage) and Route Handlers (`/api/search`, `/api/products`, admin pages). **Do not assume the DB doesn't exist or that pages still run on mock data** — verify against `lib/db/schema.ts` and `lib/queries/` first. Remaining mock data (`lib/data/mock-products.ts`) is limited to non-catalog UI content (`valueProps`); it is not used for product data anymore. `lib/auth/password.ts` (PBKDF2 hashing, no dependencies) is the only auth-related code and isn't wired to anything yet — auth, payment, email, and deployment are still unverified/likely unbuilt.
 
 The wireframes (`docs/wireframes/`) were deleted and are no longer used — **the live code under `app/` and `components/` is the source of truth for UI/layout.** Match existing patterns there when building new pages rather than inventing new layouts.
 
@@ -42,7 +42,7 @@ No test runner is configured yet.
 
 ## UI conventions
 
-All UI copy is in **Bahasa Indonesia** — match that in any new pages/components. Storefront pages live under `app/(store)/` (homepage, `produk` PLP/PDP, cart, checkout, account) and the admin panel under `app/admin/` (dashboard, products, orders, customers, banners, settings). Some wireframed sections aren't built yet (search, wishlist, contact/FAQ, legal pages, admin categories/brands/promotions/inventory/reports/users) — check `app/` and `app/admin/` directly for what exists before assuming a page is missing.
+All UI copy is in **Bahasa Indonesia** — match that in any new pages/components. Storefront pages live under `app/(store)/` (homepage, `produk` PLP/PDP — which also handles search and category/sale/diving-type filtering via query params, e.g. `/produk?q=`, `/produk?onSale=true`, `/produk?divingType=freediving`, `/produk?category=aksesoris` — cart, checkout, account) and the admin panel under `app/admin/` (dashboard, products, orders, customers, banners, settings). `/sale`, `/freediving`, `/scuba`, `/aksesoris`, `/search` are legacy routes that now just redirect to the equivalent `/produk?...` URL (see `next.config.ts` `redirects()` and `app/(store)/search/page.tsx`) — don't recreate them as standalone pages. Some wireframed sections aren't built yet (wishlist, contact/FAQ, legal pages, admin promotions/inventory/reports) — check `app/` and `app/admin/` directly for what exists before assuming a page is missing.
 
 ## Target Architecture (per `docs/sandwich/technical-notes.md`, architecture sections cross-checked against `SPEC.md`)
 

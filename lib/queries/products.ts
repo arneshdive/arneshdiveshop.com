@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import { db, products, productVariants, categories, brands } from '@/lib/db';
 import { eq, isNull, desc, ilike, and, SQL, sql, or, gte, lte, between } from 'drizzle-orm';
+import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 
 export interface ProductFilters {
   category?: string;        // Category ID or slug
@@ -13,6 +14,7 @@ export interface ProductFilters {
   search?: string;          // Keyword search (name and description)
   minPrice?: number;        // Price in cents
   maxPrice?: number;        // Price in cents
+  sort?: string;            // 'newest' (default) | 'price-asc' | 'price-desc' | 'popular'
   limit?: number;
   offset?: number;
 }
@@ -128,7 +130,7 @@ export async function searchProducts(filters?: ProductFilters) {
   // Build query with pagination
   const limit = filters?.limit || 50;
   const offset = filters?.offset || 0;
-  
+
   const results = await db.query.products.findMany({
     where: and(...conditions),
     with: {
@@ -136,12 +138,34 @@ export async function searchProducts(filters?: ProductFilters) {
       brand: true,
       variants: true,
     },
-    orderBy: [desc(products.createdAt)],
+    orderBy: getProductOrderBy(filters?.sort),
     limit,
     offset,
   });
-  
+
   return results;
+}
+
+/**
+ * Resolve a storefront sort key to a DB order-by clause. Sorting must
+ * happen here (not client-side on an already-paginated page) so that
+ * page 2+ reflects the true global order instead of just re-sorting
+ * whatever 24 rows happened to land on that page.
+ */
+function getProductOrderBy(sort?: string) {
+  switch (sort) {
+    case 'price-asc':
+      return [sql`${products.priceCents} ASC`];
+    case 'price-desc':
+      return [sql`${products.priceCents} DESC`];
+    case 'popular':
+      return [
+        sql`(CASE WHEN ${products.isNewArrival} OR ${products.isOnSale} THEN 1 ELSE 0 END) DESC`,
+        desc(products.createdAt),
+      ];
+    default:
+      return [desc(products.createdAt)];
+  }
 }
 
 /**
@@ -217,8 +241,95 @@ export async function searchProductsCount(filters?: ProductFilters): Promise<num
     .select({ count: sql<number>`count(*)` })
     .from(products)
     .where(and(...conditions));
-  
+
   return Number(result[0]?.count || 0);
+}
+
+/**
+ * Search products plus everything the storefront PLP/search UI needs
+ * around them: total count, the full category/brand lists (for filter
+ * facets), and per-category/per-brand result counts for the current
+ * filters. Shared by /api/search and the /produk page so both stay
+ * in sync instead of maintaining two copies of this fan-out.
+ */
+export async function searchProductsWithFacets(filters?: ProductFilters) {
+  const [productResults, total, allCategories, allBrands] = await Promise.all([
+    searchProducts(filters),
+    searchProductsCount(filters),
+    db.query.categories.findMany({
+      orderBy: [desc(categories.createdAt)],
+    }),
+    db.query.brands.findMany({
+      orderBy: [desc(brands.createdAt)],
+    }),
+  ]);
+
+  const categoryDistribution: Record<string, number> = {};
+  for (const cat of allCategories) {
+    const count = await searchProductsCount({ ...filters, category: cat.id });
+    if (count > 0) {
+      categoryDistribution[cat.id] = count;
+    }
+  }
+
+  const brandDistribution: Record<string, number> = {};
+  for (const brandItem of allBrands) {
+    const count = await searchProductsCount({ ...filters, brand: brandItem.id });
+    if (count > 0) {
+      brandDistribution[brandItem.id] = count;
+    }
+  }
+
+  return {
+    products: productResults,
+    total,
+    categories: allCategories,
+    brands: allBrands,
+    categoryDistribution,
+    brandDistribution,
+  };
+}
+
+/**
+ * Shape a DB product (as returned by searchProducts/searchProductsWithFacets)
+ * into the flat, display-ready format the storefront PLP/search UI expects.
+ */
+export function formatProductForStorefront(product: Awaited<ReturnType<typeof searchProducts>>[number]) {
+  const badges: string[] = [];
+  if (product.isNewArrival) badges.push('Baru');
+  if (product.isOnSale) badges.push('Sale');
+
+  const priceInfo = computeProductPriceDisplay({
+    priceCents: product.priceCents,
+    compareAtPriceCents: product.compareAtPriceCents ?? null,
+    variants: (product.variants || []).map((v) => ({
+      isActive: v.isActive,
+      priceCents: v.priceCents,
+    })),
+  });
+
+  return {
+    id: product.id,
+    handle: product.slug,
+    title: product.name,
+    vendor: product.brand?.name,
+    price: priceInfo.priceDisplay,
+    priceRangeMin: priceInfo.priceRangeMin,
+    priceRangeMax: priceInfo.priceRangeMax,
+    compareAtPrice: priceInfo.compareAtPriceDisplay,
+    badges,
+    image: product.images?.[0] || undefined,
+    secondaryImage: product.images?.[1] || undefined,
+    variantId: (product.variants || []).find((v) => v.isActive)?.id,
+    categoryId: product.categoryId,
+    brandId: product.brandId ?? undefined,
+    divingTypes: product.divingTypes,
+    isNewArrival: product.isNewArrival,
+    isOnSale: product.isOnSale,
+    isActive: product.isActive,
+    category: product.category,
+    brand: product.brand,
+  };
 }
 
 /**
@@ -258,6 +369,7 @@ export async function getProducts(filters?: ProductFilters) {
       variants: true,
     },
     orderBy: [desc(products.createdAt)],
+    limit: filters?.limit,
   });
 }
 

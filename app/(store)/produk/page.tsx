@@ -5,6 +5,9 @@ import { SearchFilters } from '@/components/search/search-filters';
 import { SearchResults } from '@/components/search/search-results';
 import { RecentlyViewed } from '@/components/product/recently-viewed';
 import { valueProps } from '@/lib/data/mock-products';
+import { searchProductsWithFacets, formatProductForStorefront } from '@/lib/queries/products';
+
+const PAGE_SIZE = 24;
 
 interface ProdukPageProps {
   searchParams: Promise<{
@@ -17,6 +20,7 @@ interface ProdukPageProps {
     sort?: string;
     minPrice?: string;
     maxPrice?: string;
+    page?: string;
   }>;
 }
 
@@ -38,38 +42,6 @@ export async function generateMetadata({ searchParams }: ProdukPageProps): Promi
     description:
       'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi di Arne\'s Dive Shop.',
   };
-}
-
-// Sort products based on sort parameter
-function sortProducts(products: any[], sortBy: string) {
-  const sorted = [...products];
-  switch (sortBy) {
-    case 'price-asc':
-      return sorted.sort((a, b) => {
-        const priceA = parsePriceToCents(a.price);
-        const priceB = parsePriceToCents(b.price);
-        return priceA - priceB;
-      });
-    case 'price-desc':
-      return sorted.sort((a, b) => {
-        const priceA = parsePriceToCents(a.price);
-        const priceB = parsePriceToCents(b.price);
-        return priceB - priceA;
-      });
-    case 'popular':
-      return sorted.sort((a, b) => {
-        if (a.badges?.length && !b.badges?.length) return -1;
-        if (!a.badges?.length && b.badges?.length) return 1;
-        return 0;
-      });
-    default:
-      return sorted;
-  }
-}
-
-// Parse price string to cents for comparison
-function parsePriceToCents(priceStr: string): number {
-  return parseInt(priceStr.replace(/[^\d]/g, ''), 10) || 0;
 }
 
 // Get banner config based on filters
@@ -163,43 +135,34 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
   const onSaleFilter = params.onSale || undefined;
   const minPrice = params.minPrice || undefined;
   const maxPrice = params.maxPrice || undefined;
+  const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
 
-  // Build search URL
-  const searchUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/search`);
-  if (query) searchUrl.searchParams.set('q', query);
-  if (categoryFilter) searchUrl.searchParams.set('category', categoryFilter);
-  if (brandFilter) searchUrl.searchParams.set('brand', brandFilter);
-  if (divingTypeFilter) searchUrl.searchParams.set('divingType', divingTypeFilter);
-  if (newArrivalFilter) searchUrl.searchParams.set('newArrival', newArrivalFilter);
-  if (onSaleFilter) searchUrl.searchParams.set('onSale', onSaleFilter);
-  if (minPrice) searchUrl.searchParams.set('minPrice', minPrice);
-  if (maxPrice) searchUrl.searchParams.set('maxPrice', maxPrice);
+  // Fetch search results directly (Server Component — no HTTP round-trip)
+  const { products: rawProducts, total, categories, brands, categoryDistribution, brandDistribution } =
+    await searchProductsWithFacets({
+      search: query || undefined,
+      category: categoryFilter,
+      brand: brandFilter,
+      divingType: divingTypeFilter,
+      isNewArrival: newArrivalFilter === 'true' ? true : undefined,
+      isOnSale: onSaleFilter === 'true' ? true : undefined,
+      minPrice: minPrice ? parseInt(minPrice, 10) * 100 : undefined,
+      maxPrice: maxPrice ? parseInt(maxPrice, 10) * 100 : undefined,
+      sort: sortBy,
+      limit: PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
+    });
 
-  // Fetch search results
-  const response = await fetch(searchUrl.toString(), {
-    cache: 'no-store', // Always fetch fresh data
-  });
-  
-  const data = await response.json();
-  
-  const products = data.products || [];
-  const total = data.total || 0;
-  const categories = data.categories || [];
-  const brands = data.brands || [];
-  const categoryDistribution = data.categoryDistribution || {};
-  const brandDistribution = data.brandDistribution || {};
+  const products = rawProducts.map(formatProductForStorefront);
 
   // Find selected category and brand for banner
-  const selectedCategory = categoryFilter 
+  const selectedCategory = categoryFilter
     ? categories.find((c: any) => c.id === categoryFilter || c.slug === categoryFilter)
     : null;
   const selectedBrand = brandFilter
     ? brands.find((b: any) => b.id === brandFilter || b.slug === brandFilter)
     : null;
 
-  // Sort products
-  const sortedProducts = sortProducts(products, sortBy);
-  
   // Get banner config
   const banner = getBannerConfig(
     query, 
@@ -267,7 +230,7 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
             query={query}
             totalResults={total}
           />
-          <SearchResults products={sortedProducts} total={total} sortBy={sortBy} />
+          <SearchResults products={products} total={total} sortBy={sortBy} page={page} pageSize={PAGE_SIZE} />
         </div>
       </div>
 

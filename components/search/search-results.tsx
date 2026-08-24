@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/product/product-card';
+import { Pagination } from '@/components/ui/pagination';
 
 interface Product {
   id: string;
@@ -25,16 +26,27 @@ interface SearchResultsProps {
   products: Product[];
   total: number;
   sortBy: string;
+  page?: number;
+  pageSize?: number;
 }
 
-export function SearchResults({ products, total, sortBy }: SearchResultsProps) {
+export function SearchResults({ products, total, sortBy, page, pageSize }: SearchResultsProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const totalPages = pageSize ? Math.ceil(total / pageSize) : 1;
 
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sort', value);
-    router.push(`/produk?${params.toString()}`);
+    params.delete('page');
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(newPage));
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   return (
@@ -58,11 +70,20 @@ export function SearchResults({ products, total, sortBy }: SearchResultsProps) {
 
       {/* Product Grid */}
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          {pageSize && (
+            <Pagination
+              currentPage={page || 1}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </>
       ) : (
         <div className="text-center py-16">
           <p className="text-lg text-neutral-600 mb-2">Tidak ada produk ditemukan</p>

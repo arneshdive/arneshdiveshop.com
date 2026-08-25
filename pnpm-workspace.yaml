@@ -1,3 +1,8 @@
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+# pnpm 11 requires an explicit decision for every dependency with a build
+# script. All three ship prebuilt platform binaries and the app, tests and
+# lint all work without running their postinstall steps — on Vercel, sharp
+# is supplied by the platform.
+allowBuilds:
+  esbuild: false
+  sharp: false
+  unrs-resolver: false

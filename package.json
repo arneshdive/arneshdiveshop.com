@@ -32,7 +32,6 @@
     "lucide-react": "^1.23.0",
     "midtrans-client": "^1.4.3",
     "next": "16.2.10",
-    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-dropzone": "^16.0.0",

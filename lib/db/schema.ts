@@ -100,10 +100,36 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// Long-lived, single-use links (currently admin invitations). Looked up by
+// token alone, which is why `token` carries a global unique constraint.
 export const verificationTokens = pgTable('verification_tokens', {
   identifier: text('identifier').notNull(), // Usually email
   token: text('token').notNull().unique(),
   expires: timestamp('expires', { withTimezone: true, mode: 'date' }).notNull(),
+});
+
+// Short numeric auth codes. Kept in their own table rather than sharing
+// verification_tokens: a 6-digit code only has 1M possible values, so the
+// global unique constraint above would eventually reject valid codes just
+// because another user held the same number. `email` as the primary key
+// gives us one live code per address and lets storeOtp upsert atomically.
+export const otpCodes = pgTable('otp_codes', {
+  email: text('email').primaryKey(),
+  code: text('code').notNull(),
+  expires: timestamp('expires', { withTimezone: true, mode: 'date' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+    .defaultNow()
+    .notNull(),
+});
+
+// Failed-attempt counters for auth endpoints. These live in the DB rather
+// than process memory because every serverless instance would otherwise
+// keep its own tally — brute-force protection that resets whenever a
+// request lands on a cold instance is no protection at all.
+export const rateLimits = pgTable('rate_limits', {
+  key: text('key').primaryKey(),
+  count: integer('count').notNull(),
+  resetAt: timestamp('reset_at', { withTimezone: true, mode: 'date' }).notNull(),
 });
 
 // ============================================================================
@@ -580,6 +606,12 @@ export type NewUser = typeof users.$inferInsert;
 
 export type VerificationToken = typeof verificationTokens.$inferSelect;
 export type NewVerificationToken = typeof verificationTokens.$inferInsert;
+
+export type OtpCode = typeof otpCodes.$inferSelect;
+export type NewOtpCode = typeof otpCodes.$inferInsert;
+
+export type RateLimit = typeof rateLimits.$inferSelect;
+export type NewRateLimit = typeof rateLimits.$inferInsert;
 
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;

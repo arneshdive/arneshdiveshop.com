@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
     // Rate limit by IP
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
     const rateLimitKey = `subscribe:${ip}`;
-    const rateLimit = checkRateLimit(rateLimitKey);
+    const rateLimit = await checkRateLimit(rateLimitKey);
 
     if (!rateLimit.allowed) {
-      recordFailedAttempt(rateLimitKey);
+      await recordFailedAttempt(rateLimitKey);
       return NextResponse.json(
         { error: `Terlalu banyak permintaan. Coba lagi dalam ${rateLimit.resetIn} detik.` },
         { status: 429 }

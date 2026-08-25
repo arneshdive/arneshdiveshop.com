@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // Set env before any imports
 vi.stubEnv('DATABASE_URL', 'postgresql://test:test@localhost:5432/test');
 
-// Mock drizzle-orm functions first (hoisted automatically)
+// Mock drizzle-orm comparators so we can inspect the conditions built
 vi.mock('drizzle-orm', async (importOriginal) => {
   const actual = await importOriginal<typeof import('drizzle-orm')>();
   return {
@@ -11,37 +11,60 @@ vi.mock('drizzle-orm', async (importOriginal) => {
     eq: vi.fn((a: unknown, b: unknown) => ({ type: 'eq', a, b })),
     and: vi.fn((...args: unknown[]) => ({ type: 'and', args })),
     gt: vi.fn((a: unknown, b: unknown) => ({ type: 'gt', a, b })),
+    lt: vi.fn((a: unknown, b: unknown) => ({ type: 'lt', a, b })),
   };
 });
 
-// Mock the database completely
 vi.mock('@/lib/db', () => ({
   db: {
     delete: vi.fn(),
     insert: vi.fn(),
     query: {
-      verificationTokens: {
+      otpCodes: {
         findFirst: vi.fn(),
       },
     },
   },
-  // Re-export schema types
-  verificationTokens: {
-    identifier: 'identifier',
-    token: 'token',
+  otpCodes: {
+    email: 'email',
+    code: 'code',
     expires: 'expires',
+    createdAt: 'createdAt',
   },
   users: {},
   customers: {},
 }));
 
-// Now import after mocks are set up
 import { db } from '@/lib/db';
 import {
+  generateOtp,
   storeOtp,
-  verifyAndDeleteOtp,
+  verifyOtp,
+  clearOtp,
   getOtpExpiryMinutes,
 } from './otp';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+/**
+ * `db.delete().where()` is awaited directly in some paths and chained with
+ * `.returning()` in others, so the mock has to satisfy both shapes.
+ */
+function mockDelete(returningValue: any[] = []) {
+  const returning = vi.fn().mockResolvedValue(returningValue);
+  const whereResult: any = Promise.resolve(returningValue);
+  whereResult.returning = returning;
+  const where = vi.fn().mockReturnValue(whereResult);
+  (db.delete as any).mockReturnValue({ where });
+  return { where, returning };
+}
+
+function mockInsert() {
+  const onConflictDoUpdate = vi.fn().mockResolvedValue(undefined);
+  const values = vi.fn().mockReturnValue({ onConflictDoUpdate });
+  (db.insert as any).mockReturnValue({ values });
+  return { values, onConflictDoUpdate };
+}
 
 describe('OTP Module', () => {
   beforeEach(() => {
@@ -52,205 +75,195 @@ describe('OTP Module', () => {
     vi.restoreAllMocks();
   });
 
-  // Helper to setup db mocks for storeOtp
-  function mockStoreOtp() {
-    const mockReturning = vi.fn().mockResolvedValue([{}]);
-    const mockWhere = vi.fn().mockReturnValue({ returning: mockReturning });
-    (db.delete as any).mockReturnValue({ where: mockWhere });
-    
-    const mockValuesReturning = vi.fn().mockResolvedValue([{}]);
-    const mockValues = vi.fn().mockReturnValue({ returning: mockValuesReturning });
-    (db.insert as any).mockReturnValue({ values: mockValues });
-    
-    return { mockWhere, mockValues, mockReturning, mockValuesReturning };
-  }
-
-  describe('Token Purpose Prefixing', () => {
-    it('stores OTP with prefixed identifier for login purpose', async () => {
-      const { mockWhere } = mockStoreOtp();
-
-      await storeOtp('user@test.com', '123456', 'login');
-
-      // Verify delete was called with login-prefixed identifier
-      expect(mockWhere.mock.calls[0]).toBeDefined();
-      const whereCondition = mockWhere.mock.calls[0]![0];
-      expect(whereCondition).toEqual({ type: 'eq', a: 'identifier', b: 'login:user@test.com' });
+  describe('generateOtp', () => {
+    it('returns a 6-digit numeric string by default', () => {
+      for (let i = 0; i < 50; i++) {
+        expect(generateOtp()).toMatch(/^\d{6}$/);
+      }
     });
 
-    it('stores OTP with prefixed identifier for register purpose', async () => {
-      const { mockWhere } = mockStoreOtp();
-
-      await storeOtp('user@test.com', '123456', 'register');
-
-      expect(mockWhere.mock.calls[0]).toBeDefined();
-      const whereCondition = mockWhere.mock.calls[0]![0];
-      expect(whereCondition).toEqual({ type: 'eq', a: 'identifier', b: 'register:user@test.com' });
+    it('respects a custom length', () => {
+      expect(generateOtp(4)).toMatch(/^\d{4}$/);
+      expect(generateOtp(8)).toMatch(/^\d{8}$/);
     });
 
-    it('stores OTP with prefixed identifier for verify purpose', async () => {
-      const { mockWhere } = mockStoreOtp();
+    it('preserves leading zeros rather than dropping them', () => {
+      // Force every byte to 0 so the code is all zeros; a numeric coercion
+      // anywhere in the pipeline would collapse this to "0".
+      const spy = vi
+        .spyOn(globalThis.crypto, 'getRandomValues')
+        .mockImplementation(((array: Uint8Array) => {
+          array.fill(0);
+          return array;
+        }) as any);
 
-      await storeOtp('user@test.com', '123456', 'verify');
-
-      expect(mockWhere.mock.calls[0]).toBeDefined();
-      const whereCondition = mockWhere.mock.calls[0]![0];
-      expect(whereCondition).toEqual({ type: 'eq', a: 'identifier', b: 'verify:user@test.com' });
-    });
-
-    it('normalizes email to lowercase in identifier', async () => {
-      const { mockWhere } = mockStoreOtp();
-
-      await storeOtp('USER@TEST.COM', '123456', 'login');
-
-      expect(mockWhere.mock.calls[0]).toBeDefined();
-      const whereCondition = mockWhere.mock.calls[0]![0];
-      expect(whereCondition).toEqual({ type: 'eq', a: 'identifier', b: 'login:user@test.com' });
+      expect(generateOtp()).toBe('000000');
+      spy.mockRestore();
     });
   });
 
-  describe('Multiple Purposes Do Not Collide', () => {
-    it('allows separate OTPs for login and verify purposes on same email', async () => {
-      const deletedIdentifiers: string[] = [];
-      const insertedData: any[] = [];
+  describe('storeOtp', () => {
+    it('upserts on email so only one code is ever live per address', async () => {
+      mockDelete();
+      const { values, onConflictDoUpdate } = mockInsert();
 
-      // Mock delete to track identifiers
-      const mockDeleteWhere = vi.fn().mockImplementation((condition: any) => {
-        deletedIdentifiers.push(condition.b);
-        return {};
-      });
-      (db.delete as any).mockReturnValue({ where: mockDeleteWhere });
+      await storeOtp('user@test.com', '123456');
 
-      // Mock insert to track data
-      const mockValues = vi.fn().mockImplementation((data: any) => {
-        insertedData.push(data);
-        return { returning: vi.fn().mockResolvedValue([{}]) };
-      });
-      (db.insert as any).mockReturnValue({ values: mockValues });
-
-      await storeOtp('user@test.com', '111111', 'login');
-      await storeOtp('user@test.com', '222222', 'verify');
-
-      // Each should have deleted only its own purpose's identifier
-      expect(deletedIdentifiers).toContain('login:user@test.com');
-      expect(deletedIdentifiers).toContain('verify:user@test.com');
-
-      // Each should have inserted with correct identifiers
-      expect(insertedData.find(d => d.identifier === 'login:user@test.com')).toBeDefined();
-      expect(insertedData.find(d => d.identifier === 'verify:user@test.com')).toBeDefined();
-    });
-  });
-
-  describe('verifyAndDeleteOtp Atomic Operation', () => {
-    it('returns true and deletes when OTP matches', async () => {
-      const mockDeleted = [{ identifier: 'login:user@test.com', token: '123456' }];
-      const mockReturning = vi.fn().mockResolvedValue(mockDeleted);
-      const mockWhere = vi.fn().mockReturnValue({ returning: mockReturning });
-      (db.delete as any).mockReturnValue({ where: mockWhere });
-
-      const result = await verifyAndDeleteOtp('user@test.com', '123456', 'login');
-
-      expect(result).toBe(true);
-      expect((db.delete as any)).toHaveBeenCalled();
+      expect(values).toHaveBeenCalledWith(
+        expect.objectContaining({ email: 'user@test.com', code: '123456' }),
+      );
+      expect(onConflictDoUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: 'email',
+          set: expect.objectContaining({ code: '123456' }),
+        }),
+      );
     });
 
-    it('returns false when no matching OTP found', async () => {
-      const mockReturning = vi.fn().mockResolvedValue([]);
-      const mockWhere = vi.fn().mockReturnValue({ returning: mockReturning });
-      (db.delete as any).mockReturnValue({ where: mockWhere });
+    it('normalizes the email to lowercase', async () => {
+      mockDelete();
+      const { values } = mockInsert();
 
-      const result = await verifyAndDeleteOtp('user@test.com', '999999', 'login');
+      await storeOtp('USER@TEST.COM', '123456');
 
-      expect(result).toBe(false);
+      expect(values).toHaveBeenCalledWith(
+        expect.objectContaining({ email: 'user@test.com' }),
+      );
     });
 
-    it('fails when purpose does not match', async () => {
-      // OTP was stored with 'login' purpose, trying to verify with 'register'
-      const mockReturning = vi.fn().mockResolvedValue([]);
-      const mockWhere = vi.fn().mockReturnValue({ returning: mockReturning });
-      (db.delete as any).mockReturnValue({ where: mockWhere });
+    it('sets expiry to the configured window', async () => {
+      mockDelete();
+      const { values } = mockInsert();
 
-      const result = await verifyAndDeleteOtp('user@test.com', '123456', 'register');
+      const before = Date.now();
+      await storeOtp('user@test.com', '123456');
+      const after = Date.now();
 
-      expect(result).toBe(false);
-      // The where clause should use 'register:user@test.com'
-      expect(mockWhere.mock.calls[0]).toBeDefined();
-      const whereCondition = mockWhere.mock.calls[0]![0];
-      expect(whereCondition.type).toBe('and');
+      const { expires } = values.mock.calls[0]![0] as { expires: Date };
+      const windowMs = getOtpExpiryMinutes() * 60 * 1000;
+      expect(expires.getTime()).toBeGreaterThanOrEqual(before + windowMs - 1000);
+      expect(expires.getTime()).toBeLessThanOrEqual(after + windowMs + 1000);
     });
 
-    it('handles race condition - only one concurrent request succeeds', async () => {
-      // First call returns the token, second returns empty
-      let callCount = 0;
-      const mockReturning = vi.fn().mockImplementation(() => {
-        callCount++;
-        if (callCount === 1) {
-          return Promise.resolve([{ identifier: 'login:user@test.com' }]);
-        }
-        return Promise.resolve([]);
-      });
-      const mockWhere = vi.fn().mockReturnValue({ returning: mockReturning });
-      (db.delete as any).mockReturnValue({ where: mockWhere });
+    it('prunes expired rows so the table cannot grow without bound', async () => {
+      const { where } = mockDelete();
+      mockInsert();
 
-      // Simulate two concurrent verification attempts
-      const [result1, result2] = await Promise.all([
-        verifyAndDeleteOtp('user@test.com', '123456', 'login'),
-        verifyAndDeleteOtp('user@test.com', '123456', 'login'),
-      ]);
+      await storeOtp('user@test.com', '123456');
 
-      // Exactly one should succeed
-      const successCount = [result1, result2].filter(Boolean).length;
-      expect(successCount).toBe(1);
+      expect(where).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'lt', a: 'expires' }),
+      );
     });
-  });
 
-  describe('OTP Replacement for Same Purpose', () => {
-    it('new OTP replaces old OTP of same purpose', async () => {
-      const deletedIdentifiers: string[] = [];
-      const insertedTokens: string[] = [];
-
-      const mockWhere = vi.fn().mockImplementation((condition: any) => {
-        deletedIdentifiers.push(condition.b);
-        return {};
-      });
-      (db.delete as any).mockReturnValue({ where: mockWhere });
-
-      const mockValues = vi.fn().mockImplementation((data: any) => {
-        insertedTokens.push(data.token);
-        return { returning: vi.fn().mockResolvedValue([{}]) };
-      });
-      (db.insert as any).mockReturnValue({ values: mockValues });
-
-      await storeOtp('user@test.com', '111111', 'login');
-      await storeOtp('user@test.com', '222222', 'login');
-
-      // Should have deleted with login prefix twice (once before each insert)
-      expect(deletedIdentifiers.filter(id => id === 'login:user@test.com')).toHaveLength(2);
-      
-      // Should have inserted both tokens
-      expect(insertedTokens).toEqual(['111111', '222222']);
-    });
-  });
-
-  describe('Security', () => {
-    it('does not log OTP in plaintext', async () => {
+    it('does not log the code in plaintext', async () => {
       const consoleSpy = vi.spyOn(console, 'log');
-      mockStoreOtp();
+      mockDelete();
+      mockInsert();
 
-      await storeOtp('user@test.com', '123456', 'login');
+      await storeOtp('user@test.com', '123456');
 
-      // Check that OTP is not in any console.log output
       const allCalls = consoleSpy.mock.calls.flat().join(' ');
       expect(allCalls).not.toContain('123456');
+    });
+  });
 
-      consoleSpy.mockRestore();
+  describe('verifyOtp', () => {
+    it('succeeds when the atomic delete consumes a row', async () => {
+      mockDelete([{ email: 'user@test.com', code: '123456' }]);
+
+      await expect(verifyOtp('user@test.com', '123456')).resolves.toEqual({
+        ok: true,
+      });
+    });
+
+    it('normalizes the email to lowercase', async () => {
+      const { where } = mockDelete([{ email: 'user@test.com' }]);
+
+      await verifyOtp('USER@TEST.COM', '123456');
+
+      const condition = where.mock.calls[0]![0] as any;
+      expect(condition.args).toContainEqual({
+        type: 'eq',
+        a: 'email',
+        b: 'user@test.com',
+      });
+    });
+
+    it('reports not_found when no code was ever issued', async () => {
+      mockDelete([]);
+      (db.query.otpCodes.findFirst as any).mockResolvedValue(undefined);
+
+      await expect(verifyOtp('user@test.com', '123456')).resolves.toEqual({
+        ok: false,
+        reason: 'not_found',
+      });
+    });
+
+    it('reports mismatch when a live code exists but differs', async () => {
+      mockDelete([]);
+      (db.query.otpCodes.findFirst as any).mockResolvedValue({
+        email: 'user@test.com',
+        code: '999999',
+        expires: new Date(Date.now() + 60_000),
+      });
+
+      await expect(verifyOtp('user@test.com', '123456')).resolves.toEqual({
+        ok: false,
+        reason: 'mismatch',
+      });
+    });
+
+    it('reports expired when the code matches but the row survived the delete', async () => {
+      mockDelete([]);
+      (db.query.otpCodes.findFirst as any).mockResolvedValue({
+        email: 'user@test.com',
+        code: '123456',
+        expires: new Date(Date.now() - 60_000),
+      });
+
+      await expect(verifyOtp('user@test.com', '123456')).resolves.toEqual({
+        ok: false,
+        reason: 'expired',
+      });
+    });
+
+    it('lets only one of two concurrent attempts succeed', async () => {
+      let callCount = 0;
+      const returning = vi.fn().mockImplementation(() => {
+        callCount++;
+        return Promise.resolve(callCount === 1 ? [{ email: 'user@test.com' }] : []);
+      });
+      const where = vi.fn().mockReturnValue({ returning });
+      (db.delete as any).mockReturnValue({ where });
+      (db.query.otpCodes.findFirst as any).mockResolvedValue(undefined);
+
+      const results = await Promise.all([
+        verifyOtp('user@test.com', '123456'),
+        verifyOtp('user@test.com', '123456'),
+      ]);
+
+      expect(results.filter((r) => r.ok)).toHaveLength(1);
+    });
+  });
+
+  describe('clearOtp', () => {
+    it('deletes the row for the normalized email', async () => {
+      const { where } = mockDelete();
+
+      await clearOtp('USER@TEST.COM');
+
+      expect(where).toHaveBeenCalledWith({
+        type: 'eq',
+        a: 'email',
+        b: 'user@test.com',
+      });
     });
   });
 
   describe('getOtpExpiryMinutes', () => {
-    it('returns the configured expiry time', () => {
-      const expiry = getOtpExpiryMinutes();
-      expect(typeof expiry).toBe('number');
-      expect(expiry).toBeGreaterThan(0);
+    it('returns the configured expiry window', () => {
+      expect(getOtpExpiryMinutes()).toBe(60);
     });
   });
 });

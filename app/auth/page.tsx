@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
@@ -26,7 +26,6 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('login');
-  const [verifyMode, setVerifyMode] = useState<'login' | 'register'>('login'); // Track which flow we're in
   const [form, setForm] = useState<AuthForm>({
     email: '',
     name: '',
@@ -34,10 +33,20 @@ function AuthForm() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [otpExpires, setOtpExpires] = useState(15);
+  const [otpExpires, setOtpExpires] = useState(60);
   const [verifyEmail, setVerifyEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   const redirectTo = searchParams.get('redirect') || '/account';
+
+  // Tick the resend cooldown down to zero. Guards against rapid repeat
+  // requests, each of which would issue a fresh code and invalidate the
+  // one the user is probably already reading in their inbox.
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   const updateForm = (field: keyof AuthForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -81,12 +90,13 @@ function AuthForm() {
 
     try {
       if (mode === 'login' || mode === 'register') {
-        const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+        // Both tabs request the same kind of code; `name` only matters when
+        // the account doesn't exist yet.
         const body = mode === 'login'
           ? { email: form.email }
           : { email: form.email, name: form.name };
 
-        const response = await fetch(endpoint, {
+        const response = await fetch('/api/auth/request-otp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
@@ -103,16 +113,13 @@ function AuthForm() {
           return;
         }
 
-        // After login/register, go to verify email
         setVerifyEmail(form.email.toLowerCase());
-        setVerifyMode(mode); // Remember which flow we're in
-        setOtpExpires(data.expires || 15);
+        setOtpExpires(data.expires);
+        setResendCooldown(30);
         setMode('verify-email');
         setForm((prev) => ({ ...prev, otp: '' }));
       } else if (mode === 'verify-email') {
-        // Call the correct verification endpoint based on original flow
-        const endpoint = verifyMode === 'login' ? '/api/auth/verify-login' : '/api/auth/verify-register';
-        const response = await fetch(endpoint, {
+        const response = await fetch('/api/auth/verify-otp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -146,9 +153,9 @@ function AuthForm() {
 
   const handleBackToLogin = () => {
     setMode('login');
-    setVerifyMode('login');
     setErrors({});
     setForm({ email: '', name: '', otp: '' });
+    setResendCooldown(0);
   };
 
   // Verify Email Form
@@ -217,16 +224,15 @@ function AuthForm() {
 
           {/* Resend OTP */}
           <button
+            disabled={isLoading || resendCooldown > 0}
             onClick={async () => {
               setIsLoading(true);
               try {
-                // Use the same endpoint as the original flow
-                const endpoint = verifyMode === 'login' ? '/api/auth/login' : '/api/auth/register';
-                const body = verifyMode === 'login'
-                  ? { email: verifyEmail }
-                  : { email: verifyEmail, name: form.name || '' };
-                
-                const response = await fetch(endpoint, {
+                const body = form.name
+                  ? { email: verifyEmail, name: form.name }
+                  : { email: verifyEmail };
+
+                const response = await fetch('/api/auth/request-otp', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(body),
@@ -234,6 +240,8 @@ function AuthForm() {
                 const data = await response.json();
                 if (response.ok) {
                   setErrors({ general: 'Kode OTP baru telah dikirim' });
+                  setForm((prev) => ({ ...prev, otp: '' }));
+                  setResendCooldown(30);
                 } else {
                   setErrors({ general: data.error || 'Gagal mengirim ulang' });
                 }
@@ -243,9 +251,11 @@ function AuthForm() {
                 setIsLoading(false);
               }
             }}
-            className="w-full text-center text-sm text-neutral-600 hover:text-neutral-900 mt-4"
+            className="w-full text-center text-sm text-neutral-600 hover:text-neutral-900 mt-4 disabled:text-neutral-300 disabled:cursor-not-allowed"
           >
-            Kirim ulang kode OTP
+            {resendCooldown > 0
+              ? `Kirim ulang kode OTP (${resendCooldown}s)`
+              : 'Kirim ulang kode OTP'}
           </button>
 
           {/* Back to login */}

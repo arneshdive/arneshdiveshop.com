@@ -71,6 +71,11 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     return url;
   };
 
+  // Browsers report HEIC inconsistently — Safari sets the MIME type, Chrome
+  // often sends an empty one — so fall back to the extension.
+  const isHeic = (file: File) =>
+    /^image\/hei[cf]$/.test(file.type) || /\.hei[cf]$/i.test(file.name);
+
   const handleDropError = (rejections: FileRejection[]) => {
     const firstRejection = rejections[0];
     if (!firstRejection) return;
@@ -81,7 +86,13 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     if (errorCode === 'file-too-large') {
       setError(`${fileName}: File terlalu besar (maksimal 20MB)`);
     } else if (errorCode === 'file-invalid-type') {
-      setError(`${fileName}: Format tidak didukung (gunakan JPEG, PNG, WebP, atau HEIC)`);
+      // Photos straight off an iPhone are the common case here, so say what to
+      // do rather than just listing the formats that would have worked.
+      setError(
+        isHeic(firstRejection.file)
+          ? `${fileName}: Format HEIC belum didukung. Ubah dulu ke JPG, lalu unggah kembali.`
+          : `${fileName}: Format tidak didukung (gunakan JPEG, PNG, atau WebP)`
+      );
     } else if (errorCode === 'too-many-files') {
       setError(`Maksimal ${maxFiles} gambar per produk`);
     } else {
@@ -165,8 +176,6 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
       'image/webp': ['.webp'],
-      'image/heic': ['.heic'],
-      'image/heif': ['.heif'],
     },
     maxSize: IMAGE_CONFIG.maxFileSize,
     maxFiles,
@@ -337,7 +346,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
                     <span className="font-medium text-neutral-900">Klik untuk upload</span> atau seret gambar ke sini
                   </p>
                   <p className="text-xs text-neutral-400 mt-1">
-                    JPEG, PNG, WebP, HEIC. Maks 20MB. {totalCount}/{maxFiles} gambar.
+                    JPEG, PNG, WebP. Maks 20MB. {totalCount}/{maxFiles} gambar.
                   </p>
                 </div>
               </>

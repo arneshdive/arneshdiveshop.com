@@ -58,10 +58,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File tidak ditemukan' }, { status: 400 });
     }
 
+    // Rejected separately from the generic case so the admin is told what to
+    // do about it. Accepting a HEIC we cannot convert would store a file that
+    // most browsers refuse to render — a broken product image rather than an
+    // upload error.
+    const conversionOnly = [...IMAGE_CONFIG.conversionOnlyFormats];
+    if (conversionOnly.includes(file.type as (typeof conversionOnly)[number])) {
+      return NextResponse.json(
+        {
+          error:
+            'Format HEIC/HEIF belum didukung. Ubah dulu ke JPG atau PNG, lalu unggah kembali.',
+        },
+        { status: 400 }
+      );
+    }
+
     const acceptedTypes = [...IMAGE_CONFIG.acceptedFormats];
     if (!acceptedTypes.includes(file.type as (typeof acceptedTypes)[number])) {
       return NextResponse.json(
-        { error: 'Format tidak didukung. Gunakan: JPEG, PNG, WebP, atau HEIC.' },
+        { error: 'Format tidak didukung. Gunakan: JPEG, PNG, atau WebP.' },
         { status: 400 }
       );
     }

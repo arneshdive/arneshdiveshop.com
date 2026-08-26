@@ -8,11 +8,20 @@ export const IMAGE_CONFIG = {
   maxFileSize: 20 * 1024 * 1024, // 20MB - accept modern phone/camera photos
   warnFileSize: 5 * 1024 * 1024, // 5MB - warn but still process
 
-  // Accepted formats (MIME types)
+  // Formats a browser can display, so they are safe to store and serve as-is.
   acceptedFormats: [
     'image/jpeg',
     'image/png',
     'image/webp',
+  ] as const,
+
+  // Formats that must be converted before anything can display them. HEIC
+  // uploads used to work only because Vercel's image optimizer quietly
+  // converted them on the way out; with that turned off (see next.config.ts)
+  // storing one would leave a picture that Chrome, Firefox and Edge cannot
+  // render. They are rejected until the upload route can convert them itself,
+  // which needs sharp to be available at runtime.
+  conversionOnlyFormats: [
     'image/heic',
     'image/heif',
   ] as const,

@@ -4,14 +4,20 @@
  */
 
 export const IMAGE_CONFIG = {
-  // Upload limits
-  // Vercel rejects request bodies over ~4.5MB at the edge, before the upload
-  // route ever runs, and answers with plain text rather than JSON. This was
-  // set to 20MB, so anything in between failed with a JSON parse error and no
-  // usable explanation. Stay under the platform limit with room for multipart
-  // overhead, and say so honestly in the UI.
-  maxFileSize: 4 * 1024 * 1024, // 4MB
-  warnFileSize: 2 * 1024 * 1024, // 2MB - warn but still process
+  // Two different limits, because the file an admin picks is no longer the
+  // file that gets sent.
+
+  // What may be selected. The browser downscales before uploading, so this is
+  // bounded by what a phone can decode without running out of memory rather
+  // than by anything on the server.
+  maxInputFileSize: 25 * 1024 * 1024, // 25MB
+
+  // What may actually arrive at the route. Vercel rejects request bodies over
+  // ~4.5MB at the edge, before the route runs, answering in plain text rather
+  // than JSON — that limit cannot be raised by configuration. Downscaled
+  // variants come to roughly 600KB together, so this is only a safety net for
+  // the fallback path that uploads an unprocessed file.
+  maxUploadSize: 4 * 1024 * 1024, // 4MB
 
   // Formats a browser can display, so they are safe to store and serve as-is.
   acceptedFormats: [
@@ -20,12 +26,13 @@ export const IMAGE_CONFIG = {
     'image/webp',
   ] as const,
 
-  // Formats that must be converted before anything can display them. HEIC
-  // uploads used to work only because Vercel's image optimizer quietly
-  // converted them on the way out; with that turned off (see next.config.ts)
-  // storing one would leave a picture that Chrome, Firefox and Edge cannot
-  // render. They are rejected until the upload route can convert them itself,
-  // which needs sharp to be available at runtime.
+  // Formats nothing in the pipeline can read. HEIC uploads used to work only
+  // because Vercel's image optimizer quietly converted them on the way out;
+  // with that turned off (see next.config.ts) storing one would leave a
+  // picture that Chrome, Firefox and Edge cannot render — and those same
+  // browsers cannot decode HEIC to a canvas either, so they cannot be
+  // downscaled on the way in. iOS generally converts to JPEG by itself when
+  // the file input does not list HEIC, which covers the common case.
   conversionOnlyFormats: [
     'image/heic',
     'image/heif',
@@ -67,18 +74,3 @@ export const IMAGE_CONFIG = {
   },
 } as const;
 
-export type ImageVariant = keyof typeof IMAGE_CONFIG.variants;
-
-export interface ProcessedImage {
-  variant: ImageVariant;
-  url: string;
-  width: number;
-  height: number;
-  sizeKB: number;
-}
-
-export interface ImageValidationResult {
-  valid: boolean;
-  error?: string;
-  warning?: string;
-}

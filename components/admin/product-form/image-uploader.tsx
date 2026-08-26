@@ -5,14 +5,16 @@ import { useDropzone, FileRejection } from 'react-dropzone';
 import { X, Upload, Image as ImageIcon, Loader, AlertCircle, Check } from 'lucide-react';
 import Image from 'next/image';
 import { IMAGE_CONFIG } from '@/lib/utils/image-config';
+import { createVariants, canResizeInBrowser } from '@/lib/utils/image-resize';
 
-const MAX_FILE_MB = Math.round(IMAGE_CONFIG.maxFileSize / (1024 * 1024));
+const MAX_INPUT_MB = Math.round(IMAGE_CONFIG.maxInputFileSize / (1024 * 1024));
+const MAX_UPLOAD_MB = Math.round(IMAGE_CONFIG.maxUploadSize / (1024 * 1024));
 
 interface UploadingImage {
   id: string;
   blobUrl: string;
   fileName: string;
-  status: 'uploading' | 'success' | 'error';
+  status: 'processing' | 'uploading' | 'success' | 'error';
   error?: string;
   finalUrl?: string;
 }
@@ -53,7 +55,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
    */
   const describeFailure = async (response: Response): Promise<string> => {
     if (response.status === 413) {
-      return `File terlalu besar (maksimal ${MAX_FILE_MB}MB)`;
+      return `File terlalu besar (maksimal ${MAX_UPLOAD_MB}MB setelah dikompres)`;
     }
 
     const body = await response.text();
@@ -68,14 +70,44 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     return `Upload gagal (${response.status})`;
   };
 
-  const uploadFile = async (file: File): Promise<string> => {
+  /**
+   * Build the request body. Normally that is the three downscaled variants,
+   * which come to a few hundred KB whatever was selected. If this browser
+   * cannot do the work, send the original instead — but only when it would
+   * actually fit, since anything larger is refused by the platform before the
+   * route sees it.
+   */
+  const buildUploadBody = async (file: File): Promise<FormData> => {
     const formData = new FormData();
-    formData.append('file', file);
 
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+    if (canResizeInBrowser()) {
+      try {
+        for (const { variant, blob } of await createVariants(file)) {
+          formData.append(variant, blob, `${variant}.webp`);
+        }
+        return formData;
+      } catch (processingError) {
+        console.error('Client-side resize failed, sending original:', processingError);
+      }
+    }
+
+    if (file.size > IMAGE_CONFIG.maxUploadSize) {
+      throw new Error(
+        `Gambar tidak bisa diproses di browser ini dan ukurannya melebihi ${MAX_UPLOAD_MB}MB. Perkecil dulu, lalu unggah kembali.`,
+      );
+    }
+
+    formData.append('file', file);
+    return formData;
+  };
+
+  const uploadFile = async (file: File, onUploading: () => void): Promise<string> => {
+    // Decoding and re-encoding a 25MB photo is noticeable, so the two phases
+    // are reported separately rather than showing one long spinner.
+    const body = await buildUploadBody(file);
+    onUploading();
+
+    const response = await fetch('/api/upload', { method: 'POST', body });
 
     if (!response.ok) {
       throw new Error(await describeFailure(response));
@@ -102,7 +134,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     const fileName = firstRejection.file.name;
 
     if (errorCode === 'file-too-large') {
-      setError(`${fileName}: File terlalu besar (maksimal ${MAX_FILE_MB}MB)`);
+      setError(`${fileName}: File terlalu besar (maksimal ${MAX_INPUT_MB}MB)`);
     } else if (errorCode === 'file-invalid-type') {
       // Photos straight off an iPhone are the common case here, so say what to
       // do rather than just listing the formats that would have worked.
@@ -142,7 +174,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       blobUrl: URL.createObjectURL(file),
       fileName: file.name,
-      status: 'uploading' as const,
+      status: 'processing' as const,
     }));
 
     setUploadingImages(prev => [...prev, ...newUploadingImages]);
@@ -153,8 +185,15 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       const uploadingImage = newUploadingImages[i]!;
 
       try {
-        const url = await uploadFile(file);
-        
+        const url = await uploadFile(file, () =>
+          setUploadingImages(prev =>
+            prev.map(img =>
+              img.id === uploadingImage.id ? { ...img, status: 'uploading' } : img
+            )
+          )
+        );
+
+
         // Mark as success and store final URL
         setUploadingImages(prev =>
           prev.map(img =>
@@ -195,7 +234,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       'image/png': ['.png'],
       'image/webp': ['.webp'],
     },
-    maxSize: IMAGE_CONFIG.maxFileSize,
+    maxSize: IMAGE_CONFIG.maxInputFileSize,
     maxFiles,
     disabled: images.length + uploadingImages.length >= maxFiles,
   });
@@ -222,7 +261,9 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     onImagesChange(newImages);
   };
 
-  const isUploading = uploadingImages.some(img => img.status === 'uploading');
+  const isUploading = uploadingImages.some(
+    img => img.status === 'processing' || img.status === 'uploading'
+  );
   const totalCount = images.length + uploadingImages.length;
 
   return (
@@ -260,13 +301,18 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
               />
               {/* Status overlay */}
               <div className={`absolute inset-0 flex items-center justify-center ${
-                img.status === 'uploading' ? 'bg-black/30' : 
+                img.status === 'processing' || img.status === 'uploading' ? 'bg-black/30' :
                 img.status === 'success' ? 'bg-green-500/30' :
                 'bg-red-500/30'
               }`}>
-                {img.status === 'uploading' && (
-                  <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
-                    <Loader className="w-5 h-5 text-neutral-600 animate-spin" style={{ animationDuration: '800ms' }} />
+                {(img.status === 'processing' || img.status === 'uploading') && (
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center">
+                      <Loader className="w-5 h-5 text-neutral-600 animate-spin" style={{ animationDuration: '800ms' }} />
+                    </div>
+                    <span className="text-[9px] text-white font-medium">
+                      {img.status === 'processing' ? 'Memproses' : 'Mengunggah'}
+                    </span>
                   </div>
                 )}
                 {img.status === 'success' && (
@@ -364,7 +410,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
                     <span className="font-medium text-neutral-900">Klik untuk upload</span> atau seret gambar ke sini
                   </p>
                   <p className="text-xs text-neutral-400 mt-1">
-                    JPEG, PNG, WebP. Maks {MAX_FILE_MB}MB. {totalCount}/{maxFiles} gambar.
+                    JPEG, PNG, WebP. Maks {MAX_INPUT_MB}MB. {totalCount}/{maxFiles} gambar.
                   </p>
                 </div>
               </>

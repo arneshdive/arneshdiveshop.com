@@ -4,13 +4,9 @@ import { useCallback, useState, useEffect, useRef } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { X, Upload, Image as ImageIcon, Loader, AlertCircle, Check } from 'lucide-react';
 import Image from 'next/image';
+import { IMAGE_CONFIG } from '@/lib/utils/image-config';
 
-// Must match server-side config
-const IMAGE_CONFIG = {
-  maxFileSize: 20 * 1024 * 1024, // 20MB
-  minDimensions: 500,
-  maxDimensions: 5000,
-} as const;
+const MAX_FILE_MB = Math.round(IMAGE_CONFIG.maxFileSize / (1024 * 1024));
 
 interface UploadingImage {
   id: string;
@@ -49,6 +45,29 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     };
   }, []);
 
+  /**
+   * Not every failure comes from the route. Vercel rejects oversized bodies at
+   * the edge and Next serves HTML for an unhandled error, both as non-JSON —
+   * parsing those blindly surfaced things like `Unexpected token 'R'` on top of
+   * the thumbnail instead of telling anyone what went wrong.
+   */
+  const describeFailure = async (response: Response): Promise<string> => {
+    if (response.status === 413) {
+      return `File terlalu besar (maksimal ${MAX_FILE_MB}MB)`;
+    }
+
+    const body = await response.text();
+
+    try {
+      const parsed = JSON.parse(body);
+      if (parsed?.error) return parsed.error;
+    } catch {
+      // Not JSON — fall through to a generic message below.
+    }
+
+    return `Upload gagal (${response.status})`;
+  };
+
   const uploadFile = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
@@ -59,8 +78,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Upload gagal');
+      throw new Error(await describeFailure(response));
     }
 
     const { url, warning: uploadWarning } = await response.json();
@@ -84,7 +102,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     const fileName = firstRejection.file.name;
 
     if (errorCode === 'file-too-large') {
-      setError(`${fileName}: File terlalu besar (maksimal 20MB)`);
+      setError(`${fileName}: File terlalu besar (maksimal ${MAX_FILE_MB}MB)`);
     } else if (errorCode === 'file-invalid-type') {
       // Photos straight off an iPhone are the common case here, so say what to
       // do rather than just listing the formats that would have worked.
@@ -346,7 +364,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
                     <span className="font-medium text-neutral-900">Klik untuk upload</span> atau seret gambar ke sini
                   </p>
                   <p className="text-xs text-neutral-400 mt-1">
-                    JPEG, PNG, WebP. Maks 20MB. {totalCount}/{maxFiles} gambar.
+                    JPEG, PNG, WebP. Maks {MAX_FILE_MB}MB. {totalCount}/{maxFiles} gambar.
                   </p>
                 </div>
               </>

@@ -5,8 +5,13 @@
 
 export const IMAGE_CONFIG = {
   // Upload limits
-  maxFileSize: 20 * 1024 * 1024, // 20MB - accept modern phone/camera photos
-  warnFileSize: 5 * 1024 * 1024, // 5MB - warn but still process
+  // Vercel rejects request bodies over ~4.5MB at the edge, before the upload
+  // route ever runs, and answers with plain text rather than JSON. This was
+  // set to 20MB, so anything in between failed with a JSON parse error and no
+  // usable explanation. Stay under the platform limit with room for multipart
+  // overhead, and say so honestly in the UI.
+  maxFileSize: 4 * 1024 * 1024, // 4MB
+  warnFileSize: 2 * 1024 * 1024, // 2MB - warn but still process
 
   // Formats a browser can display, so they are safe to store and serve as-is.
   acceptedFormats: [

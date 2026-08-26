@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils/cn';
+import { productImageUrl } from '@/lib/utils/product-image';
 
 interface ProductGalleryProps {
   images: string[];
@@ -22,7 +23,7 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
         {/* Main Image */}
         <div className="relative aspect-square bg-neutral-100 rounded-lg overflow-hidden flex-1">
           <Image
-            src={currentImage}
+            src={productImageUrl(currentImage, 'main') || '/placeholder-product.jpg'}
             alt={`${productTitle} - Image ${selectedIndex + 1}`}
             fill
             className="object-cover mix-blend-multiply"
@@ -47,7 +48,7 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
                 )}
               >
                 <Image
-                  src={image}
+                  src={productImageUrl(image, 'thumb') || '/placeholder-product.jpg'}
                   alt={`${productTitle} thumbnail ${index + 1}`}
                   fill
                   className="object-cover mix-blend-multiply"

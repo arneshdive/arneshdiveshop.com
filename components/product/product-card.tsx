@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cart';
 import { ProductBadge, type BadgeType } from '@/components/ui/product-badge';
+import { productImageUrl } from '@/lib/utils/product-image';
 
 interface ProductCardProps {
   product: {
@@ -88,18 +89,21 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Primary Image */}
             <div className="w-1/2 h-full relative flex-shrink-0">
               <Image
-                src={product.image || '/placeholder-product.jpg'}
+                src={productImageUrl(product.image, 'medium') || '/placeholder-product.jpg'}
                 alt={product.title}
                 fill
                 className="object-cover mix-blend-multiply"
                 sizes="(max-width: 768px) 50vw, 25vw"
               />
             </div>
-            
+
             {/* Secondary Image */}
             <div className="w-1/2 h-full relative flex-shrink-0">
               <Image
-                src={product.secondaryImage || product.image || '/placeholder-product.jpg'}
+                src={
+                  productImageUrl(product.secondaryImage || product.image, 'medium') ||
+                  '/placeholder-product.jpg'
+                }
                 alt={`${product.title} - alternate view`}
                 fill
                 className="object-cover mix-blend-multiply"

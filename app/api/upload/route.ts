@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import sharp from 'sharp';
 import { requireAdmin } from '@/lib/auth/admin';
 import { IMAGE_CONFIG } from '@/lib/utils/image-config';
 import { variantPath, originalPath, type ImageSize } from '@/lib/utils/product-image';
@@ -8,6 +7,22 @@ import { variantPath, originalPath, type ImageSize } from '@/lib/utils/product-i
 // sharp needs the Node runtime; route handlers default to it, but this is
 // load-bearing rather than incidental.
 export const runtime = 'nodejs';
+
+/**
+ * sharp is a native module, and importing it at the top level takes the whole
+ * route down with it if the binary is missing for the deployment's platform —
+ * the handler never runs and the client gets an HTML error page instead of
+ * JSON. Resizing is an enhancement, not a requirement for storing an upload,
+ * so load it lazily and let the caller carry on without it.
+ */
+async function loadSharp() {
+  try {
+    return (await import('sharp')).default;
+  } catch (error) {
+    console.error('sharp unavailable, storing uploads without resizing:', error);
+    return null;
+  }
+}
 
 const VARIANT_SIZES: ImageSize[] = ['main', 'medium', 'thumb'];
 
@@ -65,7 +80,13 @@ export async function POST(request: NextRequest) {
 
     let mainUrl: string;
 
+    const sharp = await loadSharp();
+
     try {
+      if (!sharp) {
+        throw new Error('sharp tidak tersedia di runtime ini');
+      }
+
       // `.rotate()` with no argument applies the EXIF orientation, which is
       // dropped along with the rest of the metadata on the way out.
       const decoded = sharp(source, { failOn: 'none' }).rotate();

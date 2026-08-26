@@ -20,16 +20,25 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // sharp loads its native binary from a platform-specific optional package
-  // via a dynamic require, which the file tracer cannot follow. Without this
-  // the binary is left out of the deployed function and `import('sharp')`
-  // fails at runtime, so uploads silently fall back to storing originals
-  // unresized. Only the platform being built for is ever installed, so these
-  // globs match one package rather than every platform's.
+  // sharp reaches its native code through two optional packages resolved by a
+  // dynamic require — @img/sharp-<platform> holds the .node binary and
+  // @img/sharp-libvips-<platform> the libvips library it links against. The
+  // file tracer cannot follow that, so they were left out of the deployed
+  // function and `import('sharp')` threw at runtime, quietly dropping uploads
+  // to the unresized fallback path.
+  //
+  // Both node_modules layouts are listed: pnpm keeps the real files under
+  // .pnpm/ and leaves symlinks at the top level, while a hoisted install has
+  // them directly. Only the platform being built for is ever installed, so
+  // these match one copy each (~17MB) rather than every platform's.
   outputFileTracingIncludes: {
     '/api/upload': [
-      './node_modules/.pnpm/**/@img/sharp-linux*/**/*',
-      './node_modules/.pnpm/**/@img/sharp-libvips-linux*/**/*',
+      'node_modules/.pnpm/**/sharp/**/*',
+      'node_modules/.pnpm/**/@img/sharp-linux*/**/*',
+      'node_modules/.pnpm/**/@img/sharp-libvips-linux*/**/*',
+      'node_modules/sharp/**/*',
+      'node_modules/@img/sharp-linux*/**/*',
+      'node_modules/@img/sharp-libvips-linux*/**/*',
     ],
   },
   async redirects() {

@@ -120,8 +120,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       price: priceInfo.priceDisplay,
       compareAtPrice: priceInfo.compareAtPriceDisplay,
       badge: p.isOnSale ? 'Sale' : p.isNewArrival ? 'Baru' : undefined,
-      image: (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
-      secondaryImage: (p.images as string[] | undefined)?.[1] || (p.images as string[] | undefined)?.[0] || '/placeholder-product.jpg',
+      image: (p.images as string[] | undefined)?.[0],
+      secondaryImage: (p.images as string[] | undefined)?.[1],
       variantId: (p.variants || []).find((v: any) => v.isActive)?.id,
     };
   });

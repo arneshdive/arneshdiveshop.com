@@ -58,19 +58,30 @@ async function resolveBrandId(brandFilter: string): Promise<string | null> {
 }
 
 /**
- * Search products with filters (excluding soft-deleted)
- * For storefront: only returns active products by default
+ * Every WHERE clause implied by a filter set, in one place.
+ *
+ * A list query and its matching count query MUST be built from the same
+ * conditions or the pagination lies: the admin list used to be counted with
+ * `isActive` alone, so `totalPages` was wrong the moment any other filter was
+ * applied. Keeping one builder means a filter can never be added to one query
+ * and forgotten in the other.
+ *
+ * `defaultActiveOnly` is the single behavioural difference between the
+ * storefront and the admin: the storefront hides inactive products unless
+ * asked, the admin shows exactly what it filtered for.
  */
-export async function searchProducts(filters?: ProductFilters) {
+async function buildProductConditions(
+  filters: ProductFilters | undefined,
+  { defaultActiveOnly }: { defaultActiveOnly: boolean },
+): Promise<SQL[]> {
   const conditions: SQL[] = [isNull(products.deletedAt)];
-  
-  // For storefront, default to active products only
-  if (filters?.isActive === undefined) {
-    conditions.push(eq(products.isActive, true));
-  } else if (filters.isActive !== undefined) {
+
+  if (filters?.isActive !== undefined) {
     conditions.push(eq(products.isActive, filters.isActive));
+  } else if (defaultActiveOnly) {
+    conditions.push(eq(products.isActive, true));
   }
-  
+
   // Keyword search - search in both name and description (case-insensitive)
   if (filters?.search) {
     const searchTerm = `%${filters.search}%`;
@@ -81,7 +92,7 @@ export async function searchProducts(filters?: ProductFilters) {
       )!
     );
   }
-  
+
   // Category filter (supports both ID and slug)
   if (filters?.category) {
     const categoryId = await resolveCategoryId(filters.category);
@@ -89,7 +100,7 @@ export async function searchProducts(filters?: ProductFilters) {
       conditions.push(eq(products.categoryId, categoryId));
     }
   }
-  
+
   // Brand filter (supports both ID and slug)
   if (filters?.brand) {
     const brandId = await resolveBrandId(filters.brand);
@@ -97,27 +108,27 @@ export async function searchProducts(filters?: ProductFilters) {
       conditions.push(eq(products.brandId, brandId));
     }
   }
-  
+
   // Featured filter
   if (filters?.isFeatured !== undefined) {
     conditions.push(eq(products.isFeatured, filters.isFeatured));
   }
-  
+
   // Diving type filter (array contains)
   if (filters?.divingType) {
     conditions.push(sql`${products.divingTypes} @> ARRAY[${filters.divingType}]::diving_type[]`);
   }
-  
+
   // New arrival filter
   if (filters?.isNewArrival !== undefined) {
     conditions.push(eq(products.isNewArrival, filters.isNewArrival));
   }
-  
+
   // On sale filter
   if (filters?.isOnSale !== undefined) {
     conditions.push(eq(products.isOnSale, filters.isOnSale));
   }
-  
+
   // Price range filters
   if (filters?.minPrice !== undefined && filters?.maxPrice !== undefined) {
     conditions.push(between(products.priceCents, filters.minPrice, filters.maxPrice));
@@ -126,7 +137,17 @@ export async function searchProducts(filters?: ProductFilters) {
   } else if (filters?.maxPrice !== undefined) {
     conditions.push(lte(products.priceCents, filters.maxPrice));
   }
-  
+
+  return conditions;
+}
+
+/**
+ * Search products with filters (excluding soft-deleted)
+ * For storefront: only returns active products by default
+ */
+export async function searchProducts(filters?: ProductFilters) {
+  const conditions = await buildProductConditions(filters, { defaultActiveOnly: true });
+
   // Build query with pagination
   const limit = filters?.limit || 50;
   const offset = filters?.offset || 0;
@@ -172,71 +193,8 @@ function getProductOrderBy(sort?: string) {
  * Get count of products matching filters
  */
 export async function searchProductsCount(filters?: ProductFilters): Promise<number> {
-  const conditions: SQL[] = [isNull(products.deletedAt)];
-  
-  // For storefront, default to active products only
-  if (filters?.isActive === undefined) {
-    conditions.push(eq(products.isActive, true));
-  } else if (filters.isActive !== undefined) {
-    conditions.push(eq(products.isActive, filters.isActive));
-  }
-  
-  // Keyword search
-  if (filters?.search) {
-    const searchTerm = `%${filters.search}%`;
-    conditions.push(
-      or(
-        ilike(products.name, searchTerm),
-        ilike(products.description, searchTerm)
-      )!
-    );
-  }
-  
-  // Category filter
-  if (filters?.category) {
-    const categoryId = await resolveCategoryId(filters.category);
-    if (categoryId) {
-      conditions.push(eq(products.categoryId, categoryId));
-    }
-  }
-  
-  // Brand filter
-  if (filters?.brand) {
-    const brandId = await resolveBrandId(filters.brand);
-    if (brandId) {
-      conditions.push(eq(products.brandId, brandId));
-    }
-  }
-  
-  // Featured filter
-  if (filters?.isFeatured !== undefined) {
-    conditions.push(eq(products.isFeatured, filters.isFeatured));
-  }
-  
-  // Diving type filter (array contains)
-  if (filters?.divingType) {
-    conditions.push(sql`${products.divingTypes} @> ARRAY[${filters.divingType}]::diving_type[]`);
-  }
-  
-  // New arrival filter
-  if (filters?.isNewArrival !== undefined) {
-    conditions.push(eq(products.isNewArrival, filters.isNewArrival));
-  }
-  
-  // On sale filter
-  if (filters?.isOnSale !== undefined) {
-    conditions.push(eq(products.isOnSale, filters.isOnSale));
-  }
-  
-  // Price range filters
-  if (filters?.minPrice !== undefined && filters?.maxPrice !== undefined) {
-    conditions.push(between(products.priceCents, filters.minPrice, filters.maxPrice));
-  } else if (filters?.minPrice !== undefined) {
-    conditions.push(gte(products.priceCents, filters.minPrice));
-  } else if (filters?.maxPrice !== undefined) {
-    conditions.push(lte(products.priceCents, filters.maxPrice));
-  }
-  
+  const conditions = await buildProductConditions(filters, { defaultActiveOnly: true });
+
   const result = await db
     .select({ count: sql<number>`count(*)` })
     .from(products)
@@ -337,30 +295,8 @@ export function formatProductForStorefront(product: Awaited<ReturnType<typeof se
  * @deprecated Use searchProducts for storefront
  */
 export async function getProducts(filters?: ProductFilters) {
-  const conditions: SQL[] = [isNull(products.deletedAt)];
-  
-  if (filters?.category) {
-    conditions.push(eq(products.categoryId, filters.category));
-  }
-  if (filters?.brand) {
-    conditions.push(eq(products.brandId, filters.brand));
-  }
-  if (filters?.isActive !== undefined) {
-    conditions.push(eq(products.isActive, filters.isActive));
-  }
-  if (filters?.isFeatured !== undefined) {
-    conditions.push(eq(products.isFeatured, filters.isFeatured));
-  }
-  if (filters?.isNewArrival !== undefined) {
-    conditions.push(eq(products.isNewArrival, filters.isNewArrival));
-  }
-  if (filters?.isOnSale !== undefined) {
-    conditions.push(eq(products.isOnSale, filters.isOnSale));
-  }
-  if (filters?.search) {
-    conditions.push(ilike(products.name, `%${filters.search}%`));
-  }
-  
+  const conditions = await buildProductConditions(filters, { defaultActiveOnly: false });
+
   return db.query.products.findMany({
     where: and(...conditions),
     with: {
@@ -369,8 +305,30 @@ export async function getProducts(filters?: ProductFilters) {
       variants: true,
     },
     orderBy: [desc(products.createdAt)],
+    // Both stay optional: an absent limit/offset emits no LIMIT/OFFSET, which
+    // is what the sitemap and homepage callers already rely on. `offset` was
+    // silently dropped here before, so every admin page returned page 1.
     limit: filters?.limit,
+    offset: filters?.offset,
   });
+}
+
+/**
+ * Count of products matching the same filters `getProducts` would list.
+ *
+ * Shares `buildProductConditions` with `getProducts` on purpose — this is the
+ * number the admin turns into `totalPages`, and a count built from a different
+ * WHERE clause produces pages that are empty or unreachable.
+ */
+export async function getProductsCount(filters?: ProductFilters): Promise<number> {
+  const conditions = await buildProductConditions(filters, { defaultActiveOnly: false });
+
+  const result = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(and(...conditions));
+
+  return Number(result[0]?.count || 0);
 }
 
 /**

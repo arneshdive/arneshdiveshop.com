@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import type { VariantOption, EditableVariant } from '@/lib/hooks/use-product-form';
 import { formatCurrencyInput } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
 
 interface ProductPreviewProps {
   name: string;
@@ -31,6 +33,21 @@ export function ProductPreview({
   variantOptions,
   editableVariants = [],
 }: ProductPreviewProps) {
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  // Keyed by URL so a single dead image doesn't blank its siblings, and
+  // functional so simultaneous onError callbacks don't overwrite each other.
+  const markImageFailed = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
+
+  // `images` is a prop, so narrowing `images[0]` in JSX does not survive into
+  // an onError closure — the value has to be captured in a const first.
+  const heroSource = images[0];
+  const hero = heroSource && !failedImages.has(heroSource)
+    ? productImageUrl(heroSource, 'medium')
+    : undefined;
+
   const formatPrice = (val: string) => (val ? `Rp ${formatCurrencyInput(val)}` : 'Rp 0');
   const parsePriceValue = (val: string) => parseInt(val.replace(/\D/g, ''), 10) || 0;
 
@@ -71,17 +88,18 @@ export function ProductPreview({
         <div className="p-4">
           {/* Image Gallery */}
           <div className="aspect-square bg-neutral-100 rounded-lg overflow-hidden relative mb-3">
-            {images.length > 0 ? (
+            {hero ? (
               <Image
-                src={images[0]!}
+                src={hero}
                 alt={name || 'Product preview'}
                 fill
                 className="object-cover"
                 sizes="320px"
+                onError={() => markImageFailed(heroSource!)}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
-                <Icon icon="solar:gallery-minimalistic-linear" className="w-10 h-10" />
+                <Icon icon="solar:box-linear" className="w-10 h-10" />
               </div>
             )}
             {!isActive && (
@@ -98,20 +116,27 @@ export function ProductPreview({
 
           {/* Thumbnail strip */}
           <div className="flex gap-2 mb-4">
-            {[0, 1, 2, 3].map((i) => (
+            {[0, 1, 2, 3].map((i) => {
+              const thumbnailSource = images[i];
+              const thumbnail = thumbnailSource && !failedImages.has(thumbnailSource)
+                ? productImageUrl(thumbnailSource, 'thumb')
+                : undefined;
+
+              return (
               <div
                 key={i}
                 className={`w-12 h-12 rounded flex-shrink-0 overflow-hidden ${
                   i === 0 ? 'border border-neutral-900' : 'border border-neutral-200'
                 }`}
               >
-                {images[i] ? (
+                {thumbnail ? (
                   <Image
-                    src={images[i]}
+                    src={thumbnail}
                     alt={`Thumbnail ${i + 1}`}
                     width={48}
                     height={48}
                     className="object-cover w-full h-full"
+                    onError={() => markImageFailed(thumbnailSource!)}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-neutral-300 text-[10px]">
@@ -119,7 +144,8 @@ export function ProductPreview({
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Vendor */}

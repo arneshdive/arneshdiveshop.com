@@ -26,6 +26,21 @@ import { variantPath, type ImageSize } from '@/lib/utils/product-image';
 // Field names the client sends, in the order product-image.ts expects.
 const VARIANT_FIELDS: ImageSize[] = ['main', 'medium', 'thumb'];
 
+/**
+ * Cache lifetime for every object this route writes, in seconds.
+ *
+ * Stated explicitly rather than inherited: paths are content-unique and are
+ * never rewritten (`allowOverwrite: false`), so the bytes behind a URL are
+ * immutable by policy and the SDK default is not something to depend on.
+ *
+ * 30 days is deliberately the same number the SDK currently defaults to, so
+ * this is provably a value the store accepts. A longer TTL would suit
+ * immutable content better, but the platform's documented upper bound could
+ * not be confirmed here, and a rejected header value would fail every upload —
+ * raise it only after one verified upload against the live store.
+ */
+const BLOB_CACHE_MAX_AGE = 30 * 24 * 60 * 60;
+
 function tooLarge(bytes: number): boolean {
   return bytes > IMAGE_CONFIG.maxUploadSize;
 }
@@ -35,6 +50,30 @@ function sizeError() {
   return NextResponse.json(
     { error: `Ukuran file terlalu besar (maksimal ${maxMB}MB)` },
     { status: 400 }
+  );
+}
+
+/**
+ * Verify that a file really is WebP before it gets stored as `image/webp`.
+ *
+ * A RIFF container is `"RIFF" <uint32 size> "WEBP"`, so the signature is the
+ * ASCII at bytes 0-3 and 8-11. Reading a 12-byte slice does not disturb the
+ * File the subsequent put() uploads — a File is a Blob over already-buffered
+ * bytes, and slice() returns an independent view rather than consuming a
+ * stream.
+ */
+const RIFF = [0x52, 0x49, 0x46, 0x46]; // 'R' 'I' 'F' 'F'
+const WEBP = [0x57, 0x45, 0x42, 0x50]; // 'W' 'E' 'B' 'P'
+
+async function isValidWebP(file: File): Promise<boolean> {
+  if (file.size < 12) return false;
+
+  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  if (bytes.length < 12) return false;
+
+  return (
+    RIFF.every((byte, i) => bytes[i] === byte) &&
+    WEBP.every((byte, i) => bytes[8 + i] === byte)
   );
 }
 
@@ -57,6 +96,12 @@ export async function POST(request: NextRequest) {
     if (variants.every((v) => v.file)) {
       for (const { file } of variants) {
         if (tooLarge(file!.size)) return sizeError();
+        if (!(await isValidWebP(file!))) {
+          return NextResponse.json(
+            { error: 'File harus berupa WebP yang valid' },
+            { status: 400 }
+          );
+        }
       }
 
       const uploaded = await Promise.all(
@@ -65,6 +110,7 @@ export async function POST(request: NextRequest) {
             access: 'public',
             contentType: 'image/webp',
             allowOverwrite: false,
+            cacheControlMaxAge: BLOB_CACHE_MAX_AGE,
           }).then((blob) => ({ size, url: blob.url }))
         )
       );
@@ -116,6 +162,7 @@ export async function POST(request: NextRequest) {
       access: 'public',
       contentType: file.type,
       allowOverwrite: false,
+      cacheControlMaxAge: BLOB_CACHE_MAX_AGE,
     });
 
     return NextResponse.json(

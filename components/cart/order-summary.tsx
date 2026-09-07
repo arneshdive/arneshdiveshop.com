@@ -6,24 +6,30 @@ import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useCartStore } from '@/lib/store/cart';
 import { formatRupiah } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
 import { AnimatedButton } from '@/components/ui/animated-button';
 
 export function OrderSummary() {
-  const { 
-    items, 
-    promoCode, 
-    promoDiscountCents, 
-    applyPromo, 
-    clearPromo, 
-    getSubtotalCents, 
+  const {
+    items,
+    promoCode,
+    promoDiscountCents,
+    applyPromo,
+    clearPromo,
+    getSubtotalCents,
     getTotalCents,
     lastError,
   } = useCartStore();
-  
+
   const [promoInput, setPromoInput] = useState(promoCode || '');
   const [promoError, setPromoError] = useState('');
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
   
   const subtotalCents = getSubtotalCents();
   const totalCents = getTotalCents();
@@ -64,11 +70,6 @@ export function OrderSummary() {
     setPromoError('');
   };
 
-  // Get image URL for an item
-  const getItemImage = (item: typeof items[0]) => {
-    return item.product.images?.[0] || null;
-  };
-
   return (
     <>
       {/* Desktop Sidebar Card */}
@@ -78,21 +79,25 @@ export function OrderSummary() {
         {/* Items */}
         <div className="space-y-4 mb-6">
           {items.map((item) => {
-            const image = getItemImage(item);
+            const image = item.product.images?.[0];
+            const thumbnail = image && !failedImages.has(image)
+              ? productImageUrl(image, 'thumb')
+              : undefined;
             const priceCents = item.variant?.priceCents ?? item.product.priceCents;
             const compareAtPriceCents = item.variant ? null : item.product.compareAtPriceCents;
             const hasDiscount = compareAtPriceCents !== null && compareAtPriceCents > item.product.priceCents;
 
             return (
               <div key={item.id} className="flex gap-4 items-center">
-                <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0">
-                  {image ? (
+                <div className="w-12 h-12 bg-neutral-100 rounded-lg relative overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  {thumbnail ? (
                     <Image
-                      src={image}
+                      src={thumbnail}
                       alt={item.product.name}
                       fill
                       sizes="48px"
                       className="object-cover"
+                      onError={() => handleImageError(image!)}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-neutral-300">

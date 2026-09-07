@@ -13,7 +13,12 @@
  *   products/v2/<base>.webp           main, 2000px  <- the URL stored on the product
  *   products/v2/<base>-800.webp       medium
  *   products/v2/<base>-400.webp       thumbnail
- *   products/v2/<base>-original.<ext> untouched upload, kept as the source of truth
+ *
+ * Note: The 2000px main variant IS the master copy for images uploaded after
+ * 2026-08-26. The browser re-encodes to lossy WebP before upload, so we never
+ * store a lossless original. The originalPath() function exists for future use
+ * (e.g., if a backfill process starts storing unprocessed originals), but no
+ * originals have ever been written to storage.
  */
 
 export const VARIANT_DIR = 'products/v2';

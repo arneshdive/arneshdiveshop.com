@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils/cn';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { formatRupiah, formatDate } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
 import type { OrderStatus } from '@/lib/db/schema';
 
 interface OrderItem {
@@ -188,6 +189,12 @@ interface OrderCardProps {
 }
 
 function OrderCard({ order }: OrderCardProps) {
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
+
   const status = customerStatusConfig[order.status];
   const isPendingPayment = order.status === 'pending_payment';
   const redirectUrl = order.payments[0]?.metadata?.redirectUrl as string | undefined;
@@ -236,14 +243,15 @@ function OrderCard({ order }: OrderCardProps) {
         {order.items.slice(0, 3).map((item) => (
           <div key={item.id} className="flex gap-4 bg-neutral-50 rounded-xl p-4 sm:min-w-[280px] sm:flex-1 sm:max-w-md">
             {/* Image */}
-            <div className="w-20 h-20 bg-neutral-100 flex-shrink-0 rounded-lg overflow-hidden">
-              {item.product.images?.[0] ? (
+            <div className="w-20 h-20 bg-neutral-100 flex-shrink-0 rounded-lg overflow-hidden flex items-center justify-center">
+              {item.product.images?.[0] && !failedImages.has(item.product.images[0]) ? (
                 <Image
-                  src={item.product.images[0]}
+                  src={productImageUrl(item.product.images[0], 'thumb')!}
                   alt={item.name}
                   width={80}
                   height={80}
                   className="w-full h-full object-cover mix-blend-multiply"
+                  onError={() => handleImageError(item.product.images![0]!)}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-neutral-300">

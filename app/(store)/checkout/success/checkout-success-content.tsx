@@ -9,6 +9,7 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { formatRupiah, formatDate } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
 import { orderStatusConfig } from '@/lib/constants/order-status';
 import type { OrderStatus, PaymentStatus } from '@/lib/db/schema';
 
@@ -75,7 +76,7 @@ export function CheckoutSuccessContent() {
   const { clearCart } = useCartStore();
   const { data: checkoutData, reset } = useCheckoutStore();
   const hasCleared = useRef(false);
-  
+
   // Store guest email in a ref before reset clears it
   // This is crucial for guest checkout order access
   const guestEmailRef = useRef<string | null>(null);
@@ -83,6 +84,11 @@ export function CheckoutSuccessContent() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
 
   const orderId = searchParams.get('order_id');
 
@@ -282,13 +288,14 @@ export function CheckoutSuccessContent() {
                 {order.items.map((item) => (
                   <div key={item.id} className="flex gap-4">
                     <div className="w-16 h-20 bg-neutral-100 rounded-xl overflow-hidden flex items-center justify-center text-neutral-300">
-                      {item.product.images?.[0] ? (
+                      {item.product.images?.[0] && !failedImages.has(item.product.images[0]) ? (
                         <Image
-                          src={item.product.images[0]}
+                          src={productImageUrl(item.product.images[0], 'thumb')!}
                           alt={item.name}
                           width={64}
                           height={80}
                           className="w-full h-full object-cover"
+                          onError={() => handleImageError(item.product.images![0]!)}
                         />
                       ) : (
                         <Icon icon="solar:box-linear" className="w-6 h-6" />

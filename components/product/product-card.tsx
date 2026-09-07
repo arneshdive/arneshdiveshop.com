@@ -34,6 +34,37 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const [added, setAdded] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  /**
+   * Both slides live in the DOM at once, so lazy loading never deferred the
+   * hover image: every visible card fetched two 800px files. This holds the
+   * second one back until the pointer reaches the card.
+   *
+   * It is deliberately sticky and deliberately triggered on the whole card,
+   * not just the image link: the slide itself is driven by `group-hover` on
+   * the card root, so anything narrower would leave the panel empty while the
+   * animation ran. Once revealed the image stays mounted, so only the very
+   * first hover can race the 500ms transition.
+   */
+  const [secondaryRevealed, setSecondaryRevealed] = useState(false);
+  const revealSecondary = () => setSecondaryRevealed(true);
+
+  // Keyed by URL so a failure on one slide leaves the other alone, and
+  // functional because both slides can fail within the same tick.
+  const handleImageError = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
+
+  const primarySource = product.image;
+  const primary = primarySource && !failedImages.has(primarySource)
+    ? productImageUrl(primarySource, 'medium')
+    : undefined;
+
+  const secondarySource = product.secondaryImage || product.image;
+  const secondary = secondarySource && !failedImages.has(secondarySource)
+    ? productImageUrl(secondarySource, 'medium')
+    : undefined;
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -61,7 +92,11 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="product-card flex flex-col leading-none relative group bg-neutral-50 rounded-lg">
+    <div
+      className="product-card flex flex-col leading-none relative group bg-neutral-50 rounded-lg"
+      onMouseEnter={revealSecondary}
+      onFocus={revealSecondary}
+    >
       {/* Media Section */}
       <div className="product-card__media relative rounded-t-lg overflow-hidden">
         {/* Badge */}
@@ -88,27 +123,40 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex w-[200%] h-full transition-transform duration-500 ease-out group-hover:-translate-x-1/2">
             {/* Primary Image */}
             <div className="w-1/2 h-full relative flex-shrink-0">
-              <Image
-                src={productImageUrl(product.image, 'medium') || '/placeholder-product.jpg'}
-                alt={product.title}
-                fill
-                className="object-cover mix-blend-multiply"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
+              {primary ? (
+                <Image
+                  src={primary}
+                  alt={product.title}
+                  fill
+                  className="object-cover mix-blend-multiply"
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  onError={() => handleImageError(primarySource!)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                  <Icon icon="solar:box-linear" className="w-8 h-8 text-neutral-300" />
+                </div>
+              )}
             </div>
 
             {/* Secondary Image */}
             <div className="w-1/2 h-full relative flex-shrink-0">
-              <Image
-                src={
-                  productImageUrl(product.secondaryImage || product.image, 'medium') ||
-                  '/placeholder-product.jpg'
-                }
-                alt={`${product.title} - alternate view`}
-                fill
-                className="object-cover mix-blend-multiply"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
+              {secondary ? (
+                secondaryRevealed && (
+                  <Image
+                    src={secondary}
+                    alt={`${product.title} - alternate view`}
+                    fill
+                    className="object-cover mix-blend-multiply"
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    onError={() => handleImageError(secondarySource!)}
+                  />
+                )
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                  <Icon icon="solar:box-linear" className="w-8 h-8 text-neutral-300" />
+                </div>
+              )}
             </div>
           </div>
         </Link>
@@ -186,7 +234,12 @@ export function ProductCard({ product }: ProductCardProps) {
                     title={swatch.name}
                     aria-label={swatch.name}
                     style={{
-                      backgroundImage: `url(${swatch.image})`,
+                      // A CSS background gets no lazy loading, so at 24px this
+                      // has to resolve to the thumbnail rather than the 2000px
+                      // main file.
+                      backgroundImage: swatch.image
+                        ? `url(${productImageUrl(swatch.image, 'thumb')})`
+                        : undefined,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
                     }}

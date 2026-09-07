@@ -9,6 +9,7 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { cn } from '@/lib/utils/cn';
 import { orderStatusConfig } from '@/lib/constants/order-status';
 import { formatRupiah, formatDate, formatDateTime, toTitleCase } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
 import type { OrderStatus, PaymentStatus } from '@/lib/db/schema';
 
 interface OrderItem {
@@ -104,6 +105,11 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const [shopSettings, setShopSettings] = useState<ShopSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
 
   useEffect(() => {
     async function fetchOrder() {
@@ -337,18 +343,19 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         <h2 className="text-lg font-semibold tracking-tight mb-4">Item Pesanan</h2>
         <div className="space-y-4">
           {order.items.map((item) => (
-            <div 
-              key={item.id} 
+            <div
+              key={item.id}
               className="flex gap-4 bg-neutral-50 rounded-xl p-4"
             >
-              <div className="w-20 h-24 bg-neutral-100 rounded-xl overflow-hidden flex-shrink-0">
-                {item.product.images?.[0] ? (
+              <div className="w-20 h-24 bg-neutral-100 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                {item.product.images?.[0] && !failedImages.has(item.product.images[0]) ? (
                   <Image
-                    src={item.product.images[0]}
+                    src={productImageUrl(item.product.images[0], 'thumb')!}
                     alt={item.name}
                     width={80}
                     height={96}
                     className="w-full h-full object-cover mix-blend-multiply"
+                    onError={() => handleImageError(item.product.images![0]!)}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">

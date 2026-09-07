@@ -5,8 +5,10 @@ import { db, products, categories, brands } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/admin';
 import { slugify, generateUniqueSlug } from '@/lib/utils/slugify';
-import { getProducts, getExistingSlugs } from '@/lib/queries/products';
+import { getProducts, getProductsCount, getExistingSlugs } from '@/lib/queries/products';
 import { DIVING_TYPES } from '@/lib/constants/diving-types';
+
+const ADMIN_ITEMS_PER_PAGE = 20;
 
 const variantOptionDefinitionSchema = z.object({
   name: z.string().min(1).max(100),
@@ -36,23 +38,48 @@ const createProductSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
+    // Admin pagination. `page` comes off the query string, so a missing,
+    // non-numeric or zero/negative value has to land on page 1 rather than
+    // becoming a NaN or negative OFFSET.
+    const requestedPage = Number.parseInt(searchParams.get('page') ?? '1', 10);
+    const page = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+    const limit = ADMIN_ITEMS_PER_PAGE;
+    const offset = (page - 1) * limit;
+
     const filters = {
       category: searchParams.get('category') || undefined,
       brand: searchParams.get('brand') || undefined,
       divingType: searchParams.get('divingType') || undefined,
-      isActive: searchParams.get('isActive') === 'true' 
-        ? true 
-        : searchParams.get('isActive') === 'false' 
-          ? false 
+      isActive: searchParams.get('isActive') === 'true'
+        ? true
+        : searchParams.get('isActive') === 'false'
+          ? false
           : undefined,
       isNewArrival: searchParams.get('isNewArrival') === 'true' ? true : undefined,
       isOnSale: searchParams.get('isOnSale') === 'true' ? true : undefined,
       search: searchParams.get('search') || undefined,
+      limit,
+      offset,
     };
 
-    const productList = await getProducts(filters);
-    return NextResponse.json({ products: productList });
+    // The count must come from the same filter set as the list, so it goes
+    // through the query layer's shared condition builder rather than a
+    // hand-rolled WHERE clause here.
+    const [productList, total] = await Promise.all([
+      getProducts(filters),
+      getProductsCount(filters),
+    ]);
+
+    return NextResponse.json({
+      products: productList,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(

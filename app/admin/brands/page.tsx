@@ -10,6 +10,8 @@ import { Pagination } from '@/components/ui/pagination';
 import { useBrands } from '@/lib/hooks/use-brands';
 import type { Brand } from '@/lib/db/schema';
 
+const FALLBACK_LOGO_ICON = 'solar:tag-linear';
+
 interface BrandFormData {
   name: string;
   slug: string;
@@ -39,6 +41,13 @@ export default function BrandsPage() {
   const [form, setForm] = useState<BrandFormData>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [failedLogos, setFailedLogos] = useState<Set<string>>(new Set());
+
+  // Keyed by URL so one broken logo doesn't take the others down with it, and
+  // functional so two failures in the same tick both stick.
+  const markLogoFailed = (logoUrl: string) => {
+    setFailedLogos(prev => new Set([...prev, logoUrl]));
+  };
 
   const openCreateModal = () => {
     setEditingBrand(null);
@@ -208,22 +217,29 @@ export default function BrandsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
-                {brands.map((brand) => (
+                {brands.map((brand) => {
+                  // Captured in a const so the null-check narrows inside
+                  // onError, where `brand.logoUrl` would re-widen.
+                  const logoUrl = brand.logoUrl;
+                  const showLogo = !!logoUrl && !failedLogos.has(logoUrl);
+
+                  return (
                   <tr key={brand.id} className="hover:bg-neutral-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {brand.logoUrl ? (
+                        {showLogo ? (
                           <Image
-                            src={brand.logoUrl}
+                            src={logoUrl}
                             alt={brand.name}
                             width={40}
                             height={40}
                             unoptimized
                             className="w-10 h-10 rounded-lg object-cover"
+                            onError={() => markLogoFailed(logoUrl)}
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
-                            <Icon icon="solar:tag-linear" className="w-5 h-5 text-neutral-400" />
+                            <Icon icon={FALLBACK_LOGO_ICON} className="w-5 h-5 text-neutral-400" />
                           </div>
                         )}
                         <span className="font-medium text-neutral-900">{brand.name}</span>
@@ -258,7 +274,8 @@ export default function BrandsPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

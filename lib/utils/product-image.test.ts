@@ -32,11 +32,12 @@ describe('product image resolution', () => {
       }
     });
 
+    // Both of these exist in public/. The assertion used to pin
+    // /placeholder-product.jpg, which never existed — so the suite guaranteed
+    // that a 404 was passed through faithfully.
     it('leaves local /public images alone', () => {
       expect(productImageUrl('/hero-image.webp', 'thumb')).toBe('/hero-image.webp');
-      expect(productImageUrl('/placeholder-product.jpg', 'medium')).toBe(
-        '/placeholder-product.jpg',
-      );
+      expect(productImageUrl('/instagram-1.jpg', 'medium')).toBe('/instagram-1.jpg');
     });
   });
 

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { formatRupiah, formatDate, toTitleCase } from '@/lib/utils/format';
 import { orderStatusConfig } from '@/lib/constants/order-status';
 import { cn } from '@/lib/utils/cn';
+import { productImageUrl } from '@/lib/utils/product-image';
 import type { OrderStatus } from '@/lib/db/schema';
 
 type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired';
@@ -99,6 +100,14 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
   const [isUpdatingTracking, setIsUpdatingTracking] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState<OrderStatus | null>(null);
   const [isSyncingPayment, setIsSyncingPayment] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  // Keyed by URL so one dead image only replaces itself with the fallback.
+  // The functional updater matters: several onError callbacks can fire in the
+  // same tick and a `new Set(failedImages)` would drop all but the last.
+  const markImageFailed = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
 
   if (!order) {
     return (
@@ -472,19 +481,28 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
       <div className="bg-neutral-50 rounded-2xl p-5 mb-6">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">Item Pesanan</h3>
         <div className="space-y-4">
-          {order.items.map((item) => (
+          {order.items.map((item) => {
+            // Pulled out of the JSX so the narrowing survives into onError:
+            // a property access re-widens inside a closure, a const does not.
+            const thumbnailSource = item.product.images?.[0];
+            const thumbnail = thumbnailSource && !failedImages.has(thumbnailSource)
+              ? productImageUrl(thumbnailSource, 'thumb')
+              : undefined;
+
+            return (
             <div key={item.id} className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-neutral-100 flex-shrink-0 overflow-hidden relative flex items-center justify-center">
-                {item.product.images?.[0] ? (
+                {thumbnail ? (
                   <Image
-                    src={item.product.images[0]}
+                    src={thumbnail}
                     alt={item.name}
                     fill
                     sizes="48px"
                     className="object-cover"
+                    onError={() => markImageFailed(thumbnailSource!)}
                   />
                 ) : (
-                  <Icon icon="solar:gallery-minimalistic-linear" className="w-5 h-5 text-neutral-400" />
+                  <Icon icon="solar:box-linear" className="w-5 h-5 text-neutral-400" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -495,7 +513,8 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
               </div>
               <p className="text-sm font-medium text-neutral-700">{formatRupiah(item.priceCents * item.quantity)}</p>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

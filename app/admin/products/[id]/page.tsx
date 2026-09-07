@@ -108,8 +108,11 @@ export default function EditProductPage() {
   const updateMutation = useMutation({
     mutationFn: (data: Record<string, unknown>) => updateProduct(productId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['product', productId] });
+      // The list caches are marked stale but not refetched — no ['products']
+      // query is mounted on this page — so going back shows the edit without
+      // this page pulling the catalogue itself.
+      queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'none' });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Gagal memperbarui produk');

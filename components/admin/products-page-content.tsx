@@ -5,15 +5,17 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { Plus, Loader } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Suspense } from 'react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { Pagination } from '@/components/ui/pagination';
 import { ProductFilters, type ProductFilterState } from '@/components/admin/product-filters';
 import { ProductBadge } from '@/components/ui/product-badge';
 import { formatRupiah } from '@/lib/utils/format';
 import { cn } from '@/lib/utils/cn';
+import { productImageUrl } from '@/lib/utils/product-image';
 
 type Product = {
   id: string;
@@ -59,7 +61,18 @@ function getPriceDisplay(product: Product): { main: string; compare?: string } {
   return { main: `${formatRupiah(minPrice)} - ${formatRupiah(maxPrice)}` };
 }
 
-async function fetchProducts(filters: ProductFilterState): Promise<{ products: Product[] }> {
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+// Only used for the placeholder shown before the first response lands; the
+// real page size is whatever /api/products reports.
+const ITEMS_PER_PAGE = 20;
+
+async function fetchProducts(filters: ProductFilterState, page: number = 1): Promise<{ products: Product[]; pagination: PaginationInfo }> {
   const params = new URLSearchParams();
   if (filters.category) params.set('category', filters.category);
   if (filters.brand) params.set('brand', filters.brand);
@@ -67,6 +80,7 @@ async function fetchProducts(filters: ProductFilterState): Promise<{ products: P
   if (filters.status) params.set('isActive', filters.status === 'active' ? 'true' : 'false');
   if (filters.isNewArrival) params.set('isNewArrival', 'true');
   if (filters.isOnSale) params.set('isOnSale', 'true');
+  params.set('page', page.toString());
 
   const response = await fetch(`/api/products?${params.toString()}`);
   if (!response.ok) throw new Error('Failed to fetch products');
@@ -75,9 +89,11 @@ async function fetchProducts(filters: ProductFilterState): Promise<{ products: P
 
 function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
   const router = useRouter();
-  
+
   const queryClient = useQueryClient();
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState<ProductFilterState>({
     category: initialCategory,
     brand: '',
@@ -88,11 +104,28 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['products', filters],
-    queryFn: () => fetchProducts(filters),
+    queryKey: ['products', filters, page],
+    queryFn: () => fetchProducts(filters, page),
+    // Each page is its own cache entry, so without this every page change
+    // would blank the list back to the spinner and hide the pager mid-click.
+    placeholderData: keepPreviousData,
   });
 
   const products = data?.products ?? [];
+  const pagination = data?.pagination ?? { page: 1, limit: ITEMS_PER_PAGE, total: 0, totalPages: 0 };
+
+  // Keyed by URL so one dead image only replaces itself with the fallback, and
+  // functional so several onError callbacks in the same tick all stick.
+  const markImageFailed = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
+
+  // Changing a filter re-pages from the start; staying on page 7 of the old
+  // result set usually lands past the end of the new one.
+  const handleFiltersChange = (next: ProductFilterState) => {
+    setFilters(next);
+    setPage(1);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -103,6 +136,9 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
       }
     },
     onSuccess: () => {
+      // A deletion shifts every later page, so all of them are invalidated.
+      // Only the mounted page actually refetches; the rest are just marked
+      // stale, which is why this no longer refetches the whole catalogue.
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Produk berhasil dihapus');
       setDeleteConfirm(null);
@@ -131,7 +167,7 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Produk</h1>
           <p className="text-sm text-neutral-500 mt-1">
-            {products.length > 0 ? `${products.length} produk` : 'Kelola katalog produk toko Anda'}
+            {pagination.total > 0 ? `${pagination.total} produk` : 'Kelola katalog produk toko Anda'}
           </p>
         </div>
         <AnimatedButton onClick={() => router.push('/admin/products/new')} size="xs">
@@ -142,7 +178,7 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
 
       {/* Mobile Filters */}
       <div className="lg:hidden mb-6">
-        <ProductFilters filters={filters} onChange={setFilters} />
+        <ProductFilters filters={filters} onChange={handleFiltersChange} />
       </div>
 
       {/* Content: Filters + List */}
@@ -150,7 +186,7 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
         {/* Desktop Filters */}
         <div className="hidden lg:block w-64 flex-shrink-0">
           <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
-            <ProductFilters filters={filters} onChange={setFilters} />
+            <ProductFilters filters={filters} onChange={handleFiltersChange} />
           </div>
         </div>
 
@@ -173,7 +209,15 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
           {/* Product List */}
           {!isLoading && !error && (
             <div className="space-y-2 pb-8">
-              {products.map((product) => (
+              {products.map((product) => {
+                // Held in a const so the null-check still narrows inside the
+                // onError closure, where a property access would re-widen.
+                const thumbnailSource = product.images?.[0];
+                const thumbnail = thumbnailSource && !failedImages.has(thumbnailSource)
+                  ? productImageUrl(thumbnailSource, 'thumb')
+                  : undefined;
+
+                return (
                 <div
                   key={product.id}
                   onClick={() => router.push(`/admin/products/${product.id}`)}
@@ -183,11 +227,18 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
                   )}
                 >
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-neutral-100 flex-shrink-0 overflow-hidden relative">
-                    {product.images[0] ? (
-                      <Image src={product.images[0]} alt={product.name} fill sizes="80px" className="object-cover" />
+                    {thumbnail ? (
+                      <Image
+                        src={thumbnail}
+                        alt={product.name}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        onError={() => markImageFailed(thumbnailSource!)}
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-neutral-400">
-                        <Icon icon="solar:gallery-minimalistic-linear" className="w-6 h-6" />
+                        <Icon icon="solar:box-linear" className="w-6 h-6" />
                       </div>
                     )}
                   </div>
@@ -246,7 +297,8 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
 
                   <Icon icon="solar:alt-arrow-right-linear" className="w-5 h-5 text-neutral-900 flex-shrink-0 sm:hidden" />
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -260,6 +312,15 @@ function ProductsPageContent({ initialCategory }: { initialCategory: string }) {
               onClick={activeFilterCount > 0 ? undefined : () => router.push('/admin/products/new')}
               ctaIcon={activeFilterCount > 0 ? undefined : <Plus className="w-4 h-4" />}
               size="xs"
+            />
+          )}
+
+          {/* Pagination */}
+          {!isLoading && !error && products.length > 0 && (
+            <Pagination
+              currentPage={page}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
             />
           )}
         </div>

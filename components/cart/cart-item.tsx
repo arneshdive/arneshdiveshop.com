@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, X } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { CartItem as CartItemType, useCartStore } from '@/lib/store/cart';
 import { formatRupiah } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
 
 interface CartItemProps {
@@ -14,7 +16,8 @@ interface CartItemProps {
 
 export function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeItem, isLoading } = useCartStore();
-  
+  const [imageError, setImageError] = useState(false);
+
   // Use variant price if available, otherwise product price
   const priceCents = item.variant?.priceCents ?? item.product.priceCents;
   const totalPriceCents = priceCents * item.quantity;
@@ -23,23 +26,27 @@ export function CartItem({ item }: CartItemProps) {
   // when no variant is selected — matches the PDP's rule for the same product.
   const compareAtPriceCents = item.variant ? null : item.product.compareAtPriceCents;
   const hasDiscount = compareAtPriceCents !== null && compareAtPriceCents > item.product.priceCents;
-  
-  // Get image URL
-  const imageUrl = item.product.images?.[0] || null;
+
+  // 400px `thumb` for a 96-144px box, which is still correct at 3x DPR.
+  const imageUrl = item.product.images?.[0];
+  const thumbnail = imageUrl && !imageError
+    ? productImageUrl(imageUrl, 'thumb')
+    : undefined;
 
   return (
     <div className="flex gap-4 lg:gap-6 py-6 lg:py-8 group/item">
       {/* Product Image - blend like product card */}
       <Link
         href={`/produk/${item.product.slug}`}
-        className="w-24 h-24 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
+        className="w-24 h-24 lg:w-36 lg:h-36 bg-neutral-100 flex-shrink-0 relative overflow-hidden rounded-lg cursor-pointer flex items-center justify-center"
       >
-        {imageUrl ? (
+        {thumbnail ? (
           <Image
-            src={imageUrl}
+            src={thumbnail}
             alt={item.product.name}
             fill
             className="object-cover mix-blend-multiply"
+            onError={() => setImageError(true)}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-neutral-300">

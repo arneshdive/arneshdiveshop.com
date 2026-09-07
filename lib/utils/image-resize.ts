@@ -76,8 +76,22 @@ function encode(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
     canvas.toBlob(
       (blob) => {
         // A null blob means the browser refused the format outright.
-        if (blob) resolve(blob);
-        else reject(new Error('Browser tidak dapat menghasilkan WebP'));
+        if (!blob) {
+          reject(new Error('Browser tidak dapat menghasilkan WebP'));
+          return;
+        }
+
+        // toBlob is specified to fall back to image/png when it cannot encode
+        // the requested type, and it does so silently. The route stores the
+        // variant path as WebP and now checks the magic bytes, so a PNG here
+        // has to be treated as a failure — buildUploadBody then falls back to
+        // uploading the untouched original, which is stored as a legacy image.
+        if (blob.type !== 'image/webp') {
+          reject(new Error(`Browser menghasilkan ${blob.type || 'format tak dikenal'}, bukan WebP`));
+          return;
+        }
+
+        resolve(blob);
       },
       'image/webp',
       quality,

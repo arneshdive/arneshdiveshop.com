@@ -16,6 +16,7 @@
     "db:seed": "tsx lib/scripts/seed-products.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1127.0",
     "@hookform/resolvers": "^5.4.0",
     "@iconify/react": "^6.0.2",
     "@neondatabase/serverless": "^1.1.0",

@@ -6,6 +6,7 @@ import { X, Upload, Image as ImageIcon, Loader, AlertCircle, Check } from 'lucid
 import Image from 'next/image';
 import { IMAGE_CONFIG } from '@/lib/utils/image-config';
 import { createVariants, canResizeInBrowser } from '@/lib/utils/image-resize';
+import { productImageUrl } from '@/lib/utils/product-image';
 
 const MAX_INPUT_MB = Math.round(IMAGE_CONFIG.maxInputFileSize / (1024 * 1024));
 const MAX_UPLOAD_MB = Math.round(IMAGE_CONFIG.maxUploadSize / (1024 * 1024));
@@ -28,7 +29,6 @@ interface ImageUploaderProps {
 export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUploaderProps) {
   const [uploadingImages, setUploadingImages] = useState<UploadingImage[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [warning, setWarning] = useState<string | null>(null);
 
   // Ref to track latest images to avoid stale closure in async callbacks
   const imagesRef = useRef(images);
@@ -36,14 +36,61 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
     imagesRef.current = images;
   }, [images]);
 
-  // Cleanup blob URLs on unmount
+  /**
+   * `uploadingImages` also lives in a ref, and every write goes through
+   * `updateUploading` so the two never diverge.
+   *
+   * This is not belt-and-braces: `onDrop` has to know how many slots are left
+   * *before* React re-renders. Reading the state variable made two quick drops
+   * both size themselves against the same count, so together they could exceed
+   * `maxFiles` — and every file over the cap is a blob written to storage that
+   * can never be deleted. The ref is the synchronous truth; the state exists
+   * only to render.
+   */
+  const uploadingRef = useRef<UploadingImage[]>([]);
+  const updateUploading = useCallback(
+    (updater: (prev: UploadingImage[]) => UploadingImage[]) => {
+      const next = updater(uploadingRef.current);
+      uploadingRef.current = next;
+      setUploadingImages(next);
+    },
+    [],
+  );
+
+  /**
+   * Object URLs to release once their tile is actually gone from the DOM.
+   * Revoking during the state update would pull the URL out from under an
+   * <img> that React has not unmounted yet, so it is deferred to the effect
+   * below, which runs after the commit.
+   */
+  const pendingRevokeRef = useRef<string[]>([]);
+  useEffect(() => {
+    if (pendingRevokeRef.current.length === 0) return;
+
+    const stillRendered = new Set(uploadingImages.map(img => img.blobUrl));
+    const stillPending: string[] = [];
+
+    for (const url of pendingRevokeRef.current) {
+      if (stillRendered.has(url)) stillPending.push(url);
+      else URL.revokeObjectURL(url);
+    }
+
+    pendingRevokeRef.current = stillPending;
+  }, [uploadingImages]);
+
+  // Cleanup blob URLs on unmount. Reads the ref, not the state variable: with
+  // a `[]` dep array the state would be captured at first render and this
+  // would revoke nothing at all.
   useEffect(() => {
     return () => {
-      uploadingImages.forEach(img => {
+      for (const img of uploadingRef.current) {
         if (img.blobUrl.startsWith('blob:')) {
           URL.revokeObjectURL(img.blobUrl);
         }
-      });
+      }
+      for (const url of pendingRevokeRef.current) {
+        URL.revokeObjectURL(url);
+      }
     };
   }, []);
 
@@ -113,11 +160,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       throw new Error(await describeFailure(response));
     }
 
-    const { url, warning: uploadWarning } = await response.json();
-    if (uploadWarning) {
-      setWarning(uploadWarning);
-      setTimeout(() => setWarning(null), 5000);
-    }
+    const { url } = await response.json();
     return url;
   };
 
@@ -157,12 +200,20 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       handleDropError(rejections);
     }
 
-    const currentUploading = uploadingImages.length;
-    const remainingSlots = maxFiles - images.length - currentUploading;
+    // Slot accounting reads the refs, so a second drop that lands before React
+    // has re-rendered still sees the files the first one claimed. Clamped at
+    // zero because slice() with a negative end counts back from the end of the
+    // array and would happily upload past the cap.
+    const remainingSlots = Math.max(
+      0,
+      maxFiles - imagesRef.current.length - uploadingRef.current.length,
+    );
     const filesToUpload = acceptedFiles.slice(0, remainingSlots);
 
     if (filesToUpload.length === 0) {
-      if (images.length + currentUploading >= maxFiles) {
+      // Only when files were actually offered and turned away — otherwise this
+      // would overwrite the specific message handleDropError just set.
+      if (acceptedFiles.length > 0 && remainingSlots === 0) {
         setError(`Maksimal ${maxFiles} gambar per produk`);
         setTimeout(() => setError(null), 5000);
       }
@@ -177,7 +228,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       status: 'processing' as const,
     }));
 
-    setUploadingImages(prev => [...prev, ...newUploadingImages]);
+    updateUploading(prev => [...prev, ...newUploadingImages]);
 
     // Upload each file in the background
     for (let i = 0; i < filesToUpload.length; i++) {
@@ -186,16 +237,15 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
 
       try {
         const url = await uploadFile(file, () =>
-          setUploadingImages(prev =>
+          updateUploading(prev =>
             prev.map(img =>
               img.id === uploadingImage.id ? { ...img, status: 'uploading' } : img
             )
           )
         );
 
-
         // Mark as success and store final URL
-        setUploadingImages(prev =>
+        updateUploading(prev =>
           prev.map(img =>
             img.id === uploadingImage.id
               ? { ...img, status: 'success', finalUrl: url }
@@ -203,19 +253,27 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
           )
         );
 
-        // Add to images after short delay to show success state
-        setTimeout(() => {
-          onImagesChange([...imagesRef.current, url]);
-          // Remove from uploading list
-          setUploadingImages(prev => prev.filter(img => img.id !== uploadingImage.id));
-        }, 500);
+        // Hand the URL to the form, keeping imagesRef in step by hand: the
+        // effect that syncs it only runs after the parent re-renders, and the
+        // next iteration must not append to a list missing this URL.
+        const nextImages = [...imagesRef.current, url];
+        imagesRef.current = nextImages;
+        onImagesChange(nextImages);
+
+        // Drop the placeholder tile; its object URL is released by the effect
+        // above once the tile is off the DOM.
+        if (uploadingImage.blobUrl.startsWith('blob:')) {
+          pendingRevokeRef.current.push(uploadingImage.blobUrl);
+        }
+        updateUploading(prev => prev.filter(img => img.id !== uploadingImage.id));
 
       } catch (err) {
         console.error('Upload error:', err);
         const message = err instanceof Error ? err.message : 'Upload gagal';
-        
-        // Mark as error
-        setUploadingImages(prev =>
+
+        // Mark as error. The tile stays, so its object URL stays valid until
+        // the admin dismisses it or the component unmounts.
+        updateUploading(prev =>
           prev.map(img =>
             img.id === uploadingImage.id
               ? { ...img, status: 'error', error: message }
@@ -225,7 +283,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images, maxFiles, onImagesChange]);
+  }, [maxFiles, onImagesChange, updateUploading]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -240,13 +298,11 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
   });
 
   const removeUploadingImage = (id: string) => {
-    setUploadingImages(prev => {
-      const img = prev.find(i => i.id === id);
-      if (img?.blobUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(img.blobUrl);
-      }
-      return prev.filter(i => i.id !== id);
-    });
+    const img = uploadingRef.current.find(i => i.id === id);
+    if (img?.blobUrl.startsWith('blob:')) {
+      pendingRevokeRef.current.push(img.blobUrl);
+    }
+    updateUploading(prev => prev.filter(i => i.id !== id));
   };
 
   const removeImage = (index: number) => {
@@ -273,14 +329,6 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
         <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
-        </div>
-      )}
-
-      {/* Warning Message */}
-      {warning && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 text-amber-700 text-sm">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{warning}</span>
         </div>
       )}
 
@@ -347,7 +395,7 @@ export function ImageUploader({ images, onImagesChange, maxFiles = 10 }: ImageUp
               className="relative aspect-square rounded-lg overflow-hidden bg-neutral-100 group"
             >
               <Image
-                src={url}
+                src={productImageUrl(url, 'thumb') || url}
                 alt={`Product image ${index + 1}`}
                 fill
                 className="object-cover"

@@ -67,17 +67,29 @@ the script can stop at any point and every product still renders.
 Rollback is emptying the new column. The originals and `products.images` are
 never modified, so nothing needs restoring.
 
-## Do not delete the originals afterwards
+## Delete nothing — and the `-original` objects never existed anyway
 
-Considered and rejected on 2026-08-26:
+Nothing in storage is ever deleted, whatever this section concluded before. The
+client cannot re-upload and there is no copy of these bytes anywhere else, so
+`del()` and overwriting an existing path stay off the table permanently. What
+changed on 2026-09-07 is only the *reason* the old wording gave, which was
+wrong on the facts.
 
-- Irreversible, and the client cannot re-upload.
-- The variants are lossy 2000px derivatives. Deleting the originals makes them
-  the permanent master — regenerating at a larger size or a future format
-  becomes impossible.
-- The saving is about 103 MB, which is negligible against the storage tier.
-- Links shared to WhatsApp/Instagram, Google image results and bookmarks point
-  at those URLs and would break invisibly.
+The 887 legacy files are the genuine masters — full-size and unprocessed — and
+they are exactly what a permanent archive has to protect.
+
+No lossless original has ever been written to storage. The browser re-encodes
+each image to lossy 2000px WebP before upload, so the 2000px variant *is* the
+master copy for every image uploaded since 2026-08-26. The comment in
+`lib/utils/product-image.ts` documenting a `products/v2/<base>-original.<ext>`
+object was aspirational — `originalPath()` exists for potential future use, but
+the route has never called it and no originals exist in storage.
+
+The reasoning about variants being lossy remains relevant when backfilling
+legacy images: any lossy 2000px derivatives would become permanent masters if
+the legacy files were deleted, making future regeneration at larger sizes or in
+new formats impossible. But for post-2026-08-26 uploads, there is no pre-lossy
+original to preserve or delete.
 
 Storage does show more than the 103 MB products reference (240 MB at the time of
 writing). The difference is likely images belonging to soft-deleted products,

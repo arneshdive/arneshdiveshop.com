@@ -1,4 +1,4 @@
-import { put as blobPut, head as blobHead } from '@vercel/blob';
+import { put as blobPut, head as blobHead, BlobNotFoundError } from '@vercel/blob';
 import type { StorageProvider, PutOptions, PutBody, HeadResult } from './types';
 
 /**
@@ -44,6 +44,21 @@ export const vercelBlobProvider: StorageProvider = {
     return { url: result.url, etag: result.etag };
   },
 
+  /**
+   * `null` means "the store answered, and there is nothing at this path".
+   *
+   * Only `BlobNotFoundError` means that. Every other failure propagates, and
+   * the distinction is the whole point: this project's incident was an
+   * exhausted operations quota, where the store answers `403` on reads. The
+   * SDK maps that to `BlobAccessError`, throttling to
+   * `BlobServiceRateLimited`, suspension to `BlobStoreSuspendedError` — and a
+   * bare `catch { return null }` turned all of them into "not stored".
+   *
+   * Phase D decides what is left to copy by asking `head()`. Reported as
+   * "nothing is there", a throttled store would send the migration off to
+   * re-copy all ~2,900 objects, spending the exact quota that caused the
+   * incident. Loud failure is the cheap outcome here.
+   */
   async head(path: string): Promise<HeadResult | null> {
     try {
       const result = await blobHead(path);
@@ -51,9 +66,11 @@ export const vercelBlobProvider: StorageProvider = {
         etag: result.etag,
         size: result.size,
       };
-    } catch {
-      // Vercel Blob's head() throws on 404; we return null to indicate not found
-      return null;
+    } catch (error) {
+      if (error instanceof BlobNotFoundError) {
+        return null;
+      }
+      throw error;
     }
   },
 };

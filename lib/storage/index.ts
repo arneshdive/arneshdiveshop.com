@@ -2,6 +2,10 @@ import type { StorageProvider, PutOptions, PutBody, PutResult, HeadResult } from
 
 export type { StorageProvider, PutOptions, PutBody, PutResult, HeadResult };
 
+// A value export, but a safe one: ./errors imports neither storage SDK, so it
+// does not undo the lazy loading below.
+export { ObjectAlreadyExistsError } from './errors';
+
 /**
  * Get the configured storage provider.
  *

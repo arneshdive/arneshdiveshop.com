@@ -99,6 +99,9 @@ export interface StorageProvider {
    *
    * @param options Path, bytes, content type, and cache control settings
    * @returns Promise resolving to the object's public URL and etag
+   * @throws {ObjectAlreadyExistsError} when the path is already taken and the
+   *   write-once guard refused the write. See `./errors.ts` for which provider
+   *   raises it and the one asymmetry still open.
    */
   put(options: PutOptions): Promise<PutResult>;
 
@@ -111,6 +114,14 @@ export interface StorageProvider {
    * Used during the Phase D migration to verify copies and detect what has
    * already been migrated, making the migration process resumable and safe to
    * re-run.
+   *
+   * `null` MEANS ABSENT, NOTHING ELSE. An implementation must not turn a
+   * failure into `null`: a 403 from an exhausted operations quota, an auth
+   * failure, throttling, a 5xx, a network error must all propagate. The
+   * migration decides what is left to copy from this answer, so "absent"
+   * reported for a store that merely refused to answer would re-copy the whole
+   * catalogue and spend the quota whose exhaustion caused the incident this
+   * work exists to fix.
    *
    * @param path Storage path/key (e.g., 'products/v2/12345-abc.webp')
    * @returns Promise resolving to object metadata, or `null` if not found

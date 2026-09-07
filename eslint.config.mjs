@@ -43,6 +43,29 @@ const eslintConfig = defineConfig([
                 "Import getStorageProvider() from @/lib/storage instead. The storage SDKs stay behind lib/storage so no code path can delete or overwrite a stored image.",
             },
           ],
+          // Subpath entry points too: `@vercel/blob/client` is a real one.
+          // `paths` matches the exact specifier only.
+          patterns: [
+            {
+              group: ["@vercel/blob/*", "@aws-sdk/client-s3/*"],
+              message:
+                "Import getStorageProvider() from @/lib/storage instead. The storage SDKs stay behind lib/storage so no code path can delete or overwrite a stored image.",
+            },
+          ],
+        },
+      ],
+      // `no-restricted-imports` only inspects static `import` declarations, so
+      // `await import('@vercel/blob')` walked straight through it — verified by
+      // probe. That is not a theoretical bypass: lib/storage/index.ts selects
+      // its provider with exactly that syntax, so it is the idiomatic form in
+      // this codebase and the one a future edit is most likely to reach for.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "ImportExpression > Literal.source[value=/^(@vercel\\/blob|@aws-sdk\\/client-s3)(\\/|$)/]",
+          message:
+            "Import getStorageProvider() from @/lib/storage instead. The storage SDKs stay behind lib/storage so no code path can delete or overwrite a stored image.",
         },
       ],
     },

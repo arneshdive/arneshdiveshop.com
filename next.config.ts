@@ -13,6 +13,29 @@ const nextConfig: NextConfig = {
     // instead — see app/api/upload/route.ts.
     unoptimized: true,
     // Kept so the optimizer stays correctly configured if it is ever re-enabled.
+    //
+    // The R2 host is pinned to the one bucket this project owns. `*.r2.dev`
+    // would have been an allowance across every Cloudflare account on earth —
+    // r2.dev subdomains are handed out per bucket to all R2 users, so that
+    // pattern let next/image fetch and re-serve a stranger's public bucket
+    // from this origin.
+    //
+    // A string literal rather than a read of R2_PUBLIC_URL because
+    // `remotePatterns` is evaluated when the config is loaded and baked into
+    // the build: a runtime env var would be whatever the build machine had,
+    // which is not something to depend on for an allowlist. Cost of that
+    // choice: switching to the Cloudflare custom domain (which Phase D needs
+    // anyway — pub-*.r2.dev is rate-limited and not meant to serve traffic)
+    // means editing this file. That is a deliberate trade — an allowlist that
+    // changes only by review.
+    //
+    // The Blob host below is still a wildcard, and has the same shape of
+    // problem: every Vercel Blob store gets a subdomain there. It is left as
+    // is only because the production store id could not be confirmed from the
+    // repo (the one that appears in lib/scripts/seed-products.ts is a seed
+    // fixture, not necessarily the live store) and a wrong pin would break
+    // every image the day the optimizer is re-enabled. Pin it from the live
+    // store id before ever turning `unoptimized` off.
     remotePatterns: [
       {
         protocol: 'https',
@@ -20,7 +43,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '*.r2.dev',
+        hostname: 'pub-e2bc11c40cb644838a7ddc22ac9f29c9.r2.dev',
       },
     ],
   },

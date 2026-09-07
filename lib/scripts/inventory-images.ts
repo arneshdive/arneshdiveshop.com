@@ -13,7 +13,7 @@ import { dirname } from 'path';
  * before designing a step that touches ~780 irreplaceable images.
  *
  * Usage:
- *   STORAGE_PROVIDER=r2 tsx lib/scripts/inventory-images.ts [--limit N] [--out path]
+ *   tsx lib/scripts/inventory-images.ts [--limit N] [--out path]
  */
 
 const BLOB_HOST = 'duruwpeexnyc4tce.public.blob.vercel-storage.com';

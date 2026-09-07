@@ -51,9 +51,6 @@ import { getStorageProvider } from '@/lib/storage';
  * ## Safety properties
  *
  * - Dry-run by default. Writing requires an explicit `--execute`.
- * - Refuses to run unless STORAGE_PROVIDER=r2. Without that check the script
- *   silently talks to Vercel Blob, finds every object "already present", and
- *   writes a state file claiming a migration that never happened.
  * - Every write passes `IfNoneMatch: '*'` (inside the R2 provider), so an
  *   object that somehow already exists is never clobbered — R2 overwrites
  *   silently otherwise, unlike Vercel Blob.
@@ -71,8 +68,8 @@ import { getStorageProvider } from '@/lib/storage';
  *   its output, not the mere existence of a state file.
  *
  * Usage:
- *   STORAGE_PROVIDER=r2 tsx lib/scripts/copy-images-to-r2.ts [--execute] [--limit N]
- *   STORAGE_PROVIDER=r2 tsx lib/scripts/copy-images-to-r2.ts --verify
+ *   tsx lib/scripts/copy-images-to-r2.ts [--execute] [--limit N]
+ *   tsx lib/scripts/copy-images-to-r2.ts --verify
  */
 
 const BLOB_HOST = 'duruwpeexnyc4tce.public.blob.vercel-storage.com';
@@ -342,17 +339,13 @@ function parseArgs(argv: string[]) {
 async function main() {
   const { execute, verify, limit } = parseArgs(process.argv.slice(2));
 
-  // Without this the script runs happily against Vercel Blob: `head()` reports
-  // every object as already present, the skip path records all 1,127 as done,
-  // and it exits 0 with a clean summary and an empty R2 bucket. The cutover
-  // gate is "the state file shows everything verified", so that state file
-  // would authorise pointing production at nothing at all.
-  if (process.env.STORAGE_PROVIDER !== 'r2') {
-    throw new Error(
-      "Jalankan dengan STORAGE_PROVIDER=r2. Tanpa itu skrip ini bicara ke Vercel Blob, bukan R2.",
-    );
-  }
-
+  // This used to require STORAGE_PROVIDER=r2, because without it the script ran
+  // happily against Vercel Blob: head() reported every object as already
+  // present, the skip path recorded all 1,127 as done, and it exited 0 with a
+  // clean summary and an empty destination bucket. The guard is gone because
+  // the hazard is: there is no provider choice left to get wrong. Keeping a
+  // check whose failure message describes a code path that no longer exists
+  // would be worse than not having one.
   const storage = await getStorageProvider();
   const state = await loadState();
 

@@ -84,6 +84,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(await auth.error.json(), { status: auth.error.status });
     }
 
+    // Resolved once, before any parsing, so a misconfigured STORAGE_PROVIDER
+    // fails the same way on both paths below instead of only after validation.
+    const storage = getStorageProvider();
+
     const formData = await request.formData();
     const base = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
@@ -104,7 +108,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const storage = getStorageProvider();
       const uploaded = await Promise.all(
         variants.map(({ size, file }) =>
           storage.put({
@@ -159,7 +162,6 @@ export async function POST(request: NextRequest) {
     if (tooLarge(file.size)) return sizeError();
 
     const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const storage = getStorageProvider();
     const stored = await storage.put({
       path: `products/${base}.${extension}`,
       body: file,

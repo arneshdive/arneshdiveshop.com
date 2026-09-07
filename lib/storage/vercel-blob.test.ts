@@ -1,194 +1,189 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { BlobResult } from '@vercel/blob';
+import type { PutBlobResult } from '@vercel/blob';
 import { vercelBlobProvider } from './vercel-blob';
+import type { PutOptions } from './types';
 
-// Mock @vercel/blob
 vi.mock('@vercel/blob', () => ({
   put: vi.fn(),
 }));
 
-// Import the mocked put after mocking the module
+// Import the mocked put after mocking the module.
 import { put as blobPut } from '@vercel/blob';
 
-const MOCK_PUT = blobPut as unknown as ReturnType<typeof vi.fn>;
+const MOCK_PUT = vi.mocked(blobPut);
+
+/**
+ * The inline URL and the download URL are deliberately different in every
+ * fixture. They are the same string in real life often enough that a test
+ * using one value for both would pass against an implementation returning
+ * `downloadUrl` — which sets Content-Disposition: attachment and would make
+ * every product image download instead of render.
+ */
+function blobResult(overrides: Partial<PutBlobResult> = {}): PutBlobResult {
+  const url = 'https://blob.example.com/products/v2/12345-abc.webp';
+  return {
+    url,
+    downloadUrl: `${url}?download=1`,
+    pathname: 'products/v2/12345-abc.webp',
+    contentType: 'image/webp',
+    contentDisposition: 'inline; filename="12345-abc.webp"',
+    etag: '"d41d8cd98f00b204e9800998ecf8427e"',
+    ...overrides,
+  };
+}
+
+/** The options object the adapter handed the SDK. */
+function sdkOptions() {
+  const call = MOCK_PUT.mock.calls[0];
+  if (!call) throw new Error('blobPut() was never called');
+  return call[2];
+}
+
+/** The body the adapter handed the SDK. */
+function sdkBody() {
+  const call = MOCK_PUT.mock.calls[0];
+  if (!call) throw new Error('blobPut() was never called');
+  return call[1];
+}
 
 describe('Vercel Blob Storage Provider', () => {
   beforeEach(() => {
-    MOCK_PUT.mockClear();
+    MOCK_PUT.mockReset();
   });
 
-  it('stores a file with correct options', async () => {
-    const mockUrl = 'https://example.com/products/v2/12345-abc.webp';
-    const mockBlob: BlobResult = {
-      url: mockUrl,
-      downloadUrl: mockUrl,
-      pathname: '/products/v2/12345-abc.webp',
-      contentType: 'image/webp',
-      contentDisposition: 'inline; filename="12345-abc.webp"',
-    };
+  it('forwards path, body and every option to the SDK unchanged', async () => {
+    MOCK_PUT.mockResolvedValueOnce(blobResult());
 
-    MOCK_PUT.mockResolvedValueOnce(mockBlob);
+    const file = new File(['webp content'], 'test.webp', { type: 'image/webp' });
 
-    const file = new File(['webp content'], 'test.webp', {
-      type: 'image/webp',
-    });
-
-    const result = await vercelBlobProvider.put({
+    await vercelBlobProvider.put({
       path: 'products/v2/12345-abc.webp',
       body: file,
       contentType: 'image/webp',
       cacheControlMaxAge: 2592000,
     });
 
-    expect(result.url).toBe(mockUrl);
-    expect(MOCK_PUT).toHaveBeenCalledWith(
-      'products/v2/12345-abc.webp',
-      file,
-      {
-        access: 'public',
-        contentType: 'image/webp',
-        allowOverwrite: false,
-        cacheControlMaxAge: 2592000,
-      }
+    // Asserted as one exact object rather than property by property, so an
+    // option quietly added, dropped or renamed fails here.
+    expect(MOCK_PUT).toHaveBeenCalledWith('products/v2/12345-abc.webp', file, {
+      access: 'public',
+      contentType: 'image/webp',
+      allowOverwrite: false,
+      cacheControlMaxAge: 2592000,
+    });
+    // A Blob body must reach the SDK as the very same object — no copy, no
+    // re-wrapping, so the bytes the route received are the bytes stored.
+    expect(sdkBody()).toBe(file);
+  });
+
+  it('cannot be talked into overwriting or into a private object', async () => {
+    MOCK_PUT.mockResolvedValueOnce(blobResult());
+
+    // A caller that has gone out of its way to ask for an overwrite. PutOptions
+    // does not admit these fields; the cast is the review question — "can this
+    // be bypassed?" — expressed as a test.
+    const hostile = {
+      path: 'products/v2/existing.webp',
+      body: new File(['x'], 'x.webp', { type: 'image/webp' }),
+      contentType: 'image/webp',
+      cacheControlMaxAge: 2592000,
+      allowOverwrite: true,
+      access: 'private',
+      addRandomSuffix: true,
+    } as unknown as PutOptions;
+
+    await vercelBlobProvider.put(hostile);
+
+    expect(sdkOptions()).toEqual({
+      access: 'public',
+      contentType: 'image/webp',
+      allowOverwrite: false,
+      cacheControlMaxAge: 2592000,
+    });
+  });
+
+  it('returns the inline url, never the download url', async () => {
+    const result = blobResult();
+    MOCK_PUT.mockResolvedValueOnce(result);
+
+    const stored = await vercelBlobProvider.put({
+      path: 'products/v2/12345-abc.webp',
+      body: new File(['content'], 'test.webp', { type: 'image/webp' }),
+      contentType: 'image/webp',
+      cacheControlMaxAge: 2592000,
+    });
+
+    expect(stored.url).toBe(result.url);
+    expect(stored.url).not.toBe(result.downloadUrl);
+  });
+
+  it('returns the etag the store reported, for migration verification', async () => {
+    MOCK_PUT.mockResolvedValueOnce(
+      blobResult({ etag: '"0cc175b9c0f1b6a831c399e269772661"' })
     );
-  });
 
-  it('passes allowOverwrite: false to enforce write-once semantics', async () => {
-    const mockBlob: BlobResult = {
-      url: 'https://example.com/test.webp',
-      downloadUrl: 'https://example.com/test.webp',
-      pathname: '/test.webp',
-      contentType: 'image/webp',
-      contentDisposition: 'inline',
-    };
-
-    MOCK_PUT.mockResolvedValueOnce(mockBlob);
-
-    const file = new File(['content'], 'test.webp', { type: 'image/webp' });
-
-    await vercelBlobProvider.put({
-      path: 'test.webp',
-      body: file,
+    const stored = await vercelBlobProvider.put({
+      path: 'products/v2/12345-abc.webp',
+      body: new File(['a'], 'a.webp', { type: 'image/webp' }),
       contentType: 'image/webp',
       cacheControlMaxAge: 2592000,
     });
 
-    // Verify allowOverwrite is explicitly false
-    const callArgs = MOCK_PUT.mock.calls[0][2];
-    expect(callArgs).toHaveProperty('allowOverwrite', false);
+    expect(stored.etag).toBe('"0cc175b9c0f1b6a831c399e269772661"');
   });
 
-  it('preserves cacheControlMaxAge value byte-for-byte', async () => {
-    const mockBlob: BlobResult = {
-      url: 'https://example.com/test.webp',
-      downloadUrl: 'https://example.com/test.webp',
-      pathname: '/test.webp',
-      contentType: 'image/webp',
-      contentDisposition: 'inline',
-    };
+  it('accepts raw bytes and forwards them without corrupting the view', async () => {
+    MOCK_PUT.mockResolvedValueOnce(blobResult());
 
-    MOCK_PUT.mockResolvedValueOnce(mockBlob);
-
-    const file = new File(['content'], 'test.webp', { type: 'image/webp' });
-    const expectedCacheControl = 30 * 24 * 60 * 60; // 30 days in seconds
+    // A window onto a larger buffer, which is what a sliced Buffer or a
+    // typed-array view looks like: an implementation that ignores byteOffset
+    // would send the wrong bytes.
+    const backing = new Uint8Array([0, 0, 1, 2, 3, 4, 0, 0]);
+    const bytes = backing.subarray(2, 6);
 
     await vercelBlobProvider.put({
-      path: 'test.webp',
-      body: file,
-      contentType: 'image/webp',
-      cacheControlMaxAge: expectedCacheControl,
-    });
-
-    const callArgs = MOCK_PUT.mock.calls[0][2];
-    expect(callArgs).toHaveProperty('cacheControlMaxAge', expectedCacheControl);
-  });
-
-  it('sets access to public for all uploads', async () => {
-    const mockBlob: BlobResult = {
-      url: 'https://example.com/test.webp',
-      downloadUrl: 'https://example.com/test.webp',
-      pathname: '/test.webp',
-      contentType: 'image/webp',
-      contentDisposition: 'inline',
-    };
-
-    MOCK_PUT.mockResolvedValueOnce(mockBlob);
-
-    const file = new File(['content'], 'test.webp', { type: 'image/webp' });
-
-    await vercelBlobProvider.put({
-      path: 'test.webp',
-      body: file,
+      path: 'products/v2/12345-abc.webp',
+      body: bytes,
       contentType: 'image/webp',
       cacheControlMaxAge: 2592000,
     });
 
-    const callArgs = MOCK_PUT.mock.calls[0][2];
-    expect(callArgs).toHaveProperty('access', 'public');
+    const forwarded = sdkBody();
+    expect(Buffer.isBuffer(forwarded)).toBe(true);
+    expect(Array.from(forwarded as Buffer)).toEqual([1, 2, 3, 4]);
+    // Wrapped, not copied: writing through the view is visible in the original.
+    (forwarded as Buffer)[0] = 9;
+    expect(backing[2]).toBe(9);
   });
 
-  it('returns the URL from the blob result', async () => {
-    const expectedUrl = 'https://blob.vercel-storage.com/products/v2/abc123.webp';
-    const mockBlob: BlobResult = {
-      url: expectedUrl,
-      downloadUrl: expectedUrl,
-      pathname: '/products/v2/abc123.webp',
-      contentType: 'image/webp',
-      contentDisposition: 'inline',
-    };
+  it('stores a legacy original under the content type the caller supplied', async () => {
+    MOCK_PUT.mockResolvedValueOnce(
+      blobResult({
+        url: 'https://blob.example.com/products/legacy.jpeg',
+        pathname: 'products/legacy.jpeg',
+        contentType: 'image/jpeg',
+      })
+    );
 
-    MOCK_PUT.mockResolvedValueOnce(mockBlob);
-
-    const file = new File(['content'], 'test.webp', { type: 'image/webp' });
-
-    const result = await vercelBlobProvider.put({
-      path: 'products/v2/abc123.webp',
-      body: file,
-      contentType: 'image/webp',
-      cacheControlMaxAge: 2592000,
-    });
-
-    expect(result.url).toBe(expectedUrl);
-  });
-
-  it('supports different content types', async () => {
-    const mockBlob: BlobResult = {
-      url: 'https://example.com/image.jpeg',
-      downloadUrl: 'https://example.com/image.jpeg',
-      pathname: '/image.jpeg',
-      contentType: 'image/jpeg',
-      contentDisposition: 'inline',
-    };
-
-    MOCK_PUT.mockResolvedValueOnce(mockBlob);
-
-    const file = new File(['jpeg content'], 'test.jpeg', {
-      type: 'image/jpeg',
-    });
-
-    const result = await vercelBlobProvider.put({
+    await vercelBlobProvider.put({
       path: 'products/legacy.jpeg',
-      body: file,
+      body: new File(['jpeg content'], 'test.jpeg', { type: 'image/jpeg' }),
       contentType: 'image/jpeg',
       cacheControlMaxAge: 2592000,
     });
 
-    expect(result.url).toBe('https://example.com/image.jpeg');
-
-    const callArgs = MOCK_PUT.mock.calls[0][2];
-    expect(callArgs).toHaveProperty('contentType', 'image/jpeg');
+    expect(sdkOptions()).toHaveProperty('contentType', 'image/jpeg');
+    // Still write-once, even off the variant path.
+    expect(sdkOptions()).toHaveProperty('allowOverwrite', false);
   });
 
   it('propagates errors from the blob provider', async () => {
-    const error = new Error('Storage quota exceeded');
-    MOCK_PUT.mockRejectedValueOnce(error);
-
-    const file = new File(['content'], 'test.webp', { type: 'image/webp' });
+    MOCK_PUT.mockRejectedValueOnce(new Error('Storage quota exceeded'));
 
     await expect(
       vercelBlobProvider.put({
         path: 'test.webp',
-        body: file,
+        body: new File(['content'], 'test.webp', { type: 'image/webp' }),
         contentType: 'image/webp',
         cacheControlMaxAge: 2592000,
       })

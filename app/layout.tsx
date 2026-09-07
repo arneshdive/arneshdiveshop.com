@@ -19,8 +19,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    default: siteConfig.shortName,
+    template: `%s | ${siteConfig.shortName}`,
   },
   description: siteConfig.description,
   openGraph: {

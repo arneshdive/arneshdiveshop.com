@@ -1,5 +1,8 @@
 export const siteConfig = {
   name: "Arnesh Dive Shop",
+  // Used for the browser tab title — "Arnesh Dive Shop" reads as the domain
+  // name (arneshdiveshop.com), not the brand, so the tab just shows "Arnesh".
+  shortName: "Arnesh",
   description: 'Premium diving equipment and gear for underwater enthusiasts',
   url: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
   links: {

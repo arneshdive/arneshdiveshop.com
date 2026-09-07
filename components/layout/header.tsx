@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
+import { Logo } from '@/components/layout/logo';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
@@ -96,9 +97,10 @@ export function Header() {
             {/* Logo */}
             <Link
               href="/"
-              className={`text-2xl font-bold tracking-tighter transition-opacity hover:opacity-70 ${textColor}`}
+              aria-label="Arnesh"
+              className={`transition-opacity hover:opacity-70 ${textColor}`}
             >
-              <span className="italic">ArneshDive</span>®
+              <Logo className="h-3.5 lg:h-4 w-auto" />
             </Link>
 
             {/* Desktop Nav Links */}

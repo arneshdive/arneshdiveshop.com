@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductSection } from '@/components/product/product-section';
-import { WaveDivider } from '@/components/layout/wave-divider';
 import { USPSection } from '@/components/layout/usp-section';
 import { HeroBannerCarousel } from '@/components/store/hero-banner-carousel';
+import { DivingTypeGrid } from '@/components/store/diving-type-grid';
 import { getProducts } from '@/lib/queries/products';
 import type { MockProduct } from '@/lib/data/mock-products';
 import type { Banner } from '@/lib/db/schema';
@@ -92,52 +91,8 @@ export default async function HomePage() {
         />
       )}
 
-      {/* Split Banner - Diving Types */}
-      <section className="relative grid md:grid-cols-2 mt-20">
-        <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-900 flex items-end pb-20 lg:pb-28 pt-8 px-8 lg:px-12 overflow-hidden">
-          {/* Freediving Background Image */}
-          <Image
-            src="/freediving-banner.webp"
-            alt="Freediving"
-            fill
-            className="object-cover"
-            sizes="(min-width: 768px) 50vw, 100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="relative z-10">
-            <span className="text-xs uppercase tracking-widest text-white/70 mb-2 block">Freediving</span>
-            <h3 className="text-2xl lg:text-3xl font-semibold mb-4 text-white">Koleksi Freediving</h3>
-            <AnimatedButton asChild variant="white">
-              <Link href="/produk?divingType=freediving">
-                Lihat Koleksi
-                <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
-              </Link>
-            </AnimatedButton>
-          </div>
-        </div>
-        <div className="relative min-h-[550px] lg:min-h-[650px] bg-neutral-900 flex items-end pb-20 lg:pb-28 pt-8 px-8 lg:px-12 overflow-hidden">
-          {/* Scuba Background Image */}
-          <Image
-            src="/scuba-banner.webp"
-            alt="Scuba Diving"
-            fill
-            className="object-cover"
-            sizes="(min-width: 768px) 50vw, 100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="relative z-10">
-            <span className="text-xs uppercase tracking-widest text-white/70 mb-2 block">Scuba</span>
-            <h3 className="text-2xl lg:text-3xl font-semibold mb-4 text-white">Koleksi Scuba</h3>
-            <AnimatedButton asChild variant="white">
-              <Link href="/produk?divingType=scuba">
-                Lihat Koleksi
-                <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
-              </Link>
-            </AnimatedButton>
-          </div>
-        </div>
-        <WaveDivider />
-      </section>
+      {/* Diving Type Grid */}
+      <DivingTypeGrid />
 
       {/* On Sale */}
       {saleProducts.length > 0 && (

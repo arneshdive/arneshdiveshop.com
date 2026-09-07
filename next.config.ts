@@ -20,30 +20,27 @@ const nextConfig: NextConfig = {
     // pattern let next/image fetch and re-serve a stranger's public bucket
     // from this origin.
     //
-    // A string literal rather than a read of R2_PUBLIC_URL because
+    // String literals rather than reads of R2_PUBLIC_URL because
     // `remotePatterns` is evaluated when the config is loaded and baked into
     // the build: a runtime env var would be whatever the build machine had,
-    // which is not something to depend on for an allowlist. Cost of that
-    // choice: switching to the Cloudflare custom domain (which Phase D needs
-    // anyway — pub-*.r2.dev is rate-limited and not meant to serve traffic)
-    // means editing this file. That is a deliberate trade — an allowlist that
-    // changes only by review.
+    // which is not something to depend on for an allowlist. The cost is that
+    // changing a host means editing this file — a deliberate trade, so the
+    // allowlist changes only by review.
     //
-    // The Blob host below is still a wildcard, and has the same shape of
-    // problem: every Vercel Blob store gets a subdomain there. It is left as
-    // is only because the production store id could not be confirmed from the
-    // repo (the one that appears in lib/scripts/seed-products.ts is a seed
-    // fixture, not necessarily the live store) and a wrong pin would break
-    // every image the day the optimizer is re-enabled. Pin it from the live
-    // store id before ever turning `unoptimized` off.
+    // Both hosts are now pinned. The Blob store id was verified against the
+    // live store during the 2026-09-07 incident (its URLs are the ones that
+    // 403'd, and the 887 legacy image URLs in `products.images` all sit on
+    // it), not taken from the seed fixture in lib/scripts/seed-products.ts.
+    // The R2 host is the Cloudflare custom domain; `pub-*.r2.dev` is
+    // rate-limited and was never meant to serve traffic.
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '*.public.blob.vercel-storage.com',
+        hostname: 'duruwpeexnyc4tce.public.blob.vercel-storage.com',
       },
       {
         protocol: 'https',
-        hostname: 'pub-e2bc11c40cb644838a7ddc22ac9f29c9.r2.dev',
+        hostname: 'file.arneshdiveshop.com',
       },
     ],
   },

@@ -23,6 +23,28 @@
 
 export const VARIANT_DIR = 'products/v2';
 
+/**
+ * Where images used to live, and where they live now.
+ *
+ * Every object was copied from Blob to R2 byte for byte, at an identical path
+ * (1,127 objects, each verified by MD5 against the source — see
+ * lib/scripts/copy-images-to-r2.ts). Because the paths match, serving from R2
+ * is a hostname swap and nothing else: `products.images` still holds the
+ * original Blob URLs, and no row was ever rewritten.
+ *
+ * Doing the swap here rather than in the query layer covers URLs that never
+ * pass through a query at all — the cart and the recently-viewed list are
+ * persisted in the visitor's own browser with whatever host was current when
+ * they were saved, and those entries would otherwise keep pointing at Blob
+ * indefinitely.
+ *
+ * Reverting is `git revert` on this commit: the database is unchanged, and the
+ * Blob objects are all still there. Blob is kept forever as the archive — the
+ * catalogue cannot be re-uploaded, so its store must never be deleted.
+ */
+const LEGACY_IMAGE_HOST = 'duruwpeexnyc4tce.public.blob.vercel-storage.com';
+const IMAGE_HOST = 'file.arneshdiveshop.com';
+
 export type ImageSize = 'thumb' | 'medium' | 'main';
 
 const SUFFIX: Record<ImageSize, string> = {
@@ -52,14 +74,32 @@ export function hasVariants(url: string): boolean {
 }
 
 /**
- * Resolve a stored image URL to the best file for how it will be displayed.
- * Legacy images have no derivatives, so they come back unchanged.
+ * Point a stored image URL at the host that serves it today.
+ *
+ * Only the one known Blob host is rewritten, and only the host — the path is
+ * carried across untouched, because that is exactly what the copy did. Any
+ * other URL (a `/public` asset, an externally hosted brand logo, an already
+ * rewritten URL) is returned as-is.
+ */
+export function toPublicImageUrl(url: string): string {
+  return url.includes(LEGACY_IMAGE_HOST)
+    ? url.replace(LEGACY_IMAGE_HOST, IMAGE_HOST)
+    : url;
+}
+
+/**
+ * Resolve a stored image URL to the best file for how it will be displayed:
+ * the right host, and the right size variant.
+ *
+ * Legacy images have no derivatives, so they keep their filename — but they
+ * still get the current host, since they were copied too.
  */
 export function productImageUrl(
   url: string | undefined | null,
   size: ImageSize,
 ): string | undefined {
   if (!url) return undefined;
-  if (size === 'main' || !hasVariants(url)) return url;
-  return url.replace(/\.webp$/, `${SUFFIX[size]}.webp`);
+  const hosted = toPublicImageUrl(url);
+  if (size === 'main' || !hasVariants(hosted)) return hosted;
+  return hosted.replace(/\.webp$/, `${SUFFIX[size]}.webp`);
 }

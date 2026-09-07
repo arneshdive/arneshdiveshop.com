@@ -2,49 +2,30 @@ import type { StorageProvider, PutOptions, PutBody, PutResult, HeadResult } from
 
 export type { StorageProvider, PutOptions, PutBody, PutResult, HeadResult };
 
-// A value export, but a safe one: ./errors imports neither storage SDK, so it
-// does not undo the lazy loading below.
+// A value export, but a safe one: ./errors imports no storage SDK, so it does
+// not undo the lazy loading below.
 export { ObjectAlreadyExistsError } from './errors';
 
 /**
- * Get the configured storage provider.
+ * Get the storage provider.
  *
- * Provider selection via STORAGE_PROVIDER env var:
- * - 'vercel-blob' (default when not set or empty)
- * - 'r2' (Cloudflare R2, lazy-loaded to avoid bundling the AWS SDK)
+ * Cloudflare R2 is the only one. There is deliberately no switch, no env var
+ * and no fallback: a provider *choice* is what let a script write a state file
+ * claiming 1,127 objects had been migrated while the destination bucket sat
+ * empty, because the unset default quietly resolved to Vercel Blob. With one
+ * provider that whole class of mistake cannot be expressed.
  *
- * Defaults to Vercel Blob when the env var is not set, maintaining existing
- * behavior on deploy and ensuring zero breaking changes to this phase.
+ * Vercel Blob is not gone — every original is still there, and its store must
+ * never be deleted, because the catalogue cannot be re-uploaded. It is simply
+ * no longer written to, and no longer reachable from application code. Reading
+ * the archive is done over its public URLs by the migration scripts, which need
+ * no SDK.
  *
- * Provider is loaded dynamically (lazy import) so a provider's SDK is only
- * bundled into serverless functions that use it. This avoids pulling
- * @aws-sdk/client-s3 into every function when the default is Vercel Blob.
- * See next.config.ts for the precedent (sharp was traced as an externality
- * affecting bundle size).
- *
- * An unrecognised value throws instead of falling back. A fallback would mean a
- * typo in the cutover ('R2', 'cloudflare-r2') silently kept writing to the
- * store this work exists to stop writing to, and the operator would not find
- * out until they went looking. The message is developer-facing and lands in the
- * server log; the upload route turns any throw into its own Indonesian error
- * for the admin.
- *
- * @throws {Error} if STORAGE_PROVIDER is set to an unknown provider
+ * Still async and still a dynamic import: it keeps @aws-sdk/client-s3 out of
+ * the module graph until something actually stores a file, which matters in
+ * serverless bundles — the same class of problem sharp caused here twice.
  */
 export async function getStorageProvider(): Promise<StorageProvider> {
-  const provider = process.env.STORAGE_PROVIDER || 'vercel-blob';
-
-  if (provider === 'vercel-blob') {
-    const { vercelBlobProvider } = await import('./vercel-blob');
-    return vercelBlobProvider;
-  }
-
-  if (provider === 'r2') {
-    const { r2Provider } = await import('./r2');
-    return r2Provider;
-  }
-
-  throw new Error(
-    `Misconfigured STORAGE_PROVIDER: ${provider}. Supported values: 'vercel-blob' (default), 'r2'.`
-  );
+  const { r2Provider } = await import('./r2');
+  return r2Provider;
 }

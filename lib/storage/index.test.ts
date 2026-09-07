@@ -1,58 +1,45 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { getStorageProvider } from './index';
-import { vercelBlobProvider } from './vercel-blob';
 import { r2Provider } from './r2';
 
 /**
- * Provider selection is the whole cutover mechanism for Phase C, and the
- * failure mode that matters is the quiet one: a mistyped value falling back to
- * Vercel Blob would keep writing to the store this work exists to leave, with
- * nothing in the logs to say so. These pin both halves.
+ * R2 is the only storage provider, and these pin that there is no way back.
  *
- * Every assertion is identity (`toBe`), never shape. A duck-typed check —
- * "the thing it returned has a put and a head" — passes just as happily when
- * 'r2' hands back the Vercel Blob provider, which is precisely the bug that
- * would make the cutover a no-op while looking like it worked.
+ * The reason this matters is a bug that nearly shipped: while a choice existed,
+ * an unset `STORAGE_PROVIDER` resolved to Vercel Blob, and a migration script
+ * run without the env prefix reported 1,127 objects successfully migrated with
+ * the destination bucket completely empty. Removing the choice removes that
+ * whole class of failure — but only if a leftover value cannot revive it.
+ *
+ * So the case that matters most here is `STORAGE_PROVIDER=vercel-blob`: a stale
+ * entry in some environment, or an old `.env` on a laptop, must be inert rather
+ * than resurrecting writes to a store this project has stopped writing to.
+ *
+ * Assertions are identity (`toBe`), never shape. "It has a put and a head"
+ * passes just as happily for the wrong provider.
  */
 describe('getStorageProvider', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it('defaults to Vercel Blob when STORAGE_PROVIDER is unset', async () => {
-    vi.stubEnv('STORAGE_PROVIDER', undefined);
-    const provider = await getStorageProvider();
-    expect(provider).toBe(vercelBlobProvider);
+  it('returns the R2 provider', async () => {
+    await expect(getStorageProvider()).resolves.toBe(r2Provider);
   });
 
-  it('defaults to Vercel Blob when STORAGE_PROVIDER is empty', async () => {
-    vi.stubEnv('STORAGE_PROVIDER', '');
-    const provider = await getStorageProvider();
-    expect(provider).toBe(vercelBlobProvider);
-  });
-
-  it('returns Vercel Blob when asked for it explicitly', async () => {
-    vi.stubEnv('STORAGE_PROVIDER', 'vercel-blob');
-    const provider = await getStorageProvider();
-    expect(provider).toBe(vercelBlobProvider);
-  });
-
-  it('returns the R2 provider when asked for it', async () => {
-    vi.stubEnv('STORAGE_PROVIDER', 'r2');
-    const provider = await getStorageProvider();
-    expect(provider).toBe(r2Provider);
-    expect(provider).not.toBe(vercelBlobProvider);
-  });
-
-  it('throws on a typo, naming the offending value', async () => {
-    vi.stubEnv('STORAGE_PROVIDER', 'R2');
-    await expect(getStorageProvider()).rejects.toThrow(/STORAGE_PROVIDER: R2/);
-  });
-
-  it('throws rather than falling back on any other unknown value', async () => {
-    for (const value of ['cloudflare-r2', 'blob', 's3', ' r2']) {
+  it('ignores a stale STORAGE_PROVIDER rather than honouring it', async () => {
+    for (const value of ['vercel-blob', 'blob', 'r2', 'R2', 's3', '']) {
       vi.stubEnv('STORAGE_PROVIDER', value);
-      await expect(getStorageProvider()).rejects.toThrow(/Misconfigured STORAGE_PROVIDER/);
+      await expect(getStorageProvider()).resolves.toBe(r2Provider);
     }
+  });
+
+  it('exposes no way to obtain any other provider', async () => {
+    const storage = await import('./index');
+    const exported = Object.keys(storage);
+    expect(exported).not.toContain('vercelBlobProvider');
+    expect(exported).toEqual(
+      expect.arrayContaining(['getStorageProvider', 'ObjectAlreadyExistsError']),
+    );
   });
 });

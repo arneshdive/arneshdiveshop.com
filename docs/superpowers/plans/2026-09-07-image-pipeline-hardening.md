@@ -368,6 +368,27 @@ domain is required before Phase D serves real traffic.
 | 887 legacy files | ~2,661 (original + 2 generated variants) | re-encode locally with `sharp` |
 | 6 local `/public` paths | 0 | not in Blob; leave alone |
 
+### R2 silently overwrites — every write MUST be conditional
+
+Vercel Blob refuses to clobber an existing object when passed `allowOverwrite: false`, and that single
+option has been this project's main protection for the catalogue. **S3-compatible APIs have no such
+default: `PutObject` overwrites without warning or error.** Moving to R2 naively would therefore delete
+the protection while appearing to change nothing — the most dangerous kind of regression, because
+nothing fails until it has already destroyed something.
+
+Measured against the real `arneshdive` bucket on 2026-09-07:
+
+| Test | Result |
+| --- | --- |
+| `PutObject` to an existing key, no condition | **Silently overwrote it** — `"ORIGINAL"` became `"CLOBBERED"` |
+| `PutObject` to an existing key with `IfNoneMatch: '*'` | Rejected, `PreconditionFailed` HTTP 412; original bytes intact |
+| `PutObject` to a *new* key with `IfNoneMatch: '*'` | Succeeded — the guard does not impede legitimate uploads |
+
+**Therefore: every single `PutObject` against R2, in the upload route and in the migration script
+alike, must pass `IfNoneMatch: '*'`.** Treat a missing `IfNoneMatch` in any R2 write as a review
+blocker. The storage interface's contract (Phase B) states this requirement so an implementation
+cannot quietly omit it.
+
 **Rules the migration script must obey — these are not negotiable:**
 
 1. Reads from Blob. Writes to R2. Writes a local manifest. **Nothing else.** No DB writes, no Blob

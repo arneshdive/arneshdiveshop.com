@@ -50,9 +50,15 @@ const ABSENT_NAMES = new Set(['NotFound', 'NoSuchKey']);
  * "absent" would make a throttled store look like an empty one and send the
  * script off to re-copy everything.
  *
- * `NoSuchBucket` is a 404 too, and must NOT read as an absent object — a typo
- * in `R2_BUCKET_NAME` would otherwise report every key as missing. It arrives
- * named, so the bodyless-404 fallback below cannot catch it.
+ * A wrong bucket is NOT distinguishable here, and callers must not assume it
+ * is. AWS S3 answers `HeadObject` on a missing bucket with a named
+ * `NoSuchBucket`, but R2 does not: measured against the live account on
+ * 2026-09-07, a nonexistent bucket produced a bodyless 404 that this SDK models
+ * as `NotFound` — byte-identical to a missing key. So a typo in
+ * `R2_BUCKET_NAME` (or a wrong endpoint) makes every key report absent, and no
+ * check inside this function can tell. The migration script defends against it
+ * outside, by re-reading objects it knows it already wrote before it does any
+ * new work; anything else reading this store should do the same.
  */
 function isObjectAbsent(error: unknown): boolean {
   if (error instanceof NotFound || error instanceof NoSuchKey) return true;

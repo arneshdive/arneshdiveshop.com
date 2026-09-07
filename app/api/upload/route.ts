@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
+import { getStorageProvider } from '@/lib/storage';
 import { requireAdmin } from '@/lib/auth/admin';
 import { IMAGE_CONFIG } from '@/lib/utils/image-config';
 import { variantPath, type ImageSize } from '@/lib/utils/product-image';
@@ -104,12 +104,13 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      const storage = getStorageProvider();
       const uploaded = await Promise.all(
         variants.map(({ size, file }) =>
-          put(variantPath(base, size), file!, {
-            access: 'public',
+          storage.put({
+            path: variantPath(base, size),
+            body: file!,
             contentType: 'image/webp',
-            allowOverwrite: false,
             cacheControlMaxAge: BLOB_CACHE_MAX_AGE,
           }).then((blob) => ({ size, url: blob.url }))
         )
@@ -158,10 +159,11 @@ export async function POST(request: NextRequest) {
     if (tooLarge(file.size)) return sizeError();
 
     const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const stored = await put(`products/${base}.${extension}`, file, {
-      access: 'public',
+    const storage = getStorageProvider();
+    const stored = await storage.put({
+      path: `products/${base}.${extension}`,
+      body: file,
       contentType: file.type,
-      allowOverwrite: false,
       cacheControlMaxAge: BLOB_CACHE_MAX_AGE,
     });
 

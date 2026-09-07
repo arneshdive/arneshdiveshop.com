@@ -1,22 +1,22 @@
-import type { StorageProvider, PutOptions, PutBody, PutResult } from './types';
-import { vercelBlobProvider } from './vercel-blob';
+import type { StorageProvider, PutOptions, PutBody, PutResult, HeadResult } from './types';
 
-export type { StorageProvider, PutOptions, PutBody, PutResult };
+export type { StorageProvider, PutOptions, PutBody, PutResult, HeadResult };
 
 /**
  * Get the configured storage provider.
  *
  * Provider selection via STORAGE_PROVIDER env var:
  * - 'vercel-blob' (default when not set or empty)
- * - 'r2' (reserved for Phase C, not implemented yet — throws today)
+ * - 'r2' (Cloudflare R2, lazy-loaded to avoid bundling the AWS SDK)
  *
  * Defaults to Vercel Blob when the env var is not set, maintaining existing
  * behavior on deploy and ensuring zero breaking changes to this phase.
  *
- * Read per call rather than memoised: this is a plain runtime property lookup
- * (only NEXT_PUBLIC_* vars are inlined at build time), it happens a handful of
- * times per upload against three network writes, and keeping it live means the
- * Phase C cutover is an env var change rather than a redeploy.
+ * Provider is loaded dynamically (lazy import) so a provider's SDK is only
+ * bundled into serverless functions that use it. This avoids pulling
+ * @aws-sdk/client-s3 into every function when the default is Vercel Blob.
+ * See next.config.ts for the precedent (sharp was traced as an externality
+ * affecting bundle size).
  *
  * An unrecognised value throws instead of falling back. A fallback would mean a
  * typo in the cutover ('R2', 'cloudflare-r2') silently kept writing to the
@@ -27,14 +27,20 @@ export type { StorageProvider, PutOptions, PutBody, PutResult };
  *
  * @throws {Error} if STORAGE_PROVIDER is set to an unknown provider
  */
-export function getStorageProvider(): StorageProvider {
+export async function getStorageProvider(): Promise<StorageProvider> {
   const provider = process.env.STORAGE_PROVIDER || 'vercel-blob';
 
   if (provider === 'vercel-blob') {
+    const { vercelBlobProvider } = await import('./vercel-blob');
     return vercelBlobProvider;
   }
 
+  if (provider === 'r2') {
+    const { r2Provider } = await import('./r2');
+    return r2Provider;
+  }
+
   throw new Error(
-    `Misconfigured STORAGE_PROVIDER: ${provider}. Supported: 'vercel-blob' (default).`
+    `Misconfigured STORAGE_PROVIDER: ${provider}. Supported values: 'vercel-blob' (default), 'r2'.`
   );
 }

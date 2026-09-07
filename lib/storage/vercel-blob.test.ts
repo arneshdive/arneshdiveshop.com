@@ -5,12 +5,14 @@ import type { PutOptions } from './types';
 
 vi.mock('@vercel/blob', () => ({
   put: vi.fn(),
+  head: vi.fn(),
 }));
 
-// Import the mocked put after mocking the module.
-import { put as blobPut } from '@vercel/blob';
+// Import the mocked functions after mocking the module.
+import { put as blobPut, head as blobHead } from '@vercel/blob';
 
 const MOCK_PUT = vi.mocked(blobPut);
+const MOCK_HEAD = vi.mocked(blobHead);
 
 /**
  * The inline URL and the download URL are deliberately different in every
@@ -188,5 +190,58 @@ describe('Vercel Blob Storage Provider', () => {
         cacheControlMaxAge: 2592000,
       })
     ).rejects.toThrow('Storage quota exceeded');
+  });
+});
+
+describe('Vercel Blob Storage Provider — head operation', () => {
+  beforeEach(() => {
+    MOCK_HEAD.mockReset();
+  });
+
+  it('returns object metadata when the object exists', async () => {
+    MOCK_HEAD.mockResolvedValueOnce({
+      etag: '"d41d8cd98f00b204e9800998ecf8427e"',
+      size: 42,
+      contentType: 'image/webp',
+      contentDisposition: 'inline',
+      downloadUrl: 'https://example.com/file?download=1',
+      pathname: 'products/v2/12345-abc.webp',
+      url: 'https://example.com/products/v2/12345-abc.webp',
+      uploadedAt: new Date(),
+      cacheControl: 'public, max-age=2592000',
+    } as any);
+
+    const result = await vercelBlobProvider.head('products/v2/12345-abc.webp');
+
+    expect(result).toEqual({
+      etag: '"d41d8cd98f00b204e9800998ecf8427e"',
+      size: 42,
+    });
+  });
+
+  it('returns null when the object does not exist', async () => {
+    MOCK_HEAD.mockRejectedValueOnce(new Error('404 Not Found'));
+
+    const result = await vercelBlobProvider.head('products/v2/nonexistent.webp');
+
+    expect(result).toBeNull();
+  });
+
+  it('uses the correct path parameter', async () => {
+    MOCK_HEAD.mockResolvedValueOnce({
+      etag: '"abc"',
+      size: 123,
+      contentType: 'image/jpeg',
+      contentDisposition: 'inline',
+      downloadUrl: 'https://example.com/f?download',
+      pathname: 'products/legacy.jpeg',
+      url: 'https://example.com/products/legacy.jpeg',
+      uploadedAt: new Date(),
+      cacheControl: 'public, max-age=2592000',
+    } as any);
+
+    await vercelBlobProvider.head('products/legacy.jpeg');
+
+    expect(MOCK_HEAD).toHaveBeenCalledWith('products/legacy.jpeg');
   });
 });

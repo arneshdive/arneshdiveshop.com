@@ -1,5 +1,5 @@
-import { put as blobPut } from '@vercel/blob';
-import type { StorageProvider, PutOptions, PutBody } from './types';
+import { put as blobPut, head as blobHead } from '@vercel/blob';
+import type { StorageProvider, PutOptions, PutBody, HeadResult } from './types';
 
 /**
  * The SDK's `PutBody` union accepts `Buffer` but not a plain `Uint8Array`, so
@@ -42,5 +42,18 @@ export const vercelBlobProvider: StorageProvider = {
     // stored on a product — an <img> pointed at it downloads a file instead of
     // rendering.
     return { url: result.url, etag: result.etag };
+  },
+
+  async head(path: string): Promise<HeadResult | null> {
+    try {
+      const result = await blobHead(path);
+      return {
+        etag: result.etag,
+        size: result.size,
+      };
+    } catch {
+      // Vercel Blob's head() throws on 404; we return null to indicate not found
+      return null;
+    }
   },
 };

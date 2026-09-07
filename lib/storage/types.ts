@@ -65,6 +65,14 @@ export interface PutResult {
   etag: string;
 }
 
+export interface HeadResult {
+  /** The object's entity tag (MD5 for S3, etc.) */
+  etag: string;
+
+  /** The object's size in bytes */
+  size: number;
+}
+
 export interface StorageProvider {
   /**
    * Store a new object at a unique path, refusing overwrites.
@@ -93,4 +101,19 @@ export interface StorageProvider {
    * @returns Promise resolving to the object's public URL and etag
    */
   put(options: PutOptions): Promise<PutResult>;
+
+  /**
+   * Get metadata about a stored object without retrieving its bytes.
+   *
+   * READ-ONLY: This operation retrieves only metadata and returns `null` if
+   * the object does not exist. No data is destroyed or modified.
+   *
+   * Used during the Phase D migration to verify copies and detect what has
+   * already been migrated, making the migration process resumable and safe to
+   * re-run.
+   *
+   * @param path Storage path/key (e.g., 'products/v2/12345-abc.webp')
+   * @returns Promise resolving to object metadata, or `null` if not found
+   */
+  head(path: string): Promise<HeadResult | null>;
 }

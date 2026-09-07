@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent git worktrees are checked out *inside* the repo, each carrying a
+    // full copy of the tree. Linting them reported 17,643 problems against the
+    // real 30 — the same double-collection trap `vitest.config.ts` documents.
+    ".claude/**",
+    ".work/**",
   ]),
   {
     // The catalogue's ~780 images cannot be re-uploaded and exist nowhere else,
@@ -19,7 +24,7 @@ const eslintConfig = defineConfig([
     // a stored object. lib/storage exposes only a write-once `put()` — but the
     // SDK's `del`, `copy`, `rename` and `put({ allowOverwrite: true })` are one
     // import away, and that bypass is invisible in review. Keep the SDK behind
-    // the interface.
+    // the interface. The same protection extends to @aws-sdk/client-s3 (R2).
     files: ["**/*.{ts,tsx,js,jsx,mjs}"],
     ignores: ["lib/storage/**"],
     rules: {
@@ -29,6 +34,11 @@ const eslintConfig = defineConfig([
           paths: [
             {
               name: "@vercel/blob",
+              message:
+                "Import getStorageProvider() from @/lib/storage instead. The storage SDKs stay behind lib/storage so no code path can delete or overwrite a stored image.",
+            },
+            {
+              name: "@aws-sdk/client-s3",
               message:
                 "Import getStorageProvider() from @/lib/storage instead. The storage SDKs stay behind lib/storage so no code path can delete or overwrite a stored image.",
             },

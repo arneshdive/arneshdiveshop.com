@@ -86,7 +86,8 @@ export async function POST(request: NextRequest) {
 
     // Resolved once, before any parsing, so a misconfigured STORAGE_PROVIDER
     // fails the same way on both paths below instead of only after validation.
-    const storage = getStorageProvider();
+    // Now async: lazy-loads the provider to avoid bundling all SDKs.
+    const storage = await getStorageProvider();
 
     const formData = await request.formData();
     const base = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;

@@ -13,30 +13,35 @@ describe('getStorageProvider', () => {
     vi.unstubAllEnvs();
   });
 
-  it('defaults to Vercel Blob when STORAGE_PROVIDER is unset', () => {
+  it('defaults to Vercel Blob when STORAGE_PROVIDER is unset', async () => {
     vi.stubEnv('STORAGE_PROVIDER', undefined);
-    expect(getStorageProvider()).toBe(vercelBlobProvider);
+    const provider = await getStorageProvider();
+    expect(provider).toBe(vercelBlobProvider);
   });
 
-  it('defaults to Vercel Blob when STORAGE_PROVIDER is empty', () => {
+  it('defaults to Vercel Blob when STORAGE_PROVIDER is empty', async () => {
     vi.stubEnv('STORAGE_PROVIDER', '');
-    expect(getStorageProvider()).toBe(vercelBlobProvider);
+    const provider = await getStorageProvider();
+    expect(provider).toBe(vercelBlobProvider);
   });
 
-  it('returns Vercel Blob when asked for it explicitly', () => {
+  it('returns Vercel Blob when asked for it explicitly', async () => {
     vi.stubEnv('STORAGE_PROVIDER', 'vercel-blob');
-    expect(getStorageProvider()).toBe(vercelBlobProvider);
+    const provider = await getStorageProvider();
+    expect(provider).toBe(vercelBlobProvider);
   });
 
-  it('throws rather than silently writing to Blob when asked for r2', () => {
-    // Reserved but not implemented until Phase C. Someone flipping the env var
-    // early must get a failed upload, not a successful write to the old store.
+  it('returns R2 provider when asked for it', async () => {
+    // Phase C implementation: R2 provider is now available
     vi.stubEnv('STORAGE_PROVIDER', 'r2');
-    expect(() => getStorageProvider()).toThrow(/STORAGE_PROVIDER: r2/);
+    const provider = await getStorageProvider();
+    // Provider has both put and head methods
+    expect(provider).toHaveProperty('put');
+    expect(provider).toHaveProperty('head');
   });
 
-  it('throws on a typo, naming the offending value', () => {
+  it('throws on a typo, naming the offending value', async () => {
     vi.stubEnv('STORAGE_PROVIDER', 'R2');
-    expect(() => getStorageProvider()).toThrow(/STORAGE_PROVIDER: R2/);
+    await expect(getStorageProvider()).rejects.toThrow(/STORAGE_PROVIDER: R2/);
   });
 });

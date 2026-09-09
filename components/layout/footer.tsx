@@ -14,7 +14,6 @@ const paymentBadges = [
 const paymentTextBadges = ['QRIS', 'Transfer Bank'];
 
 export async function Footer() {
-  const year = new Date().getFullYear();
   const settings = await getPublicShopSettings();
   const session = await getSession();
   const isAdmin = session?.role === 'admin' || session?.role === 'super_admin';
@@ -57,7 +56,7 @@ export async function Footer() {
       <div className="sticky bottom-0 z-0 bg-black text-neutral-500 pt-20 lg:pt-24 pb-6">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-            <span>© {year} Arnes Dive Shop. All rights reserved.</span>
+            <span>2026 Arnesh Dive. All rights reserved.</span>
             <div className="flex flex-wrap gap-4">
               <Link href="/privasi" className="hover:text-white transition-colors"><AnimatedUnderline>Kebijakan Privasi</AnimatedUnderline></Link>
               <Link href="/syarat" className="hover:text-white transition-colors"><AnimatedUnderline>Syarat & Ketentuan</AnimatedUnderline></Link>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { useQuery } from '@tanstack/react-query';
+import { Logo } from '@/components/layout/logo';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: 'solar:chart-2-linear' },
@@ -44,10 +45,12 @@ export function AdminSidebar() {
       }`}
     >
       {/* Logo Section */}
-      <div className="flex items-center justify-between px-3 py-5 border-b border-neutral-800">
-        <Link href="/admin" className="group px-3">
-          <Icon icon="solar:widget-5-bold" className="w-6 h-6 text-white" />
-        </Link>
+      <div className={`flex items-center px-3 py-5 border-b border-neutral-800 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+        {!collapsed && (
+          <Link href="/admin" aria-label="Arnesh Dive Shop" className="px-3">
+            <Logo className="h-4 w-auto text-white" />
+          </Link>
+        )}
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-2 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors"

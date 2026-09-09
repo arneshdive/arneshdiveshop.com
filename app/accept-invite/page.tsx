@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { Logo } from '@/components/layout/logo';
 import { AnimatedButton } from '@/components/ui/animated-button';
 
 function AcceptInviteForm() {
@@ -71,8 +72,8 @@ function AcceptInviteForm() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold tracking-tighter hover:opacity-70 transition-opacity">
-            <span className="italic">ArneshDive</span>®
+          <Link href="/" aria-label="Arnesh Dive Shop" className="inline-block hover:opacity-70 transition-opacity">
+            <Logo className="h-5 w-auto text-neutral-900" />
           </Link>
         </div>
 

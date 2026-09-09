@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, use } from 'react';
 import { Icon } from '@iconify/react';
+import { Logo } from '@/components/layout/logo';
 import { formatRupiah, formatDate, toTitleCase } from '@/lib/utils/format';
 import { orderStatusConfig } from '@/lib/constants/order-status';
 import type { OrderStatus, PaymentStatus } from '@/lib/db/schema';
@@ -101,8 +102,8 @@ export default function OrderPrintPage({ params }: { params: Promise<{ id: strin
         {/* Invoice Header */}
         <div className="flex items-start justify-between border-b border-neutral-300 pb-4 mb-4">
           <div>
-            <h1 className="text-sm font-semibold tracking-tight text-neutral-900">arneshdiveshop.com</h1>
-            <p className="text-[10px] text-neutral-500 mt-0.5">Invoice Pesanan</p>
+            <Logo className="h-3.5 w-auto text-neutral-900" />
+            <p className="text-[10px] text-neutral-500 mt-1">Invoice Pesanan</p>
           </div>
           <div className="text-right">
             <p className="font-semibold tracking-tight text-neutral-900">{order.orderNumber}</p>

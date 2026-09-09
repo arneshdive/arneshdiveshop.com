@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 import { LogoMark } from '@/components/layout/logo-mark';
@@ -23,9 +23,23 @@ interface FormErrors {
   general?: string;
 }
 
+/**
+ * Where to send someone once they are signed in.
+ *
+ * Only same-site paths are honoured: `?redirect=` arrives from the URL bar,
+ * so anything else — an absolute URL, or a protocol-relative `//host` that
+ * the browser also treats as absolute — would let a link to our own login
+ * page bounce people onto someone else's site carrying our branding.
+ */
+function safeRedirect(target: string | null): string {
+  if (!target || !target.startsWith('/') || target.startsWith('//')) {
+    return '/account';
+  }
+  return target;
+}
+
 function AuthForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [mode, setMode] = useState<Mode>('login');
   const [form, setForm] = useState<AuthForm>({
     email: '',
@@ -38,7 +52,17 @@ function AuthForm() {
   const [verifyEmail, setVerifyEmail] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
 
-  const redirectTo = searchParams.get('redirect') || '/account';
+  // Set once the code has been accepted and the browser is on its way to
+  // `redirectTo`. The form stays disabled from that moment: leaving it live
+  // during the hop is what let a second submit spend an already-spent code
+  // and replace a completed sign-in with "kode sudah digunakan".
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  // A ref, not state: two submits fired before React re-renders both read
+  // the old `isLoading`, and a disabled attribute that lands one frame late
+  // stops nothing.
+  const submitInFlight = useRef(false);
+
+  const redirectTo = safeRedirect(searchParams.get('redirect'));
 
   // Tick the resend cooldown down to zero. Guards against rapid repeat
   // requests, each of which would issue a fresh code and invalidate the
@@ -84,10 +108,14 @@ function AuthForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (submitInFlight.current || isRedirecting) return;
     if (!validateForm()) return;
 
+    submitInFlight.current = true;
     setIsLoading(true);
     setErrors({});
+
+    let redirecting = false;
 
     try {
       if (mode === 'login' || mode === 'register') {
@@ -140,15 +168,27 @@ function AuthForm() {
           return;
         }
 
-        // Success - redirect to account
-        router.push(redirectTo);
-        router.refresh();
+        // Signed in. Hand over to the browser rather than the client router:
+        // the destination is often /admin, which is slow enough on a cold
+        // start that a soft navigation looks like nothing happened at all —
+        // no spinner, no address bar movement — and that silence is what
+        // prompted people to submit the code a second time. A document
+        // request shows the browser's own progress and starts the new page
+        // with the session cookie already in hand.
+        redirecting = true;
+        setIsRedirecting(true);
+        window.location.assign(redirectTo);
       }
     } catch (error) {
       console.error('Auth error:', error);
       setErrors({ general: 'Terjadi kesalahan pada server' });
     } finally {
-      setIsLoading(false);
+      // Not reset while a navigation is under way: the form must not come
+      // back to life underneath it and invite a second submit.
+      if (!redirecting) {
+        submitInFlight.current = false;
+        setIsLoading(false);
+      }
     }
   };
 
@@ -216,16 +256,20 @@ function AuthForm() {
             {/* Submit */}
             <AnimatedButton
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isRedirecting}
               className="w-full py-3 text-sm"
             >
-              {isLoading ? 'Memproses...' : 'Verifikasi'}
+              {isRedirecting
+                ? 'Mengalihkan...'
+                : isLoading
+                  ? 'Memproses...'
+                  : 'Verifikasi'}
             </AnimatedButton>
           </form>
 
           {/* Resend OTP */}
           <button
-            disabled={isLoading || resendCooldown > 0}
+            disabled={isLoading || isRedirecting || resendCooldown > 0}
             onClick={async () => {
               setIsLoading(true);
               try {
@@ -374,7 +418,7 @@ function AuthForm() {
           {/* Submit */}
           <AnimatedButton
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isRedirecting}
             className="w-full py-3 text-sm"
           >
             {isLoading

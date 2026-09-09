@@ -19,6 +19,33 @@
   --color-brand-lighter: var(--brand-lighter);
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+
+  /* Fonts for the /lab homepage experiment. The --font-* custom props are
+     scoped to the .lab-root wrapper (see app/lab/layout.tsx); these utilities
+     only resolve inside that subtree. */
+  --font-display: var(--font-archivo), "Archivo Black", system-ui, sans-serif;
+  --font-editorial: var(--font-instrument), Georgia, "Times New Roman", serif;
+  --font-script: var(--font-caveat), ui-rounded, cursive;
+}
+
+/* Marquee ticker for the /lab experiment. */
+@keyframes lab-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.lab-marquee-track {
+  animation: lab-marquee 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-marquee-track {
+    animation: none;
+  }
 }
 
 body {

@@ -44,13 +44,13 @@ export function DivingTypeGrid() {
         <div className="flex flex-col mb-10">
           <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">Kategori</span>
           <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter mb-2">
-            Belanja Berdasarkan{' '}
+            Temukan{' '}
             <em
               is="highlighted-text"
               className="highlighted-text not-italic relative inline-block animated"
               data-style="scribble"
             >
-              <span className="relative z-10">Tipe Diving</span>
+              <span className="relative z-10">Aktivitas Anda</span>
               <svg
                 className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-2 left-0 w-full"
                 viewBox="-347 -30.1947 694 96.19"

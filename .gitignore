@@ -51,3 +51,6 @@ vitest.config.ts.timestamp-*
 
 # git worktrees (local scratch branches)
 /.work/
+
+# claude code local state (settings + worktree scratch)
+/.claude/

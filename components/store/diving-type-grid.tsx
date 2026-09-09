@@ -72,7 +72,7 @@ export function DivingTypeGrid() {
           <p className="text-sm lg:text-base max-w-md">Temukan peralatan yang tepat untuk gaya menyelam Anda.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-3">
           {divingTypeTiles.map((type) => (
             <Link
               key={type.title}

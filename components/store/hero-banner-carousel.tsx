@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { AnimatedButton } from '@/components/ui/animated-button';
-import { WaveDivider } from '@/components/layout/wave-divider';
 import type { Banner } from '@/lib/db/schema';
 
 interface HeroBannerCarouselProps {
@@ -15,11 +14,11 @@ interface HeroBannerCarouselProps {
 const fallbackBanner = {
   id: 'fallback',
   title: 'Berjelajah di kedalaman',
-  subtitle: 'Temukan perlengkapan freediving yang Anda butuhkan.',
-  eyebrow: 'Freediving & Scuba',
+  subtitle: 'Perlengkapan freediving & scuba dari merek tepercaya, untuk setiap level penyelam.',
+  eyebrow: 'SCUBA · FREEDIVING · SPEARFISHING',
   ctaText: 'Semua Katalog',
   ctaLink: '/produk',
-  imageUrl: '/hero-image.webp',
+  imageUrl: '/hero-diver.webp',
 };
 
 export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
@@ -87,19 +86,20 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
           fill
           priority
           sizes="100vw"
-          className={`object-cover transition-opacity duration-300 ${
+          className={`object-cover object-left lg:object-center transition-opacity duration-300 ${
             isTransitioning ? 'opacity-0' : 'opacity-100'
           }`}
         />
-        {/* Gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+        {/* Gradient overlay for text readability — darker on the left where the copy sits,
+            clearing toward the right so the diver stays visible */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="absolute inset-0 z-10 flex items-center justify-center">
+      <div className="absolute inset-0 z-10 flex items-center justify-start">
         <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="flex flex-col items-center justify-center text-center min-h-[650px] lg:min-h-[740px]">
-            <div className={`transition-all duration-300 ${
+          <div className="flex flex-col items-start justify-center text-left min-h-[650px] lg:min-h-[740px]">
+            <div className={`w-full lg:max-w-[54%] transition-all duration-300 ${
               isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
             }`}>
               {currentBanner.eyebrow && (
@@ -107,15 +107,15 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                   {currentBanner.eyebrow}
                 </span>
               )}
-              <h1 className="text-4xl lg:text-7xl font-bold text-white mb-6 leading-tight tracking-tighter whitespace-pre-line">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tighter whitespace-pre">
                 {currentBanner.title || 'Berjelajah di kedalaman'}
               </h1>
               {currentBanner.subtitle && (
-                <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed mx-auto">
+                <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed">
                   {currentBanner.subtitle}
                 </p>
               )}
-              <div className="flex flex-wrap gap-3 justify-center">
+              <div className="flex flex-wrap gap-3 justify-start">
                 <AnimatedButton
                   asChild
                   variant="white"
@@ -132,7 +132,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
 
       {/* Carousel Indicators */}
       {displayBanners.length > 1 && (
-        <div className="absolute bottom-24 lg:bottom-28 left-0 right-0 z-20 flex justify-center gap-2">
+        <div className="absolute bottom-24 lg:bottom-28 left-0 right-0 z-20 flex justify-center lg:justify-start gap-2 max-w-[1440px] mx-auto px-6 lg:px-12">
           {displayBanners.map((_, index) => (
             <button
               key={index}
@@ -147,8 +147,6 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
           ))}
         </div>
       )}
-
-      <WaveDivider className="z-20" />
     </section>
   );
 }

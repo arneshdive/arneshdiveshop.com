@@ -11,6 +11,17 @@ const adminApiRoutes = ['/api/admin'];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Markdown for Agents: agents that send Accept: text/markdown get a
+  // markdown rendering of the homepage instead of HTML. Rewritten (not
+  // redirected) so the URL bar/caller-visible path stays "/".
+  if (
+    pathname === '/' &&
+    request.method === 'GET' &&
+    request.headers.get('accept')?.includes('text/markdown')
+  ) {
+    return NextResponse.rewrite(new URL('/api/markdown/home', request.url));
+  }
+
   // Get session from cookie
   const token = request.cookies.get('session')?.value;
   let session: SessionPayload | null = null;
@@ -59,6 +70,16 @@ export async function middleware(request: NextRequest) {
   if (session) {
     response.headers.set('x-user-id', session.userId);
     response.headers.set('x-user-role', session.role);
+  }
+
+  // RFC 8288 Link headers for agent discovery — advertise the API catalog
+  // and its docs from the homepage.
+  if (pathname === '/') {
+    response.headers.set(
+      'Link',
+      '</.well-known/api-catalog>; rel="api-catalog", </docs/api>; rel="service-doc"'
+    );
+    response.headers.set('Vary', 'Accept');
   }
 
   return response;

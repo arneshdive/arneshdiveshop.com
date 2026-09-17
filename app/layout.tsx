@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/config/site';
-
-export const dynamic = 'force-dynamic';
+import { JsonLd } from '@/components/seo/json-ld';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -14,15 +13,23 @@ const inter = Inter({
 // browser UI (scrollbars, form controls) shouldn't switch on OS/browser dark
 // mode either.
 export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   colorScheme: 'light',
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.shortName,
     template: `%s | ${siteConfig.shortName}`,
   },
   description: siteConfig.description,
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     title: siteConfig.name,
     description: siteConfig.description,
@@ -42,8 +49,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased scroll-smooth`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="id" className={`${inter.variable} h-full antialiased scroll-smooth`}>
+      <body className="min-h-full flex flex-col">
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: siteConfig.name,
+            url: siteConfig.url,
+            logo: `${siteConfig.url}/icon.png`,
+            sameAs: [siteConfig.links.instagram],
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

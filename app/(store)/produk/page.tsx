@@ -6,6 +6,7 @@ import { SearchResults } from '@/components/search/search-results';
 import { RecentlyViewed } from '@/components/product/recently-viewed';
 import { valueProps } from '@/lib/data/mock-products';
 import { searchProductsWithFacets, formatProductForStorefront } from '@/lib/queries/products';
+import { siteConfig } from '@/config/site';
 
 const PAGE_SIZE = 24;
 
@@ -37,10 +38,26 @@ export async function generateMetadata({ searchParams }: ProdukPageProps): Promi
   else if (params.category) title = label(params.category);
   else if (params.brand) title = label(params.brand);
 
+  // Canonicalize to the filter identity (category/brand/divingType/newArrival/onSale/q) —
+  // sort, page and price-range are presentation-only and shouldn't fragment the
+  // canonical URL across many near-duplicate combinations.
+  const canonicalParams = new URLSearchParams();
+  if (params.q) canonicalParams.set('q', params.q);
+  if (params.category) canonicalParams.set('category', params.category);
+  if (params.brand) canonicalParams.set('brand', params.brand);
+  if (params.divingType) canonicalParams.set('divingType', params.divingType);
+  if (params.newArrival) canonicalParams.set('newArrival', params.newArrival);
+  if (params.onSale) canonicalParams.set('onSale', params.onSale);
+  const query = canonicalParams.toString();
+  const canonical = `${siteConfig.url}/produk${query ? `?${query}` : ''}`;
+
   return {
     title,
     description:
       'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi di Arne\'s Dive Shop.',
+    alternates: {
+      canonical,
+    },
   };
 }
 

@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { getPublicShopSettings } from '@/lib/queries/settings';
 import { WaveDivider } from '@/components/layout/wave-divider';
-import { getSession } from '@/lib/auth/session';
 import { NewsletterForm } from '@/components/layout/newsletter-form';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
+import { AdminFooterLink } from '@/components/layout/admin-footer-link';
 
 const paymentBadges = [
   { label: 'Visa', icon: 'logos:visa' },
@@ -15,8 +15,6 @@ const paymentTextBadges = ['QRIS', 'Transfer Bank'];
 
 export async function Footer() {
   const settings = await getPublicShopSettings();
-  const session = await getSession();
-  const isAdmin = session?.role === 'admin' || session?.role === 'super_admin';
 
   return (
     <>
@@ -62,7 +60,7 @@ export async function Footer() {
               <Link href="/syarat" className="hover:text-white transition-colors"><AnimatedUnderline>Syarat & Ketentuan</AnimatedUnderline></Link>
               <Link href="/faq" className="hover:text-white transition-colors"><AnimatedUnderline>Bantuan</AnimatedUnderline></Link>
               <Link href="/kontak" className="hover:text-white transition-colors"><AnimatedUnderline>Kontak</AnimatedUnderline></Link>
-              {isAdmin && <Link href="/admin" className="hover:text-white transition-colors"><AnimatedUnderline>Portal Admin</AnimatedUnderline></Link>}
+              <AdminFooterLink />
             </div>
           </div>
           <div className="flex items-center gap-2">

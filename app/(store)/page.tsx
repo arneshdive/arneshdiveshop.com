@@ -10,6 +10,8 @@ import type { MockProduct } from '@/lib/data/mock-products';
 import type { Banner } from '@/lib/db/schema';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 
+export const revalidate = 3600;
+
 // Static hero banners — banner management isn't built yet, so this
 // carousel content is hardcoded rather than sourced from the DB.
 const heroBanners: Banner[] = [

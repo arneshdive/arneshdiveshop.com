@@ -6,8 +6,12 @@ import { ProductInfo } from '@/components/product/product-info';
 import { USPSection } from '@/components/layout/usp-section';
 import { TrackProductView } from '@/components/product/track-product-view';
 import { RecentlyViewed } from '@/components/product/recently-viewed';
+import { JsonLd } from '@/components/seo/json-ld';
 import { getProductBySlug, getRelatedProducts } from '@/lib/queries/products';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
+import { siteConfig } from '@/config/site';
+
+export const revalidate = 3600;
 
 interface ProductPageProps {
   params: Promise<{
@@ -31,6 +35,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   return {
     title: product.name,
     description,
+    alternates: {
+      canonical: `${siteConfig.url}/produk/${slug}`,
+    },
     openGraph: {
       title: product.name,
       description,
@@ -126,8 +133,72 @@ export default async function ProductPage({ params }: ProductPageProps) {
     };
   });
 
+  const productUrl = `${siteConfig.url}/produk/${product.slug}`;
+  const priceInfo = computeProductPriceDisplay({
+    priceCents: product.priceCents,
+    compareAtPriceCents: product.compareAtPriceCents ?? null,
+    variants: variants.map((v: any) => ({ isActive: v.isActive, priceCents: v.priceCents })),
+  });
+  const availability = product.isActive
+    ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock';
+  // Variant pricing means there's no single price — use an AggregateOffer
+  // over the min/max instead of a single (and potentially wrong) Offer.
+  const offers =
+    priceInfo.priceRangeMin !== undefined && priceInfo.priceRangeMin !== priceInfo.priceRangeMax
+      ? {
+          '@type': 'AggregateOffer',
+          url: productUrl,
+          priceCurrency: 'IDR',
+          lowPrice: (priceInfo.priceRangeMin / 100).toFixed(2),
+          highPrice: (priceInfo.priceRangeMax! / 100).toFixed(2),
+          offerCount: variants.length,
+          availability,
+        }
+      : {
+          '@type': 'Offer',
+          url: productUrl,
+          priceCurrency: 'IDR',
+          price: ((priceInfo.priceRangeMin ?? product.priceCents) / 100).toFixed(2),
+          availability,
+        };
+  const breadcrumbItems = [
+    { name: 'Beranda', url: siteConfig.url },
+    { name: 'Produk', url: `${siteConfig.url}/produk` },
+    ...(product.category
+      ? [{ name: product.category.name, url: `${siteConfig.url}/produk?category=${product.category.slug}` }]
+      : []),
+    { name: product.name, url: productUrl },
+  ];
+
   return (
     <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          description: product.description ?? undefined,
+          image: product.images ?? undefined,
+          sku: product.sku ?? undefined,
+          brand: product.brand ? { '@type': 'Brand', name: product.brand.name } : undefined,
+          url: productUrl,
+          offers,
+        }}
+      />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: breadcrumbItems.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.name,
+            item: item.url,
+          })),
+        }}
+      />
+
       {/* Breadcrumbs */}
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-4">
         <nav className="text-xs text-neutral-600">
@@ -137,7 +208,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {product.category && (
             <>
               <span className="mx-2">/</span>
-              <Link href={`/kategori/${product.category.slug}`} className="hover:text-neutral-900 transition-colors">
+              <Link href={`/produk?category=${product.category.slug}`} className="hover:text-neutral-900 transition-colors">
                 {product.category.name}
               </Link>
             </>

@@ -13,13 +13,13 @@ import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 
 export const revalidate = 3600;
 
-// Mirrors the hero banner's own category framing below
-// ("SCUBA · FREEDIVING · SPEARFISHING" eyebrow + subtitle), so the <head>
-// tags say the same thing the page itself opens with.
+// Mirrors the DivingTypeGrid section below (components/store/diving-type-grid.tsx),
+// which is the actual list of activities the catalog is organized around —
+// not just the two the hero banner happens to lead with.
 export const metadata: Metadata = {
-  title: 'Perlengkapan Freediving, Scuba & Spearfishing',
+  title: 'Freediving, Scuba, Spearfishing, Surfing & Swimming',
   description:
-    'Perlengkapan freediving, scuba diving & spearfishing original dari Arnesh Dive. Kualitas terjamin, pembayaran aman, kirim ke seluruh Indonesia.',
+    'Perlengkapan freediving, scuba, spearfishing, surfing & swimming original dari Arnesh Dive. Kualitas terjamin, kirim seluruh Indonesia.',
 };
 
 // Static hero banners — banner management isn't built yet, so this

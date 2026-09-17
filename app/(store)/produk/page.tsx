@@ -20,9 +20,12 @@ const FILTER_DESCRIPTIONS = {
   onSale: 'Diskon spesial untuk produk terpilih.',
   freediving: 'Peralatan freediving berkualitas untuk petualangan bawah laut.',
   scuba: 'Peralatan scuba diving lengkap untuk eksplorasi laut dalam.',
+  spearfishing: 'Peralatan spearfishing andal untuk berburu di bawah laut.',
+  surfing: 'Perlengkapan surfing untuk menaklukkan setiap ombak.',
+  swimming: 'Perlengkapan swimming untuk gerak bebas di air.',
 } as const;
 const DEFAULT_CATALOG_DESCRIPTION =
-  'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi di Arnesh Dive.';
+  'Jelajahi koleksi lengkap perlengkapan freediving, scuba, spearfishing, surfing, dan swimming berkualitas tinggi di Arnesh Dive.';
 
 interface ProdukPageProps {
   searchParams: Promise<{
@@ -46,6 +49,10 @@ export async function generateMetadata({ searchParams }: ProdukPageProps): Promi
 
   let title = 'Semua Katalog';
   let description: string = DEFAULT_CATALOG_DESCRIPTION;
+  const divingTypeDescription = params.divingType
+    ? FILTER_DESCRIPTIONS[params.divingType as keyof typeof FILTER_DESCRIPTIONS]
+    : undefined;
+
   if (params.q) {
     title = `Hasil untuk "${params.q}"`;
     description = 'Temukan produk yang Anda cari dari koleksi kami.';
@@ -55,15 +62,9 @@ export async function generateMetadata({ searchParams }: ProdukPageProps): Promi
   } else if (params.onSale === 'true') {
     title = 'Sale';
     description = FILTER_DESCRIPTIONS.onSale;
-  } else if (params.divingType === 'freediving') {
-    title = `Koleksi ${label(params.divingType)}`;
-    description = FILTER_DESCRIPTIONS.freediving;
-  } else if (params.divingType === 'scuba') {
-    title = `Koleksi ${label(params.divingType)}`;
-    description = FILTER_DESCRIPTIONS.scuba;
   } else if (params.divingType) {
     title = `Koleksi ${label(params.divingType)}`;
-    description = `Jelajahi koleksi ${label(params.divingType)} berkualitas tinggi di Arnesh Dive.`;
+    description = divingTypeDescription ?? `Jelajahi koleksi ${label(params.divingType)} berkualitas tinggi di Arnesh Dive.`;
   } else if (params.category) {
     title = label(params.category);
     description = `Jelajahi produk ${label(params.category)} berkualitas tinggi di Arnesh Dive.`;
@@ -135,6 +136,32 @@ function getBannerConfig(
       title: query ? `Scuba: "${query}"` : 'Koleksi Scuba',
       description: FILTER_DESCRIPTIONS.scuba,
       gradient: 'from-teal-600 to-teal-500',
+      icon: 'solar:swimming-bold',
+    };
+  }
+
+  if (divingType === 'spearfishing') {
+    return {
+      title: query ? `Spearfishing: "${query}"` : 'Koleksi Spearfishing',
+      description: FILTER_DESCRIPTIONS.spearfishing,
+      gradient: 'from-cyan-600 to-cyan-500',
+      icon: 'solar:swimming-bold',
+    };
+  }
+
+  if (divingType === 'surfing') {
+    return {
+      title: query ? `Surfing: "${query}"` : 'Koleksi Surfing',
+      description: FILTER_DESCRIPTIONS.surfing,
+      gradient: 'from-sky-600 to-sky-500',
+    };
+  }
+
+  if (divingType === 'swimming') {
+    return {
+      title: query ? `Swimming: "${query}"` : 'Koleksi Swimming',
+      description: FILTER_DESCRIPTIONS.swimming,
+      gradient: 'from-indigo-600 to-indigo-500',
       icon: 'solar:swimming-bold',
     };
   }

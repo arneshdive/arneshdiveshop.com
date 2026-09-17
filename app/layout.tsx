@@ -62,6 +62,19 @@ export default function RootLayout({
             sameAs: [siteConfig.links.instagram],
           }}
         />
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: siteConfig.name,
+            url: siteConfig.url,
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: `${siteConfig.url}/produk?q={search_term_string}`,
+              'query-input': 'required name=search_term_string',
+            },
+          }}
+        />
         {children}
         {process.env.NODE_ENV === 'production' && (
           <Script

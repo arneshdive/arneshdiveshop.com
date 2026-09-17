@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { USPSection } from '@/components/layout/usp-section';
+import { JsonLd } from '@/components/seo/json-ld';
 import { getPublicShopSettings } from '@/lib/queries/settings';
 
 export const metadata: Metadata = {
@@ -114,9 +115,24 @@ const faqData = {
 
 export default async function FAQPage() {
   const settings = await getPublicShopSettings();
+  const allFaqs = Object.values(faqData).flat();
 
   return (
     <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: allFaqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: faq.answer,
+            },
+          })),
+        }}
+      />
       <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-16 lg:py-24">
         {/* Header */}
         <header className="text-center mb-12">

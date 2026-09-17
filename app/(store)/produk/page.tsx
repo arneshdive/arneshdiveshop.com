@@ -12,6 +12,18 @@ import { getGuideForFilter } from '@/lib/data/guides';
 
 const PAGE_SIZE = 24;
 
+// Shared with getBannerConfig below so the <head> meta description always
+// matches the banner actually rendered on the page for these filters,
+// instead of drifting into two separately-maintained copies.
+const FILTER_DESCRIPTIONS = {
+  newArrival: 'Produk terbaru untuk petualangan diving Anda.',
+  onSale: 'Diskon spesial untuk produk terpilih.',
+  freediving: 'Peralatan freediving berkualitas untuk petualangan bawah laut.',
+  scuba: 'Peralatan scuba diving lengkap untuk eksplorasi laut dalam.',
+} as const;
+const DEFAULT_CATALOG_DESCRIPTION =
+  'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi di Arnesh Dive.';
+
 interface ProdukPageProps {
   searchParams: Promise<{
     q?: string;
@@ -33,12 +45,32 @@ export async function generateMetadata({ searchParams }: ProdukPageProps): Promi
     slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   let title = 'Semua Katalog';
-  if (params.q) title = `Hasil untuk "${params.q}"`;
-  else if (params.newArrival === 'true') title = 'New Arrivals';
-  else if (params.onSale === 'true') title = 'Sale';
-  else if (params.divingType) title = `Koleksi ${label(params.divingType)}`;
-  else if (params.category) title = label(params.category);
-  else if (params.brand) title = label(params.brand);
+  let description: string = DEFAULT_CATALOG_DESCRIPTION;
+  if (params.q) {
+    title = `Hasil untuk "${params.q}"`;
+    description = 'Temukan produk yang Anda cari dari koleksi kami.';
+  } else if (params.newArrival === 'true') {
+    title = 'New Arrivals';
+    description = FILTER_DESCRIPTIONS.newArrival;
+  } else if (params.onSale === 'true') {
+    title = 'Sale';
+    description = FILTER_DESCRIPTIONS.onSale;
+  } else if (params.divingType === 'freediving') {
+    title = `Koleksi ${label(params.divingType)}`;
+    description = FILTER_DESCRIPTIONS.freediving;
+  } else if (params.divingType === 'scuba') {
+    title = `Koleksi ${label(params.divingType)}`;
+    description = FILTER_DESCRIPTIONS.scuba;
+  } else if (params.divingType) {
+    title = `Koleksi ${label(params.divingType)}`;
+    description = `Jelajahi koleksi ${label(params.divingType)} berkualitas tinggi di Arnesh Dive.`;
+  } else if (params.category) {
+    title = label(params.category);
+    description = `Jelajahi produk ${label(params.category)} berkualitas tinggi di Arnesh Dive.`;
+  } else if (params.brand) {
+    title = label(params.brand);
+    description = `Produk dari ${label(params.brand)}, tersedia lengkap di Arnesh Dive.`;
+  }
 
   // Canonicalize to the filter identity (category/brand/divingType/newArrival/onSale/q) —
   // sort, page and price-range are presentation-only and shouldn't fragment the
@@ -55,8 +87,7 @@ export async function generateMetadata({ searchParams }: ProdukPageProps): Promi
 
   return {
     title,
-    description:
-      'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi di Arne\'s Dive Shop.',
+    description,
     alternates: {
       canonical,
     },
@@ -75,7 +106,7 @@ function getBannerConfig(
   if (isNewArrival) {
     return {
       title: query ? `New Arrivals: "${query}"` : 'New Arrivals',
-      description: 'Produk terbaru untuk petualangan diving Anda.',
+      description: FILTER_DESCRIPTIONS.newArrival,
       gradient: 'from-emerald-600 to-emerald-500',
       icon: 'solar:star-bold',
     };
@@ -84,7 +115,7 @@ function getBannerConfig(
   if (isOnSale) {
     return {
       title: query ? `Promo: "${query}"` : 'Sale',
-      description: 'Diskon spesial untuk produk terpilih.',
+      description: FILTER_DESCRIPTIONS.onSale,
       gradient: 'from-red-600 to-red-500',
       icon: 'solar:tag-bold',
     };
@@ -93,7 +124,7 @@ function getBannerConfig(
   if (divingType === 'freediving') {
     return {
       title: query ? `Freediving: "${query}"` : 'Koleksi Freediving',
-      description: 'Peralatan freediving berkualitas untuk petualangan bawah laut.',
+      description: FILTER_DESCRIPTIONS.freediving,
       gradient: 'from-blue-600 to-blue-500',
       icon: 'solar:swimming-bold',
     };
@@ -102,7 +133,7 @@ function getBannerConfig(
   if (divingType === 'scuba') {
     return {
       title: query ? `Scuba: "${query}"` : 'Koleksi Scuba',
-      description: 'Peralatan scuba diving lengkap untuk eksplorasi laut dalam.',
+      description: FILTER_DESCRIPTIONS.scuba,
       gradient: 'from-teal-600 to-teal-500',
       icon: 'solar:swimming-bold',
     };
@@ -137,7 +168,7 @@ function getBannerConfig(
   // All products
   return {
     title: 'Semua Katalog',
-    description: 'Jelajahi koleksi lengkap perlengkapan freediving, scuba, dan aksesoris berkualitas tinggi.',
+    description: DEFAULT_CATALOG_DESCRIPTION,
     gradient: 'from-neutral-700 to-neutral-500',
     icon: 'solar:box-bold',
   };

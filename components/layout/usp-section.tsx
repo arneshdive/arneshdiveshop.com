@@ -9,7 +9,7 @@ export function USPSection() {
           {valueProps.map((prop, index) => (
             <div key={prop.title} className={`text-center px-6 py-6 sm:py-0 ${index === 2 ? 'col-span-2 sm:col-span-1' : ''}`}>
               <Icon icon={prop.icon} className="w-8 h-8 mx-auto mb-4 text-neutral-800" />
-              <h4 className="font-semibold text-base mb-1.5">{prop.title}</h4>
+              <h3 className="font-semibold text-base mb-1.5">{prop.title}</h3>
               <p className="text-xs lg:text-sm text-neutral-500 max-w-[220px] mx-auto">{prop.desc}</p>
             </div>
           ))}

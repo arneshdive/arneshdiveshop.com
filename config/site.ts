@@ -9,6 +9,9 @@ export const siteConfig = {
   description: 'Perlengkapan freediving dan scuba diving premium untuk setiap level penyelam',
   url: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
   links: {
-    instagram: 'https://instagram.com/arneshdiveshop',
+    // Matches the handle actually linked on the homepage (app/(store)/page.tsx)
+    // — not "arneshdiveshop", which is the same stale domain-derived name the
+    // comment above already warns against.
+    instagram: 'https://www.instagram.com/arnesh.official',
   },
 } as const;

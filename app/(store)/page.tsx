@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { ProductSection } from '@/components/product/product-section';
@@ -11,6 +12,15 @@ import type { Banner } from '@/lib/db/schema';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
 
 export const revalidate = 3600;
+
+// Mirrors the hero banner's own category framing below
+// ("SCUBA · FREEDIVING · SPEARFISHING" eyebrow + subtitle), so the <head>
+// tags say the same thing the page itself opens with.
+export const metadata: Metadata = {
+  title: 'Perlengkapan Freediving, Scuba & Spearfishing',
+  description:
+    'Perlengkapan freediving, scuba diving & spearfishing original dari Arnesh Dive. Kualitas terjamin, pembayaran aman, kirim ke seluruh Indonesia.',
+};
 
 // Static hero banners — banner management isn't built yet, so this
 // carousel content is hardcoded rather than sourced from the DB.

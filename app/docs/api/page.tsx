@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'API Documentation',
-  description: 'Public read-only endpoints for the Arnesh Dive Shop product catalog.',
+  description: 'Public read-only endpoints for the Arnesh Dive product catalog.',
 };
 
 export default function ApiDocsPage() {

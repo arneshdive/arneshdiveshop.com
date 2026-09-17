@@ -7,8 +7,8 @@ import { USPSection } from '@/components/layout/usp-section';
 import { getPublicShopSettings } from '@/lib/queries/settings';
 
 export const metadata: Metadata = {
-  title: 'Pusat Bantuan | Arnes Dive Shop',
-  description: 'Pertanyaan yang sering diajukan tentang pembelian, pengiriman, dan produk di Arnes Dive Shop.',
+  title: 'Pusat Bantuan | Arnesh Dive',
+  description: 'Pertanyaan yang sering diajukan tentang pembelian, pengiriman, dan produk di Arnesh Dive.',
 };
 
 const faqCategories = [

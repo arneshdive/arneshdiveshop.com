@@ -436,7 +436,7 @@ export const banners = pgTable('banners', {
 export const shopSettings = pgTable('shop_settings', {
   id: text('id').primaryKey().default('default'),
   // Shop info
-  storeName: text('store_name').notNull().default("Arnesh Dive Shop"),
+  storeName: text('store_name').notNull().default("Arnesh Dive"),
   email: text('email').notNull().default('support@arneshdive.com'),
   phone: text('phone').notNull().default('+62 812-3456-7890'),
   whatsapp: text('whatsapp').notNull().default('6281234567890'),

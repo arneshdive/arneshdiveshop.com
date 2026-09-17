@@ -7,6 +7,8 @@ import { RecentlyViewed } from '@/components/product/recently-viewed';
 import { valueProps } from '@/lib/data/mock-products';
 import { searchProductsWithFacets, formatProductForStorefront } from '@/lib/queries/products';
 import { siteConfig } from '@/config/site';
+import { JsonLd } from '@/components/seo/json-ld';
+import { getGuideForFilter } from '@/lib/data/guides';
 
 const PAGE_SIZE = 24;
 
@@ -180,6 +182,8 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
     ? brands.find((b: any) => b.id === brandFilter || b.slug === brandFilter)
     : null;
 
+  const matchingGuide = getGuideForFilter(selectedCategory?.slug, divingTypeFilter);
+
   // Get banner config
   const banner = getBannerConfig(
     query, 
@@ -200,6 +204,19 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
 
   return (
     <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: breadcrumb.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: item.label.replace(/^"|"$/g, ''),
+            item: `${siteConfig.url}${item.href}`,
+          })),
+        }}
+      />
+
       {/* Breadcrumb */}
       <div className="max-w-[1440px] mx-auto px-4 lg:px-12 pt-4 text-xs text-neutral-500">
         {breadcrumb.map((item, i) => (
@@ -227,6 +244,14 @@ export default async function ProdukPage({ searchParams }: ProdukPageProps) {
           <div>
             <h1 className="text-2xl lg:text-4xl font-bold tracking-tight mb-2">{banner.title}</h1>
             <p className="text-white/80 max-w-xl">{banner.description}</p>
+            {matchingGuide && (
+              <Link
+                href={`/panduan/${matchingGuide.slug}`}
+                className="inline-flex items-center gap-1 mt-3 text-sm text-white/90 underline underline-offset-2 hover:text-white"
+              >
+                Baca panduan: {matchingGuide.title}
+              </Link>
+            )}
           </div>
         </div>
       </section>

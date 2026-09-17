@@ -91,7 +91,7 @@ export const getShopSettings = unstable_cache(
     if (result.length === 0) {
       // Return defaults matching schema defaults
       return {
-        storeName: "Arnesh Dive Shop",
+        storeName: "Arnesh Dive",
         email: 'support@arneshdive.com',
         phone: '+62 812-3456-7890',
         whatsapp: '6281234567890',
@@ -120,7 +120,7 @@ export async function getPublicShopSettings() {
   
   if (!settings) {
     return {
-      storeName: "Arnesh Dive Shop",
+      storeName: "Arnesh Dive",
       email: 'support@arneshdive.com',
       phone: '+62 812-3456-7890',
       whatsapp: '6281234567890',

@@ -8,6 +8,7 @@ import { Icon } from '@iconify/react';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
+import { track } from '@/lib/analytics/track';
 import { formatRupiah, formatDate } from '@/lib/utils/format';
 import { productImageUrl } from '@/lib/utils/product-image';
 import { orderStatusConfig } from '@/lib/constants/order-status';
@@ -76,6 +77,7 @@ export function CheckoutSuccessContent() {
   const { clearCart } = useCartStore();
   const { data: checkoutData, reset } = useCheckoutStore();
   const hasCleared = useRef(false);
+  const hasTracked = useRef(false);
 
   // Store guest email in a ref before reset clears it
   // This is crucial for guest checkout order access
@@ -130,6 +132,15 @@ export function CheckoutSuccessContent() {
 
         const data = await response.json();
         setOrder(data.order);
+
+        if (!hasTracked.current) {
+          hasTracked.current = true;
+          track('purchase_completed', {
+            orderNumber: data.order.orderNumber,
+            totalCents: data.order.totalCents,
+            itemCount: data.order.items.length,
+          });
+        }
       } catch (err) {
         console.error('Error fetching order:', err);
         setError('Gagal memuat pesanan');

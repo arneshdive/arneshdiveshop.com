@@ -1,6 +1,9 @@
 export const siteConfig = {
-  name: "Arnesh Dive Shop",
-  // Used for the browser tab title — "Arnesh Dive Shop" reads as the domain
+  // "Arnesh Dive" is the real store name (see shop_settings.store_name in
+  // the DB) — not "Arnesh Dive Shop"/"Arnes Dive Shop", both of which drifted
+  // into various pages/emails over time.
+  name: "Arnesh Dive",
+  // Used for the browser tab title — the full name still reads as the domain
   // name (arneshdiveshop.com), not the brand, so the tab just shows "Arnesh".
   shortName: "Arnesh",
   description: 'Perlengkapan freediving dan scuba diving premium untuk setiap level penyelam',

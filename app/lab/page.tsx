@@ -105,7 +105,8 @@ export default async function LabHomePage() {
           src="/lab/hero-freediver.jpg"
           alt=""
           fill
-          priority
+          preload
+          fetchPriority="high"
           sizes="100vw"
           className="object-cover object-[60%_center]"
         />

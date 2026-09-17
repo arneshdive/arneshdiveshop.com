@@ -47,7 +47,7 @@ export function AdminSidebar() {
       {/* Logo Section */}
       <div className={`flex items-center px-3 py-5 border-b border-neutral-800 ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
-          <Link href="/admin" aria-label="Arnesh Dive Shop" className="px-3">
+          <Link href="/admin" aria-label="Arnesh Dive" className="px-3">
             <Logo className="h-4 w-auto text-white" />
           </Link>
         )}

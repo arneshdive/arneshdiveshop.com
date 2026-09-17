@@ -206,7 +206,7 @@ function AuthForm() {
         <div className="w-full max-w-sm">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link href="/" aria-label="Arnesh Dive Shop" className="inline-block hover:opacity-70 transition-opacity">
+            <Link href="/" aria-label="Arnesh Dive" className="inline-block hover:opacity-70 transition-opacity">
               <LogoMark className="h-24 w-auto text-neutral-900" />
             </Link>
           </div>
@@ -329,7 +329,7 @@ function AuthForm() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" aria-label="Arnesh Dive Shop" className="inline-block hover:opacity-70 transition-opacity">
+          <Link href="/" aria-label="Arnesh Dive" className="inline-block hover:opacity-70 transition-opacity">
             <LogoMark className="h-24 w-auto text-neutral-900" />
           </Link>
         </div>

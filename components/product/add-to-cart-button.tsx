@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
+import { track } from '@/lib/analytics/track';
 
 interface AddToCartButtonProps {
   productId: string;
@@ -29,6 +30,7 @@ export function AddToCartButton({
     const result = await addItem(productId, variantId, 1);
     
     if (result.success) {
+      track('add_to_cart', { productId, quantity: 1 });
       toast.success('Ditambahkan', {
         action: {
           label: 'Lihat',

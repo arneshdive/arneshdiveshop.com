@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   const description = product.description
     ? product.description.slice(0, 160)
-    : `Beli ${product.name} di Arnesh Dive Shop.`;
+    : `Beli ${product.name} di Arnesh Dive.`;
   const image = product.images?.[0];
 
   return {

@@ -84,7 +84,8 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
           src={currentBanner.imageUrl}
           alt={currentBanner.title || 'Hero'}
           fill
-          priority
+          preload
+          fetchPriority="high"
           sizes="100vw"
           className={`object-cover object-left lg:object-center transition-opacity duration-300 ${
             isTransitioning ? 'opacity-0' : 'opacity-100'

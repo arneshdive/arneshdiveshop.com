@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cart';
 import { ProductBadge, type BadgeType } from '@/components/ui/product-badge';
 import { productImageUrl } from '@/lib/utils/product-image';
+import { track } from '@/lib/analytics/track';
 
 interface ProductCardProps {
   product: {
@@ -76,6 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
     const result = await addItem(product.id, product.variantId);
 
     if (result.success) {
+      track('add_to_cart', { productId: product.id, title: product.title });
       toast.success('Ditambahkan', {
         action: {
           label: 'Lihat',

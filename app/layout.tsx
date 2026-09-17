@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { siteConfig } from '@/config/site';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -62,6 +63,13 @@ export default function RootLayout({
           }}
         />
         {children}
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            src="https://cloud.umami.is/script.js"
+            data-website-id="632b2566-7f7a-4148-9693-21a50c6487d7"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );

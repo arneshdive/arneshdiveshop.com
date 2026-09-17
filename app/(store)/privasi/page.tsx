@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { USPSection } from '@/components/layout/usp-section';
 
 export const metadata: Metadata = {
-  title: 'Kebijakan Privasi | Arnes Dive Shop',
-  description: 'Kebijakan privasi Arnes Dive Shop - bagaimana kami mengumpulkan, menggunakan, dan melindungi data Anda.',
+  title: 'Kebijakan Privasi | Arnesh Dive',
+  description: 'Kebijakan privasi Arnesh Dive - bagaimana kami mengumpulkan, menggunakan, dan melindungi data Anda.',
 };
 
 export default function PrivasiPage() {
@@ -25,7 +25,7 @@ export default function PrivasiPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4">1. Pendahuluan</h2>
             <p className="text-neutral-700 leading-relaxed">
-              Arnes Dive Shop (&quot;kami&quot;) berkomitmen untuk melindungi privasi Anda. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi pribadi Anda ketika Anda mengunjungi website kami atau melakukan pembelian.
+              Arnesh Dive (&quot;kami&quot;) berkomitmen untuk melindungi privasi Anda. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi pribadi Anda ketika Anda mengunjungi website kami atau melakukan pembelian.
             </p>
           </section>
 

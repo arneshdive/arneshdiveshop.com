@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { useCartStore } from '@/lib/store/cart';
+import { track } from '@/lib/analytics/track';
 import { getVariantOptionGroups, findMatchingVariant } from '@/lib/utils/variant-selection';
 import type { VariantOptionDefinition } from '@/lib/utils/variant-selection';
 
@@ -61,8 +62,9 @@ export function ProductActions({
     setAdded(true);
     
     const result = await addItem(productId, selectedVariantId, quantity);
-    
+
     if (result.success) {
+      track('add_to_cart', { productId, variantId: selectedVariantId ?? '', quantity });
       toast.success('Ditambahkan', {
         action: {
           label: 'Lihat',

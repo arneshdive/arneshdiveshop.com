@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { USPSection } from '@/components/layout/usp-section';
 
 export const metadata: Metadata = {
-  title: 'Syarat & Ketentuan | Arnes Dive Shop',
-  description: 'Syarat dan ketentuan penggunaan layanan Arnes Dive Shop - pembelian, pengiriman, dan kebijakan pengembalian.',
+  title: 'Syarat & Ketentuan | Arnesh Dive',
+  description: 'Syarat dan ketentuan penggunaan layanan Arnesh Dive - pembelian, pengiriman, dan kebijakan pengembalian.',
 };
 
 export default function SyaratPage() {
@@ -25,7 +25,7 @@ export default function SyaratPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4">1. Ketentuan Umum</h2>
             <p className="text-neutral-700 leading-relaxed">
-              Dengan mengakses dan menggunakan website Arnes Dive Shop, Anda menyetujui untuk terikat dengan syarat dan ketentuan ini. Jika Anda tidak menyetujui syarat-syarat ini, mohon untuk tidak menggunakan layanan kami.
+              Dengan mengakses dan menggunakan website Arnesh Dive, Anda menyetujui untuk terikat dengan syarat dan ketentuan ini. Jika Anda tidak menyetujui syarat-syarat ini, mohon untuk tidak menggunakan layanan kami.
             </p>
           </section>
 
@@ -103,7 +103,7 @@ export default function SyaratPage() {
           <section className="mb-10">
             <h2 className="text-xl font-semibold mb-4">8. Kekayaan Intelektual</h2>
             <p className="text-neutral-700 leading-relaxed">
-              Seluruh konten di website ini termasuk logo, gambar, teks, dan desain adalah milik Arnes Dive Shop dan dilindungi oleh hukum hak cipta. Dilarang menyalin atau menggunakan konten tanpa izin tertulis.
+              Seluruh konten di website ini termasuk logo, gambar, teks, dan desain adalah milik Arnesh Dive dan dilindungi oleh hukum hak cipta. Dilarang menyalin atau menggunakan konten tanpa izin tertulis.
             </p>
           </section>
 

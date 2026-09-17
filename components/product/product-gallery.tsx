@@ -40,7 +40,8 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
               fill
               className="object-cover mix-blend-multiply"
               sizes="(max-width: 1024px) 100vw, 60vw"
-              priority
+              preload
+              fetchPriority="high"
               onError={() => handleImageError(currentImage!)}
             />
           ) : (

@@ -17,6 +17,7 @@ import { USPSection } from '@/components/layout/usp-section';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
+import { track } from '@/lib/analytics/track';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function CheckoutPage() {
   // Sync cart on mount
   useCartSync();
   
-  const { items } = useCartStore();
+  const { items, getTotalCents } = useCartStore();
   const { data, setField } = useCheckoutStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
@@ -179,6 +180,7 @@ export default function CheckoutPage() {
     }
 
     setIsSubmitting(true);
+    track('checkout_started', { itemCount: items.length, totalCents: getTotalCents() });
 
     // Open new tab synchronously (before async operations) to avoid popup blockers
     const paymentTab = window.open('', '_blank');

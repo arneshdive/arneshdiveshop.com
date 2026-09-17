@@ -6,8 +6,8 @@ import { getPublicShopSettings } from '@/lib/queries/settings';
 import { USPSection } from '@/components/layout/usp-section';
 
 export const metadata: Metadata = {
-  title: 'Kontak | Arnes Dive Shop',
-  description: 'Hubungi tim customer service Arnes Dive Shop untuk pertanyaan tentang pesanan, produk, atau layanan kami.',
+  title: 'Kontak | Arnesh Dive',
+  description: 'Hubungi tim customer service Arnesh Dive untuk pertanyaan tentang pesanan, produk, atau layanan kami.',
 };
 
 export default async function KontakPage() {

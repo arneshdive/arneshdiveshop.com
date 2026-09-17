@@ -215,6 +215,70 @@ export const guides: Guide[] = [
     ],
     ctaLabel: 'Lihat Perlengkapan Freediving',
   },
+  {
+    slug: 'budget-perlengkapan-freediving-pemula',
+    title: 'Berapa Budget untuk Mulai Freediving? Rincian Harga Perlengkapan Pemula',
+    description:
+      'Perkiraan biaya perlengkapan dasar freediving untuk pemula — mana yang wajib dibeli sendiri dan mana yang masih bisa disewa dulu.',
+    icon: 'solar:wallet-money-linear',
+    divingType: 'freediving',
+    publishedAt: '2026-09-17',
+    intro:
+      'Freediving jauh lebih murah untuk memulai dibanding scuba — tidak perlu tabung, BCD, atau sertifikasi mahal di awal. Tapi berapa persisnya yang perlu disiapkan tergantung mana yang dibeli sendiri dan mana yang masih bisa disewa dulu saat belajar.',
+    sections: [
+      {
+        heading: 'Yang sebaiknya dibeli sendiri sejak awal',
+        body: [
+          'Masker dan snorkel bersifat sangat personal (fit ke wajah masing-masing orang berbeda) dan menyangkut higienitas, jadi ini dua item yang paling masuk akal dibeli sendiri sejak sesi pertama, bukan dipinjam atau disewa.',
+          'Fin juga sebaiknya dibeli sendiri begitu tahu ukuran kaki dan level stiffness yang cocok — fin sewaan di kolam biasanya blade pendek generik yang tidak mewakili fin freediving sesungguhnya.',
+        ],
+      },
+      {
+        heading: 'Yang masih masuk akal disewa dulu',
+        body: [
+          'Wetsuit dan weight belt biasanya masih tersedia untuk disewa di kebanyakan tempat kursus freediving, dan kebutuhan ketebalan/berat pemberat baru benar-benar diketahui setelah beberapa sesi latihan buoyancy check. Baru pertimbangkan beli sendiri setelah rutin latihan lebih dari sebulan.',
+        ],
+      },
+      {
+        heading: 'Kisaran realistis untuk paket dasar',
+        body: [
+          'Paket masker + snorkel + fin entry-level dari brand yang sudah teruji (bukan yang termurah di marketplace tanpa merek jelas) adalah pengeluaran utama di awal. Barang entry-level yang layak biasanya jauh lebih murah daripada varian carbon/kompetisi — cukup untuk belajar teknik dasar sebelum upgrade ke perlengkapan yang lebih spesifik.',
+        ],
+      },
+    ],
+    ctaLabel: 'Lihat Paket Perlengkapan Freediving',
+  },
+  {
+    slug: 'snorkeling-vs-freediving-vs-scuba',
+    title: 'Snorkeling vs Freediving vs Scuba: Apa Bedanya dan Mana yang Cocok untuk Anda?',
+    description:
+      'Perbandingan snorkeling, freediving, dan scuba diving dari sisi biaya, sertifikasi, dan pengalaman di bawah air — untuk membantu menentukan mana yang paling cocok sebagai titik awal.',
+    icon: 'solar:diving-mask-linear',
+    publishedAt: '2026-09-17',
+    intro:
+      'Ketiganya sama-sama aktivitas melihat bawah laut, tapi berbeda jauh dari sisi kedalaman, napas, sertifikasi, dan biaya awal — memilih yang salah biasanya berarti perlengkapan yang dibeli tidak terpakai maksimal.',
+    sections: [
+      {
+        heading: 'Snorkeling: paling ringan, tanpa sertifikasi',
+        body: [
+          'Hanya mengapung di permukaan sambil melihat ke bawah lewat masker dan snorkel, tanpa menyelam. Tidak butuh sertifikasi atau pelatihan formal, dan perlengkapannya paling murah dari ketiganya. Titik awal paling masuk akal bagi yang belum yakin akan menekuni diving lebih jauh.',
+        ],
+      },
+      {
+        heading: 'Freediving: menyelam dengan tahan napas',
+        body: [
+          'Menyelam ke kedalaman dengan satu tarikan napas, tanpa alat bantu pernapasan. Butuh pelatihan teknik napas dan keamanan (biasanya lewat kursus singkat), tapi perlengkapannya jauh lebih ringkas dan murah dibanding scuba. Cocok untuk yang ingin merasakan kedalaman lebih dari snorkeling tanpa investasi besar di alat.',
+        ],
+      },
+      {
+        heading: 'Scuba diving: durasi lebih lama, butuh sertifikasi penuh',
+        body: [
+          'Menggunakan tabung udara untuk bernapas di bawah air dalam waktu lebih lama dan kedalaman lebih konsisten. Wajib sertifikasi resmi (misalnya Open Water) sebelum menyelam mandiri, dan perlengkapannya (tabung, regulator, BCD) jauh lebih banyak dan mahal. Paling cocok untuk yang serius ingin eksplorasi bawah laut secara rutin, termasuk wreck dan reef yang lebih dalam.',
+        ],
+      },
+    ],
+    ctaLabel: 'Lihat Semua Perlengkapan',
+  },
 ];
 
 export function getGuideBySlug(slug: string): Guide | undefined {

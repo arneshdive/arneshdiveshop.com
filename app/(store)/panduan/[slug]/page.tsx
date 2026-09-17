@@ -52,7 +52,9 @@ export default async function GuidePage({ params }: GuidePageProps) {
   const guideImage = `${siteConfig.url}${getGuideImagePath(guide)}`;
   const productHref = guide.category
     ? `/produk?category=${guide.category}${guide.divingType ? `&divingType=${guide.divingType}` : ''}`
-    : `/produk?divingType=${guide.divingType}`;
+    : guide.divingType
+      ? `/produk?divingType=${guide.divingType}`
+      : '/produk';
 
   const otherGuides = guides.filter((g) => g.slug !== guide.slug).slice(0, 3);
 

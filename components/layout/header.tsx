@@ -14,6 +14,7 @@ import { useHydrated } from '@/lib/hooks/use-hydrated';
 const NAV_ITEMS = [
   { name: 'Semua Katalog', href: '/produk' },
   { name: 'New Arrivals', href: '/produk?newArrival=true' },
+  { name: 'Dive Journal', href: '/blog' },
   { name: 'Sale', href: '/produk?onSale=true', className: 'text-red-600 hover:text-red-700' },
 ];
 

@@ -201,12 +201,60 @@ export const productVariants = pgTable('product_variants', {
 });
 
 // ============================================================================
+// Editorial / Blog
+// ============================================================================
+
+export interface BlogContentSection {
+  heading: string;
+  paragraphs: string[];
+  bullets?: string[];
+  note?: {
+    title: string;
+    body: string;
+  };
+}
+
+export interface BlogSource {
+  title: string;
+  publisher: string;
+  url: string;
+}
+
+export const blogPosts = pgTable('blog_posts', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  excerpt: text('excerpt').notNull(),
+  category: text('category').notNull(),
+  coverImageUrl: text('cover_image_url').notNull(),
+  coverImageAlt: text('cover_image_alt').notNull(),
+  author: text('author').notNull().default('Tim Arnesh Dive'),
+  readTimeMinutes: integer('read_time_minutes').notNull().default(5),
+  content: jsonb('content').$type<BlogContentSection[]>().notNull(),
+  sources: jsonb('sources').$type<BlogSource[]>().notNull().default([]),
+  relatedCategorySlug: text('related_category_slug'),
+  divingType: divingTypeEnum('diving_type'),
+  ctaLabel: text('cta_label'),
+  ctaHref: text('cta_href'),
+  isFeatured: boolean('is_featured').notNull().default(false),
+  isPublished: boolean('is_published').notNull().default(false),
+  sortOrder: integer('sort_order').notNull().default(0),
+  publishedAt: timestamp('published_at', { withTimezone: true, mode: 'date' }),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+    .defaultNow()
+    .notNull(),
+});
+
+// ============================================================================
 // Customers & Addresses
 // ============================================================================
 
 export const customers = pgTable('customers', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').references(() => users.id), // Link to auth user
+  userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }), // Link to auth user
   email: text('email').notNull().unique(),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
@@ -247,7 +295,7 @@ export const addresses = pgTable('addresses', {
 
 export const carts = pgTable('carts', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').references(() => users.id),
+  userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
   guestId: text('guest_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -269,7 +317,7 @@ export const cartItems = pgTable('cart_items', {
 
 export const checkoutSessions = pgTable('checkout_sessions', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').references(() => users.id),
+  userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
   guestId: text('guest_id'),
   cartId: text('cart_id').references(() => carts.id),
   email: text('email').notNull(),
@@ -310,7 +358,7 @@ export const orders = pgTable('orders', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   orderNumber: text('order_number').notNull().unique(),
   customerId: text('customer_id')
-    .references(() => customers.id)
+    .references(() => customers.id, { onDelete: 'cascade' })
     .notNull(),
   status: orderStatusEnum('status').default('pending_payment').notNull(),
   subtotalCents: integer('subtotal_cents').notNull(),
@@ -360,7 +408,7 @@ export const orderStatusHistory = pgTable('order_status_history', {
     .notNull(),
   status: orderStatusEnum('status').notNull(),
   note: text('note'),
-  changedBy: text('changed_by').references(() => users.id),
+  changedBy: text('changed_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -371,7 +419,7 @@ export const orderStatusHistory = pgTable('order_status_history', {
 export const payments = pgTable('payments', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   orderId: text('order_id')
-    .references(() => orders.id)
+    .references(() => orders.id, { onDelete: 'cascade' })
     .notNull(),
   status: paymentStatusEnum('status').default('pending').notNull(),
   amountCents: integer('amount_cents').notNull(),
@@ -624,6 +672,9 @@ export type NewProduct = typeof products.$inferInsert;
 
 export type ProductVariant = typeof productVariants.$inferSelect;
 export type NewProductVariant = typeof productVariants.$inferInsert;
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type NewBlogPost = typeof blogPosts.$inferInsert;
 
 export type Customer = typeof customers.$inferSelect;
 export type NewCustomer = typeof customers.$inferInsert;

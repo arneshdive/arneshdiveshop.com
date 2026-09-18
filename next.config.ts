@@ -46,6 +46,8 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: '/panduan', destination: '/blog', permanent: true },
+      { source: '/panduan/:slug', destination: '/blog/:slug', permanent: true },
       { source: '/sale', destination: '/produk?onSale=true', permanent: true },
       { source: '/freediving', destination: '/produk?divingType=freediving', permanent: true },
       { source: '/scuba', destination: '/produk?divingType=scuba', permanent: true },

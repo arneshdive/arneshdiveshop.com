@@ -1,4 +1,9 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+config({ path: resolve(process.cwd(), '.env.local'), quiet: true });
+config({ path: resolve(process.cwd(), '.env'), quiet: true });
+
 import { db, products } from '@/lib/db';
 import { getStorageProvider } from '@/lib/storage';
 import { mkdir, writeFile } from 'fs/promises';

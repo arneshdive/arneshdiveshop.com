@@ -1,3 +1,9 @@
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+config({ path: resolve(process.cwd(), '.env.local'), quiet: true });
+config({ path: resolve(process.cwd(), '.env'), quiet: true });
+
 import { db, categories, brands, products, productVariants } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 

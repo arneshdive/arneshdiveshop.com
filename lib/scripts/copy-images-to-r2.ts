@@ -1,7 +1,11 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
+import { dirname, resolve } from 'path';
+
+config({ path: resolve(process.cwd(), '.env.local'), quiet: true });
+config({ path: resolve(process.cwd(), '.env'), quiet: true });
+
 import { createHash } from 'crypto';
 import { appendFile, mkdir, readFile } from 'fs/promises';
-import { dirname } from 'path';
 import { db, products } from '@/lib/db';
 import { getStorageProvider } from '@/lib/storage';
 

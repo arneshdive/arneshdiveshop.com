@@ -1,85 +1,70 @@
-# Database Migrations
+# Database Schema Management
 
-This directory contains Drizzle ORM migration files for the Arnesh Dive Shop database.
+This project does **not** use a committed SQL migration history. `lib/db/schema.ts` is the
+single source of truth; schema changes are applied with `drizzle-kit push`, which diffs
+`schema.ts` against the target database and reconciles it directly.
 
-## Running Migrations
+This directory only exists because `drizzle-kit` requires an `out` folder to be configured
+(`drizzle.config.ts`); it holds no meaningful state. `.gitignore` excludes any `*.sql` files
+here, and there is no `meta/` snapshot history — don't recreate one and don't rely on
+`pnpm db:migrate`, it has nothing to apply.
 
-### Development
+## Environments
+
+**Current state (as of 2026-09-18): there is only one database.** `.env`'s `DATABASE_URL`
+is the live production DB, and local dev / `pnpm db:push` run directly against it — be
+careful with local mutations, seed scripts, and schema experiments.
+
+A split was proposed but deliberately deferred:
+
+| Environment | DB | `DATABASE_URL` source |
+|---|---|---|
+| Production | Neon production branch | Vercel dashboard, Production-scoped env var |
+| Preview (Vercel PR/branch deploys) | would be an ephemeral Neon branch per preview | Neon's Vercel integration (not connected yet) |
+| Local dev | would be a persistent Neon `dev` branch | `.env.local` (not set up yet) |
+
+`lib/scripts/migrate-on-deploy.mjs` already runs `drizzle-kit push` on both Vercel
+Production and Preview builds in anticipation of this split (Preview builds currently push
+to the same DB as Production until the integration above is connected). If/when a `dev`
+branch is created, put its connection string in `.env.local` (gitignored, takes precedence)
+and never restore a real value to `.env`.
+
+## Commands
 
 ```bash
-# Generate migrations from schema changes
-pnpm db:generate
-
-# Apply migrations to the database
-pnpm db:migrate
-
-# Push schema directly (bypasses migrations - use for dev only)
+# Apply schema.ts changes to whatever DB DATABASE_URL points at
 pnpm db:push
+
+# Optional: preview the SQL diff before pushing (output is not committed,
+# not part of any pipeline — purely a local sanity check)
+pnpm db:generate
 
 # Open Drizzle Studio to inspect the database
 pnpm db:studio
 ```
 
-### Production (Vercel)
-
-Migrations are typically applied during the build process. For Neon databases:
-
-1. Ensure `DATABASE_URL` is set in Vercel environment variables
-2. Use `pnpm db:migrate` in your build script, or
-3. Use `drizzle-kit push` if migrations folder is not available
-
-**Recommended:** Run migrations as a separate deployment step before deploying the application code.
-
-## Migration History
-
-| Version | Tag | Description |
-|---------|-----|-------------|
-| 0000 | married_microbe | Initial schema with all 13 tables |
-
 ## Schema Overview
 
-The database contains the following tables:
+- **users** — authentication users with role-based access (customer/admin/super_admin)
+- **customers** — customer profiles linked to users
+- **addresses** — customer shipping addresses
+- **categories** / **brands** — product taxonomy
+- **products** / **product_variants** — catalog, pricing in cents
+- **blog_posts** — editorial content
+- **carts** / **cart_items** / **checkout_sessions** — pre-order flow
+- **orders** / **order_items** / **order_status_history** — order lifecycle
+- **payments** — Midtrans payment records
+- **promotions** — discount codes
+- **banners** — homepage content
+- **otp_codes** / **rate_limits** / **verification_tokens** — auth
+- **shop_settings** — store configuration
 
-- **users** - Authentication users with role-based access (customer/admin/super_admin)
-- **customers** - Customer profiles linked to users
-- **addresses** - Customer shipping addresses
-- **categories** - Hierarchical product categories
-- **brands** - Product brands
-- **products** - Product catalog with pricing in cents
-- **product_variants** - Size/color variants with individual pricing
-- **orders** - Customer orders with status tracking
-- **order_items** - Line items with price snapshots
-- **payments** - Payment records (Midtrans integration)
-- **promotions** - Discount codes and promotions
-- **banners** - Homepage banner content
-- **verification_tokens** - OTP tokens for email verification
+### Money storage
+All monetary values are stored as integers in cents (never floats): `price_cents`,
+`amount_cents`, `total_spent_cents`, etc.
 
-## Important Notes
-
-### Money Storage
-All monetary values are stored as integers in cents (not floats) to avoid rounding errors:
-- `price_cents` fields on products, variants, order items
-- `amount_cents` on payments
-- `total_spent_cents` on customers
-
-### Enums
-PostgreSQL enums are used for:
-- `order_status` - Order workflow states
-- `payment_status` - Payment states
-- `promotion_type` - Discount types
-- `banner_position` - Banner placement
-- `user_role` - Access control levels
-
-### Relations
-All foreign key relationships are defined in `schema.ts` with appropriate cascade rules:
-- `product_variants` cascade delete when product is deleted
-- `addresses` cascade delete when customer is deleted
-- `order_items` cascade delete when order is deleted
-
-## Troubleshooting
-
-### Migration Fails on Existing Database
-If tables already exist, use `pnpm db:push` instead of `db:migrate` to sync the schema without running migration files.
-
-### Reverting Migrations
-Drizzle ORM does not generate down migrations by default. To revert, manually create SQL statements or restore from a database backup.
+### Cascade rules
+Foreign keys use explicit `onDelete` behavior defined in `schema.ts` — e.g. deleting a
+`users` row cascades through `customers` → `orders` → `order_items`/`payments`, while
+`order_status_history.changed_by` is `SET NULL` to preserve the audit trail. Check
+`schema.ts` directly for the current rules rather than assuming.

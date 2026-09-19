@@ -1,0 +1,1048 @@
+{
+  "nav": {
+    "catalog": "Semua Katalog",
+    "newArrivals": "New Arrivals",
+    "diveJournal": "Dive Journal",
+    "sale": "Sale",
+    "search": "Cari",
+    "cart": "Keranjang",
+    "account": "Akun",
+    "menu": "Menu",
+    "closeMenu": "Tutup menu",
+    "myAccount": "Akun Saya",
+    "language": "Bahasa"
+  },
+  "footer": {
+    "copyright": "{year} Arnesh Dive. Seluruh hak cipta dilindungi.",
+    "privacyPolicy": "Kebijakan Privasi",
+    "termsAndConditions": "Syarat & Ketentuan",
+    "help": "Bantuan",
+    "contact": "Kontak"
+  },
+  "newsletter": {
+    "heading": "Dapatkan info promo terbaru",
+    "emailPlaceholder": "Email Anda",
+    "subscribeAria": "Langganan",
+    "subscribeAnother": "Daftarkan email lain",
+    "errors": {
+      "generic": "Terjadi kesalahan",
+      "invalidEmail": "Email tidak valid",
+      "rateLimited": "Terlalu banyak permintaan. Coba lagi dalam {seconds} detik."
+    },
+    "success": {
+      "alreadySubscribed": "Email sudah terdaftar sebagai subscriber",
+      "reactivated": "Berhasil berlangganan kembali!",
+      "subscribed": "Terima kasih telah berlangganan!"
+    }
+  },
+  "common": {
+    "pagination": {
+      "previous": "Halaman sebelumnya",
+      "next": "Halaman berikutnya",
+      "page": "Halaman {page}"
+    },
+    "valueProps": {
+      "originalProduct": {
+        "title": "Produk Original",
+        "desc": "100% kualitas terjamin"
+      },
+      "securePayment": {
+        "title": "Pembayaran Aman",
+        "desc": "Transaksi terlindungi"
+      },
+      "nationwideShipping": {
+        "title": "Kirim Seluruh Indonesia",
+        "desc": "Jangkauan luas"
+      }
+    },
+    "loading": "Memuat...",
+    "divingTypes": {
+      "freediving": "Freediving",
+      "scuba": "Scuba",
+      "spearfishing": "Spearfishing",
+      "surfing": "Surfing",
+      "swimming": "Swimming"
+    }
+  },
+  "auth": {
+    "loading": "Memuat...",
+    "brandAlt": "Arnesh Dive",
+    "tabs": {
+      "login": "Masuk",
+      "register": "Daftar"
+    },
+    "fields": {
+      "fullName": "Nama Lengkap",
+      "fullNamePlaceholder": "Nama lengkap Anda",
+      "email": "Email",
+      "emailPlaceholder": "email@contoh.com"
+    },
+    "buttons": {
+      "processing": "Memproses...",
+      "login": "Masuk",
+      "register": "Daftar",
+      "redirecting": "Mengalihkan...",
+      "verify": "Verifikasi"
+    },
+    "terms": {
+      "prefix": "Dengan melanjutkan, Anda menyetujui",
+      "link": "Syarat & Ketentuan",
+      "suffix": "kami"
+    },
+    "backToStore": "← Kembali ke toko",
+    "backToLogin": "← Kembali ke login",
+    "verify": {
+      "title": "Verifikasi Email",
+      "description": "Masukkan kode OTP yang dikirim ke",
+      "expiresIn": "Kode berlaku {minutes} menit",
+      "otpLabel": "Kode OTP",
+      "otpPlaceholder": "Masukkan 6 digit kode OTP",
+      "resend": "Kirim ulang kode OTP",
+      "resendWithCooldown": "Kirim ulang kode OTP ({seconds}s)"
+    },
+    "errors": {
+      "emailRequired": "Email wajib diisi",
+      "emailInvalid": "Format email tidak valid",
+      "nameRequired": "Nama wajib diisi",
+      "otpRequired": "Kode OTP wajib diisi",
+      "otpInvalidLength": "Kode OTP harus 6 digit",
+      "generic": "Terjadi kesalahan",
+      "genericServer": "Terjadi kesalahan pada server",
+      "resendFailed": "Gagal mengirim ulang"
+    },
+    "success": {
+      "otpResent": "Kode OTP baru telah dikirim"
+    }
+  },
+  "search": {
+    "showingCount": "Menampilkan <b>{count}</b> produk",
+    "sort": {
+      "newest": "Terbaru",
+      "priceAsc": "Harga: Rendah ke Tinggi",
+      "priceDesc": "Harga: Tinggi ke Rendah",
+      "popular": "Paling Populer"
+    },
+    "empty": {
+      "title": "Tidak ada produk ditemukan",
+      "description": "Coba ubah filter atau kata kunci pencarian Anda."
+    },
+    "filters": {
+      "divingType": "Tipe Diving",
+      "clearDivingType": "Hapus filter tipe diving",
+      "category": "Kategori",
+      "clearCategory": "Hapus filter kategori",
+      "brand": "Merek",
+      "clearBrand": "Hapus filter merek",
+      "price": "Harga",
+      "priceMinPlaceholder": "Min",
+      "priceMaxPlaceholder": "Max",
+      "clearAll": "Hapus Semua Filter",
+      "filterButton": "Filter",
+      "closeAria": "Tutup",
+      "clearFilterButton": "Hapus Filter",
+      "apply": "Terapkan"
+    },
+    "modal": {
+      "placeholder": "Cari produk...",
+      "closeAria": "Tutup",
+      "categoriesLabel": "Kategori",
+      "enterHint": "Tekan <kbd>Enter</kbd> untuk mencari atau pilih kategori"
+    }
+  },
+  "product": {
+    "addedToast": "Ditambahkan",
+    "viewCartAction": "Lihat",
+    "addToCartErrorToast": "Gagal menambahkan item",
+    "addToCartErrorDescription": "Terjadi kesalahan, silakan coba lagi.",
+    "badgeSale": "Sale",
+    "badgeNew": "Baru",
+    "alternateViewAlt": "{title} - tampilan alternatif",
+    "added": "Ditambahkan",
+    "addShort": "Tambahkan",
+    "addToCart": "Tambah ke Keranjang",
+    "addingToCart": "Menambahkan...",
+    "quantityLabel": "Jumlah",
+    "inStock": "Produk tersedia",
+    "outOfStock": "Produk tidak tersedia",
+    "noDescription": "Tidak ada deskripsi.",
+    "showMore": "Tampilkan lebih banyak",
+    "showLess": "Tampilkan lebih sedikit",
+    "startingFrom": "Mulai dari",
+    "descriptionTab": "Deskripsi",
+    "specificationsTab": "Spesifikasi",
+    "divingTypeLabel": "Tipe Diving",
+    "categoryLabel": "Kategori",
+    "brandLabel": "Brand",
+    "galleryImageAlt": "{title} - Gambar {index}",
+    "galleryThumbnailAlt": "{title} - gambar mini {index}",
+    "recentlyViewed": {
+      "eyebrow": "Riwayat",
+      "title": "Baru <highlight>Dilihat</highlight>",
+      "description": "Lanjutkan dari produk yang baru saja Anda lihat."
+    }
+  },
+  "produk": {
+    "meta": {
+      "allCatalogTitle": "Semua Katalog",
+      "defaultCatalogDescription": "Jelajahi koleksi lengkap perlengkapan freediving, scuba, spearfishing, surfing, dan swimming berkualitas tinggi di Arnesh Dive.",
+      "searchResultsTitle": "Hasil untuk \"{query}\"",
+      "searchResultsDescription": "Temukan produk yang Anda cari dari koleksi kami.",
+      "newArrivalsTitle": "New Arrivals",
+      "saleTitle": "Sale",
+      "divingTypeTitle": "Koleksi {label}",
+      "divingTypeDescription": "Jelajahi koleksi {label} berkualitas tinggi di Arnesh Dive.",
+      "categoryDescription": "Jelajahi produk {label} berkualitas tinggi di Arnesh Dive.",
+      "brandDescription": "Produk dari {label}, tersedia lengkap di Arnesh Dive."
+    },
+    "filters": {
+      "newArrival": "Produk terbaru untuk petualangan diving Anda.",
+      "onSale": "Diskon spesial untuk produk terpilih.",
+      "freediving": "Peralatan freediving berkualitas untuk petualangan bawah laut.",
+      "scuba": "Peralatan scuba diving lengkap untuk eksplorasi laut dalam.",
+      "spearfishing": "Peralatan spearfishing andal untuk berburu di bawah laut.",
+      "surfing": "Perlengkapan surfing untuk menaklukkan setiap ombak.",
+      "swimming": "Perlengkapan swimming untuk gerak bebas di air."
+    },
+    "banner": {
+      "newArrivalsWithQuery": "New Arrivals: \"{query}\"",
+      "saleWithQuery": "Promo: \"{query}\"",
+      "freedivingWithQuery": "Freediving: \"{query}\"",
+      "freedivingTitle": "Koleksi Freediving",
+      "scubaWithQuery": "Scuba: \"{query}\"",
+      "scubaTitle": "Koleksi Scuba",
+      "spearfishingWithQuery": "Spearfishing: \"{query}\"",
+      "spearfishingTitle": "Koleksi Spearfishing",
+      "surfingWithQuery": "Surfing: \"{query}\"",
+      "surfingTitle": "Koleksi Surfing",
+      "swimmingWithQuery": "Swimming: \"{query}\"",
+      "swimmingTitle": "Koleksi Swimming",
+      "categoryWithQuery": "{name}: \"{query}\"",
+      "categoryDefaultDescription": "Jelajahi produk dalam kategori ini.",
+      "brandWithQuery": "{name}: \"{query}\"",
+      "brandDefaultDescription": "Produk dari merek terpercaya.",
+      "readJournal": "Baca journal: {title}"
+    },
+    "breadcrumb": {
+      "home": "Beranda"
+    },
+    "pdp": {
+      "notFound": "Produk tidak ditemukan",
+      "backToCatalog": "Kembali ke katalog",
+      "metaDescriptionPadding": "Beli {name}{category} berkualitas di Arnesh Dive, toko alat freediving & scuba diving online.",
+      "breadcrumbProduk": "Produk",
+      "badgeSale": "Sale",
+      "badgeNew": "Baru",
+      "relatedProductsLabel": "Related Products",
+      "relatedProductsTitle": "Produk Terkait",
+      "relatedProductsEmpty": "Tidak ada produk terkait."
+    }
+  },
+  "account": {
+    "sidebar": {
+      "orders": "Pesanan",
+      "addresses": "Alamat",
+      "settings": "Pengaturan",
+      "logout": "Keluar"
+    },
+    "addresses": {
+      "title": "Alamat Saya",
+      "addNew": "Tambah Alamat",
+      "loading": "Memuat alamat...",
+      "confirmDelete": "Apakah Anda yakin ingin menghapus alamat ini?",
+      "loginRequired": {
+        "title": "Silakan Login",
+        "description": "Login untuk mengelola alamat pengiriman Anda",
+        "cta": "Login"
+      },
+      "errors": {
+        "loadFailedTitle": "Gagal Memuat",
+        "retry": "Coba Lagi",
+        "unauthorized": "Silakan login untuk melihat alamat Anda",
+        "loadFailed": "Gagal memuat alamat",
+        "createFailed": "Gagal menambah alamat",
+        "updateFailed": "Gagal mengubah alamat",
+        "deleteFailed": "Gagal menghapus alamat"
+      },
+      "empty": {
+        "title": "Belum Ada Alamat",
+        "description": "Tambahkan alamat pengiriman untuk memudahkan proses checkout berikutnya."
+      },
+      "toast": {
+        "created": "Alamat berhasil ditambahkan",
+        "updated": "Alamat berhasil diubah",
+        "deleted": "Alamat berhasil dihapus"
+      },
+      "card": {
+        "default": "Utama",
+        "setDefault": "Jadikan Utama",
+        "edit": "Ubah",
+        "delete": "Hapus"
+      }
+    },
+    "orders": {
+      "title": "Pesanan Saya",
+      "loading": "Memuat pesanan...",
+      "loginRequired": {
+        "title": "Silakan Login",
+        "description": "Login untuk melihat riwayat pesanan Anda",
+        "cta": "Login"
+      },
+      "errors": {
+        "loadFailedTitle": "Gagal Memuat",
+        "retry": "Coba Lagi",
+        "loadFailed": "Gagal memuat pesanan"
+      },
+      "empty": {
+        "title": "Belum Ada Pesanan",
+        "description": "Pesanan dengan status ini belum ditemukan. Yuk mulai belanja dan temukan perlengkapan diving terbaik!",
+        "cta": "Mulai Belanja"
+      },
+      "filters": {
+        "all": "Semua"
+      },
+      "status": {
+        "pending_payment": "Perlu Dibayar",
+        "processing": "Diproses",
+        "shipped": "Dikirim",
+        "delivered": "Selesai",
+        "cancelled": "Dibatalkan",
+        "refunded": "Dikembalikan"
+      },
+      "paymentStatus": {
+        "pending": "Menunggu",
+        "paid": "Dibayar",
+        "failed": "Gagal",
+        "expired": "Kadaluarsa",
+        "cancelled": "Dibatalkan",
+        "refunded": "Dikembalikan"
+      },
+      "paymentMethods": {
+        "credit_card": "Kartu Kredit",
+        "bank_transfer": "Transfer Bank",
+        "bca_va": "BCA Virtual Account",
+        "bni_va": "BNI Virtual Account",
+        "bri_va": "BRI Virtual Account",
+        "echannel": "Mandiri Bill Payment",
+        "gopay": "GoPay",
+        "gopay_partner": "GoPay",
+        "ovo": "OVO",
+        "shopeepay": "ShopeePay",
+        "qris": "QRIS",
+        "danamon_online": "Danamon Online",
+        "akulaku": "Akulaku"
+      },
+      "copyHint": "Klik untuk salin",
+      "moreItems": "+{count} item lainnya",
+      "qtyLabel": "Qty: {count}",
+      "total": "Total",
+      "payNow": "Bayar Sekarang",
+      "trackShipment": "Lacak Pengiriman",
+      "viewDetail": "Lihat Detail",
+      "payLinkUnavailable": {
+        "title": "Link pembayaran tidak tersedia",
+        "description": "Silakan hubungi customer service untuk bantuan."
+      },
+      "detail": {
+        "backToOrders": "Kembali ke Pesanan",
+        "backToList": "Kembali ke Daftar Pesanan",
+        "loading": "Memuat pesanan...",
+        "notFoundTitle": "Pesanan Tidak Ditemukan",
+        "notFoundDescription": "Pesanan yang Anda cari tidak dapat ditemukan atau Anda tidak memiliki akses.",
+        "orderNumber": "Pesanan #{number}",
+        "createdOn": "Dibuat pada {date}",
+        "errors": {
+          "notFound": "Pesanan tidak ditemukan",
+          "forbidden": "Anda tidak memiliki akses ke pesanan ini",
+          "loadFailed": "Gagal memuat pesanan"
+        },
+        "paymentBanner": {
+          "title": "Menunggu Pembayaran",
+          "description": "Selesaikan pembayaran Anda sebelum deadline berikut",
+          "deadlineLabel": "Batas Waktu Pembayaran",
+          "vaLabel": "{bank} Virtual Account",
+          "transferExact": "Transfer tepat sesuai nominal: {amount}",
+          "mandiriTitle": "Mandiri Bill Payment",
+          "billerCode": "Kode Biller:",
+          "billKey": "Bill Key:",
+          "payExact": "Bayar tepat sesuai nominal: {amount}",
+          "methodLabel": "Metode Pembayaran"
+        },
+        "items": {
+          "title": "Item Pesanan"
+        },
+        "summary": {
+          "subtotal": "Subtotal",
+          "shipping": "Ongkos Kirim",
+          "free": "Gratis",
+          "discount": "Diskon"
+        },
+        "tracking": {
+          "title": "Nomor Resi",
+          "copyHint": "Salin nomor resi",
+          "shippedOn": "Dikirim pada {date}",
+          "inTransit": "Pesanan sedang dalam perjalanan. Nomor resi akan tersedia segera setelah kurir mengambil paket."
+        },
+        "status": {
+          "title": "Status Pesanan",
+          "processingNote": "Pesanan sedang dikemas. Nomor resi akan tersedia setelah dikirim.",
+          "waitingPayment": "Menunggu pembayaran"
+        },
+        "payment": {
+          "title": "Pembayaran",
+          "statusLabel": "Status",
+          "methodLabel": "Metode",
+          "paidAtLabel": "Tanggal Bayar"
+        },
+        "shipping": {
+          "title": "Pengiriman",
+          "recipient": "Penerima",
+          "address": "Alamat"
+        },
+        "notes": {
+          "title": "Catatan"
+        },
+        "help": {
+          "title": "Butuh Bantuan?",
+          "description": "Hubungi customer service kami jika ada pertanyaan tentang pesanan Anda.",
+          "whatsapp": "Chat via WhatsApp"
+        }
+      }
+    },
+    "settings": {
+      "title": "Pengaturan Akun",
+      "loading": "Memuat profil...",
+      "loginRequired": {
+        "description": "Silakan login untuk mengakses pengaturan akun",
+        "cta": "Login"
+      },
+      "errors": {
+        "unauthorized": "Silakan login untuk mengakses pengaturan",
+        "loadFailed": "Gagal memuat profil",
+        "updateFailed": "Gagal mengubah profil",
+        "retry": "Coba lagi"
+      },
+      "toast": {
+        "saved": "Profil berhasil disimpan"
+      },
+      "profile": {
+        "title": "Profil",
+        "photoLabel": "Foto Profil",
+        "photoHint": "JPG, PNG. Maksimal 2MB",
+        "uploadPhoto": "Unggah Foto",
+        "firstName": "Nama Depan",
+        "lastName": "Nama Belakang",
+        "email": "Email",
+        "emailHint": "Alamat email digunakan untuk login dan tidak dapat diubah",
+        "phone": "Nomor Telepon",
+        "save": "Simpan Perubahan",
+        "saving": "Menyimpan..."
+      },
+      "security": {
+        "title": "Keamanan",
+        "passwordLabel": "Kata Sandi",
+        "passwordHint": "Terakhir diubah 3 bulan yang lalu",
+        "changePassword": "Ubah Kata Sandi"
+      },
+      "danger": {
+        "title": "Zona Bahaya",
+        "description": "Menghapus akun akan menghapus semua data Anda secara permanen. Tindakan ini tidak dapat dikembalikan.",
+        "deleteAccount": "Hapus Akun Saya"
+      }
+    }
+  },
+  "cart": {
+    "eyebrow": "Belanja",
+    "title": "Keranjang Anda",
+    "continueShopping": "Lanjut Belanja",
+    "empty": {
+      "title": "Keranjang Kosong",
+      "description": "Belum ada produk di keranjang Anda. Yuk mulai belanja dan temukan perlengkapan diving yang Anda butuhkan.",
+      "cta": "Mulai Belanja"
+    },
+    "item": {
+      "decreaseAria": "Kurangi jumlah",
+      "increaseAria": "Tambah jumlah",
+      "removeAria": "Hapus item"
+    },
+    "summary": {
+      "title": "Ringkasan",
+      "qty": "Qty: {quantity}",
+      "promoLabel": "Kode Promo",
+      "removePromoAria": "Hapus promo",
+      "promoPlaceholder": "Masukkan kode",
+      "promoApply": "Pakai",
+      "promoApplying": "Memeriksa...",
+      "promoRequiredError": "Masukkan kode promo",
+      "promoInvalidError": "Kode promo tidak valid",
+      "promoAppliedMessage": "Diskon {amount} diterapkan!",
+      "subtotal": "Subtotal",
+      "discount": "Diskon",
+      "shipping": "Ongkos Kirim",
+      "shippingCalculatedAtCheckout": "Dihitung saat checkout",
+      "total": "Total",
+      "checkoutCta": "Lanjut ke Checkout",
+      "checkoutShort": "Checkout",
+      "detailsToggle": "Detail",
+      "secureTransaction": "Transaksi aman & terenkripsi"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "subtitle": "Lengkapi informasi untuk melanjutkan",
+    "preparingSession": "Menyiapkan checkout...",
+    "processingPayment": "Memproses pembayaran...",
+    "continueToPayment": "Lanjut ke Pembayaran",
+    "backToCart": "Kembali ke Keranjang",
+    "paymentTab": {
+      "title": "Memproses...",
+      "processing": "Memproses pembayaran..."
+    },
+    "validation": {
+      "incompleteTitle": "Lengkapi data yang diperlukan",
+      "incompleteDescription": "Field berikut harus diisi: {fields}",
+      "fieldEmail": "Email",
+      "fieldPhone": "No. Telepon",
+      "fieldFullName": "Nama Lengkap",
+      "fieldDestination": "Kelurahan/Kecamatan",
+      "fieldAddress": "Alamat Lengkap"
+    },
+    "errors": {
+      "createSessionFailed": "Gagal membuat sesi checkout",
+      "updateShippingFailed": "Gagal memperbarui metode pengiriman",
+      "staleSession": "Sesi checkout sudah tidak berlaku, silakan coba lagi",
+      "createPaymentFailed": "Gagal membuat transaksi pembayaran"
+    },
+    "toast": {
+      "paymentOpenedTitle": "Pembayaran dibuka di tab baru",
+      "paymentOpenedDescription": "Silakan selesaikan pembayaran Anda",
+      "errorTitle": "Terjadi kesalahan",
+      "genericRetry": "Silakan coba lagi"
+    },
+    "contact": {
+      "title": "Informasi Kontak",
+      "emailLabel": "Email",
+      "emailPlaceholder": "email@contoh.com",
+      "emailRequired": "Email wajib diisi",
+      "emailInvalid": "Format email tidak valid",
+      "phoneLabel": "No. Telepon",
+      "phonePlaceholder": "0812-3456-7890",
+      "phoneRequired": "No. Telepon wajib diisi",
+      "phoneInvalid": "Format nomor telepon tidak valid"
+    },
+    "shipping": {
+      "title": "Alamat Pengiriman",
+      "fullNameLabel": "Nama Lengkap",
+      "fullNamePlaceholder": "Nama penerima paket",
+      "fullNameRequired": "Nama lengkap wajib diisi",
+      "destinationLabel": "Kelurahan/Kecamatan",
+      "destinationPlaceholder": "Cari kelurahan atau kecamatan...",
+      "destinationRequired": "Kelurahan/Kecamatan wajib dipilih",
+      "destinationHint": "Ketik nama kelurahan atau kecamatan tujuan pengiriman",
+      "destinationSelectedLabel": "Tujuan Pengiriman",
+      "address1Label": "Alamat Lengkap",
+      "address1Placeholder": "Jalan, nomor rumah, nama gedung, RT/RW...",
+      "address1Required": "Alamat lengkap wajib diisi",
+      "address2Label": "Detail Tambahan",
+      "optionalTag": "opsional",
+      "address2Placeholder": "Patokan, catatan untuk kurir..."
+    },
+    "shippingMethod": {
+      "title": "Metode Pengiriman",
+      "calculating": "Menghitung ongkos kirim...",
+      "verifyAddressHint": "Silakan verifikasi alamat pengiriman Anda.",
+      "noRatesFound": "Tidak ada kurir tersedia untuk alamat ini.",
+      "selectDestinationHint": "Pilih kelurahan/kecamatan tujuan untuk melihat pilihan kurir.",
+      "serviceCountAndPrice": "{count} layanan • Mulai dari {price}",
+      "selectedBadge": "Terpilih",
+      "errors": {
+        "fetchFailed": "Gagal mengambil ongkos kirim"
+      },
+      "badges": {
+        "sameDay": "Same Day",
+        "nextDay": "Next Day",
+        "regular": "Reguler",
+        "economy": "Hemat",
+        "cargo": "Cargo"
+      }
+    },
+    "savedAddress": {
+      "loading": "Memuat alamat tersimpan...",
+      "saving": "Menyimpan alamat...",
+      "addNew": "Tambah Alamat Baru",
+      "defaultBadge": "Utama",
+      "errors": {
+        "loadFailed": "Gagal memuat alamat tersimpan",
+        "saveFailed": "Gagal menyimpan alamat"
+      }
+    },
+    "summary": {
+      "title": "Ringkasan",
+      "qty": "Qty: {quantity}",
+      "subtotal": "Subtotal",
+      "discount": "Diskon",
+      "shipping": "Ongkos Kirim",
+      "shippingPendingCourier": "Dihitung setelah pilih kurir",
+      "total": "Total",
+      "secureTransaction": "Transaksi aman & terenkripsi"
+    },
+    "callback": {
+      "viewOrder": "Lihat Pesanan",
+      "toAccount": "Ke Akun Saya",
+      "retry": "Coba Lagi",
+      "success": {
+        "title": "Pembayaran Berhasil!",
+        "description": "Terima kasih! Pesanan Anda telah dikonfirmasi dan sedang diproses."
+      },
+      "pending": {
+        "title": "Menunggu Pembayaran",
+        "description": "Pembayaran Anda sedang diproses. Silakan selesaikan pembayaran sesuai instruksi yang diberikan."
+      },
+      "failed": {
+        "title": "Pembayaran Gagal",
+        "description": "Maaf, pembayaran Anda tidak dapat diproses. Silakan coba lagi atau hubungi customer service."
+      }
+    },
+    "success": {
+      "loadingOrder": "Memuat pesanan...",
+      "thankYouTitle": "Terima Kasih!",
+      "thankYouDescription": "Pesanan Anda telah berhasil dibuat",
+      "orderNumberLabel": "No. Pesanan:",
+      "pendingPayment": "Menunggu Pembayaran",
+      "orderConfirmed": "Pesanan Dikonfirmasi",
+      "shippingInfoTitle": "Informasi Pengiriman",
+      "nameLabel": "Nama",
+      "orderDateLabel": "Tanggal Pesanan",
+      "addressLabel": "Alamat",
+      "emailLabel": "Email",
+      "phoneLabel": "Telepon",
+      "orderDetailsTitle": "Detail Pesanan",
+      "qtyLabel": "Qty: {quantity}",
+      "subtotal": "Subtotal",
+      "shippingCost": "Ongkos Kirim",
+      "free": "Gratis",
+      "discount": "Diskon",
+      "total": "Total",
+      "paymentInstructionsTitle": "Instruksi Pembayaran",
+      "paymentInstructionsDescription": "Pembayaran Anda sedang menunggu konfirmasi. Silakan selesaikan pembayaran melalui metode yang telah dipilih.",
+      "paymentMethodLabel": "Metode pembayaran:",
+      "viewPaymentDetails": "Lihat detail pembayaran →",
+      "paymentCompleted": "Pembayaran Selesai • {date}",
+      "paymentMethodShort": "Metode: {method}",
+      "viewOrders": "Lihat Pesanan",
+      "continueShopping": "Lanjut Belanja",
+      "errors": {
+        "notFound": "Pesanan tidak ditemukan",
+        "noAccess": "Anda tidak memiliki akses ke pesanan ini",
+        "loadFailed": "Gagal memuat pesanan",
+        "notFoundTitle": "Pesanan Tidak Ditemukan",
+        "notFoundDescription": "Tidak dapat menemukan detail pesanan Anda. Silakan cek email konfirmasi atau hubungi customer service.",
+        "viewMyOrders": "Lihat Pesanan Saya"
+      },
+      "paymentMethods": {
+        "creditCard": "Kartu Kredit",
+        "bankTransfer": "Transfer Bank"
+      }
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "Freediving, Scuba, Spearfishing, Surfing & Swimming",
+      "description": "Perlengkapan freediving, scuba, spearfishing, surfing & swimming original dari Arnesh Dive. Kualitas terjamin, kirim seluruh Indonesia."
+    },
+    "hero": {
+      "eyebrow": "SCUBA · FREEDIVING · SPEARFISHING",
+      "title": "Explore the Deep.\nDive with Confidence.",
+      "subtitle": "Perlengkapan freediving & scuba dari merek tepercaya, untuk setiap level penyelam.",
+      "ctaText": "Semua Katalog",
+      "fallbackTitle": "Berjelajah di kedalaman",
+      "imageAltFallback": "Hero",
+      "ctaFallback": "Lihat Koleksi",
+      "goToSlide": "Go to slide {number}"
+    },
+    "newArrivals": {
+      "eyebrow": "New Arrivals",
+      "headingPrefix": "Produk",
+      "headingHighlight": "Terbaru",
+      "description": "Peralatan diving terbaru untuk petualangan bawah laut."
+    },
+    "sale": {
+      "eyebrow": "Sale",
+      "headingPrefix": "Promo",
+      "headingHighlight": "Spesial",
+      "description": "Diskon spesial untuk produk terpilih."
+    },
+    "explore": {
+      "eyebrow": "Semua Produk",
+      "headingPrefix": "Eksplor",
+      "headingHighlight": "Lainnya",
+      "description": "Temukan perlengkapan diving untuk kebutuhan Anda."
+    },
+    "viewAll": "Lihat Semua",
+    "community": {
+      "eyebrow": "Jelajahi Kebebasan Bawah Laut",
+      "heading": "Ikuti Perjalanan Kami",
+      "description1": "Ikuti bagaimana Arnesh Dive menemani petualangan para diver di seluruh Indonesia.",
+      "description2": "Dari freediving hingga scuba, setiap penyelaman adalah cerita baru. Temukan inspirasi untuk petualangan diving Anda berikutnya.",
+      "instagramCta": "Instagram",
+      "instagramAlt": "Instagram post"
+    },
+    "divingGrid": {
+      "category": "Kategori",
+      "headingPrefix": "Temukan",
+      "headingHighlight": "Aktivitas Anda",
+      "description": "Temukan peralatan yang tepat untuk gaya menyelam Anda.",
+      "freedivingSubtitle": "Tenang di bawah, bebas di dalam.",
+      "scubaSubtitle": "Lebih dalam, lebih lama bertahan.",
+      "spearfishingSubtitle": "Satu bidikan, satu cerita.",
+      "surfingSubtitle": "Taklukkan setiap ombaknya.",
+      "swimmingSubtitle": "Gerak bebas, napas lega.",
+      "otherTitle": "Lainnya",
+      "otherSubtitle": "Lengkapi semua kebutuhan selammu."
+    }
+  },
+  "faq": {
+    "meta": {
+      "title": "Pusat Bantuan | Arnesh Dive",
+      "description": "Pertanyaan yang sering diajukan tentang pembelian, pengiriman, dan produk di Arnesh Dive."
+    },
+    "header": {
+      "title": "Pusat Bantuan",
+      "description": "Temukan jawaban untuk pertanyaan yang sering diajukan atau hubungi kami jika membutuhkan bantuan lebih lanjut.",
+      "searchPlaceholder": "Cari pertanyaan...",
+      "stillNeedHelp": "Masih butuh bantuan?",
+      "contactUs": "Hubungi Kami"
+    },
+    "categories": {
+      "pengiriman": "Pengiriman",
+      "pengembalian": "Pengembalian",
+      "pembayaran": "Pembayaran",
+      "produk": "Produk",
+      "akun": "Akun"
+    },
+    "items": {
+      "pengiriman": {
+        "0": {
+          "question": "Berapa lama waktu pengiriman?",
+          "answer": "Pengiriman standar membutuhkan 3-5 hari kerja, sedangkan pengiriman express 1-2 hari kerja. Waktu pengiriman dihitung sejak pesanan dikirim dari gudang kami."
+        },
+        "1": {
+          "question": "Bagaimana cara melacak pesanan saya?",
+          "answer": "Setelah pesanan dikirim, Anda akan menerima email berisi nomor resi dan link untuk melacak status pengiriman. Anda juga dapat mengecek status melalui halaman \"Pesanan Saya\" di akun Anda."
+        },
+        "2": {
+          "question": "Apakah bisa mengubah alamat pengiriman setelah checkout?",
+          "answer": "Perubahan alamat hanya bisa dilakukan sebelum pesanan diproses. Silakan hubungi customer service kami secepatnya melalui WhatsApp atau email."
+        },
+        "3": {
+          "question": "Kurir apa saja yang tersedia?",
+          "answer": "Kami bekerja sama dengan JNE, J&T Express, SiCepat, ID Express, AnterAja, POS Indonesia, dan Tiki. Ketersediaan kurir mungkin berbeda untuk setiap lokasi."
+        }
+      },
+      "pengembalian": {
+        "0": {
+          "question": "Bagaimana cara mengembalikan produk?",
+          "answer": "Hubungi customer service kami dalam waktu 7 hari setelah menerima pesanan. Sertakan foto produk dan alasan pengembalian. Jika disetujui, Anda akan menerima panduan pengiriman barang kembali."
+        },
+        "1": {
+          "question": "Apakah ada biaya pengembalian?",
+          "answer": "Biaya pengiriman pengembalian ditanggung pembeli kecuali produk cacat atau tidak sesuai pesanan. Biaya pengiriman ulang untuk penukaran ditanggung kami."
+        },
+        "2": {
+          "question": "Berapa lama proses refund?",
+          "answer": "Refund akan diproses dalam 3-5 hari kerja setelah produk kami terima dan diperiksa. Waktu masuk ke rekening Anda tergantung metode pembayaran dan bank Anda."
+        },
+        "3": {
+          "question": "Produk apa saja yang tidak bisa dikembalikan?",
+          "answer": "Produk yang sudah digunakan, produk custom/warna khusus, dan produk dengan seal rusak tidak dapat dikembalikan. Masker juga tidak dapat dikembalikan karena alasan kebersihan."
+        }
+      },
+      "pembayaran": {
+        "0": {
+          "question": "Metode pembayaran apa saja yang tersedia?",
+          "answer": "Kami menerima transfer bank (BCA, Mandiri, BNI, BRI), kartu kredit/debit (Visa, Mastercard), e-wallet (GoPay, OVO, Dana), dan QRIS."
+        },
+        "1": {
+          "question": "Apakah pembayaran saya aman?",
+          "answer": "Ya, semua transaksi dienkripsi dengan protokol SSL/TLS. Kami tidak menyimpan detail kartu kredit Anda. Pemrosesan pembayaran dilakukan oleh payment gateway terpercaya."
+        },
+        "2": {
+          "question": "Bagaimana jika pembayaran gagal?",
+          "answer": "Periksa saldo atau limit kartu Anda. Jika masalah berlanjut, coba metode pembayaran lain atau hubungi bank Anda. Keranjang Anda tetap tersimpan selama 24 jam."
+        },
+        "3": {
+          "question": "Bisa bayar dengan cicilan?",
+          "answer": "Ya, kami menyediakan cicilan tanpa kartu kredit melalui partner kami. Opsi cicilan akan muncul di halaman checkout untuk pembelian minimal Rp 500.000."
+        }
+      },
+      "produk": {
+        "0": {
+          "question": "Bagaimana cara memilih ukuran yang tepat?",
+          "answer": "Setiap produk dilengkapi panduan ukuran (size guide). Anda juga dapat menghubungi customer service untuk rekomendasi berdasarkan tinggi dan berat badan Anda."
+        },
+        "1": {
+          "question": "Apakah produk dijamin 100% original?",
+          "answer": "Ya, semua produk yang kami jual adalah 100% original dari distributor resmi. Kami memberikan jaminan keaslian untuk setiap produk."
+        },
+        "2": {
+          "question": "Bagaimana cara merawat peralatan diving?",
+          "answer": "Bilas dengan air tawar setelah digunakan, keringkan di tempat teduh (hindari sinar matahari langsung), dan simpan di tempat kering. Detail perawatan berbeda untuk setiap produk, cek label atau panduan produk."
+        },
+        "3": {
+          "question": "Apakah ada garansi?",
+          "answer": "Garansi mengikuti kebijakan masing-masing brand, biasanya 6-12 bulan untuk defect pabrik. Simpan invoice Anda sebagai bukti pembelian."
+        }
+      },
+      "akun": {
+        "0": {
+          "question": "Bagaimana cara mengubah profil saya?",
+          "answer": "Login ke akun Anda, buka halaman \"Profil\" atau \"Pengaturan\". Anda dapat mengubah nama, email, nomor telepon, dan alamat."
+        },
+        "1": {
+          "question": "Lupa password, bagaimana cara reset?",
+          "answer": "Klik \"Lupa Password\" di halaman login. Masukkan email terdaftar dan Anda akan menerima link untuk reset password."
+        },
+        "2": {
+          "question": "Apakah saya wajib membuat akun untuk berbelanja?",
+          "answer": "Ya, akun diperlukan untuk melacak pesanan, menyimpan alamat, dan mendapatkan poin reward. Proses pendaftaran cepat dan gratis."
+        },
+        "3": {
+          "question": "Bagaimana cara menghapus akun?",
+          "answer": "Hubungi customer service kami melalui email atau WhatsApp dengan permintaan penghapusan akun. Data Anda akan dihapus dalam 30 hari kerja sesuai kebijakan privasi."
+        }
+      }
+    }
+  },
+  "kontak": {
+    "meta": {
+      "title": "Kontak | Arnesh Dive",
+      "description": "Hubungi tim customer service Arnesh Dive untuk pertanyaan tentang pesanan, produk, atau layanan kami."
+    },
+    "header": {
+      "title": "Hubungi Kami",
+      "description": "Ada pertanyaan tentang pesanan atau produk? Tim kami siap membantu Anda."
+    },
+    "form": {
+      "heading": "Kirim Pesan",
+      "subjectOptions": {
+        "order": "Pesanan",
+        "shipping": "Pengiriman",
+        "return": "Pengembalian & Penukaran",
+        "product": "Produk",
+        "other": "Lainnya"
+      },
+      "successTitle": "Pesan Terkirim!",
+      "successDescription": "Terima kasih telah menghubungi kami. Tim kami akan merespons dalam 1-2 hari kerja.",
+      "sendAnother": "Kirim Pesan Lain",
+      "nameLabel": "Nama Lengkap",
+      "emailLabel": "Email",
+      "subjectLabel": "Subjek",
+      "subjectPlaceholder": "Pilih subjek...",
+      "messageLabel": "Pesan",
+      "sending": "Mengirim...",
+      "submit": "Kirim Pesan"
+    },
+    "info": {
+      "heading": "Informasi Kontak",
+      "whatsappLabel": "WhatsApp",
+      "whatsappNote": "Respon cepat dalam jam kerja",
+      "emailLabel": "Email",
+      "emailNote": "Respon dalam 1-2 hari kerja",
+      "hoursLabel": "Jam Operasional",
+      "instagramLabel": "Instagram",
+      "quickHelp": "Butuh bantuan cepat?",
+      "chatWhatsapp": "Chat WhatsApp",
+      "viewFaq": "Lihat FAQ"
+    }
+  },
+  "privasi": {
+    "meta": {
+      "title": "Kebijakan Privasi | Arnesh Dive",
+      "description": "Kebijakan privasi Arnesh Dive - bagaimana kami mengumpulkan, menggunakan, dan melindungi data Anda."
+    },
+    "header": {
+      "title": "Kebijakan Privasi",
+      "lastUpdated": "Terakhir diperbarui: Juli 2026"
+    },
+    "sections": {
+      "intro": {
+        "heading": "1. Pendahuluan",
+        "body": "Arnesh Dive (\"kami\") berkomitmen untuk melindungi privasi Anda. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi pribadi Anda ketika Anda mengunjungi website kami atau melakukan pembelian."
+      },
+      "dataCollected": {
+        "heading": "2. Informasi yang Kami Kumpulkan",
+        "intro": "Kami mengumpulkan informasi berikut:",
+        "items": {
+          "personal": {
+            "label": "Informasi Pribadi:",
+            "text": "Nama lengkap, alamat email, nomor telepon, alamat pengiriman"
+          },
+          "payment": {
+            "label": "Informasi Pembayaran:",
+            "text": "Detail pembayaran diproses secara aman oleh payment gateway kami"
+          },
+          "device": {
+            "label": "Informasi Perangkat:",
+            "text": "Alamat IP, jenis browser, sistem operasi, preferensi bahasa"
+          },
+          "navigation": {
+            "label": "Informasi Navigasi:",
+            "text": "Halaman yang dikunjungi, waktu kunjungan, sumber referral"
+          }
+        }
+      },
+      "usage": {
+        "heading": "3. Penggunaan Informasi",
+        "intro": "Informasi yang kami kumpulkan digunakan untuk:",
+        "items": {
+          "0": "Memproses dan mengirim pesanan Anda",
+          "1": "Berkomunikasi tentang status pesanan dan layanan pelanggan",
+          "2": "Mengirim newsletter dan promosi (dengan persetujuan Anda)",
+          "3": "Meningkatkan pengalaman pengguna di website kami",
+          "4": "Mencegah penipuan dan aktivitas ilegal"
+        }
+      },
+      "security": {
+        "heading": "4. Keamanan Data",
+        "body": "Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang sesuai untuk melindungi informasi pribadi Anda dari akses tidak sah, pengubahan, pengungkapan, atau penghancuran. Data pembayaran dienkripsi menggunakan protokol SSL/TLS."
+      },
+      "cookies": {
+        "heading": "5. Cookies",
+        "body": "Kami menggunakan cookies untuk meningkatkan pengalaman browsing Anda, mengingat preferensi Anda, dan menganalisis traffic website. Anda dapat mengatur browser Anda untuk menolak cookies, namun hal ini dapat mempengaruhi fungsionalitas website."
+      },
+      "sharing": {
+        "heading": "6. Berbagi Informasi",
+        "intro": "Kami tidak menjual informasi pribadi Anda kepada pihak ketiga. Kami hanya membagikan informasi yang diperlukan untuk:",
+        "items": {
+          "0": "Layanan pengiriman (nama, alamat, telepon)",
+          "1": "Pemrosesan pembayaran (detail transaksi)",
+          "2": "Penegakan hukum jika diwajibkan oleh hukum"
+        }
+      },
+      "rights": {
+        "heading": "7. Hak Anda",
+        "intro": "Anda memiliki hak untuk:",
+        "items": {
+          "0": "Mengakses informasi pribadi yang kami simpan tentang Anda",
+          "1": "Meminta koreksi data yang tidak akurat",
+          "2": "Meminta penghapusan data Anda",
+          "3": "Berhenti berlangganan newsletter kapan saja"
+        }
+      },
+      "contact": {
+        "heading": "8. Hubungi Kami",
+        "intro": "Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi kami melalui:"
+      }
+    }
+  },
+  "syarat": {
+    "meta": {
+      "title": "Syarat & Ketentuan | Arnesh Dive",
+      "description": "Syarat dan ketentuan penggunaan layanan Arnesh Dive - pembelian, pengiriman, dan kebijakan pengembalian."
+    },
+    "header": {
+      "title": "Syarat & Ketentuan",
+      "lastUpdated": "Terakhir diperbarui: Juli 2026"
+    },
+    "sections": {
+      "general": {
+        "heading": "1. Ketentuan Umum",
+        "body": "Dengan mengakses dan menggunakan website Arnesh Dive, Anda menyetujui untuk terikat dengan syarat dan ketentuan ini. Jika Anda tidak menyetujui syarat-syarat ini, mohon untuk tidak menggunakan layanan kami."
+      },
+      "account": {
+        "heading": "2. Akun Pengguna",
+        "intro": "Untuk melakukan pembelian, Anda perlu membuat akun. Anda bertanggung jawab untuk:",
+        "items": {
+          "0": "Menyimpan kerahasiaan informasi akun Anda",
+          "1": "Memberikan informasi yang akurat dan lengkap",
+          "2": "Segera memberitahu kami jika ada penggunaan tidak sah"
+        }
+      },
+      "purchase": {
+        "heading": "3. Pembelian",
+        "intro": "Dengan melakukan pembelian, Anda menyatakan bahwa:",
+        "items": {
+          "0": "Anda berusia minimal 18 tahun atau memiliki persetujuan orang tua/wali",
+          "1": "Informasi yang diberikan benar dan akurat",
+          "2": "Pembayaran yang dilakukan sah dan tidak melanggar hukum"
+        },
+        "priceNote": "Harga yang tertera dalam Rupiah Indonesia (IDR). Kami berhak mengubah harga sewaktu-waktu tanpa pemberitahuan sebelumnya."
+      },
+      "payment": {
+        "heading": "4. Pembayaran",
+        "body": "Kami menerima pembayaran melalui transfer bank, kartu kredit/debit, dan e-wallet (GoPay, OVO, Dana, QRIS). Pembayaran harus dilakukan sebelum pesanan diproses."
+      },
+      "shipping": {
+        "heading": "5. Pengiriman",
+        "intro": "Kami mengirim ke seluruh Indonesia melalui kurir partner kami. Estimasi waktu pengiriman:",
+        "standardLabel": "Standar:",
+        "standardValue": "3-5 hari kerja",
+        "expressLabel": "Express:",
+        "expressValue": "1-2 hari kerja",
+        "note": "Biaya pengiriman dihitung berdasarkan berat dan lokasi. Kami tidak bertanggung jawab atas keterlambatan yang disebabkan oleh pihak kurir atau force majeure."
+      },
+      "returns": {
+        "heading": "6. Kebijakan Pengembalian & Penukaran",
+        "intro": "Kami menerima pengembalian dan penukaran dalam kondisi berikut:",
+        "items": {
+          "0": "Produk dalam kondisi baru dan belum digunakan",
+          "1": "Packaging dan label masih lengkap",
+          "2": "Diajukan dalam waktu 7 hari setelah penerimaan",
+          "3": "Dilampiri bukti pembelian (invoice)"
+        },
+        "exclusionsLabel": "Produk yang tidak dapat dikembalikan:",
+        "exclusionsText": "produk yang sudah digunakan, drama/custom, dan produk dengan seal rusak."
+      },
+      "warranty": {
+        "heading": "7. Garansi",
+        "body": "Garansi produk mengikuti kebijakan masing-masing brand. Untuk klaim garansi, hubungi customer service kami dengan menyertakan bukti pembelian dan foto kerusakan."
+      },
+      "ip": {
+        "heading": "8. Kekayaan Intelektual",
+        "body": "Seluruh konten di website ini termasuk logo, gambar, teks, dan desain adalah milik Arnesh Dive dan dilindungi oleh hukum hak cipta. Dilarang menyalin atau menggunakan konten tanpa izin tertulis."
+      },
+      "liability": {
+        "heading": "9. Batasan Tanggung Jawab",
+        "body": "Kami tidak bertanggung jawab atas kerugian tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan produk atau layanan kami."
+      },
+      "changes": {
+        "heading": "10. Perubahan Kebijakan",
+        "body": "Kami berhak mengubah syarat dan ketentuan ini sewaktu-waktu. Perubahan akan efektif segera setelah dipublikasikan di website. Penggunaan berkelanjutan setelah perubahan dianggap sebagai persetujuan."
+      }
+    }
+  },
+  "blog": {
+    "meta": {
+      "title": "Dive Journal — Panduan Freediving & Scuba",
+      "description": "Catatan lapangan, panduan perlengkapan, dan pengetahuan keselamatan freediving serta scuba yang bisa langsung dipakai di sesi berikutnya.",
+      "ogTitle": "Dive Journal — Arnesh Dive",
+      "ogDescription": "Panduan perlengkapan dan catatan lapangan untuk diver Indonesia, ditulis tanpa jargon yang tidak perlu."
+    },
+    "title": "Dive Journal",
+    "list": {
+      "description": "Panduan yang fokus pada konteks perairan tropis dan kebutuhan diver Indonesia."
+    },
+    "featuredLabel": "Artikel pilihan",
+    "readNow": "Baca sekarang",
+    "moreArticles": "Artikel lainnya",
+    "emptyState": "Artikel sedang disiapkan. Silakan kembali lagi segera.",
+    "exploreEyebrow": "Dari teori ke air",
+    "exploreHeading": "Sudah tahu yang Anda butuhkan? Temukan gear yang sesuai, bukan sekadar yang paling mahal.",
+    "exploreCatalogCta": "Jelajahi katalog",
+    "readTime": "{minutes} menit baca",
+    "comingSoon": "Segera terbit",
+    "notFound": "Artikel tidak ditemukan",
+    "breadcrumb": {
+      "home": "Beranda",
+      "journal": "Journal"
+    },
+    "sourcesHeading": "Sumber & bacaan lanjut",
+    "sourcesDisclaimer": "Tautan ini dipakai sebagai rujukan umum dan dibuka di situs penerbitnya. Artikel ini tidak menggantikan pelatihan, arahan buddy, manual produsen, atau pemeriksaan teknisi yang sesuai.",
+    "continueFromHere": "Lanjutkan dari sini",
+    "ctaStaticText": "Cari perlengkapan berdasarkan kebutuhan Anda, bukan sekadar label produknya.",
+    "continueReading": "Lanjut membaca",
+    "relatedArticles": "Artikel terkait",
+    "allArticles": "Semua artikel",
+    "inThisArticle": "Dalam artikel ini",
+    "readArticle": "Baca artikel"
+  }
+}

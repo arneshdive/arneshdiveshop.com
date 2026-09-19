@@ -38,10 +38,13 @@ export function TrackProductView({ product, variants }: TrackProductViewProps) {
       })),
     });
 
-    // Determine badges
+    // Determine badges. Stored as stable, language-neutral keys (not
+    // localized text) — ProductCard translates these for display, since
+    // this value is persisted to localStorage and read back under whatever
+    // locale the viewer is on later.
     const badges: string[] = [];
-    if (product.isNewArrival) badges.push('Baru');
-    if (product.isOnSale) badges.push('Sale');
+    if (product.isNewArrival) badges.push('new');
+    if (product.isOnSale) badges.push('sale');
 
     // Add to recently viewed
     addToRecentlyViewed({

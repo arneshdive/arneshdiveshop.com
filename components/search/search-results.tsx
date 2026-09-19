@@ -1,6 +1,8 @@
 'use client';
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import { getPathname, useRouter, usePathname } from '@/i18n/navigation';
 import { ProductCard } from '@/components/product/product-card';
 import { Pagination } from '@/components/ui/pagination';
 
@@ -31,6 +33,9 @@ interface SearchResultsProps {
 }
 
 export function SearchResults({ products, total, sortBy, page, pageSize }: SearchResultsProps) {
+  const t = useTranslations('search');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -49,22 +54,34 @@ export function SearchResults({ products, total, sortBy, page, pageSize }: Searc
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  const getPageHref = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(newPage));
+    return getPathname({
+      href: { pathname, query: Object.fromEntries(params) },
+      locale,
+    });
+  };
+
   return (
     <div className="flex-1">
       {/* Header with count and sort */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
         <p className="text-sm sm:text-base text-neutral-600">
-          Menampilkan <span className="font-medium text-neutral-900">{total}</span> produk
+          {t.rich('showingCount', {
+            count: total,
+            b: (chunks) => <span className="font-medium text-neutral-900">{chunks}</span>,
+          })}
         </p>
         <select
           value={sortBy}
           onChange={(e) => handleSortChange(e.target.value)}
           className="border border-neutral-300 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base rounded focus:outline-none focus:ring-1 focus:ring-neutral-900 w-full sm:w-auto"
         >
-          <option value="newest">Terbaru</option>
-          <option value="price-asc">Harga: Rendah ke Tinggi</option>
-          <option value="price-desc">Harga: Tinggi ke Rendah</option>
-          <option value="popular">Paling Populer</option>
+          <option value="newest">{t('sort.newest')}</option>
+          <option value="price-asc">{t('sort.priceAsc')}</option>
+          <option value="price-desc">{t('sort.priceDesc')}</option>
+          <option value="popular">{t('sort.popular')}</option>
         </select>
       </div>
 
@@ -81,15 +98,19 @@ export function SearchResults({ products, total, sortBy, page, pageSize }: Searc
               currentPage={page || 1}
               totalPages={totalPages}
               onPageChange={handlePageChange}
+              getHref={getPageHref}
+              labels={{
+                previous: tCommon('pagination.previous'),
+                next: tCommon('pagination.next'),
+                page: (p) => tCommon('pagination.page', { page: p }),
+              }}
             />
           )}
         </>
       ) : (
         <div className="text-center py-16">
-          <p className="text-lg text-neutral-600 mb-2">Tidak ada produk ditemukan</p>
-          <p className="text-sm text-neutral-400">
-            Coba ubah filter atau kata kunci pencarian Anda.
-          </p>
+          <p className="text-lg text-neutral-600 mb-2">{t('empty.title')}</p>
+          <p className="text-sm text-neutral-400">{t('empty.description')}</p>
         </div>
       )}
     </div>

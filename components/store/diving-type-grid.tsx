@@ -1,6 +1,7 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
-import { DIVING_TYPES, formatDivingType } from '@/lib/constants/diving-types';
+import { DIVING_TYPES } from '@/lib/constants/diving-types';
 import type { DivingType } from '@/lib/db/schema';
 
 interface DivingTypeTile {
@@ -10,47 +11,50 @@ interface DivingTypeTile {
   image: string;
 }
 
-// Marketing copy + banner image per diving type — kept separate from
+// Marketing copy image per diving type — kept separate from
 // DIVING_TYPES (lib/constants/diving-types.ts) so the enum stays the
 // single source of truth for which types exist, matching the admin
 // product form's checklist.
-const TILE_CONTENT: Record<DivingType, { subtitle: string; image: string }> = {
-  freediving: { subtitle: 'Tenang di bawah, bebas di dalam.', image: '/freediving-banner.webp' },
-  scuba: { subtitle: 'Lebih dalam, lebih lama bertahan.', image: '/scuba-banner.webp' },
-  spearfishing: { subtitle: 'Satu bidikan, satu cerita.', image: '/spearfishing-banner.webp' },
-  surfing: { subtitle: 'Taklukkan setiap ombaknya.', image: '/surfing-banner.webp' },
-  swimming: { subtitle: 'Gerak bebas, napas lega.', image: '/swimming-banner.webp' },
+const TILE_IMAGES: Record<DivingType, string> = {
+  freediving: '/freediving-banner.webp',
+  scuba: '/scuba-banner.webp',
+  spearfishing: '/spearfishing-banner.webp',
+  surfing: '/surfing-banner.webp',
+  swimming: '/swimming-banner.webp',
 };
 
-const divingTypeTiles: DivingTypeTile[] = [
-  ...DIVING_TYPES.map((type) => ({
-    title: formatDivingType(type),
-    subtitle: TILE_CONTENT[type].subtitle,
-    href: `/produk?divingType=${type}`,
-    image: TILE_CONTENT[type].image,
-  })),
-  {
-    title: 'Lainnya',
-    subtitle: 'Lengkapi semua kebutuhan selammu.',
-    href: '/produk',
-    image: '/lainnya-banner.webp',
-  },
-];
+export async function DivingTypeGrid() {
+  const t = await getTranslations('home');
+  const tDivingTypes = await getTranslations('common.divingTypes');
 
-export function DivingTypeGrid() {
+  const divingTypeTiles: DivingTypeTile[] = [
+    ...DIVING_TYPES.map((type) => ({
+      title: tDivingTypes(type),
+      subtitle: t(`divingGrid.${type}Subtitle`),
+      href: `/produk?divingType=${type}`,
+      image: TILE_IMAGES[type],
+    })),
+    {
+      title: t('divingGrid.otherTitle'),
+      subtitle: t('divingGrid.otherSubtitle'),
+      href: '/produk',
+      image: '/lainnya-banner.webp',
+    },
+  ];
+
   return (
     <section className="py-12 lg:py-16">
       <div className="max-w-[1440px] mx-auto px-4 lg:px-12">
         <div className="flex flex-col mb-10">
-          <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">Kategori</span>
+          <span className="text-[10px] lg:text-xs text-neutral-500 uppercase tracking-widest mb-2">{t('divingGrid.category')}</span>
           <h2 className="text-3xl lg:text-[44px] font-bold tracking-tighter mb-2">
-            Temukan{' '}
+            {t('divingGrid.headingPrefix')}{' '}
             <em
               is="highlighted-text"
               className="highlighted-text not-italic relative inline-block animated"
               data-style="scribble"
             >
-              <span className="relative z-10">Aktivitas Anda</span>
+              <span className="relative z-10">{t('divingGrid.headingHighlight')}</span>
               <svg
                 className="icon icon-squiggle-underline absolute -bottom-1 lg:-bottom-2 left-0 w-full"
                 viewBox="-347 -30.1947 694 96.19"
@@ -69,7 +73,7 @@ export function DivingTypeGrid() {
               </svg>
             </em>
           </h2>
-          <p className="text-sm lg:text-base max-w-md">Temukan peralatan yang tepat untuk gaya menyelam Anda.</p>
+          <p className="text-sm lg:text-base max-w-md">{t('divingGrid.description')}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-3">

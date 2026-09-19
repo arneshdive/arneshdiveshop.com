@@ -1,0 +1,1048 @@
+{
+  "nav": {
+    "catalog": "すべての商品",
+    "newArrivals": "新着商品",
+    "diveJournal": "ダイブジャーナル",
+    "sale": "セール",
+    "search": "検索",
+    "cart": "カート",
+    "account": "アカウント",
+    "menu": "メニュー",
+    "closeMenu": "メニューを閉じる",
+    "myAccount": "マイアカウント",
+    "language": "言語"
+  },
+  "footer": {
+    "copyright": "{year} Arnesh Dive. All rights reserved.",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsAndConditions": "利用規約",
+    "help": "ヘルプ",
+    "contact": "お問い合わせ"
+  },
+  "newsletter": {
+    "heading": "最新のお得な情報をお届けします",
+    "emailPlaceholder": "メールアドレス",
+    "subscribeAria": "登録",
+    "subscribeAnother": "別のメールアドレスを登録",
+    "errors": {
+      "generic": "エラーが発生しました",
+      "invalidEmail": "メールアドレスが無効です",
+      "rateLimited": "リクエストが多すぎます。{seconds}秒後にもう一度お試しください。"
+    },
+    "success": {
+      "alreadySubscribed": "このメールアドレスは既に登録されています",
+      "reactivated": "登録を再開しました!",
+      "subscribed": "ご登録ありがとうございます!"
+    }
+  },
+  "common": {
+    "pagination": {
+      "previous": "前のページ",
+      "next": "次のページ",
+      "page": "{page}ページ"
+    },
+    "valueProps": {
+      "originalProduct": {
+        "title": "正規品保証",
+        "desc": "100%品質保証"
+      },
+      "securePayment": {
+        "title": "安全な決済",
+        "desc": "安心のお取引"
+      },
+      "nationwideShipping": {
+        "title": "インドネシア全国配送",
+        "desc": "広範囲にお届け"
+      }
+    },
+    "loading": "読み込み中...",
+    "divingTypes": {
+      "freediving": "フリーダイビング",
+      "scuba": "スキューバ",
+      "spearfishing": "スピアフィッシング",
+      "surfing": "サーフィン",
+      "swimming": "スイミング"
+    }
+  },
+  "auth": {
+    "loading": "読み込み中...",
+    "brandAlt": "Arnesh Dive",
+    "tabs": {
+      "login": "ログイン",
+      "register": "新規登録"
+    },
+    "fields": {
+      "fullName": "氏名",
+      "fullNamePlaceholder": "お名前",
+      "email": "メールアドレス",
+      "emailPlaceholder": "email@example.com"
+    },
+    "buttons": {
+      "processing": "処理中...",
+      "login": "ログイン",
+      "register": "新規登録",
+      "redirecting": "移動中...",
+      "verify": "確認"
+    },
+    "terms": {
+      "prefix": "続行することで、当社の",
+      "link": "利用規約",
+      "suffix": "に同意したものとみなされます"
+    },
+    "backToStore": "← ストアに戻る",
+    "backToLogin": "← ログインに戻る",
+    "verify": {
+      "title": "メール確認",
+      "description": "以下に送信されたOTPコードを入力してください:",
+      "expiresIn": "コードの有効期限は{minutes}分です",
+      "otpLabel": "OTPコード",
+      "otpPlaceholder": "6桁のOTPコードを入力",
+      "resend": "OTPコードを再送信",
+      "resendWithCooldown": "OTPコードを再送信 ({seconds}秒)"
+    },
+    "errors": {
+      "emailRequired": "メールアドレスは必須です",
+      "emailInvalid": "メールアドレスの形式が正しくありません",
+      "nameRequired": "氏名は必須です",
+      "otpRequired": "OTPコードは必須です",
+      "otpInvalidLength": "OTPコードは6桁である必要があります",
+      "generic": "エラーが発生しました",
+      "genericServer": "サーバーエラーが発生しました",
+      "resendFailed": "再送信に失敗しました"
+    },
+    "success": {
+      "otpResent": "新しいOTPコードを送信しました"
+    }
+  },
+  "search": {
+    "showingCount": "<b>{count}</b>件の商品を表示中",
+    "sort": {
+      "newest": "新着順",
+      "priceAsc": "価格が低い順",
+      "priceDesc": "価格が高い順",
+      "popular": "人気順"
+    },
+    "empty": {
+      "title": "商品が見つかりません",
+      "description": "フィルターや検索キーワードを変更してお試しください。"
+    },
+    "filters": {
+      "divingType": "ダイビングタイプ",
+      "clearDivingType": "ダイビングタイプの絞り込みを解除",
+      "category": "カテゴリー",
+      "clearCategory": "カテゴリーの絞り込みを解除",
+      "brand": "ブランド",
+      "clearBrand": "ブランドの絞り込みを解除",
+      "price": "価格",
+      "priceMinPlaceholder": "最小",
+      "priceMaxPlaceholder": "最大",
+      "clearAll": "すべての絞り込みを解除",
+      "filterButton": "絞り込み",
+      "closeAria": "閉じる",
+      "clearFilterButton": "絞り込みを解除",
+      "apply": "適用"
+    },
+    "modal": {
+      "placeholder": "商品を検索...",
+      "closeAria": "閉じる",
+      "categoriesLabel": "カテゴリー",
+      "enterHint": "<kbd>Enter</kbd> を押して検索、またはカテゴリーを選択"
+    }
+  },
+  "product": {
+    "addedToast": "追加しました",
+    "viewCartAction": "見る",
+    "addToCartErrorToast": "商品を追加できませんでした",
+    "addToCartErrorDescription": "エラーが発生しました。もう一度お試しください。",
+    "badgeSale": "セール",
+    "badgeNew": "新着",
+    "alternateViewAlt": "{title} - 別の画像",
+    "added": "追加しました",
+    "addShort": "追加",
+    "addToCart": "カートに追加",
+    "addingToCart": "追加中...",
+    "quantityLabel": "数量",
+    "inStock": "在庫あり",
+    "outOfStock": "在庫切れ",
+    "noDescription": "説明はありません。",
+    "showMore": "もっと見る",
+    "showLess": "少なく表示",
+    "startingFrom": "から",
+    "descriptionTab": "説明",
+    "specificationsTab": "仕様",
+    "divingTypeLabel": "ダイビングタイプ",
+    "categoryLabel": "カテゴリー",
+    "brandLabel": "ブランド",
+    "galleryImageAlt": "{title} - 画像 {index}",
+    "galleryThumbnailAlt": "{title} - サムネイル {index}",
+    "recentlyViewed": {
+      "eyebrow": "履歴",
+      "title": "最近<highlight>見た商品</highlight>",
+      "description": "最近見た商品から続けて見る。"
+    }
+  },
+  "produk": {
+    "meta": {
+      "allCatalogTitle": "すべての商品",
+      "defaultCatalogDescription": "Arnesh Diveで、フリーダイビング、スキューバ、スピアフィッシング、サーフィン、スイミング用の高品質な用具の全コレクションをご覧ください。",
+      "searchResultsTitle": "「{query}」の検索結果",
+      "searchResultsDescription": "お探しの商品をコレクションからお見つけください。",
+      "newArrivalsTitle": "新着商品",
+      "saleTitle": "セール",
+      "divingTypeTitle": "{label}コレクション",
+      "divingTypeDescription": "Arnesh Diveの高品質な{label}コレクションをご覧ください。",
+      "categoryDescription": "Arnesh Diveの高品質な{label}商品をご覧ください。",
+      "brandDescription": "{label}の商品を、Arnesh Diveで豊富に取り扱っています。"
+    },
+    "filters": {
+      "newArrival": "ダイビングの冒険のための最新アイテム。",
+      "onSale": "厳選商品の特別割引。",
+      "freediving": "海中の冒険のための高品質なフリーダイビング用具。",
+      "scuba": "深海探索のための本格的なスキューバダイビング用具。",
+      "spearfishing": "水中ハンティングのための信頼できるスピアフィッシング用具。",
+      "surfing": "どんな波にも挑めるサーフィン用品。",
+      "swimming": "水中で自由に動けるスイミング用品。"
+    },
+    "banner": {
+      "newArrivalsWithQuery": "新着商品: 「{query}」",
+      "saleWithQuery": "セール: 「{query}」",
+      "freedivingWithQuery": "フリーダイビング: 「{query}」",
+      "freedivingTitle": "フリーダイビングコレクション",
+      "scubaWithQuery": "スキューバ: 「{query}」",
+      "scubaTitle": "スキューバコレクション",
+      "spearfishingWithQuery": "スピアフィッシング: 「{query}」",
+      "spearfishingTitle": "スピアフィッシングコレクション",
+      "surfingWithQuery": "サーフィン: 「{query}」",
+      "surfingTitle": "サーフィンコレクション",
+      "swimmingWithQuery": "スイミング: 「{query}」",
+      "swimmingTitle": "スイミングコレクション",
+      "categoryWithQuery": "{name}: 「{query}」",
+      "categoryDefaultDescription": "このカテゴリーの商品をご覧ください。",
+      "brandWithQuery": "{name}: 「{query}」",
+      "brandDefaultDescription": "信頼できるブランドの商品。",
+      "readJournal": "ジャーナルを読む: {title}"
+    },
+    "breadcrumb": {
+      "home": "ホーム"
+    },
+    "pdp": {
+      "notFound": "商品が見つかりません",
+      "backToCatalog": "カタログに戻る",
+      "metaDescriptionPadding": "フリーダイビング＆スキューバダイビング用品のオンラインショップ、Arnesh Diveで高品質な{name}{category}をお買い求めください。",
+      "breadcrumbProduk": "商品",
+      "badgeSale": "セール",
+      "badgeNew": "新着",
+      "relatedProductsLabel": "関連商品",
+      "relatedProductsTitle": "関連商品",
+      "relatedProductsEmpty": "関連商品が見つかりません。"
+    }
+  },
+  "account": {
+    "sidebar": {
+      "orders": "注文",
+      "addresses": "配送先",
+      "settings": "設定",
+      "logout": "ログアウト"
+    },
+    "addresses": {
+      "title": "マイ配送先",
+      "addNew": "配送先を追加",
+      "loading": "配送先を読み込み中...",
+      "confirmDelete": "この配送先を削除してもよろしいですか?",
+      "loginRequired": {
+        "title": "ログインしてください",
+        "description": "配送先を管理するにはログインしてください",
+        "cta": "ログイン"
+      },
+      "errors": {
+        "loadFailedTitle": "読み込みに失敗しました",
+        "retry": "再試行",
+        "unauthorized": "配送先を表示するにはログインしてください",
+        "loadFailed": "配送先の読み込みに失敗しました",
+        "createFailed": "配送先の追加に失敗しました",
+        "updateFailed": "配送先の更新に失敗しました",
+        "deleteFailed": "配送先の削除に失敗しました"
+      },
+      "empty": {
+        "title": "配送先はまだありません",
+        "description": "配送先を登録すると、次回のご購入がスムーズになります。"
+      },
+      "toast": {
+        "created": "配送先を追加しました",
+        "updated": "配送先を更新しました",
+        "deleted": "配送先を削除しました"
+      },
+      "card": {
+        "default": "デフォルト",
+        "setDefault": "デフォルトに設定",
+        "edit": "編集",
+        "delete": "削除"
+      }
+    },
+    "orders": {
+      "title": "マイ注文",
+      "loading": "注文を読み込み中...",
+      "loginRequired": {
+        "title": "ログインしてください",
+        "description": "注文履歴を見るにはログインしてください",
+        "cta": "ログイン"
+      },
+      "errors": {
+        "loadFailedTitle": "読み込みに失敗しました",
+        "retry": "再試行",
+        "loadFailed": "注文の読み込みに失敗しました"
+      },
+      "empty": {
+        "title": "注文はまだありません",
+        "description": "このステータスの注文は見つかりませんでした。お買い物を始めて、最高のダイビング用品を見つけましょう!",
+        "cta": "お買い物を始める"
+      },
+      "filters": {
+        "all": "すべて"
+      },
+      "status": {
+        "pending_payment": "支払い待ち",
+        "processing": "処理中",
+        "shipped": "発送済み",
+        "delivered": "完了",
+        "cancelled": "キャンセル済み",
+        "refunded": "返金済み"
+      },
+      "paymentStatus": {
+        "pending": "保留中",
+        "paid": "支払い済み",
+        "failed": "失敗",
+        "expired": "期限切れ",
+        "cancelled": "キャンセル済み",
+        "refunded": "返金済み"
+      },
+      "paymentMethods": {
+        "credit_card": "クレジットカード",
+        "bank_transfer": "銀行振込",
+        "bca_va": "BCA Virtual Account",
+        "bni_va": "BNI Virtual Account",
+        "bri_va": "BRI Virtual Account",
+        "echannel": "Mandiri Bill Payment",
+        "gopay": "GoPay",
+        "gopay_partner": "GoPay",
+        "ovo": "OVO",
+        "shopeepay": "ShopeePay",
+        "qris": "QRIS",
+        "danamon_online": "Danamon Online",
+        "akulaku": "Akulaku"
+      },
+      "copyHint": "クリックしてコピー",
+      "moreItems": "他 {count} 点",
+      "qtyLabel": "数量: {count}",
+      "total": "合計",
+      "payNow": "今すぐ支払う",
+      "trackShipment": "配送状況を確認",
+      "viewDetail": "詳細を見る",
+      "payLinkUnavailable": {
+        "title": "支払いリンクが利用できません",
+        "description": "カスタマーサービスにお問い合わせください。"
+      },
+      "detail": {
+        "backToOrders": "注文一覧へ戻る",
+        "backToList": "注文リストへ戻る",
+        "loading": "注文を読み込み中...",
+        "notFoundTitle": "注文が見つかりません",
+        "notFoundDescription": "お探しの注文が見つからないか、アクセス権がありません。",
+        "orderNumber": "注文 #{number}",
+        "createdOn": "{date} に作成",
+        "errors": {
+          "notFound": "注文が見つかりません",
+          "forbidden": "この注文へのアクセス権がありません",
+          "loadFailed": "注文の読み込みに失敗しました"
+        },
+        "paymentBanner": {
+          "title": "お支払い待ち",
+          "description": "以下の期限までにお支払いを完了してください",
+          "deadlineLabel": "お支払い期限",
+          "vaLabel": "{bank} バーチャルアカウント",
+          "transferExact": "正確な金額を振り込んでください: {amount}",
+          "mandiriTitle": "Mandiri Bill Payment",
+          "billerCode": "ビラーコード:",
+          "billKey": "ビルキー:",
+          "payExact": "正確な金額をお支払いください: {amount}",
+          "methodLabel": "支払い方法"
+        },
+        "items": {
+          "title": "注文商品"
+        },
+        "summary": {
+          "subtotal": "小計",
+          "shipping": "配送料",
+          "free": "無料",
+          "discount": "割引"
+        },
+        "tracking": {
+          "title": "配送追跡番号",
+          "copyHint": "追跡番号をコピー",
+          "shippedOn": "{date} に発送",
+          "inTransit": "ご注文は配送中です。配送業者が荷物を受け取り次第、追跡番号が表示されます。"
+        },
+        "status": {
+          "title": "注文状況",
+          "processingNote": "ご注文の梱包中です。発送後に追跡番号が表示されます。",
+          "waitingPayment": "お支払い待ち"
+        },
+        "payment": {
+          "title": "お支払い",
+          "statusLabel": "状況",
+          "methodLabel": "方法",
+          "paidAtLabel": "支払日"
+        },
+        "shipping": {
+          "title": "配送情報",
+          "recipient": "お届け先",
+          "address": "住所"
+        },
+        "notes": {
+          "title": "備考"
+        },
+        "help": {
+          "title": "お困りですか?",
+          "description": "ご注文についてご質問がある場合は、カスタマーサービスにお問い合わせください。",
+          "whatsapp": "WhatsAppでチャット"
+        }
+      }
+    },
+    "settings": {
+      "title": "アカウント設定",
+      "loading": "プロフィールを読み込み中...",
+      "loginRequired": {
+        "description": "アカウント設定にアクセスするにはログインしてください",
+        "cta": "ログイン"
+      },
+      "errors": {
+        "unauthorized": "設定にアクセスするにはログインしてください",
+        "loadFailed": "プロフィールの読み込みに失敗しました",
+        "updateFailed": "プロフィールの更新に失敗しました",
+        "retry": "再試行"
+      },
+      "toast": {
+        "saved": "プロフィールを保存しました"
+      },
+      "profile": {
+        "title": "プロフィール",
+        "photoLabel": "プロフィール写真",
+        "photoHint": "JPG、PNG。最大2MB",
+        "uploadPhoto": "写真をアップロード",
+        "firstName": "名",
+        "lastName": "姓",
+        "email": "メールアドレス",
+        "emailHint": "メールアドレスはログインに使用され、変更できません",
+        "phone": "電話番号",
+        "save": "変更を保存",
+        "saving": "保存中..."
+      },
+      "security": {
+        "title": "セキュリティ",
+        "passwordLabel": "パスワード",
+        "passwordHint": "3か月前に変更済み",
+        "changePassword": "パスワードを変更"
+      },
+      "danger": {
+        "title": "危険な操作",
+        "description": "アカウントを削除すると、すべてのデータが永久に削除されます。この操作は元に戻せません。",
+        "deleteAccount": "アカウントを削除する"
+      }
+    }
+  },
+  "cart": {
+    "eyebrow": "ショッピング",
+    "title": "カート",
+    "continueShopping": "ショッピングを続ける",
+    "empty": {
+      "title": "カートは空です",
+      "description": "カートにはまだ商品がありません。ショッピングを始めて、必要なダイビング用品を見つけましょう。",
+      "cta": "ショッピングを始める"
+    },
+    "item": {
+      "decreaseAria": "数量を減らす",
+      "increaseAria": "数量を増やす",
+      "removeAria": "商品を削除"
+    },
+    "summary": {
+      "title": "注文概要",
+      "qty": "数量: {quantity}",
+      "promoLabel": "プロモコード",
+      "removePromoAria": "プロモコードを削除",
+      "promoPlaceholder": "コードを入力",
+      "promoApply": "適用",
+      "promoApplying": "確認中...",
+      "promoRequiredError": "プロモコードを入力してください",
+      "promoInvalidError": "無効なプロモコードです",
+      "promoAppliedMessage": "{amount}の割引が適用されました!",
+      "subtotal": "小計",
+      "discount": "割引",
+      "shipping": "配送料",
+      "shippingCalculatedAtCheckout": "チェックアウト時に計算されます",
+      "total": "合計",
+      "checkoutCta": "チェックアウトに進む",
+      "checkoutShort": "チェックアウト",
+      "detailsToggle": "詳細",
+      "secureTransaction": "安全に暗号化された取引"
+    }
+  },
+  "checkout": {
+    "title": "チェックアウト",
+    "subtitle": "情報を入力して続行してください",
+    "preparingSession": "チェックアウトを準備中...",
+    "processingPayment": "支払いを処理中...",
+    "continueToPayment": "お支払いに進む",
+    "backToCart": "カートに戻る",
+    "paymentTab": {
+      "title": "処理中...",
+      "processing": "支払いを処理中..."
+    },
+    "validation": {
+      "incompleteTitle": "必要な情報を入力してください",
+      "incompleteDescription": "以下の項目を入力してください: {fields}",
+      "fieldEmail": "メールアドレス",
+      "fieldPhone": "電話番号",
+      "fieldFullName": "氏名",
+      "fieldDestination": "地区/郡",
+      "fieldAddress": "住所"
+    },
+    "errors": {
+      "createSessionFailed": "チェックアウトセッションの作成に失敗しました",
+      "updateShippingFailed": "配送方法の更新に失敗しました",
+      "staleSession": "このチェックアウトセッションは無効になりました。もう一度お試しください",
+      "createPaymentFailed": "支払いトランザクションの作成に失敗しました"
+    },
+    "toast": {
+      "paymentOpenedTitle": "新しいタブで決済ページを開きました",
+      "paymentOpenedDescription": "お支払いを完了してください",
+      "errorTitle": "エラーが発生しました",
+      "genericRetry": "もう一度お試しください"
+    },
+    "contact": {
+      "title": "連絡先情報",
+      "emailLabel": "メールアドレス",
+      "emailPlaceholder": "email@example.com",
+      "emailRequired": "メールアドレスは必須です",
+      "emailInvalid": "メールアドレスの形式が正しくありません",
+      "phoneLabel": "電話番号",
+      "phonePlaceholder": "0812-3456-7890",
+      "phoneRequired": "電話番号は必須です",
+      "phoneInvalid": "電話番号の形式が正しくありません"
+    },
+    "shipping": {
+      "title": "配送先住所",
+      "fullNameLabel": "氏名",
+      "fullNamePlaceholder": "受取人の氏名",
+      "fullNameRequired": "氏名は必須です",
+      "destinationLabel": "地区/郡",
+      "destinationPlaceholder": "地区または郡を検索...",
+      "destinationRequired": "地区/郡を選択してください",
+      "destinationHint": "配送先の地区または郡名を入力してください",
+      "destinationSelectedLabel": "配送先",
+      "address1Label": "住所",
+      "address1Placeholder": "町名、番地、建物名など...",
+      "address1Required": "住所は必須です",
+      "address2Label": "追加情報",
+      "optionalTag": "任意",
+      "address2Placeholder": "目印、配達員へのメモなど..."
+    },
+    "shippingMethod": {
+      "title": "配送方法",
+      "calculating": "配送料を計算中...",
+      "verifyAddressHint": "配送先住所を確認してください。",
+      "noRatesFound": "この住所には利用可能な配送業者がありません。",
+      "selectDestinationHint": "配送業者の選択肢を表示するには、配送先の地区/郡を選択してください。",
+      "serviceCountAndPrice": "{count}件のサービス • {price}から",
+      "selectedBadge": "選択中",
+      "errors": {
+        "fetchFailed": "配送料の取得に失敗しました"
+      },
+      "badges": {
+        "sameDay": "当日配送",
+        "nextDay": "翌日配送",
+        "regular": "通常",
+        "economy": "エコノミー",
+        "cargo": "貨物"
+      }
+    },
+    "savedAddress": {
+      "loading": "保存された住所を読み込み中...",
+      "saving": "住所を保存中...",
+      "addNew": "新しい住所を追加",
+      "defaultBadge": "デフォルト",
+      "errors": {
+        "loadFailed": "保存された住所の読み込みに失敗しました",
+        "saveFailed": "住所の保存に失敗しました"
+      }
+    },
+    "summary": {
+      "title": "注文概要",
+      "qty": "数量: {quantity}",
+      "subtotal": "小計",
+      "discount": "割引",
+      "shipping": "配送料",
+      "shippingPendingCourier": "配送業者を選択後に計算されます",
+      "total": "合計",
+      "secureTransaction": "安全に暗号化された取引"
+    },
+    "callback": {
+      "viewOrder": "注文を見る",
+      "toAccount": "マイアカウントへ",
+      "retry": "再試行",
+      "success": {
+        "title": "決済が完了しました!",
+        "description": "ありがとうございます!ご注文は確定し、処理中です。"
+      },
+      "pending": {
+        "title": "決済待ち",
+        "description": "お支払いを処理しています。提供された案内に従ってお支払いを完了してください。"
+      },
+      "failed": {
+        "title": "決済に失敗しました",
+        "description": "申し訳ございません。お支払いを処理できませんでした。もう一度お試しいただくか、カスタマーサービスにお問い合わせください。"
+      }
+    },
+    "success": {
+      "loadingOrder": "注文情報を読み込み中...",
+      "thankYouTitle": "ありがとうございます!",
+      "thankYouDescription": "ご注文が完了しました",
+      "orderNumberLabel": "注文番号:",
+      "pendingPayment": "決済待ち",
+      "orderConfirmed": "注文確定",
+      "shippingInfoTitle": "配送情報",
+      "nameLabel": "氏名",
+      "orderDateLabel": "注文日",
+      "addressLabel": "住所",
+      "emailLabel": "メールアドレス",
+      "phoneLabel": "電話番号",
+      "orderDetailsTitle": "注文詳細",
+      "qtyLabel": "数量: {quantity}",
+      "subtotal": "小計",
+      "shippingCost": "配送料",
+      "free": "無料",
+      "discount": "割引",
+      "total": "合計",
+      "paymentInstructionsTitle": "お支払い方法について",
+      "paymentInstructionsDescription": "お支払いの確認待ちです。選択した方法でお支払いを完了してください。",
+      "paymentMethodLabel": "支払い方法:",
+      "viewPaymentDetails": "支払い詳細を見る →",
+      "paymentCompleted": "支払い完了 • {date}",
+      "paymentMethodShort": "方法: {method}",
+      "viewOrders": "注文一覧を見る",
+      "continueShopping": "ショッピングを続ける",
+      "errors": {
+        "notFound": "注文が見つかりません",
+        "noAccess": "この注文へのアクセス権がありません",
+        "loadFailed": "注文の読み込みに失敗しました",
+        "notFoundTitle": "注文が見つかりません",
+        "notFoundDescription": "ご注文の詳細が見つかりませんでした。確認メールをご確認いただくか、カスタマーサービスにお問い合わせください。",
+        "viewMyOrders": "注文一覧を見る"
+      },
+      "paymentMethods": {
+        "creditCard": "クレジットカード",
+        "bankTransfer": "銀行振込"
+      }
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "フリーダイビング、スキューバ、スピアフィッシング、サーフィン&スイミング",
+      "description": "Arnesh Diveのフリーダイビング、スキューバ、スピアフィッシング、サーフィン、スイミング用品。品質保証、インドネシア全土に配送。"
+    },
+    "hero": {
+      "eyebrow": "スキューバ・フリーダイビング・スピアフィッシング",
+      "title": "深海を探検しよう。\n自信を持って潜ろう。",
+      "subtitle": "信頼できるブランドのフリーダイビング&スキューバ用品を、すべてのレベルのダイバーへ。",
+      "ctaText": "すべてのカタログ",
+      "fallbackTitle": "深海を探検する",
+      "imageAltFallback": "ヒーロー画像",
+      "ctaFallback": "コレクションを見る",
+      "goToSlide": "スライド{number}へ移動"
+    },
+    "newArrivals": {
+      "eyebrow": "新着商品",
+      "headingPrefix": "新着",
+      "headingHighlight": "商品",
+      "description": "水中の冒険のための最新のダイビング用品。"
+    },
+    "sale": {
+      "eyebrow": "セール",
+      "headingPrefix": "特別",
+      "headingHighlight": "プロモーション",
+      "description": "選定商品の特別割引。"
+    },
+    "explore": {
+      "eyebrow": "すべての商品",
+      "headingPrefix": "もっと",
+      "headingHighlight": "探す",
+      "description": "あなたに必要なダイビング用品を見つけましょう。"
+    },
+    "viewAll": "すべて見る",
+    "community": {
+      "eyebrow": "水中の自由を探検しよう",
+      "heading": "私たちの旅をフォローしよう",
+      "description1": "Arnesh Diveがインドネシア全土のダイバーの冒険にどのように寄り添っているかをご覧ください。",
+      "description2": "フリーダイビングからスキューバまで、すべてのダイブが新しい物語です。次のダイビングの冒険へのインスピレーションを見つけましょう。",
+      "instagramCta": "Instagram",
+      "instagramAlt": "Instagramの投稿"
+    },
+    "divingGrid": {
+      "category": "カテゴリー",
+      "headingPrefix": "あなたの",
+      "headingHighlight": "アクティビティを見つける",
+      "description": "あなたのダイビングスタイルに合った用品を見つけましょう。",
+      "freedivingSubtitle": "水中では静かに、心は自由に。",
+      "scubaSubtitle": "より深く、より長く。",
+      "spearfishingSubtitle": "一撃、一つの物語。",
+      "surfingSubtitle": "すべての波を制覇しよう。",
+      "swimmingSubtitle": "自由に動き、楽に呼吸する。",
+      "otherTitle": "その他",
+      "otherSubtitle": "すべてのダイビングニーズに対応。"
+    }
+  },
+  "faq": {
+    "meta": {
+      "title": "ヘルプセンター | Arnesh Dive",
+      "description": "Arnesh Diveでの購入、配送、商品に関するよくある質問。"
+    },
+    "header": {
+      "title": "ヘルプセンター",
+      "description": "よくある質問への回答をお探しください。さらにサポートが必要な場合はお問い合わせください。",
+      "searchPlaceholder": "質問を検索...",
+      "stillNeedHelp": "さらにサポートが必要ですか?",
+      "contactUs": "お問い合わせ"
+    },
+    "categories": {
+      "pengiriman": "配送",
+      "pengembalian": "返品",
+      "pembayaran": "お支払い",
+      "produk": "商品",
+      "akun": "アカウント"
+    },
+    "items": {
+      "pengiriman": {
+        "0": {
+          "question": "配送にはどのくらい時間がかかりますか?",
+          "answer": "通常配送は3〜5営業日、速達配送は1〜2営業日かかります。配送時間は倉庫から発送された時点から計算されます。"
+        },
+        "1": {
+          "question": "注文はどのように追跡できますか?",
+          "answer": "注文が発送されると、追跡番号と配送状況を確認できるリンクが記載されたメールが届きます。アカウントの「注文履歴」ページでも状況を確認できます。"
+        },
+        "2": {
+          "question": "チェックアウト後に配送先を変更できますか?",
+          "answer": "配送先の変更は、注文が処理される前のみ可能です。できるだけ早くWhatsAppまたはメールでカスタマーサービスにご連絡ください。"
+        },
+        "3": {
+          "question": "利用できる配送業者は何ですか?",
+          "answer": "JNE、J&T Express、SiCepat、ID Express、AnterAja、POS Indonesia、Tikiと提携しています。利用可能な配送業者は地域によって異なる場合があります。"
+        }
+      },
+      "pengembalian": {
+        "0": {
+          "question": "商品はどのように返品できますか?",
+          "answer": "注文受領後7日以内にカスタマーサービスにご連絡ください。商品の写真と返品理由を添えてください。承認されると、返送方法のご案内が届きます。"
+        },
+        "1": {
+          "question": "返品には費用がかかりますか?",
+          "answer": "商品に欠陥がある場合や注文と異なる場合を除き、返品時の配送料は購入者負担となります。交換時の再配送費用は当社が負担します。"
+        },
+        "2": {
+          "question": "返金処理にはどのくらい時間がかかりますか?",
+          "answer": "商品を受領し検査した後、3〜5営業日以内に返金処理が行われます。アカウントへの反映時間はお支払い方法と銀行によって異なります。"
+        },
+        "3": {
+          "question": "返品できない商品は何ですか?",
+          "answer": "使用済みの商品、カスタム/特別カラーの商品、封が破損している商品は返品できません。衛生上の理由からマスクも返品できません。"
+        }
+      },
+      "pembayaran": {
+        "0": {
+          "question": "利用できるお支払い方法は何ですか?",
+          "answer": "銀行振込(BCA、Mandiri、BNI、BRI)、クレジット/デビットカード(Visa、Mastercard)、電子ウォレット(GoPay、OVO、Dana)、QRISをご利用いただけます。"
+        },
+        "1": {
+          "question": "お支払いは安全ですか?",
+          "answer": "はい、すべての取引はSSL/TLSプロトコルで暗号化されています。クレジットカードの詳細情報は保存しません。決済処理は信頼できる決済ゲートウェイによって行われます。"
+        },
+        "2": {
+          "question": "支払いが失敗した場合はどうすればよいですか?",
+          "answer": "カードの残高または利用限度額をご確認ください。問題が続く場合は、別の支払い方法をお試しいただくか、銀行にお問い合わせください。カートの内容は24時間保存されます。"
+        },
+        "3": {
+          "question": "分割払いはできますか?",
+          "answer": "はい、パートナー経由でクレジットカード不要の分割払いをご利用いただけます。分割払いオプションは、最低50万ルピア以上の購入でチェックアウト時に表示されます。"
+        }
+      },
+      "produk": {
+        "0": {
+          "question": "適切なサイズはどのように選びますか?",
+          "answer": "各商品にはサイズガイドが付いています。身長や体重に基づいたおすすめについては、カスタマーサービスにもお問い合わせいただけます。"
+        },
+        "1": {
+          "question": "商品は100%正規品保証されていますか?",
+          "answer": "はい、当社が販売するすべての商品は正規代理店からの100%正規品です。すべての商品について真贋を保証しています。"
+        },
+        "2": {
+          "question": "ダイビング用品の手入れ方法は?",
+          "answer": "使用後は真水で洗い、直射日光を避けた日陰で乾かし、乾燥した場所に保管してください。手入れの詳細は商品ごとに異なりますので、ラベルまたは商品ガイドをご確認ください。"
+        },
+        "3": {
+          "question": "保証はありますか?",
+          "answer": "保証は各ブランドの規定に従い、通常は工場出荷時の欠陥に対して6〜12か月です。購入証明としてインボイスを保管してください。"
+        }
+      },
+      "akun": {
+        "0": {
+          "question": "プロフィールはどのように変更しますか?",
+          "answer": "アカウントにログインし、「プロフィール」または「設定」ページを開いてください。名前、メール、電話番号、住所を変更できます。"
+        },
+        "1": {
+          "question": "パスワードを忘れました。リセット方法は?",
+          "answer": "ログインページの「パスワードをお忘れですか」をクリックしてください。登録済みのメールアドレスを入力すると、パスワードリセット用のリンクが届きます。"
+        },
+        "2": {
+          "question": "購入にはアカウント作成が必須ですか?",
+          "answer": "はい、注文の追跡、住所の保存、ポイント獲得のためにアカウントが必要です。登録は簡単で無料です。"
+        },
+        "3": {
+          "question": "アカウントを削除するにはどうすればよいですか?",
+          "answer": "アカウント削除のご依頼は、メールまたはWhatsAppでカスタマーサービスにご連絡ください。プライバシーポリシーに従い、30営業日以内にデータが削除されます。"
+        }
+      }
+    }
+  },
+  "kontak": {
+    "meta": {
+      "title": "お問い合わせ | Arnesh Dive",
+      "description": "ご注文、商品、サービスに関するご質問はArnesh Diveのカスタマーサービスチームにお問い合わせください。"
+    },
+    "header": {
+      "title": "お問い合わせ",
+      "description": "ご注文や商品についてご質問がありますか?私たちのチームがサポートいたします。"
+    },
+    "form": {
+      "heading": "メッセージを送る",
+      "subjectOptions": {
+        "order": "注文",
+        "shipping": "配送",
+        "return": "返品・交換",
+        "product": "商品",
+        "other": "その他"
+      },
+      "successTitle": "メッセージを送信しました!",
+      "successDescription": "お問い合わせいただきありがとうございます。1〜2営業日以内にご返信いたします。",
+      "sendAnother": "別のメッセージを送る",
+      "nameLabel": "氏名",
+      "emailLabel": "メールアドレス",
+      "subjectLabel": "件名",
+      "subjectPlaceholder": "件名を選択...",
+      "messageLabel": "メッセージ",
+      "sending": "送信中...",
+      "submit": "メッセージを送信"
+    },
+    "info": {
+      "heading": "連絡先情報",
+      "whatsappLabel": "WhatsApp",
+      "whatsappNote": "営業時間内は迅速に対応します",
+      "emailLabel": "メールアドレス",
+      "emailNote": "1〜2営業日以内に返信します",
+      "hoursLabel": "営業時間",
+      "instagramLabel": "Instagram",
+      "quickHelp": "すぐにサポートが必要ですか?",
+      "chatWhatsapp": "WhatsAppでチャット",
+      "viewFaq": "よくある質問を見る"
+    }
+  },
+  "privasi": {
+    "meta": {
+      "title": "プライバシーポリシー | Arnesh Dive",
+      "description": "Arnesh Diveのプライバシーポリシー - お客様のデータをどのように収集、使用、保護するか。"
+    },
+    "header": {
+      "title": "プライバシーポリシー",
+      "lastUpdated": "最終更新日: 2026年7月"
+    },
+    "sections": {
+      "intro": {
+        "heading": "1. はじめに",
+        "body": "Arnesh Dive(以下「当社」)は、お客様のプライバシー保護に努めています。本プライバシーポリシーは、お客様が当社ウェブサイトを訪問したり購入を行ったりする際に、当社がお客様の個人情報をどのように収集、使用、開示、保護するかについて説明します。"
+      },
+      "dataCollected": {
+        "heading": "2. 当社が収集する情報",
+        "intro": "当社は以下の情報を収集します:",
+        "items": {
+          "personal": {
+            "label": "個人情報:",
+            "text": "氏名、メールアドレス、電話番号、配送先住所"
+          },
+          "payment": {
+            "label": "決済情報:",
+            "text": "決済情報は当社の決済ゲートウェイによって安全に処理されます"
+          },
+          "device": {
+            "label": "デバイス情報:",
+            "text": "IPアドレス、ブラウザの種類、オペレーティングシステム、言語設定"
+          },
+          "navigation": {
+            "label": "閲覧情報:",
+            "text": "訪問したページ、訪問時間、参照元"
+          }
+        }
+      },
+      "usage": {
+        "heading": "3. 情報の利用",
+        "intro": "当社が収集した情報は以下の目的で利用されます:",
+        "items": {
+          "0": "ご注文の処理と発送",
+          "1": "注文状況やカスタマーサービスに関する連絡",
+          "2": "ニュースレターやプロモーションの送信(お客様の同意のもと)",
+          "3": "当社ウェブサイトのユーザー体験の向上",
+          "4": "不正行為や違法行為の防止"
+        }
+      },
+      "security": {
+        "heading": "4. データセキュリティ",
+        "body": "当社は、お客様の個人情報を不正アクセス、改ざん、開示、破壊から保護するために、適切な技術的および組織的セキュリティ対策を実施しています。決済データはSSL/TLSプロトコルにより暗号化されています。"
+      },
+      "cookies": {
+        "heading": "5. クッキー",
+        "body": "当社は、ブラウジング体験の向上、お客様の設定の記憶、ウェブサイトのトラフィック分析のためにクッキーを使用しています。ブラウザの設定でクッキーを拒否することもできますが、これによりウェブサイトの機能に影響が出る場合があります。"
+      },
+      "sharing": {
+        "heading": "6. 情報の共有",
+        "intro": "当社はお客様の個人情報を第三者に販売することはありません。以下の目的にのみ必要な情報を共有します:",
+        "items": {
+          "0": "配送サービス(氏名、住所、電話番号)",
+          "1": "決済処理(取引の詳細)",
+          "2": "法律で義務付けられた場合の法執行機関への提供"
+        }
+      },
+      "rights": {
+        "heading": "7. お客様の権利",
+        "intro": "お客様には以下の権利があります:",
+        "items": {
+          "0": "当社が保有するお客様の個人情報へのアクセス",
+          "1": "不正確なデータの修正の要求",
+          "2": "データの削除の要求",
+          "3": "いつでもニュースレターの配信停止"
+        }
+      },
+      "contact": {
+        "heading": "8. お問い合わせ",
+        "intro": "本プライバシーポリシーに関するご質問がございましたら、以下よりお問い合わせください:"
+      }
+    }
+  },
+  "syarat": {
+    "meta": {
+      "title": "利用規約 | Arnesh Dive",
+      "description": "Arnesh Diveのサービス利用規約 - 購入、配送、返品ポリシー。"
+    },
+    "header": {
+      "title": "利用規約",
+      "lastUpdated": "最終更新日: 2026年7月"
+    },
+    "sections": {
+      "general": {
+        "heading": "1. 総則",
+        "body": "Arnesh Diveのウェブサイトにアクセスし利用することにより、お客様は本利用規約に拘束されることに同意したものとみなされます。本規約に同意されない場合は、当社サービスをご利用にならないでください。"
+      },
+      "account": {
+        "heading": "2. ユーザーアカウント",
+        "intro": "購入を行うには、アカウントの作成が必要です。お客様は以下の責任を負います:",
+        "items": {
+          "0": "アカウント情報の機密性を保持すること",
+          "1": "正確かつ完全な情報を提供すること",
+          "2": "不正利用があった場合は速やかに当社に通知すること"
+        }
+      },
+      "purchase": {
+        "heading": "3. 購入",
+        "intro": "購入を行うことにより、お客様は以下を表明したものとみなされます:",
+        "items": {
+          "0": "18歳以上であること、または保護者の同意を得ていること",
+          "1": "提供された情報が正確であること",
+          "2": "行われた支払いが合法であり、法律に違反していないこと"
+        },
+        "priceNote": "表示価格はインドネシアルピア(IDR)です。当社は事前の通知なしに価格を変更する権利を有します。"
+      },
+      "payment": {
+        "heading": "4. お支払い",
+        "body": "銀行振込、クレジット/デビットカード、電子ウォレット(GoPay、OVO、Dana、QRIS)によるお支払いをご利用いただけます。お支払いは注文処理前に完了する必要があります。"
+      },
+      "shipping": {
+        "heading": "5. 配送",
+        "intro": "当社は提携配送業者を通じてインドネシア全土に配送を行っています。配送予定時間:",
+        "standardLabel": "通常配送:",
+        "standardValue": "3〜5営業日",
+        "expressLabel": "速達配送:",
+        "expressValue": "1〜2営業日",
+        "note": "配送料は重量と配送先に基づいて計算されます。配送業者または不可抗力による遅延について、当社は責任を負いません。"
+      },
+      "returns": {
+        "heading": "6. 返品・交換ポリシー",
+        "intro": "以下の条件を満たす場合、返品・交換を承ります:",
+        "items": {
+          "0": "商品が新品未使用であること",
+          "1": "パッケージとラベルが完全な状態であること",
+          "2": "受領後7日以内に申請されること",
+          "3": "購入証明(インボイス)が添付されていること"
+        },
+        "exclusionsLabel": "返品できない商品:",
+        "exclusionsText": "使用済みの商品、カスタム/特別カラーの商品、封が破損している商品。"
+      },
+      "warranty": {
+        "heading": "7. 保証",
+        "body": "商品保証は各ブランドの規定に従います。保証を申請する場合は、購入証明と破損箇所の写真を添えてカスタマーサービスにご連絡ください。"
+      },
+      "ip": {
+        "heading": "8. 知的財産権",
+        "body": "ロゴ、画像、テキスト、デザインを含む本ウェブサイト上のすべてのコンテンツはArnesh Diveの所有物であり、著作権法により保護されています。書面による許可なくコンテンツを複製または使用することは禁止されています。"
+      },
+      "liability": {
+        "heading": "9. 責任の制限",
+        "body": "当社の商品またはサービスの利用により生じた間接的、偶発的、または結果的な損失について、当社は責任を負いません。"
+      },
+      "changes": {
+        "heading": "10. 本規約の変更",
+        "body": "当社は、いつでも本利用規約を変更する権利を有します。変更はウェブサイトに公開された時点で直ちに効力を生じます。変更後も継続してご利用いただく場合、変更に同意したものとみなされます。"
+      }
+    }
+  },
+  "blog": {
+    "meta": {
+      "title": "Dive Journal — フリーダイビング&スキューバガイド",
+      "description": "次のセッションで即実践できる、フィールドノート、用品ガイド、フリーダイビングとスキューバの安全知識。",
+      "ogTitle": "Dive Journal — Arnesh Dive",
+      "ogDescription": "不要なジャーゴンを使わずに書かれた、インドネシアのダイバーのための用品ガイドとフィールドノート。"
+    },
+    "title": "Dive Journal",
+    "list": {
+      "description": "熱帯の海の環境とインドネシアのダイバーのニーズに焦点を当てたガイド。"
+    },
+    "featuredLabel": "注目の記事",
+    "readNow": "今すぐ読む",
+    "moreArticles": "その他の記事",
+    "emptyState": "記事を準備中です。近日中にご確認ください。",
+    "exploreEyebrow": "理論から実践へ",
+    "exploreHeading": "必要なものはすでにお分かりですか?最も高価なものではなく、あなたに合った用品を見つけましょう。",
+    "exploreCatalogCta": "カタログを見る",
+    "readTime": "{minutes}分で読めます",
+    "comingSoon": "近日公開",
+    "notFound": "記事が見つかりません",
+    "breadcrumb": {
+      "home": "ホーム",
+      "journal": "Journal"
+    },
+    "sourcesHeading": "出典・関連情報",
+    "sourcesDisclaimer": "これらのリンクは一般的な参考情報として使用され、発行元のサイトで開きます。この記事は、トレーニング、バディの指示、メーカーのマニュアル、適切な技術者による点検の代わりにはなりません。",
+    "continueFromHere": "ここから続ける",
+    "ctaStaticText": "商品ラベルだけでなく、あなたのニーズに合った用品を見つけましょう。",
+    "continueReading": "続けて読む",
+    "relatedArticles": "関連記事",
+    "allArticles": "すべての記事",
+    "inThisArticle": "この記事の内容",
+    "readArticle": "記事を読む"
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
 import { useCheckoutStore } from '@/lib/store/checkout';
@@ -26,6 +27,7 @@ interface Address {
 }
 
 export function SavedAddressSelector() {
+  const t = useTranslations('checkout');
   const { setData } = useCheckoutStore();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -50,7 +52,7 @@ export function SavedAddressSelector() {
 
       try {
         const response = await fetch('/api/addresses');
-        if (!response.ok) throw new Error('Gagal memuat alamat tersimpan');
+        if (!response.ok) throw new Error(t('savedAddress.errors.loadFailed'));
 
         const result = await response.json();
         const fetchedAddresses: Address[] = result.addresses || [];
@@ -67,7 +69,7 @@ export function SavedAddressSelector() {
         }
       } catch (err) {
         if (!isCancelled) {
-          setError(err instanceof Error ? err.message : 'Gagal memuat alamat tersimpan');
+          setError(err instanceof Error ? err.message : t('savedAddress.errors.loadFailed'));
         }
       } finally {
         if (!isCancelled) setIsLoading(false);
@@ -95,7 +97,7 @@ export function SavedAddressSelector() {
 
       if (!response.ok) {
         const errorBody = await response.json();
-        throw new Error(errorBody.error || 'Gagal menyimpan alamat');
+        throw new Error(errorBody.error || t('savedAddress.errors.saveFailed'));
       }
 
       const result = await response.json();
@@ -105,7 +107,7 @@ export function SavedAddressSelector() {
       selectAddress(newAddress);
       setIsAddingNew(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Gagal menyimpan alamat');
+      setError(err instanceof Error ? err.message : t('savedAddress.errors.saveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -114,10 +116,10 @@ export function SavedAddressSelector() {
   if (isLoading) {
     return (
       <div className="pb-8 mb-8 border-b border-neutral-200">
-        <h2 className="text-lg font-semibold tracking-tight mb-6">Alamat Pengiriman</h2>
+        <h2 className="text-lg font-semibold tracking-tight mb-6">{t('shipping.title')}</h2>
         <div className="flex items-center gap-2 text-neutral-500 text-sm py-4">
           <Icon icon="solar:spinner-linear" className="w-5 h-5 animate-spin" />
-          Memuat alamat tersimpan...
+          {t('savedAddress.loading')}
         </div>
       </div>
     );
@@ -126,13 +128,13 @@ export function SavedAddressSelector() {
   if (isAddingNew) {
     return (
       <div className="pb-8 mb-8 border-b border-neutral-200">
-        <h2 className="text-lg font-semibold tracking-tight mb-6">Alamat Pengiriman</h2>
+        <h2 className="text-lg font-semibold tracking-tight mb-6">{t('shipping.title')}</h2>
         {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
         <AddressForm
           onSave={handleSaveNewAddress}
           onCancel={() => setIsAddingNew(false)}
         />
-        {isSaving && <p className="text-sm text-neutral-500 mt-3">Menyimpan alamat...</p>}
+        {isSaving && <p className="text-sm text-neutral-500 mt-3">{t('savedAddress.saving')}</p>}
       </div>
     );
   }
@@ -140,14 +142,14 @@ export function SavedAddressSelector() {
   return (
     <div className="pb-8 mb-8 border-b border-neutral-200">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold tracking-tight">Alamat Pengiriman</h2>
+        <h2 className="text-lg font-semibold tracking-tight">{t('shipping.title')}</h2>
         <button
           type="button"
           onClick={() => setIsAddingNew(true)}
           className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors inline-flex items-center gap-1.5"
         >
           <Icon icon="solar:add-circle-linear" className="w-4 h-4" />
-          Tambah Alamat Baru
+          {t('savedAddress.addNew')}
         </button>
       </div>
 
@@ -196,7 +198,7 @@ export function SavedAddressSelector() {
                   {address.isDefault && (
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600">
                       <span className="w-1.5 h-1.5 bg-neutral-900 rounded-full" />
-                      Utama
+                      {t('savedAddress.defaultBadge')}
                     </span>
                   )}
                 </div>

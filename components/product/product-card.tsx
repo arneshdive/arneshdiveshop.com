@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Icon } from '@iconify/react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cart';
@@ -33,6 +34,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const t = useTranslations('product');
   const addItem = useCartStore((state) => state.addItem);
   const [added, setAdded] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -78,17 +80,17 @@ export function ProductCard({ product }: ProductCardProps) {
 
     if (result.success) {
       track('add_to_cart', { productId: product.id, title: product.title });
-      toast.success('Ditambahkan', {
+      toast.success(t('addedToast'), {
         action: {
-          label: 'Lihat',
+          label: t('viewCartAction'),
           onClick: () => window.location.href = '/cart',
         },
       });
       setTimeout(() => setAdded(false), 2000);
     } else {
       setAdded(false);
-      toast.error('Gagal menambahkan item', {
-        description: result.error || 'Terjadi kesalahan, silakan coba lagi.',
+      toast.error(t('addToCartErrorToast'), {
+        description: result.error || t('addToCartErrorDescription'),
       });
     }
   };
@@ -105,10 +107,16 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.badges && product.badges.length > 0 && (
           <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
             {product.badges.map((badge) => {
-              const badgeType: BadgeType = badge.toLowerCase() === 'sale' ? 'sale' : 'new';
+              const normalized = badge.toLowerCase();
+              const badgeType: BadgeType = normalized === 'sale' ? 'sale' : 'new';
+              // 'new'/'sale' are the stable keys this app writes (see
+              // track-product-view.tsx); anything else is already-localized
+              // text from elsewhere (e.g. the query layer) and passes through.
+              const label =
+                normalized === 'sale' ? t('badgeSale') : normalized === 'new' ? t('badgeNew') : badge;
               return (
                 <ProductBadge key={badge} type={badgeType} context="card">
-                  {badge}
+                  {label}
                 </ProductBadge>
               );
             })}
@@ -147,7 +155,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 secondaryRevealed && (
                   <Image
                     src={secondary}
-                    alt={`${product.title} - alternate view`}
+                    alt={t('alternateViewAlt', { title: product.title })}
                     fill
                     className="object-cover mix-blend-multiply"
                     sizes="(max-width: 768px) 50vw, 25vw"
@@ -178,10 +186,10 @@ export function ProductCard({ product }: ProductCardProps) {
             {added ? (
               <>
                 <Icon icon="solar:check-circle-bold" className="w-4 h-4" />
-                Ditambahkan
+                {t('added')}
               </>
             ) : (
-              'Tambahkan'
+              t('addShort')
             )}
           </button>
         </div>
@@ -210,7 +218,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.priceRangeMin !== undefined &&
              product.priceRangeMax !== undefined &&
              product.priceRangeMin !== product.priceRangeMax && (
-              <span className="text-[10px] text-neutral-500 uppercase tracking-wide">Mulai dari</span>
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wide">{t('startingFrom')}</span>
             )}
             <div className="flex justify-center gap-2">
               {product.compareAtPrice ? (

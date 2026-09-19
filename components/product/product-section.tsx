@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Icon } from '@iconify/react';
+import { Link } from '@/i18n/navigation';
 import { ProductCard } from '@/components/product/product-card';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import type { MockProduct } from '@/lib/data/mock-products';
@@ -10,6 +10,7 @@ interface ProductSectionProps {
   headingHighlight: string;
   description: string;
   ctaHref: string;
+  viewAllLabel: string;
   products: MockProduct[];
 }
 
@@ -19,6 +20,7 @@ export function ProductSection({
   headingHighlight,
   description,
   ctaHref,
+  viewAllLabel,
   products,
 }: ProductSectionProps) {
   return (
@@ -57,7 +59,7 @@ export function ProductSection({
           </div>
           <AnimatedButton asChild variant="outline" className="!hidden sm:!flex text-sm font-medium px-6 py-3">
             <Link href={ctaHref} className="inline-flex items-center gap-2.5">
-              Lihat Semua
+              {viewAllLabel}
               <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
             </Link>
           </AnimatedButton>
@@ -72,7 +74,7 @@ export function ProductSection({
         <div className="text-center mt-10 sm:hidden">
           <AnimatedButton asChild variant="outline" className="text-sm font-medium px-6 py-3">
             <Link href={ctaHref} className="inline-flex items-center gap-2.5">
-              Lihat Semua
+              {viewAllLabel}
               <Icon icon="solar:arrow-right-linear" className="w-4 h-4" />
             </Link>
           </AnimatedButton>

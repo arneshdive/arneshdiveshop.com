@@ -1,0 +1,311 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { Icon } from '@iconify/react';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils/cn';
+import { AnimatedButton } from '@/components/ui/animated-button';
+import { EmptyState } from '@/components/ui/empty-state';
+import { formatRupiah, formatDate } from '@/lib/utils/format';
+import { productImageUrl } from '@/lib/utils/product-image';
+import type { OrderStatus } from '@/lib/db/schema';
+
+interface OrderItem {
+  id: string;
+  productId: string;
+  name: string;
+  quantity: number;
+  priceCents: number;
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    images: string[] | null;
+  };
+  variant: {
+    id: string;
+    name: string;
+  } | null;
+}
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  status: OrderStatus;
+  subtotalCents: number;
+  shippingCents: number;
+  totalCents: number;
+  createdAt: string;
+  items: OrderItem[];
+  payments: {
+    status: string;
+    paymentMethod: string | null;
+    metadata: Record<string, unknown> | null;
+  }[];
+}
+
+// Style config for customer-facing view (ping dot style). Labels are looked
+// up via translation keys (account.orders.status.<value>) rather than stored
+// here, since order status is backend-enum-backed and must not be hardcoded.
+const customerStatusConfig: Record<OrderStatus, { textClass: string; dotClass: string; pingClass: string }> = {
+  pending_payment: { textClass: 'text-amber-700', dotClass: 'bg-amber-500', pingClass: 'bg-amber-400' },
+  processing: { textClass: 'text-blue-700', dotClass: 'bg-blue-500', pingClass: 'bg-blue-400' },
+  shipped: { textClass: 'text-purple-700', dotClass: 'bg-purple-500', pingClass: 'bg-purple-400' },
+  delivered: { textClass: 'text-green-700', dotClass: 'bg-green-500', pingClass: 'bg-green-400' },
+  cancelled: { textClass: 'text-red-700', dotClass: 'bg-red-500', pingClass: 'bg-red-400' },
+  refunded: { textClass: 'text-red-700', dotClass: 'bg-red-500', pingClass: 'bg-red-400' },
+};
+
+const statusFilterValues: (OrderStatus | undefined)[] = [
+  undefined,
+  'pending_payment',
+  'processing',
+  'shipped',
+  'delivered',
+];
+
+// Fetch orders from API
+async function fetchOrders(status?: OrderStatus): Promise<{ orders: Order[] }> {
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+
+  const response = await fetch(`/api/orders?${params.toString()}`);
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('UNAUTHORIZED');
+    }
+    throw new Error('FETCH_FAILED');
+  }
+
+  return response.json();
+}
+
+export default function OrdersPage() {
+  const t = useTranslations('account');
+  const [activeFilter, setActiveFilter] = useState<OrderStatus | undefined>(undefined);
+
+  // Fetch orders with TanStack Query
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['orders', activeFilter],
+    queryFn: () => fetchOrders(activeFilter),
+  });
+
+  const orders = data?.orders ?? [];
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">{t('orders.title')}</h1>
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-12 h-12 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-neutral-500">{t('orders.loading')}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state - not logged in
+  if (error?.message === 'UNAUTHORIZED') {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">{t('orders.title')}</h1>
+        <EmptyState
+          icon="solar:lock-linear"
+          title={t('orders.loginRequired.title')}
+          description={t('orders.loginRequired.description')}
+          ctaLabel={t('orders.loginRequired.cta')}
+          ctaHref="/auth"
+        />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">{t('orders.title')}</h1>
+        <EmptyState
+          icon="solar:danger-triangle-linear"
+          title={t('orders.errors.loadFailedTitle')}
+          description={t('orders.errors.loadFailed')}
+          ctaLabel={t('orders.errors.retry')}
+          onClick={() => refetch()}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6 md:mb-8">{t('orders.title')}</h1>
+
+      {/* Status Filters */}
+      <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+        {statusFilterValues.map((filterStatus) => (
+          <button
+            key={filterStatus ?? 'all'}
+            onClick={() => setActiveFilter(filterStatus)}
+            className={cn(
+              'px-4 py-2 text-sm whitespace-nowrap rounded-full transition-colors',
+              (activeFilter === filterStatus || (!activeFilter && !filterStatus))
+                ? 'bg-neutral-900 text-white'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+            )}
+          >
+            {filterStatus ? t(`orders.status.${filterStatus}`) : t('orders.filters.all')}
+          </button>
+        ))}
+      </div>
+
+      {/* Orders List */}
+      {orders.length === 0 ? (
+        <EmptyState
+          icon="solar:bag-3-linear"
+          title={t('orders.empty.title')}
+          description={t('orders.empty.description')}
+          ctaLabel={t('orders.empty.cta')}
+          ctaHref="/produk"
+        />
+      ) : (
+        <div className="space-y-8">
+          {orders.map((order, index) => (
+            <div key={order.id} className={index !== orders.length - 1 ? 'border-b border-neutral-200 pb-8' : ''}>
+              <OrderCard order={order} />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface OrderCardProps {
+  order: Order;
+}
+
+function OrderCard({ order }: OrderCardProps) {
+  const t = useTranslations('account');
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = (imageUrl: string) => {
+    setFailedImages(prev => new Set([...prev, imageUrl]));
+  };
+
+  const status = customerStatusConfig[order.status];
+  const statusLabel = t(`orders.status.${order.status}`);
+  const isPendingPayment = order.status === 'pending_payment';
+  const redirectUrl = order.payments[0]?.metadata?.redirectUrl as string | undefined;
+
+  const copyOrderId = () => {
+    navigator.clipboard.writeText(order.orderNumber);
+  };
+
+  const handleBayarSekarang = () => {
+    if (!redirectUrl) {
+      toast.error(t('orders.payLinkUnavailable.title'), {
+        description: t('orders.payLinkUnavailable.description'),
+      });
+      return;
+    }
+    window.open(redirectUrl, '_blank');
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={copyOrderId}
+            className="font-mono font-medium text-base hover:text-neutral-600 transition-colors cursor-pointer"
+            title={t('orders.copyHint')}
+          >
+            #{order.orderNumber}
+          </button>
+          <span className={cn('inline-flex items-center gap-2 text-sm font-medium leading-tight', status.textClass)}>
+            <span className="relative flex h-2 w-2">
+              {isPendingPayment && (
+                <span className={cn('animate-ping absolute inline-flex h-full w-full rounded-full opacity-75', status.pingClass)} />
+              )}
+              <span className={cn('relative inline-flex rounded-full h-2 w-2', status.dotClass)} />
+            </span>
+            {statusLabel}
+          </span>
+        </div>
+        <p className="text-sm text-neutral-500">{formatDate(order.createdAt)}</p>
+      </div>
+
+      {/* Items */}
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+        {order.items.slice(0, 3).map((item) => (
+          <div key={item.id} className="flex gap-4 bg-neutral-50 rounded-xl p-4 sm:min-w-[280px] sm:flex-1 sm:max-w-md">
+            {/* Image */}
+            <div className="w-20 h-20 bg-neutral-100 flex-shrink-0 rounded-lg overflow-hidden flex items-center justify-center">
+              {item.product.images?.[0] && !failedImages.has(item.product.images[0]) ? (
+                <Image
+                  src={productImageUrl(item.product.images[0], 'thumb')!}
+                  alt={item.name}
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover mix-blend-multiply"
+                  onError={() => handleImageError(item.product.images![0]!)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-neutral-300">
+                  <Icon icon="solar:box-linear" className="w-6 h-6" />
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 flex flex-col justify-center py-0.5">
+              <p className="font-medium tracking-tight">{item.name}</p>
+              <p className="text-sm text-neutral-400">
+                {item.variant?.name && `${item.variant.name} • `}{t('orders.qtyLabel', { count: item.quantity })}
+              </p>
+              <p className="text-base font-semibold tracking-tight mt-1">{formatRupiah(item.priceCents)}</p>
+            </div>
+          </div>
+        ))}
+        {order.items.length > 3 && (
+          <div className="flex items-center justify-center bg-neutral-50 rounded-xl p-4 sm:min-w-[140px] text-sm text-neutral-500">
+            {t('orders.moreItems', { count: order.items.length - 3 })}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
+        <p className="text-sm">
+          {t('orders.total')}: <strong className="text-lg font-semibold tracking-tight">{formatRupiah(order.totalCents)}</strong>
+        </p>
+        <div className="flex gap-2">
+          {isPendingPayment && (
+            <AnimatedButton onClick={handleBayarSekarang} className="px-5 py-2.5 text-sm">
+              {t('orders.payNow')}
+            </AnimatedButton>
+          )}
+          {order.status === 'shipped' && (
+            <AnimatedButton variant="outline" className="px-4 py-2 text-sm">
+              {t('orders.trackShipment')}
+            </AnimatedButton>
+          )}
+          <AnimatedButton variant="outline" asChild className="px-4 py-2 text-sm">
+            <Link href={`/account/orders/${order.id}`}>
+              {t('orders.viewDetail')}
+            </Link>
+          </AnimatedButton>
+        </div>
+      </div>
+    </div>
+  );
+}

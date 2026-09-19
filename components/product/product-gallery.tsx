@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
@@ -12,6 +13,7 @@ interface ProductGalleryProps {
 }
 
 export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
+  const t = useTranslations('product');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
@@ -36,7 +38,7 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
           {mainImage ? (
             <Image
               src={mainImage}
-              alt={`${productTitle} - Image ${selectedIndex + 1}`}
+              alt={t('galleryImageAlt', { title: productTitle, index: selectedIndex + 1 })}
               fill
               className="object-cover mix-blend-multiply"
               sizes="(max-width: 1024px) 100vw, 60vw"
@@ -74,7 +76,7 @@ export function ProductGallery({ images, productTitle }: ProductGalleryProps) {
                 {thumbnail ? (
                   <Image
                     src={thumbnail}
-                    alt={`${productTitle} thumbnail ${index + 1}`}
+                    alt={t('galleryThumbnailAlt', { title: productTitle, index: index + 1 })}
                     fill
                     className="object-cover mix-blend-multiply"
                     sizes="144px"

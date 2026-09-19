@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Icon } from '@iconify/react';
 
 export function NewsletterForm() {
+  const t = useTranslations('newsletter');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -30,11 +32,11 @@ export function NewsletterForm() {
         setEmail('');
       } else {
         setStatus('error');
-        setMessage(data.error || 'Terjadi kesalahan');
+        setMessage(data.error || t('errors.generic'));
       }
     } catch {
       setStatus('error');
-      setMessage('Terjadi kesalahan');
+      setMessage(t('errors.generic'));
     }
   };
 
@@ -46,7 +48,7 @@ export function NewsletterForm() {
           onClick={() => setStatus('idle')}
           className="text-sm text-neutral-400 hover:text-white transition-colors"
         >
-          Daftarkan email lain
+          {t('subscribeAnother')}
         </button>
       </div>
     );
@@ -55,21 +57,21 @@ export function NewsletterForm() {
   return (
     <div className="flex flex-col justify-end">
       <p className="text-lg lg:text-xl font-bold text-white tracking-tighter mb-5">
-        Dapatkan info promo terbaru
+        {t('heading')}
       </p>
       <form onSubmit={handleSubmit} className="flex items-center bg-neutral-900 border border-neutral-800 rounded-full p-1.5 pl-5">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email Anda"
+          placeholder={t('emailPlaceholder')}
           disabled={status === 'loading'}
           className="flex-1 bg-transparent text-sm text-white placeholder:text-neutral-500 focus:outline-none disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={status === 'loading' || !email.trim()}
-          aria-label="Langganan"
+          aria-label={t('subscribeAria')}
           className="w-9 h-9 rounded-full bg-white text-neutral-900 flex items-center justify-center hover:bg-neutral-200 transition-colors flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Icon icon={status === 'loading' ? 'solar:spinner-linear' : 'solar:arrow-right-linear'} className="w-4 h-4" />

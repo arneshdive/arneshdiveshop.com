@@ -1,13 +1,18 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Icon } from '@iconify/react';
 
 export function EmptyCart() {
+  const t = useTranslations('cart');
+
   return (
     <EmptyState
       icon="solar:sad-circle-linear"
-      title="Keranjang Kosong"
-      description="Belum ada produk di keranjang Anda. Yuk mulai belanja dan temukan perlengkapan diving yang Anda butuhkan."
-      ctaLabel="Mulai Belanja"
+      title={t('empty.title')}
+      description={t('empty.description')}
+      ctaLabel={t('empty.cta')}
       ctaHref="/produk"
       ctaIcon={<Icon icon="solar:magnifer-linear" className="w-4 h-4" />}
     />

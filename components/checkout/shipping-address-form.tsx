@@ -1,17 +1,24 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Input, Textarea } from '@/components/admin/input';
 import { useCheckoutStore } from '@/lib/store/checkout';
+import { checkoutFormSchema, getFieldI18nKey } from '@/lib/validations/checkout';
 import { DestinationSearch } from './destination-search';
 
 export function ShippingAddressForm() {
+  const t = useTranslations('checkout');
   const { data, setField, touched, setTouched } = useCheckoutStore();
+  const validation = checkoutFormSchema.safeParse(data);
+  const fullNameErrorKey = getFieldI18nKey(validation, 'fullName');
+  const destinationErrorKey = getFieldI18nKey(validation, 'rajaongkirCityId');
+  const address1ErrorKey = getFieldI18nKey(validation, 'address1');
 
   return (
     <div className="pb-8 mb-8 border-b border-neutral-200">
       <div className="mb-6">
         <h2 className="text-lg font-semibold tracking-tight">
-          Alamat Pengiriman
+          {t('shipping.title')}
         </h2>
       </div>
 
@@ -19,26 +26,26 @@ export function ShippingAddressForm() {
         {/* Full Name */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Nama Lengkap <span className="text-red-500">*</span>
+            {t('shipping.fullNameLabel')} <span className="text-red-500">*</span>
           </label>
           <Input
             type="text"
             value={data.fullName}
             onChange={(e) => setField('fullName', e.target.value)}
             onBlur={() => setTouched('fullName')}
-            placeholder="Nama penerima paket"
+            placeholder={t('shipping.fullNamePlaceholder')}
             className={`py-3 rounded-xl ${
-              touched.fullName && !data.fullName.trim()
+              touched.fullName && fullNameErrorKey
                 ? 'border-red-400 focus:border-red-500 focus:ring-red-500'
                 : ''
             }`}
           />
-          {touched.fullName && !data.fullName.trim() && (
+          {touched.fullName && fullNameErrorKey && (
             <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              Nama lengkap wajib diisi
+              {t(fullNameErrorKey)}
             </p>
           )}
         </div>
@@ -46,7 +53,7 @@ export function ShippingAddressForm() {
         {/* Destination Search (Kelurahan/Kecamatan) */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Kelurahan/Kecamatan <span className="text-red-500">*</span>
+            {t('shipping.destinationLabel')} <span className="text-red-500">*</span>
           </label>
           <div
             onFocus={() => setTouched('rajaongkirCityId')}
@@ -62,20 +69,20 @@ export function ShippingAddressForm() {
                 setField('rajaongkirDistrict', destination.district || null);
                 setField('rajaongkirSubdistrict', destination.name);
               }}
-              placeholder="Cari kelurahan atau kecamatan..."
-              className={touched.rajaongkirCityId && !data.rajaongkirCityId ? 'border-red-400' : ''}
+              placeholder={t('shipping.destinationPlaceholder')}
+              className={touched.rajaongkirCityId && destinationErrorKey ? 'border-red-400' : ''}
             />
           </div>
-          {touched.rajaongkirCityId && !data.rajaongkirCityId && (
+          {touched.rajaongkirCityId && destinationErrorKey && (
             <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              Kelurahan/Kecamatan wajib dipilih
+              {t(destinationErrorKey)}
             </p>
           )}
           <p className="text-xs text-neutral-400 mt-2">
-            Ketik nama kelurahan atau kecamatan tujuan pengiriman
+            {t('shipping.destinationHint')}
           </p>
         </div>
 
@@ -90,7 +97,7 @@ export function ShippingAddressForm() {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-neutral-500 mb-1">Tujuan Pengiriman</p>
+                <p className="text-xs text-neutral-500 mb-1">{t('shipping.destinationSelectedLabel')}</p>
                 <p className="text-sm font-medium leading-relaxed">
                   {data.rajaongkirCityName}
                 </p>
@@ -107,26 +114,26 @@ export function ShippingAddressForm() {
         {/* Street Address */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Alamat Lengkap <span className="text-red-500">*</span>
+            {t('shipping.address1Label')} <span className="text-red-500">*</span>
           </label>
           <Textarea
             value={data.address1}
             onChange={(e) => setField('address1', e.target.value)}
             onBlur={() => setTouched('address1')}
-            placeholder="Jalan, nomor rumah, nama gedung, RT/RW..."
+            placeholder={t('shipping.address1Placeholder')}
             rows={2}
             className={`py-3 rounded-xl ${
-              touched.address1 && !data.address1.trim()
+              touched.address1 && address1ErrorKey
                 ? 'border-red-400 focus:border-red-500 focus:ring-red-500'
                 : ''
             }`}
           />
-          {touched.address1 && !data.address1.trim() && (
+          {touched.address1 && address1ErrorKey && (
             <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              Alamat lengkap wajib diisi
+              {t(address1ErrorKey)}
             </p>
           )}
         </div>
@@ -134,13 +141,13 @@ export function ShippingAddressForm() {
         {/* Additional Details */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
-            Detail Tambahan <span className="text-neutral-400 font-normal">(opsional)</span>
+            {t('shipping.address2Label')} <span className="text-neutral-400 font-normal">({t('shipping.optionalTag')})</span>
           </label>
           <Input
             type="text"
             value={data.notes}
             onChange={(e) => setField('notes', e.target.value)}
-            placeholder="Patokan, catatan untuk kurir..."
+            placeholder={t('shipping.address2Placeholder')}
             className="py-3 rounded-xl"
           />
         </div>

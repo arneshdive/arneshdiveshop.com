@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 interface Address {
@@ -26,6 +27,7 @@ interface AddressCardProps {
 }
 
 export function AddressCard({ address, onSetDefault, onEdit, onDelete }: AddressCardProps) {
+  const t = useTranslations('account');
   // Build location string from RajaOngkir fields
   const locationParts = [
     address.rajaongkirSubdistrict,
@@ -49,7 +51,7 @@ export function AddressCard({ address, onSetDefault, onEdit, onDelete }: Address
         {address.isDefault && (
           <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600">
             <span className="w-1.5 h-1.5 bg-neutral-900 rounded-full" />
-            Utama
+            {t('addresses.card.default')}
           </span>
         )}
       </div>
@@ -73,20 +75,20 @@ export function AddressCard({ address, onSetDefault, onEdit, onDelete }: Address
             onClick={() => onSetDefault(address.id)}
             className="px-3 py-1.5 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
           >
-            Jadikan Utama
+            {t('addresses.card.setDefault')}
           </button>
         )}
         <button
           onClick={onEdit}
           className="px-3 py-1.5 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
         >
-          Ubah
+          {t('addresses.card.edit')}
         </button>
         <button
           onClick={() => onDelete(address.id)}
           className="px-3 py-1.5 text-sm text-red-500 hover:text-red-600 transition-colors"
         >
-          Hapus
+          {t('addresses.card.delete')}
         </button>
       </div>
     </div>

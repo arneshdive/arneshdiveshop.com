@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
 import type { BlogPost } from '@/lib/db';
@@ -15,7 +16,8 @@ interface BlogCardProps {
   priority?: boolean;
 }
 
-export function BlogCard({ post, priority = false }: BlogCardProps) {
+export async function BlogCard({ post, priority = false }: BlogCardProps) {
+  const t = await getTranslations('blog');
   return (
     <article className="group flex h-full flex-col">
       <Link
@@ -40,10 +42,10 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
       <div className="flex flex-1 flex-col">
         <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.13em] text-neutral-500">
           <time dateTime={post.publishedAt?.toISOString()}>
-            {post.publishedAt ? dateFormatter.format(post.publishedAt) : 'Segera terbit'}
+            {post.publishedAt ? dateFormatter.format(post.publishedAt) : t('comingSoon')}
           </time>
           <span aria-hidden="true">·</span>
-          <span>{post.readTimeMinutes} menit baca</span>
+          <span>{t('readTime', { minutes: post.readTimeMinutes })}</span>
         </div>
         <h2 className="mb-3 text-2xl font-bold leading-[1.08] tracking-[-0.025em] text-neutral-900 lg:text-[28px]">
           <Link href={`/blog/${post.slug}`} className="decoration-1 underline-offset-4 group-hover:underline">
@@ -55,7 +57,7 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
           href={`/blog/${post.slug}`}
           className="mt-auto inline-flex w-fit items-center gap-2 text-sm font-medium text-neutral-900"
         >
-          <AnimatedUnderline>Baca artikel</AnimatedUnderline>
+          <AnimatedUnderline>{t('readArticle')}</AnimatedUnderline>
           <Icon icon="solar:arrow-right-linear" className="h-4 w-4" />
         </Link>
       </div>

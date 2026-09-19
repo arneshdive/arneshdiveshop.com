@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Accordion, AccordionItem } from '@/components/ui/accordion';
 import { ExpandableText } from '@/components/ui/expandable-text';
 import { ProductActions } from '@/components/product/product-actions';
 import { formatRupiah } from '@/lib/utils/format';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
-import { formatDivingType } from '@/lib/constants/diving-types';
 import type { DivingType } from '@/lib/db/schema';
 import type { VariantOptionDefinition } from '@/lib/utils/variant-selection';
 
@@ -37,6 +37,8 @@ interface ProductInfoProps {
 }
 
 export function ProductInfo({ product, variants, variantOptions }: ProductInfoProps) {
+  const t = useTranslations('product');
+  const tDivingTypes = useTranslations('common.divingTypes');
   const [currentPriceCents, setCurrentPriceCents] = useState<number | null>(null);
   const [currentCompareAtPriceCents, setCurrentCompareAtPriceCents] = useState<number | null>(
     product.compareAtPriceCents
@@ -119,10 +121,15 @@ export function ProductInfo({ product, variants, variantOptions }: ProductInfoPr
 
       {/* Accordion */}
       <Accordion>
-        <AccordionItem title="Deskripsi" defaultOpen>
-          <ExpandableText text={product.description || ''} />
+        <AccordionItem title={t('descriptionTab')} defaultOpen>
+          <ExpandableText
+            text={product.description || ''}
+            emptyText={t('noDescription')}
+            showMoreText={t('showMore')}
+            showLessText={t('showLess')}
+          />
         </AccordionItem>
-        <AccordionItem title="Spesifikasi">
+        <AccordionItem title={t('specificationsTab')}>
           <table className="w-full">
             <tbody>
               <tr>
@@ -130,19 +137,19 @@ export function ProductInfo({ product, variants, variantOptions }: ProductInfoPr
                 <td className="py-1.5">{product.sku || '-'}</td>
               </tr>
               <tr>
-                <td className="py-1.5 text-neutral-500 w-1/3">Tipe Diving</td>
+                <td className="py-1.5 text-neutral-500 w-1/3">{t('divingTypeLabel')}</td>
                 <td className="py-1.5">
-                  {(product.divingTypes?.length ?? 0) > 0 
-                    ? product.divingTypes!.map(t => formatDivingType(t as DivingType)).join(', ')
+                  {(product.divingTypes?.length ?? 0) > 0
+                    ? product.divingTypes!.map(dt => tDivingTypes(dt as DivingType)).join(', ')
                     : '-'}
                 </td>
               </tr>
               <tr>
-                <td className="py-1.5 text-neutral-500 w-1/3">Kategori</td>
+                <td className="py-1.5 text-neutral-500 w-1/3">{t('categoryLabel')}</td>
                 <td className="py-1.5">{product.category?.name || '-'}</td>
               </tr>
               <tr>
-                <td className="py-1.5 text-neutral-500 w-1/3">Brand</td>
+                <td className="py-1.5 text-neutral-500 w-1/3">{t('brandLabel')}</td>
                 <td className="py-1.5">{product.brand?.name || '-'}</td>
               </tr>
             </tbody>

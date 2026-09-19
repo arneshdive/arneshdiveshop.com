@@ -1,19 +1,20 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { cn } from '@/lib/utils/cn';
 
-const navItems = [
-  { href: '/account/orders', label: 'Pesanan', icon: 'solar:bag-3-linear' },
-  { href: '/account/addresses', label: 'Alamat', icon: 'solar:map-point-linear' },
-  { href: '/account/settings', label: 'Pengaturan', icon: 'solar:settings-linear' },
-];
-
 export function AccountSidebar() {
+  const t = useTranslations('account');
   const pathname = usePathname();
   const router = useRouter();
+
+  const navItems = [
+    { href: '/account/orders', label: t('sidebar.orders'), icon: 'solar:bag-3-linear' },
+    { href: '/account/addresses', label: t('sidebar.addresses'), icon: 'solar:map-point-linear' },
+    { href: '/account/settings', label: t('sidebar.settings'), icon: 'solar:settings-linear' },
+  ];
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -48,7 +49,7 @@ export function AccountSidebar() {
           className="flex items-center gap-2 lg:gap-3 py-2.5 px-4 rounded-xl text-neutral-600 hover:bg-neutral-50 transition-colors whitespace-nowrap flex-shrink-0 cursor-pointer"
         >
           <Icon icon="solar:logout-2-linear" className="w-5 h-5" />
-          <span className="text-sm lg:text-base">Keluar</span>
+          <span className="text-sm lg:text-base">{t('sidebar.logout')}</span>
         </button>
       </nav>
     </aside>

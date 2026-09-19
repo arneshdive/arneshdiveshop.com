@@ -1,5 +1,6 @@
-import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { Icon } from '@iconify/react';
+import { Link } from '@/i18n/navigation';
 import { getPublicShopSettings } from '@/lib/queries/settings';
 import { WaveDivider } from '@/components/layout/wave-divider';
 import { NewsletterForm } from '@/components/layout/newsletter-form';
@@ -15,6 +16,7 @@ const paymentTextBadges = ['QRIS', 'Transfer Bank'];
 
 export async function Footer() {
   const settings = await getPublicShopSettings();
+  const t = await getTranslations('footer');
 
   return (
     <>
@@ -54,12 +56,12 @@ export async function Footer() {
       <div className="sticky bottom-0 z-0 bg-black text-neutral-500 pt-20 lg:pt-24 pb-6">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-            <span>2026 Arnesh Dive. All rights reserved.</span>
+            <span>{t('copyright', { year: 2026 })}</span>
             <div className="flex flex-wrap gap-4">
-              <Link href="/privasi" className="hover:text-white transition-colors"><AnimatedUnderline>Kebijakan Privasi</AnimatedUnderline></Link>
-              <Link href="/syarat" className="hover:text-white transition-colors"><AnimatedUnderline>Syarat & Ketentuan</AnimatedUnderline></Link>
-              <Link href="/faq" className="hover:text-white transition-colors"><AnimatedUnderline>Bantuan</AnimatedUnderline></Link>
-              <Link href="/kontak" className="hover:text-white transition-colors"><AnimatedUnderline>Kontak</AnimatedUnderline></Link>
+              <Link href="/privasi" className="hover:text-white transition-colors"><AnimatedUnderline>{t('privacyPolicy')}</AnimatedUnderline></Link>
+              <Link href="/syarat" className="hover:text-white transition-colors"><AnimatedUnderline>{t('termsAndConditions')}</AnimatedUnderline></Link>
+              <Link href="/faq" className="hover:text-white transition-colors"><AnimatedUnderline>{t('help')}</AnimatedUnderline></Link>
+              <Link href="/kontak" className="hover:text-white transition-colors"><AnimatedUnderline>{t('contact')}</AnimatedUnderline></Link>
               <AdminFooterLink />
             </div>
           </div>

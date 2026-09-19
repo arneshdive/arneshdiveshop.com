@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useCartStore } from '@/lib/store/cart';
@@ -10,6 +11,7 @@ import { productImageUrl } from '@/lib/utils/product-image';
 import { AnimatedButton } from '@/components/ui/animated-button';
 
 export function OrderSummary() {
+  const t = useTranslations('cart');
   const {
     items,
     promoCode,
@@ -48,19 +50,19 @@ export function OrderSummary() {
 
   const handleApplyPromo = async () => {
     if (!promoInput.trim()) {
-      setPromoError('Masukkan kode promo');
+      setPromoError(t('summary.promoRequiredError'));
       return;
     }
-    
+
     setIsApplyingPromo(true);
     setPromoError('');
-    
+
     const result = await applyPromo(promoInput);
-    
+
     setIsApplyingPromo(false);
-    
+
     if (!result.success) {
-      setPromoError(result.error || 'Kode promo tidak valid');
+      setPromoError(result.error || t('summary.promoInvalidError'));
     }
   };
 
@@ -74,7 +76,7 @@ export function OrderSummary() {
     <>
       {/* Desktop Sidebar Card */}
       <div className="hidden lg:block bg-neutral-50 p-8 lg:p-12 sticky top-24 rounded-2xl">
-        <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
+        <h2 className="text-xl font-semibold tracking-tight mb-6">{t('summary.title')}</h2>
 
         {/* Items */}
         <div className="space-y-4 mb-6">
@@ -107,7 +109,7 @@ export function OrderSummary() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{item.product.name}</p>
-                  <p className="text-xs text-neutral-400">Qty: {item.quantity}</p>
+                  <p className="text-xs text-neutral-400">{t('summary.qty', { quantity: item.quantity })}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium">{formatRupiah(priceCents * item.quantity)}</p>
@@ -124,7 +126,7 @@ export function OrderSummary() {
 
         {/* Promo Code */}
         <div className="mb-6">
-          <p className="text-sm font-medium mb-2">Kode Promo</p>
+          <p className="text-sm font-medium mb-2">{t('summary.promoLabel')}</p>
           {promoCode ? (
             <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
               <div className="flex items-center gap-2">
@@ -134,7 +136,7 @@ export function OrderSummary() {
               <button
                 onClick={handleRemovePromo}
                 className="text-neutral-400 hover:text-red-500 transition-colors"
-                aria-label="Hapus promo"
+                aria-label={t('summary.removePromoAria')}
               >
                 <Icon icon="solar:close-circle-linear" className="w-5 h-5" />
               </button>
@@ -146,7 +148,7 @@ export function OrderSummary() {
                 value={promoInput}
                 onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
-                placeholder="Masukkan kode"
+                placeholder={t('summary.promoPlaceholder')}
                 disabled={isApplyingPromo}
                 className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors disabled:opacity-50"
               />
@@ -155,35 +157,35 @@ export function OrderSummary() {
                 disabled={isApplyingPromo}
                 className="px-5 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors disabled:opacity-50"
               >
-                {isApplyingPromo ? 'Memeriksa...' : 'Pakai'}
+                {isApplyingPromo ? t('summary.promoApplying') : t('summary.promoApply')}
               </button>
             </div>
           )}
           {promoError && <p className="text-xs text-red-500 mt-2">{promoError}</p>}
           {lastError && <p className="text-xs text-red-500 mt-2">{lastError}</p>}
           {promoDiscountCents > 0 && (
-            <p className="text-xs text-green-600 mt-2">Diskon {formatRupiah(promoDiscountCents)} diterapkan!</p>
+            <p className="text-xs text-green-600 mt-2">{t('summary.promoAppliedMessage', { amount: formatRupiah(promoDiscountCents) })}</p>
           )}
         </div>
 
         {/* Totals */}
         <div className="border-t border-neutral-100 pt-6 space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-neutral-500">Subtotal</span>
+            <span className="text-neutral-500">{t('summary.subtotal')}</span>
             <span>{formatRupiah(subtotalCents)}</span>
           </div>
           {promoDiscountCents > 0 && (
             <div className="flex justify-between text-sm text-green-600">
-              <span>Diskon</span>
+              <span>{t('summary.discount')}</span>
               <span>-{formatRupiah(promoDiscountCents)}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
-            <span className="text-neutral-500">Ongkos Kirim</span>
-            <span>Dihitung saat checkout</span>
+            <span className="text-neutral-500">{t('summary.shipping')}</span>
+            <span>{t('summary.shippingCalculatedAtCheckout')}</span>
           </div>
           <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
-            <span>Total</span>
+            <span>{t('summary.total')}</span>
             <span>{formatRupiah(totalCents)}</span>
           </div>
         </div>
@@ -192,7 +194,7 @@ export function OrderSummary() {
         <div className="mt-8">
           <AnimatedButton asChild className="w-full py-4 text-base">
             <Link href="/checkout">
-              Lanjut ke Checkout
+              {t('summary.checkoutCta')}
             </Link>
           </AnimatedButton>
         </div>
@@ -200,7 +202,7 @@ export function OrderSummary() {
         {/* Trust */}
         <div className="flex items-center justify-center gap-2 mt-6 text-xs text-neutral-400">
           <Icon icon="solar:shield-check-linear" className="w-4 h-4" />
-          Transaksi aman & terenkripsi
+          {t('summary.secureTransaction')}
         </div>
       </div>
 
@@ -212,11 +214,11 @@ export function OrderSummary() {
         >
           <div className="px-4 pt-3 pb-2 flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm text-neutral-500">Total</span>
+              <span className="text-sm text-neutral-500">{t('summary.total')}</span>
               <span className="text-lg font-semibold tracking-tight">{formatRupiah(totalCents)}</span>
             </div>
             <div className="flex items-center gap-1 text-neutral-400">
-              <span className="text-xs">Detail</span>
+              <span className="text-xs">{t('summary.detailsToggle')}</span>
               <Icon icon="solar:alt-arrow-up-linear" className="w-4 h-4" />
             </div>
           </div>
@@ -224,7 +226,7 @@ export function OrderSummary() {
         <div className="px-4 pb-4">
           <AnimatedButton asChild className="w-full py-4 text-sm">
             <Link href="/checkout">
-              Checkout
+              {t('summary.checkoutShort')}
             </Link>
           </AnimatedButton>
         </div>
@@ -243,7 +245,7 @@ export function OrderSummary() {
           <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto animate-drawer-up">
             {/* Drawer Header */}
             <div className="sticky top-0 bg-white px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
-              <h2 className="text-lg font-semibold tracking-tight">Ringkasan</h2>
+              <h2 className="text-lg font-semibold tracking-tight">{t('summary.title')}</h2>
               <button
                 onClick={() => setIsMobileDrawerOpen(false)}
                 className="p-2 -mr-2 hover:bg-neutral-100 rounded-full transition-colors"
@@ -255,7 +257,7 @@ export function OrderSummary() {
             <div className="p-6">
               {/* Promo Code */}
               <div className="mb-6">
-                <p className="text-sm font-medium mb-2">Kode Promo</p>
+                <p className="text-sm font-medium mb-2">{t('summary.promoLabel')}</p>
                 {promoCode ? (
                   <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-xl">
                     <div className="flex items-center gap-2">
@@ -265,7 +267,7 @@ export function OrderSummary() {
                     <button
                       onClick={handleRemovePromo}
                       className="text-neutral-400 hover:text-red-500 transition-colors"
-                      aria-label="Hapus promo"
+                      aria-label={t('summary.removePromoAria')}
                     >
                       <Icon icon="solar:close-circle-linear" className="w-5 h-5" />
                     </button>
@@ -277,7 +279,7 @@ export function OrderSummary() {
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
                       onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
-                      placeholder="Masukkan kode"
+                      placeholder={t('summary.promoPlaceholder')}
                       disabled={isApplyingPromo}
                       className="flex-1 px-4 py-3 border border-neutral-200 rounded-xl text-sm focus:border-neutral-900 focus:outline-none transition-colors disabled:opacity-50"
                     />
@@ -286,35 +288,35 @@ export function OrderSummary() {
                       disabled={isApplyingPromo}
                       className="px-5 py-3 bg-neutral-900 text-white text-sm font-medium rounded-xl hover:bg-neutral-800 transition-colors disabled:opacity-50"
                     >
-                      {isApplyingPromo ? 'Memeriksa...' : 'Pakai'}
+                      {isApplyingPromo ? t('summary.promoApplying') : t('summary.promoApply')}
                     </button>
                   </div>
                 )}
                 {promoError && <p className="text-xs text-red-500 mt-2">{promoError}</p>}
                 {lastError && <p className="text-xs text-red-500 mt-2">{lastError}</p>}
                 {promoDiscountCents > 0 && (
-                  <p className="text-xs text-green-600 mt-2">Diskon {formatRupiah(promoDiscountCents)} diterapkan!</p>
+                  <p className="text-xs text-green-600 mt-2">{t('summary.promoAppliedMessage', { amount: formatRupiah(promoDiscountCents) })}</p>
                 )}
               </div>
 
               {/* Totals */}
               <div className="border-t border-neutral-100 pt-6 space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-neutral-500">Subtotal</span>
+                  <span className="text-neutral-500">{t('summary.subtotal')}</span>
                   <span>{formatRupiah(subtotalCents)}</span>
                 </div>
                 {promoDiscountCents > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
-                    <span>Diskon</span>
+                    <span>{t('summary.discount')}</span>
                     <span>-{formatRupiah(promoDiscountCents)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-neutral-500">Ongkos Kirim</span>
-                  <span>Dihitung saat checkout</span>
+                  <span className="text-neutral-500">{t('summary.shipping')}</span>
+                  <span>{t('summary.shippingCalculatedAtCheckout')}</span>
                 </div>
                 <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
-                  <span>Total</span>
+                  <span>{t('summary.total')}</span>
                   <span>{formatRupiah(totalCents)}</span>
                 </div>
               </div>
@@ -323,7 +325,7 @@ export function OrderSummary() {
               <div className="mt-6">
                 <AnimatedButton asChild className="w-full py-4 text-base">
                   <Link href="/checkout">
-                    Lanjut ke Checkout
+                    {t('summary.checkoutCta')}
                   </Link>
                 </AnimatedButton>
               </div>
@@ -331,7 +333,7 @@ export function OrderSummary() {
               {/* Trust */}
               <div className="flex items-center justify-center gap-2 mt-4 text-xs text-neutral-400">
                 <Icon icon="solar:shield-check-linear" className="w-4 h-4" />
-                Transaksi aman & terenkripsi
+                {t('summary.secureTransaction')}
               </div>
             </div>
           </div>

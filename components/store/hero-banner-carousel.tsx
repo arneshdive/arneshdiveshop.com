@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import type { Banner } from '@/lib/db/schema';
@@ -10,23 +11,24 @@ interface HeroBannerCarouselProps {
   banners: Banner[];
 }
 
-// Fallback banner when no banners from DB
-const fallbackBanner = {
-  id: 'fallback',
-  title: 'Berjelajah di kedalaman',
-  subtitle: 'Perlengkapan freediving & scuba dari merek tepercaya, untuk setiap level penyelam.',
-  eyebrow: 'SCUBA · FREEDIVING · SPEARFISHING',
-  ctaText: 'Semua Katalog',
-  ctaLink: '/produk',
-  imageUrl: '/hero-diver.webp',
-};
-
 export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
+  const t = useTranslations('home');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [parallaxOffset, setParallaxOffset] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
-  
+
+  // Fallback banner when no banners from DB
+  const fallbackBanner = {
+    id: 'fallback',
+    title: t('hero.fallbackTitle'),
+    subtitle: t('hero.subtitle'),
+    eyebrow: t('hero.eyebrow'),
+    ctaText: t('hero.ctaText'),
+    ctaLink: '/produk',
+    imageUrl: '/hero-diver.webp',
+  };
+
   // Use fallback if no banners from DB
   const displayBanners = banners.length > 0 ? banners : [fallbackBanner as Banner];
   
@@ -82,7 +84,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
       >
         <Image
           src={currentBanner.imageUrl}
-          alt={currentBanner.title || 'Hero'}
+          alt={currentBanner.title || t('hero.imageAltFallback')}
           fill
           preload
           fetchPriority="high"
@@ -109,7 +111,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                 </span>
               )}
               <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tighter whitespace-pre">
-                {currentBanner.title || 'Berjelajah di kedalaman'}
+                {currentBanner.title || t('hero.fallbackTitle')}
               </h1>
               {currentBanner.subtitle && (
                 <p className="text-white/80 text-lg mb-8 max-w-md leading-relaxed">
@@ -122,7 +124,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                   variant="white"
                 >
                   <Link href={currentBanner.ctaLink || currentBanner.link || '/produk'}>
-                    {currentBanner.ctaText || 'Lihat Koleksi'}
+                    {currentBanner.ctaText || t('hero.ctaFallback')}
                   </Link>
                 </AnimatedButton>
               </div>
@@ -143,7 +145,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                   ? 'bg-white w-6' 
                   : 'bg-white/50 hover:bg-white/70'
               }`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={t('hero.goToSlide', { number: index + 1 })}
             />
           ))}
         </div>

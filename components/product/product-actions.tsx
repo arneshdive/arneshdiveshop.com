@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Icon } from '@iconify/react';
 import { toast } from 'sonner';
 import { AnimatedButton } from '@/components/ui/animated-button';
@@ -36,6 +37,7 @@ export function ProductActions({
   isActive,
   onPriceChange,
 }: ProductActionsProps) {
+  const t = useTranslations('product');
   const [quantity, setQuantity] = useState(1);
   // Track selected option values per dimension instead of a single variant id.
   // This lets multi-dimensional variants (e.g. stiffness × size) combine
@@ -65,17 +67,17 @@ export function ProductActions({
 
     if (result.success) {
       track('add_to_cart', { productId, variantId: selectedVariantId ?? '', quantity });
-      toast.success('Ditambahkan', {
+      toast.success(t('addedToast'), {
         action: {
-          label: 'Lihat',
+          label: t('viewCartAction'),
           onClick: () => window.location.href = '/cart',
         },
       });
       setTimeout(() => setAdded(false), 2000);
     } else {
       setAdded(false);
-      toast.error('Gagal menambahkan', {
-        description: result.error || 'Terjadi kesalahan',
+      toast.error(t('addToCartErrorToast'), {
+        description: result.error || t('addToCartErrorDescription'),
       });
     }
   };
@@ -142,7 +144,7 @@ export function ProductActions({
 
       {/* Quantity */}
       <div className="mb-6">
-        <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">Jumlah</p>
+        <p className="text-sm uppercase tracking-widest text-neutral-600 font-medium mb-3">{t('quantityLabel')}</p>
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -168,18 +170,18 @@ export function ProductActions({
       {isActive ? (
         <p className="text-sm text-green-600 mb-6 flex items-center gap-2">
           <Icon icon="solar:check-circle-linear" className="w-4 h-4" />
-          Produk tersedia
+          {t('inStock')}
         </p>
       ) : (
         <p className="text-sm text-red-600 mb-6 flex items-center gap-2">
           <Icon icon="solar:close-circle-linear" className="w-4 h-4" />
-          Produk tidak tersedia
+          {t('outOfStock')}
         </p>
       )}
 
       {/* Actions */}
       <div className="flex gap-3 mb-8">
-        <AnimatedButton 
+        <AnimatedButton
           className="flex-1 h-[54px] text-base"
           onClick={handleAddToCart}
           disabled={!isActive || added || isLoading}
@@ -187,12 +189,12 @@ export function ProductActions({
           {added ? (
             <span className="flex items-center gap-2">
               <Icon icon="solar:check-circle-linear" className="w-5 h-5" />
-              Ditambahkan!
+              {t('added')}!
             </span>
           ) : isLoading ? (
-            'Menambahkan...'
+            t('addingToCart')
           ) : (
-            'Tambah ke Keranjang'
+            t('addToCart')
           )}
         </AnimatedButton>
         <AnimatedButton className="!w-[54px] !h-[54px] !p-0" variant="outline">

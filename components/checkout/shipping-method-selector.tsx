@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCheckoutStore } from '@/lib/store/checkout';
 import { useCartSync } from '@/lib/store/cart';
 import { formatCurrency } from '@/lib/utils/format';
 import { Icon } from '@iconify/react';
 import type { ShippingRate } from '@/lib/rajaongkir/types';
 
-// Courier display names
+// Courier display names (brand names, not localized)
 const COURIER_NAMES: Record<string, string> = {
   jne: 'JNE',
   jnt: 'J&T Express',
@@ -18,15 +19,6 @@ const COURIER_NAMES: Record<string, string> = {
   tiki: 'TIKI',
 };
 
-// Category badges
-const CATEGORY_BADGES: Record<string, { label: string; color: string }> = {
-  same_day: { label: 'Same Day', color: 'bg-emerald-100 text-emerald-700' },
-  next_day: { label: 'Next Day', color: 'bg-blue-100 text-blue-700' },
-  regular: { label: 'Reguler', color: 'bg-neutral-100 text-neutral-600' },
-  economy: { label: 'Hemat', color: 'bg-amber-100 text-amber-700' },
-  cargo: { label: 'Cargo', color: 'bg-purple-100 text-purple-700' },
-};
-
 interface ShippingMethodSelectorProps {
   checkoutSessionId?: string | null;
 }
@@ -34,7 +26,17 @@ interface ShippingMethodSelectorProps {
 export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }: ShippingMethodSelectorProps) {
   useCartSync();
 
+  const t = useTranslations('checkout');
   const { data, setField } = useCheckoutStore();
+
+  // Category badges
+  const CATEGORY_BADGES: Record<string, { label: string; color: string }> = {
+    same_day: { label: t('shippingMethod.badges.sameDay'), color: 'bg-emerald-100 text-emerald-700' },
+    next_day: { label: t('shippingMethod.badges.nextDay'), color: 'bg-blue-100 text-blue-700' },
+    regular: { label: t('shippingMethod.badges.regular'), color: 'bg-neutral-100 text-neutral-600' },
+    economy: { label: t('shippingMethod.badges.economy'), color: 'bg-amber-100 text-amber-700' },
+    cargo: { label: t('shippingMethod.badges.cargo'), color: 'bg-purple-100 text-purple-700' },
+  };
 
   const [rates, setRates] = useState<ShippingRate[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +107,7 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch shipping rates');
+          throw new Error(errorData.error || t('shippingMethod.errors.fetchFailed'));
         }
 
         const result = await response.json();
@@ -133,7 +135,7 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
       } catch (err) {
         if (!isCancelled) {
           console.error('Error fetching shipping rates:', err);
-          setError(err instanceof Error ? err.message : 'Gagal mengambil ongkos kirim');
+          setError(err instanceof Error ? err.message : t('shippingMethod.errors.fetchFailed'));
         }
       } finally {
         if (!isCancelled) {
@@ -181,14 +183,14 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
   return (
     <div className="pb-8">
       <h2 className="text-lg font-semibold tracking-tight mb-6">
-        Metode Pengiriman
+        {t('shippingMethod.title')}
       </h2>
 
       {/* Loading state */}
       {isLoading && (
         <div className="flex items-center justify-center py-8 text-neutral-500">
           <Icon icon="solar:spinner-linear" className="w-5 h-5 animate-spin mr-2" />
-          Menghitung ongkos kirim...
+          {t('shippingMethod.calculating')}
         </div>
       )}
 
@@ -199,21 +201,21 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
             <Icon icon="solar:danger-triangle-linear" className="w-4 h-4" />
             {error}
           </div>
-          <p className="mt-1 text-amber-700">Silakan verifikasi alamat pengiriman Anda.</p>
+          <p className="mt-1 text-amber-700">{t('shippingMethod.verifyAddressHint')}</p>
         </div>
       )}
 
       {/* No destination selected */}
       {!data.rajaongkirCityId && !isLoading && (
         <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-600 text-sm">
-          Pilih kelurahan/kecamatan tujuan untuk melihat pilihan kurir.
+          {t('shippingMethod.selectDestinationHint')}
         </div>
       )}
 
       {/* No rates found */}
       {data.rajaongkirCityId && !isLoading && !error && rates.length === 0 && (
         <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-600 text-sm">
-          Tidak ada kurir tersedia untuk alamat ini.
+          {t('shippingMethod.noRatesFound')}
         </div>
       )}
 
@@ -251,14 +253,14 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
                         {COURIER_NAMES[courier] || courier.toUpperCase()}
                       </div>
                       <div className="text-xs text-neutral-500">
-                        {courierRates.length} layanan • Mulai dari {formatCurrency(cheapest.costCents)}
+                        {t('shippingMethod.serviceCountAndPrice', { count: courierRates.length, price: formatCurrency(cheapest.costCents) })}
                       </div>
                     </div>
                   </div>
                   {hasSelection && (
                     <div className="flex items-center gap-2 text-xs text-neutral-600">
                       <Icon icon="solar:check-circle-bold" className="w-4 h-4 text-neutral-900" />
-                      Terpilih
+                      {t('shippingMethod.selectedBadge')}
                     </div>
                   )}
                 </button>

@@ -6,9 +6,19 @@ interface ExpandableTextProps {
   text: string;
   maxLines?: number;
   className?: string;
+  emptyText?: string;
+  showMoreText?: string;
+  showLessText?: string;
 }
 
-export function ExpandableText({ text, maxLines = 3, className = '' }: ExpandableTextProps) {
+export function ExpandableText({
+  text,
+  maxLines = 3,
+  className = '',
+  emptyText = 'Tidak ada deskripsi.',
+  showMoreText = 'Tampilkan lebih banyak',
+  showLessText = 'Tampilkan lebih sedikit',
+}: ExpandableTextProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [needsExpand, setNeedsExpand] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
@@ -23,7 +33,7 @@ export function ExpandableText({ text, maxLines = 3, className = '' }: Expandabl
   }, [text, maxLines]);
 
   if (!text) {
-    return <span className={className}>Tidak ada deskripsi.</span>;
+    return <span className={className}>{emptyText}</span>;
   }
 
   return (
@@ -42,7 +52,7 @@ export function ExpandableText({ text, maxLines = 3, className = '' }: Expandabl
           onClick={() => setIsExpanded(!isExpanded)}
           className="mt-2 text-sm font-medium text-neutral-900 hover:text-neutral-600 transition-colors"
         >
-          {isExpanded ? 'Tampilkan lebih sedikit' : 'Tampilkan lebih banyak'}
+          {isExpanded ? showLessText : showMoreText}
         </button>
       )}
     </div>

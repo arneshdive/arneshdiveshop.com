@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
@@ -12,6 +13,7 @@ export function OrderSummaryCard() {
   // Ensure cart is synced
   useCartSync();
 
+  const t = useTranslations('checkout');
   const { items, promoDiscountCents, getSubtotalCents } = useCartStore();
   const { data: checkoutData } = useCheckoutStore();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -26,7 +28,7 @@ export function OrderSummaryCard() {
 
   return (
     <div className="bg-neutral-50 p-8 lg:p-12 sticky top-24 rounded-2xl">
-      <h2 className="text-xl font-semibold tracking-tight mb-6">Ringkasan</h2>
+      <h2 className="text-xl font-semibold tracking-tight mb-6">{t('summary.title')}</h2>
 
       {/* Items */}
       <div className="space-y-4 mb-6">
@@ -62,7 +64,7 @@ export function OrderSummaryCard() {
                 {item.variant && (
                   <p className="text-xs text-neutral-400">{item.variant.name}</p>
                 )}
-                <p className="text-xs text-neutral-400">Qty: {item.quantity}</p>
+                <p className="text-xs text-neutral-400">{t('summary.qty', { quantity: item.quantity })}</p>
               </div>
               <div className="text-right">
                 <p className="text-sm font-medium">{formatRupiah(priceCents * item.quantity)}</p>
@@ -80,25 +82,25 @@ export function OrderSummaryCard() {
       {/* Totals */}
       <div className="border-t border-neutral-100 pt-6 space-y-3">
         <div className="flex justify-between text-sm">
-          <span className="text-neutral-500">Subtotal</span>
+          <span className="text-neutral-500">{t('summary.subtotal')}</span>
           <span>{formatRupiah(subtotalCents)}</span>
         </div>
         {promoDiscountCents > 0 && (
           <div className="flex justify-between text-sm text-green-600">
-            <span>Diskon</span>
+            <span>{t('summary.discount')}</span>
             <span>-{formatRupiah(promoDiscountCents)}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-neutral-500">Ongkos Kirim</span>
+          <span className="text-neutral-500">{t('summary.shipping')}</span>
           {shippingCostCents !== null ? (
             <span>{formatRupiah(shippingCostCents)}</span>
           ) : (
-            <span className="text-neutral-400">Dihitung setelah pilih kurir</span>
+            <span className="text-neutral-400">{t('summary.shippingPendingCourier')}</span>
           )}
         </div>
         <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
-          <span>Total</span>
+          <span>{t('summary.total')}</span>
           <span>{formatRupiah(totalCents)}</span>
         </div>
       </div>
@@ -106,7 +108,7 @@ export function OrderSummaryCard() {
       {/* Trust */}
       <div className="flex items-center justify-center gap-2 mt-6 text-xs text-neutral-400">
         <Icon icon="solar:shield-check-linear" className="w-4 h-4" />
-        Transaksi aman & terenkripsi
+        {t('summary.secureTransaction')}
       </div>
     </div>
   );

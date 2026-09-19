@@ -3,6 +3,8 @@
 # lint all work without running their postinstall steps — on Vercel, sharp
 # is supplied by the platform.
 allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
   esbuild: false
   sharp: false
   unrs-resolver: false

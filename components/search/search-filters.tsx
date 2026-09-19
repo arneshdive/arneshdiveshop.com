@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { Icon } from '@iconify/react';
 import { DIVING_TYPE_OPTIONS } from '@/lib/constants/diving-types';
 
@@ -62,12 +64,14 @@ function FilterContent({
   clearFilters,
   hasActiveFilters,
 }: FilterContentProps) {
+  const t = useTranslations('search');
+  const tDivingTypes = useTranslations('common.divingTypes');
   return (
     <div className="space-y-8">
       {/* Diving Type Filter */}
       <div>
         <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
-          Tipe Diving
+          {t('filters.divingType')}
         </h3>
         <div className="space-y-3">
           {DIVING_TYPE_OPTIONS.map((option) => (
@@ -84,7 +88,7 @@ function FilterContent({
                   className="accent-neutral-900 w-4 h-4"
                 />
                 <span className="text-neutral-600 group-hover:text-neutral-900">
-                  {option.name}
+                  {tDivingTypes(option.id)}
                 </span>
               </div>
             </label>
@@ -94,7 +98,7 @@ function FilterContent({
               onClick={() => updateFilter('divingType', '')}
               className="text-sm text-neutral-400 hover:text-neutral-600 underline"
             >
-              Hapus filter tipe diving
+              {t('filters.clearDivingType')}
             </button>
           )}
         </div>
@@ -104,7 +108,7 @@ function FilterContent({
       {categories.length > 0 && (
         <div>
           <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
-            Kategori
+            {t('filters.category')}
           </h3>
           <div className="space-y-3">
             {categories.map((category) => {
@@ -137,7 +141,7 @@ function FilterContent({
                 onClick={() => updateFilter('category', '')}
                 className="text-sm text-neutral-400 hover:text-neutral-600 underline"
               >
-                Hapus filter kategori
+                {t('filters.clearCategory')}
               </button>
             )}
           </div>
@@ -148,7 +152,7 @@ function FilterContent({
       {brands.length > 0 && (
         <div>
           <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
-            Merek
+            {t('filters.brand')}
           </h3>
           <div className="space-y-3 max-h-64 overflow-y-auto">
             {brands.map((brand) => {
@@ -181,7 +185,7 @@ function FilterContent({
                 onClick={() => updateFilter('brand', '')}
                 className="text-sm text-neutral-400 hover:text-neutral-600 underline"
               >
-                Hapus filter merek
+                {t('filters.clearBrand')}
               </button>
             )}
           </div>
@@ -191,12 +195,12 @@ function FilterContent({
       {/* Price Filter */}
       <div>
         <h3 className="text-sm uppercase tracking-wider font-semibold mb-4 pb-3 border-b border-neutral-200">
-          Harga
+          {t('filters.price')}
         </h3>
         <div className="flex gap-3 items-center text-base">
           <input
             type="number"
-            placeholder="Min"
+            placeholder={t('filters.priceMinPlaceholder')}
             value={minPrice || ''}
             onChange={(e) => updateFilter('minPrice', e.target.value || '')}
             className="w-28 px-3 py-2 border border-neutral-300 rounded text-base focus:outline-none focus:ring-1 focus:ring-neutral-900"
@@ -204,7 +208,7 @@ function FilterContent({
           <span className="text-neutral-400">—</span>
           <input
             type="number"
-            placeholder="Max"
+            placeholder={t('filters.priceMaxPlaceholder')}
             value={maxPrice || ''}
             onChange={(e) => updateFilter('maxPrice', e.target.value || '')}
             className="w-28 px-3 py-2 border border-neutral-300 rounded text-base focus:outline-none focus:ring-1 focus:ring-neutral-900"
@@ -218,7 +222,7 @@ function FilterContent({
           onClick={clearFilters}
           className="text-sm text-neutral-400 hover:text-neutral-600 underline"
         >
-          Hapus Semua Filter
+          {t('filters.clearAll')}
         </button>
       )}
     </div>
@@ -237,6 +241,7 @@ export function SearchFilters({
   maxPrice,
   query,
 }: SearchFiltersProps) {
+  const t = useTranslations('search');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -287,7 +292,7 @@ export function SearchFilters({
           className="w-full py-3 px-4 text-base border border-neutral-200 rounded-lg flex items-center justify-center gap-2 bg-white hover:bg-neutral-50 transition-colors"
         >
           <Icon icon="solar:filter-linear" className="w-5 h-5" />
-          Filter
+          {t('filters.filterButton')}
           {activeFilterCount > 0 && (
             <span className="bg-neutral-900 text-white text-xs px-2 py-0.5 rounded-full">
               {activeFilterCount}
@@ -312,10 +317,11 @@ export function SearchFilters({
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-4 border-b border-neutral-200">
-          <h2 className="text-lg font-semibold">Filter</h2>
+          <h2 className="text-lg font-semibold">{t('filters.filterButton')}</h2>
           <button
             onClick={() => setIsDrawerOpen(false)}
             className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+            aria-label={t('filters.closeAria')}
           >
             <Icon icon="solar:close-circle-linear" className="w-6 h-6 text-neutral-500" />
           </button>
@@ -351,14 +357,14 @@ export function SearchFilters({
               }}
               className="flex-1 py-3 px-4 border border-neutral-300 rounded-lg text-neutral-600 hover:bg-neutral-50 transition-colors"
             >
-              Hapus Filter
+              {t('filters.clearFilterButton')}
             </button>
           )}
           <button
             onClick={() => setIsDrawerOpen(false)}
             className={`${hasActiveFilters ? 'flex-1' : 'w-full'} py-3 px-4 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors`}
           >
-            Terapkan
+            {t('filters.apply')}
           </button>
         </div>
       </div>

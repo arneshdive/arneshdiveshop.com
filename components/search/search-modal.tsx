@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { useRouter, Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 
 interface Category {
@@ -17,6 +17,7 @@ interface SearchModalProps {
 }
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
+  const t = useTranslations('search');
   const [query, setQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -96,14 +97,14 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Cari produk..."
+                placeholder={t('modal.placeholder')}
                 className="w-full pl-14 pr-14 py-5 text-xl border-0 focus:outline-none focus:ring-0"
               />
               <button
                 type="button"
                 onClick={onClose}
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-neutral-100 rounded-full transition-colors"
-                aria-label="Tutup"
+                aria-label={t('modal.closeAria')}
               >
                 <Icon icon="solar:close-circle-linear" className="w-6 h-6 text-neutral-400" />
               </button>
@@ -112,7 +113,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
           {/* Quick Links */}
           <div className="border-t border-neutral-100 px-5 py-4">
-            <p className="text-xs text-neutral-400 uppercase tracking-wider mb-3">Kategori</p>
+            <p className="text-xs text-neutral-400 uppercase tracking-wider mb-3">{t('modal.categoriesLabel')}</p>
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <Link
@@ -130,7 +131,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           {/* Tip */}
           <div className="border-t border-neutral-100 px-5 py-3 text-center">
             <p className="text-xs text-neutral-400">
-              Tekan <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-500">Enter</kbd> untuk mencari atau pilih kategori
+              {t.rich('modal.enterHint', {
+                kbd: (chunks) => (
+                  <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded text-neutral-500">{chunks}</kbd>
+                ),
+              })}
             </p>
           </div>
         </div>

@@ -1,0 +1,1048 @@
+{
+  "nav": {
+    "catalog": "Todo el Catálogo",
+    "newArrivals": "Novedades",
+    "diveJournal": "Diario de Buceo",
+    "sale": "Rebajas",
+    "search": "Buscar",
+    "cart": "Carrito",
+    "account": "Cuenta",
+    "menu": "Menú",
+    "closeMenu": "Cerrar menú",
+    "myAccount": "Mi Cuenta",
+    "language": "Idioma"
+  },
+  "footer": {
+    "copyright": "{year} Arnesh Dive. Todos los derechos reservados.",
+    "privacyPolicy": "Política de Privacidad",
+    "termsAndConditions": "Términos y Condiciones",
+    "help": "Ayuda",
+    "contact": "Contacto"
+  },
+  "newsletter": {
+    "heading": "Recibe las últimas promociones",
+    "emailPlaceholder": "Tu correo electrónico",
+    "subscribeAria": "Suscribirse",
+    "subscribeAnother": "Registrar otro correo",
+    "errors": {
+      "generic": "Algo salió mal",
+      "invalidEmail": "Correo electrónico no válido",
+      "rateLimited": "Demasiadas solicitudes. Inténtalo de nuevo en {seconds} segundos."
+    },
+    "success": {
+      "alreadySubscribed": "Este correo ya está suscrito",
+      "reactivated": "¡Suscripción reactivada con éxito!",
+      "subscribed": "¡Gracias por suscribirte!"
+    }
+  },
+  "common": {
+    "pagination": {
+      "previous": "Página anterior",
+      "next": "Página siguiente",
+      "page": "Página {page}"
+    },
+    "valueProps": {
+      "originalProduct": {
+        "title": "Productos Originales",
+        "desc": "100% calidad garantizada"
+      },
+      "securePayment": {
+        "title": "Pago Seguro",
+        "desc": "Transacciones protegidas"
+      },
+      "nationwideShipping": {
+        "title": "Envío a Todo el País",
+        "desc": "Entregas en toda Indonesia"
+      }
+    },
+    "loading": "Cargando...",
+    "divingTypes": {
+      "freediving": "Freediving",
+      "scuba": "Buceo",
+      "spearfishing": "Pesca Submarina",
+      "surfing": "Surf",
+      "swimming": "Natación"
+    }
+  },
+  "auth": {
+    "loading": "Cargando...",
+    "brandAlt": "Arnesh Dive",
+    "tabs": {
+      "login": "Iniciar Sesión",
+      "register": "Registrarse"
+    },
+    "fields": {
+      "fullName": "Nombre Completo",
+      "fullNamePlaceholder": "Tu nombre completo",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "correo@ejemplo.com"
+    },
+    "buttons": {
+      "processing": "Procesando...",
+      "login": "Iniciar Sesión",
+      "register": "Registrarse",
+      "redirecting": "Redirigiendo...",
+      "verify": "Verificar"
+    },
+    "terms": {
+      "prefix": "Al continuar, aceptas nuestros",
+      "link": "Términos y Condiciones",
+      "suffix": ""
+    },
+    "backToStore": "← Volver a la tienda",
+    "backToLogin": "← Volver al inicio de sesión",
+    "verify": {
+      "title": "Verificar Correo",
+      "description": "Ingresa el código OTP enviado a",
+      "expiresIn": "El código expira en {minutes} minutos",
+      "otpLabel": "Código OTP",
+      "otpPlaceholder": "Ingresa el código OTP de 6 dígitos",
+      "resend": "Reenviar código OTP",
+      "resendWithCooldown": "Reenviar código OTP ({seconds}s)"
+    },
+    "errors": {
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Formato de correo electrónico no válido",
+      "nameRequired": "El nombre es obligatorio",
+      "otpRequired": "El código OTP es obligatorio",
+      "otpInvalidLength": "El código OTP debe tener 6 dígitos",
+      "generic": "Algo salió mal",
+      "genericServer": "Ocurrió un error en el servidor",
+      "resendFailed": "No se pudo reenviar"
+    },
+    "success": {
+      "otpResent": "Se ha enviado un nuevo código OTP"
+    }
+  },
+  "search": {
+    "showingCount": "Mostrando <b>{count}</b> productos",
+    "sort": {
+      "newest": "Más recientes",
+      "priceAsc": "Precio: Menor a Mayor",
+      "priceDesc": "Precio: Mayor a Menor",
+      "popular": "Más Populares"
+    },
+    "empty": {
+      "title": "No se encontraron productos",
+      "description": "Intenta ajustar los filtros o las palabras clave de tu búsqueda."
+    },
+    "filters": {
+      "divingType": "Tipo de Buceo",
+      "clearDivingType": "Quitar filtro de tipo de buceo",
+      "category": "Categoría",
+      "clearCategory": "Quitar filtro de categoría",
+      "brand": "Marca",
+      "clearBrand": "Quitar filtro de marca",
+      "price": "Precio",
+      "priceMinPlaceholder": "Mín",
+      "priceMaxPlaceholder": "Máx",
+      "clearAll": "Quitar Todos los Filtros",
+      "filterButton": "Filtro",
+      "closeAria": "Cerrar",
+      "clearFilterButton": "Quitar Filtros",
+      "apply": "Aplicar"
+    },
+    "modal": {
+      "placeholder": "Buscar productos...",
+      "closeAria": "Cerrar",
+      "categoriesLabel": "Categorías",
+      "enterHint": "Presiona <kbd>Enter</kbd> para buscar o elige una categoría"
+    }
+  },
+  "product": {
+    "addedToast": "Añadido",
+    "viewCartAction": "Ver",
+    "addToCartErrorToast": "No se pudo añadir el producto",
+    "addToCartErrorDescription": "Algo salió mal, por favor intenta de nuevo.",
+    "badgeSale": "Oferta",
+    "badgeNew": "Nuevo",
+    "alternateViewAlt": "{title} - vista alternativa",
+    "added": "Añadido",
+    "addShort": "Añadir",
+    "addToCart": "Añadir al Carrito",
+    "addingToCart": "Añadiendo...",
+    "quantityLabel": "Cantidad",
+    "inStock": "Producto disponible",
+    "outOfStock": "Producto no disponible",
+    "noDescription": "No hay descripción disponible.",
+    "showMore": "Mostrar más",
+    "showLess": "Mostrar menos",
+    "startingFrom": "Desde",
+    "descriptionTab": "Descripción",
+    "specificationsTab": "Especificaciones",
+    "divingTypeLabel": "Tipo de Buceo",
+    "categoryLabel": "Categoría",
+    "brandLabel": "Marca",
+    "galleryImageAlt": "{title} - Imagen {index}",
+    "galleryThumbnailAlt": "{title} - miniatura {index}",
+    "recentlyViewed": {
+      "eyebrow": "Historial",
+      "title": "Vistos <highlight>Recientemente</highlight>",
+      "description": "Continúa donde lo dejaste con los productos que viste recientemente."
+    }
+  },
+  "produk": {
+    "meta": {
+      "allCatalogTitle": "Todo el Catálogo",
+      "defaultCatalogDescription": "Explora la colección completa de equipo de freediving, buceo, pesca submarina, surf y natación de alta calidad en Arnesh Dive.",
+      "searchResultsTitle": "Resultados para \"{query}\"",
+      "searchResultsDescription": "Encuentra los productos que buscas en nuestra colección.",
+      "newArrivalsTitle": "Novedades",
+      "saleTitle": "Rebajas",
+      "divingTypeTitle": "Colección {label}",
+      "divingTypeDescription": "Explora nuestra colección de {label} de alta calidad en Arnesh Dive.",
+      "categoryDescription": "Explora productos de {label} de alta calidad en Arnesh Dive.",
+      "brandDescription": "Productos de {label}, disponibles en Arnesh Dive."
+    },
+    "filters": {
+      "newArrival": "Lo más nuevo para tus aventuras de buceo.",
+      "onSale": "Descuentos especiales en productos seleccionados.",
+      "freediving": "Equipo de freediving de calidad para tus aventuras submarinas.",
+      "scuba": "Equipo completo de buceo para la exploración en aguas profundas.",
+      "spearfishing": "Equipo confiable de pesca submarina para cazar bajo el agua.",
+      "surfing": "Equipo de surf para enfrentar cada ola.",
+      "swimming": "Equipo de natación para moverte libremente en el agua."
+    },
+    "banner": {
+      "newArrivalsWithQuery": "Novedades: \"{query}\"",
+      "saleWithQuery": "Ofertas: \"{query}\"",
+      "freedivingWithQuery": "Freediving: \"{query}\"",
+      "freedivingTitle": "Colección de Freediving",
+      "scubaWithQuery": "Buceo: \"{query}\"",
+      "scubaTitle": "Colección de Buceo",
+      "spearfishingWithQuery": "Pesca Submarina: \"{query}\"",
+      "spearfishingTitle": "Colección de Pesca Submarina",
+      "surfingWithQuery": "Surf: \"{query}\"",
+      "surfingTitle": "Colección de Surf",
+      "swimmingWithQuery": "Natación: \"{query}\"",
+      "swimmingTitle": "Colección de Natación",
+      "categoryWithQuery": "{name}: \"{query}\"",
+      "categoryDefaultDescription": "Explora los productos de esta categoría.",
+      "brandWithQuery": "{name}: \"{query}\"",
+      "brandDefaultDescription": "Productos de una marca de confianza.",
+      "readJournal": "Lee el artículo: {title}"
+    },
+    "breadcrumb": {
+      "home": "Inicio"
+    },
+    "pdp": {
+      "notFound": "Producto no encontrado",
+      "backToCatalog": "Volver al catálogo",
+      "metaDescriptionPadding": "Compra {name}{category} de calidad en Arnesh Dive, tu tienda online de equipo de freediving y buceo.",
+      "breadcrumbProduk": "Productos",
+      "badgeSale": "Rebaja",
+      "badgeNew": "Nuevo",
+      "relatedProductsLabel": "Productos Relacionados",
+      "relatedProductsTitle": "Productos Relacionados",
+      "relatedProductsEmpty": "No se encontraron productos relacionados."
+    }
+  },
+  "account": {
+    "sidebar": {
+      "orders": "Pedidos",
+      "addresses": "Direcciones",
+      "settings": "Configuración",
+      "logout": "Cerrar sesión"
+    },
+    "addresses": {
+      "title": "Mis Direcciones",
+      "addNew": "Añadir Dirección",
+      "loading": "Cargando direcciones...",
+      "confirmDelete": "¿Estás seguro de que quieres eliminar esta dirección?",
+      "loginRequired": {
+        "title": "Inicia Sesión",
+        "description": "Inicia sesión para gestionar tus direcciones de envío",
+        "cta": "Iniciar Sesión"
+      },
+      "errors": {
+        "loadFailedTitle": "Error al Cargar",
+        "retry": "Intentar de Nuevo",
+        "unauthorized": "Inicia sesión para ver tus direcciones",
+        "loadFailed": "No se pudieron cargar las direcciones",
+        "createFailed": "No se pudo añadir la dirección",
+        "updateFailed": "No se pudo actualizar la dirección",
+        "deleteFailed": "No se pudo eliminar la dirección"
+      },
+      "empty": {
+        "title": "Aún No Hay Direcciones",
+        "description": "Añade una dirección de envío para agilizar tu próxima compra."
+      },
+      "toast": {
+        "created": "Dirección añadida correctamente",
+        "updated": "Dirección actualizada correctamente",
+        "deleted": "Dirección eliminada correctamente"
+      },
+      "card": {
+        "default": "Principal",
+        "setDefault": "Marcar como Principal",
+        "edit": "Editar",
+        "delete": "Eliminar"
+      }
+    },
+    "orders": {
+      "title": "Mis Pedidos",
+      "loading": "Cargando pedidos...",
+      "loginRequired": {
+        "title": "Inicia Sesión",
+        "description": "Inicia sesión para ver tu historial de pedidos",
+        "cta": "Iniciar Sesión"
+      },
+      "errors": {
+        "loadFailedTitle": "Error al Cargar",
+        "retry": "Intentar de Nuevo",
+        "loadFailed": "No se pudieron cargar los pedidos"
+      },
+      "empty": {
+        "title": "Aún No Hay Pedidos",
+        "description": "No se encontraron pedidos con este estado. ¡Empieza a comprar y encuentra el mejor equipo de buceo!",
+        "cta": "Empezar a Comprar"
+      },
+      "filters": {
+        "all": "Todos"
+      },
+      "status": {
+        "pending_payment": "Pago Pendiente",
+        "processing": "En Proceso",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "cancelled": "Cancelado",
+        "refunded": "Reembolsado"
+      },
+      "paymentStatus": {
+        "pending": "Pendiente",
+        "paid": "Pagado",
+        "failed": "Fallido",
+        "expired": "Caducado",
+        "cancelled": "Cancelado",
+        "refunded": "Reembolsado"
+      },
+      "paymentMethods": {
+        "credit_card": "Tarjeta de Crédito",
+        "bank_transfer": "Transferencia Bancaria",
+        "bca_va": "BCA Virtual Account",
+        "bni_va": "BNI Virtual Account",
+        "bri_va": "BRI Virtual Account",
+        "echannel": "Mandiri Bill Payment",
+        "gopay": "GoPay",
+        "gopay_partner": "GoPay",
+        "ovo": "OVO",
+        "shopeepay": "ShopeePay",
+        "qris": "QRIS",
+        "danamon_online": "Danamon Online",
+        "akulaku": "Akulaku"
+      },
+      "copyHint": "Haz clic para copiar",
+      "moreItems": "+{count} artículos más",
+      "qtyLabel": "Cant: {count}",
+      "total": "Total",
+      "payNow": "Pagar Ahora",
+      "trackShipment": "Rastrear Envío",
+      "viewDetail": "Ver Detalles",
+      "payLinkUnavailable": {
+        "title": "Enlace de pago no disponible",
+        "description": "Contacta con atención al cliente para obtener ayuda."
+      },
+      "detail": {
+        "backToOrders": "Volver a Pedidos",
+        "backToList": "Volver a la Lista de Pedidos",
+        "loading": "Cargando pedido...",
+        "notFoundTitle": "Pedido No Encontrado",
+        "notFoundDescription": "El pedido que buscas no se pudo encontrar o no tienes acceso a él.",
+        "orderNumber": "Pedido #{number}",
+        "createdOn": "Realizado el {date}",
+        "errors": {
+          "notFound": "Pedido no encontrado",
+          "forbidden": "No tienes acceso a este pedido",
+          "loadFailed": "No se pudo cargar el pedido"
+        },
+        "paymentBanner": {
+          "title": "Esperando Pago",
+          "description": "Completa tu pago antes de la siguiente fecha límite",
+          "deadlineLabel": "Fecha Límite de Pago",
+          "vaLabel": "Cuenta Virtual {bank}",
+          "transferExact": "Transfiere el monto exacto: {amount}",
+          "mandiriTitle": "Mandiri Bill Payment",
+          "billerCode": "Código de Facturación:",
+          "billKey": "Clave de Factura:",
+          "payExact": "Paga el monto exacto: {amount}",
+          "methodLabel": "Método de Pago"
+        },
+        "items": {
+          "title": "Artículos del Pedido"
+        },
+        "summary": {
+          "subtotal": "Subtotal",
+          "shipping": "Envío",
+          "free": "Gratis",
+          "discount": "Descuento"
+        },
+        "tracking": {
+          "title": "Número de Seguimiento",
+          "copyHint": "Copiar número de seguimiento",
+          "shippedOn": "Enviado el {date}",
+          "inTransit": "Tu pedido está en camino. El número de seguimiento estará disponible poco después de que el mensajero recoja el paquete."
+        },
+        "status": {
+          "title": "Estado del Pedido",
+          "processingNote": "Tu pedido está siendo empacado. El número de seguimiento estará disponible una vez enviado.",
+          "waitingPayment": "Esperando pago"
+        },
+        "payment": {
+          "title": "Pago",
+          "statusLabel": "Estado",
+          "methodLabel": "Método",
+          "paidAtLabel": "Fecha de Pago"
+        },
+        "shipping": {
+          "title": "Envío",
+          "recipient": "Destinatario",
+          "address": "Dirección"
+        },
+        "notes": {
+          "title": "Notas"
+        },
+        "help": {
+          "title": "¿Necesitas Ayuda?",
+          "description": "Contacta a nuestro servicio al cliente si tienes preguntas sobre tu pedido.",
+          "whatsapp": "Chatear por WhatsApp"
+        }
+      }
+    },
+    "settings": {
+      "title": "Configuración de la Cuenta",
+      "loading": "Cargando perfil...",
+      "loginRequired": {
+        "description": "Inicia sesión para acceder a la configuración de la cuenta",
+        "cta": "Iniciar Sesión"
+      },
+      "errors": {
+        "unauthorized": "Inicia sesión para acceder a la configuración",
+        "loadFailed": "No se pudo cargar el perfil",
+        "updateFailed": "No se pudo actualizar el perfil",
+        "retry": "Intentar de nuevo"
+      },
+      "toast": {
+        "saved": "Perfil guardado correctamente"
+      },
+      "profile": {
+        "title": "Perfil",
+        "photoLabel": "Foto de Perfil",
+        "photoHint": "JPG, PNG. Máximo 2MB",
+        "uploadPhoto": "Subir Foto",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo Electrónico",
+        "emailHint": "Tu correo electrónico se usa para iniciar sesión y no se puede cambiar",
+        "phone": "Número de Teléfono",
+        "save": "Guardar Cambios",
+        "saving": "Guardando..."
+      },
+      "security": {
+        "title": "Seguridad",
+        "passwordLabel": "Contraseña",
+        "passwordHint": "Última modificación hace 3 meses",
+        "changePassword": "Cambiar Contraseña"
+      },
+      "danger": {
+        "title": "Zona de Peligro",
+        "description": "Eliminar tu cuenta borrará permanentemente todos tus datos. Esta acción no se puede deshacer.",
+        "deleteAccount": "Eliminar Mi Cuenta"
+      }
+    }
+  },
+  "cart": {
+    "eyebrow": "Compras",
+    "title": "Tu Carrito",
+    "continueShopping": "Seguir Comprando",
+    "empty": {
+      "title": "Tu Carrito está Vacío",
+      "description": "Aún no hay productos en tu carrito. Empieza a comprar y encuentra el equipo de buceo que necesitas.",
+      "cta": "Empezar a Comprar"
+    },
+    "item": {
+      "decreaseAria": "Disminuir cantidad",
+      "increaseAria": "Aumentar cantidad",
+      "removeAria": "Eliminar artículo"
+    },
+    "summary": {
+      "title": "Resumen",
+      "qty": "Cant.: {quantity}",
+      "promoLabel": "Código Promocional",
+      "removePromoAria": "Quitar promoción",
+      "promoPlaceholder": "Ingresa el código",
+      "promoApply": "Aplicar",
+      "promoApplying": "Verificando...",
+      "promoRequiredError": "Ingresa un código promocional",
+      "promoInvalidError": "Código promocional no válido",
+      "promoAppliedMessage": "¡Descuento de {amount} aplicado!",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "shipping": "Envío",
+      "shippingCalculatedAtCheckout": "Se calcula al finalizar la compra",
+      "total": "Total",
+      "checkoutCta": "Continuar a Finalizar Compra",
+      "checkoutShort": "Finalizar compra",
+      "detailsToggle": "Detalles",
+      "secureTransaction": "Transacción segura y encriptada"
+    }
+  },
+  "checkout": {
+    "title": "Finalizar compra",
+    "subtitle": "Completa tu información para continuar",
+    "preparingSession": "Preparando el pago...",
+    "processingPayment": "Procesando el pago...",
+    "continueToPayment": "Continuar al Pago",
+    "backToCart": "Volver al Carrito",
+    "paymentTab": {
+      "title": "Procesando...",
+      "processing": "Procesando el pago..."
+    },
+    "validation": {
+      "incompleteTitle": "Completa la información requerida",
+      "incompleteDescription": "Los siguientes campos son obligatorios: {fields}",
+      "fieldEmail": "Correo electrónico",
+      "fieldPhone": "Número de Teléfono",
+      "fieldFullName": "Nombre Completo",
+      "fieldDestination": "Distrito/Subdistrito",
+      "fieldAddress": "Dirección Completa"
+    },
+    "errors": {
+      "createSessionFailed": "No se pudo crear la sesión de pago",
+      "updateShippingFailed": "No se pudo actualizar el método de envío",
+      "staleSession": "Esta sesión de pago ha caducado, inténtalo de nuevo",
+      "createPaymentFailed": "No se pudo crear la transacción de pago"
+    },
+    "toast": {
+      "paymentOpenedTitle": "El pago se abrió en una nueva pestaña",
+      "paymentOpenedDescription": "Por favor completa tu pago",
+      "errorTitle": "Algo salió mal",
+      "genericRetry": "Por favor inténtalo de nuevo"
+    },
+    "contact": {
+      "title": "Información de Contacto",
+      "emailLabel": "Correo electrónico",
+      "emailPlaceholder": "correo@ejemplo.com",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Formato de correo electrónico no válido",
+      "phoneLabel": "Número de Teléfono",
+      "phonePlaceholder": "0812-3456-7890",
+      "phoneRequired": "El número de teléfono es obligatorio",
+      "phoneInvalid": "Formato de número de teléfono no válido"
+    },
+    "shipping": {
+      "title": "Dirección de Envío",
+      "fullNameLabel": "Nombre Completo",
+      "fullNamePlaceholder": "Nombre del destinatario",
+      "fullNameRequired": "El nombre completo es obligatorio",
+      "destinationLabel": "Distrito/Subdistrito",
+      "destinationPlaceholder": "Busca un distrito o subdistrito...",
+      "destinationRequired": "El distrito/subdistrito es obligatorio",
+      "destinationHint": "Escribe el nombre del distrito o subdistrito de destino",
+      "destinationSelectedLabel": "Destino de Envío",
+      "address1Label": "Dirección Completa",
+      "address1Placeholder": "Calle, número, nombre del edificio...",
+      "address1Required": "La dirección completa es obligatoria",
+      "address2Label": "Detalles Adicionales",
+      "optionalTag": "opcional",
+      "address2Placeholder": "Punto de referencia, notas para el mensajero..."
+    },
+    "shippingMethod": {
+      "title": "Método de Envío",
+      "calculating": "Calculando el costo de envío...",
+      "verifyAddressHint": "Por favor verifica tu dirección de envío.",
+      "noRatesFound": "No hay mensajerías disponibles para esta dirección.",
+      "selectDestinationHint": "Selecciona un distrito/subdistrito de destino para ver las opciones de mensajería.",
+      "serviceCountAndPrice": "{count} servicios • Desde {price}",
+      "selectedBadge": "Seleccionado",
+      "errors": {
+        "fetchFailed": "No se pudieron obtener las tarifas de envío"
+      },
+      "badges": {
+        "sameDay": "Mismo día",
+        "nextDay": "Día siguiente",
+        "regular": "Regular",
+        "economy": "Económico",
+        "cargo": "Carga"
+      }
+    },
+    "savedAddress": {
+      "loading": "Cargando direcciones guardadas...",
+      "saving": "Guardando dirección...",
+      "addNew": "Añadir Nueva Dirección",
+      "defaultBadge": "Predeterminada",
+      "errors": {
+        "loadFailed": "No se pudieron cargar las direcciones guardadas",
+        "saveFailed": "No se pudo guardar la dirección"
+      }
+    },
+    "summary": {
+      "title": "Resumen",
+      "qty": "Cant.: {quantity}",
+      "subtotal": "Subtotal",
+      "discount": "Descuento",
+      "shipping": "Envío",
+      "shippingPendingCourier": "Se calcula después de elegir la mensajería",
+      "total": "Total",
+      "secureTransaction": "Transacción segura y encriptada"
+    },
+    "callback": {
+      "viewOrder": "Ver Pedido",
+      "toAccount": "Ir a Mi Cuenta",
+      "retry": "Intentar de Nuevo",
+      "success": {
+        "title": "¡Pago Exitoso!",
+        "description": "¡Gracias! Tu pedido ha sido confirmado y está siendo procesado."
+      },
+      "pending": {
+        "title": "Esperando Pago",
+        "description": "Tu pago está siendo procesado. Por favor completa el pago según las instrucciones proporcionadas."
+      },
+      "failed": {
+        "title": "Pago Fallido",
+        "description": "Lo sentimos, tu pago no pudo ser procesado. Inténtalo de nuevo o contacta al servicio al cliente."
+      }
+    },
+    "success": {
+      "loadingOrder": "Cargando pedido...",
+      "thankYouTitle": "¡Gracias!",
+      "thankYouDescription": "Tu pedido se ha realizado con éxito",
+      "orderNumberLabel": "N.º de Pedido:",
+      "pendingPayment": "Esperando Pago",
+      "orderConfirmed": "Pedido Confirmado",
+      "shippingInfoTitle": "Información de Envío",
+      "nameLabel": "Nombre",
+      "orderDateLabel": "Fecha del Pedido",
+      "addressLabel": "Dirección",
+      "emailLabel": "Correo electrónico",
+      "phoneLabel": "Teléfono",
+      "orderDetailsTitle": "Detalles del Pedido",
+      "qtyLabel": "Cant.: {quantity}",
+      "subtotal": "Subtotal",
+      "shippingCost": "Envío",
+      "free": "Gratis",
+      "discount": "Descuento",
+      "total": "Total",
+      "paymentInstructionsTitle": "Instrucciones de Pago",
+      "paymentInstructionsDescription": "Tu pago está pendiente de confirmación. Por favor completa el pago mediante el método que seleccionaste.",
+      "paymentMethodLabel": "Método de pago:",
+      "viewPaymentDetails": "Ver detalles del pago →",
+      "paymentCompleted": "Pago Completado • {date}",
+      "paymentMethodShort": "Método: {method}",
+      "viewOrders": "Ver Pedidos",
+      "continueShopping": "Seguir Comprando",
+      "errors": {
+        "notFound": "Pedido no encontrado",
+        "noAccess": "No tienes acceso a este pedido",
+        "loadFailed": "No se pudo cargar el pedido",
+        "notFoundTitle": "Pedido No Encontrado",
+        "notFoundDescription": "No pudimos encontrar los detalles de tu pedido. Revisa tu correo de confirmación o contacta al servicio al cliente.",
+        "viewMyOrders": "Ver Mis Pedidos"
+      },
+      "paymentMethods": {
+        "creditCard": "Tarjeta de Crédito",
+        "bankTransfer": "Transferencia Bancaria"
+      }
+    }
+  },
+  "home": {
+    "meta": {
+      "title": "Freediving, Scuba, Spearfishing, Surfing & Swimming",
+      "description": "Equipo de freediving, scuba, pesca submarina, surf y natación, original de Arnesh Dive. Calidad garantizada, envíos a toda Indonesia."
+    },
+    "hero": {
+      "eyebrow": "SCUBA · FREEDIVING · SPEARFISHING",
+      "title": "Explora las profundidades.\nSumérgete con confianza.",
+      "subtitle": "Equipo de freediving y buceo de marcas confiables, para cada nivel de buceador.",
+      "ctaText": "Ver Catálogo",
+      "fallbackTitle": "Explora las profundidades",
+      "imageAltFallback": "Portada",
+      "ctaFallback": "Ver Colección",
+      "goToSlide": "Ir a la diapositiva {number}"
+    },
+    "newArrivals": {
+      "eyebrow": "Novedades",
+      "headingPrefix": "Nuevos",
+      "headingHighlight": "Productos",
+      "description": "El equipo de buceo más reciente para tus aventuras submarinas."
+    },
+    "sale": {
+      "eyebrow": "Ofertas",
+      "headingPrefix": "Promoción",
+      "headingHighlight": "Especial",
+      "description": "Descuentos especiales en productos seleccionados."
+    },
+    "explore": {
+      "eyebrow": "Todos los Productos",
+      "headingPrefix": "Explora",
+      "headingHighlight": "Más",
+      "description": "Encuentra el equipo de buceo que necesitas."
+    },
+    "viewAll": "Ver Todo",
+    "community": {
+      "eyebrow": "Explora la Libertad Bajo el Agua",
+      "heading": "Sigue Nuestro Viaje",
+      "description1": "Descubre cómo Arnesh Dive acompaña las aventuras de los buceadores en toda Indonesia.",
+      "description2": "Del freediving al buceo, cada inmersión es una historia nueva. Encuentra inspiración para tu próxima aventura de buceo.",
+      "instagramCta": "Instagram",
+      "instagramAlt": "Publicación de Instagram"
+    },
+    "divingGrid": {
+      "category": "Categoría",
+      "headingPrefix": "Encuentra",
+      "headingHighlight": "Tu Actividad",
+      "description": "Encuentra el equipo adecuado para tu estilo de buceo.",
+      "freedivingSubtitle": "Calma abajo, libertad por dentro.",
+      "scubaSubtitle": "Más profundo, más tiempo bajo el agua.",
+      "spearfishingSubtitle": "Un disparo, una historia.",
+      "surfingSubtitle": "Conquista cada ola.",
+      "swimmingSubtitle": "Muévete libre, respira tranquilo.",
+      "otherTitle": "Otros",
+      "otherSubtitle": "Completa todas tus necesidades de buceo."
+    }
+  },
+  "faq": {
+    "meta": {
+      "title": "Centro de Ayuda | Arnesh Dive",
+      "description": "Preguntas frecuentes sobre compras, envíos y productos en Arnesh Dive."
+    },
+    "header": {
+      "title": "Centro de Ayuda",
+      "description": "Encuentra respuestas a las preguntas frecuentes o contáctanos si necesitas más ayuda.",
+      "searchPlaceholder": "Buscar una pregunta...",
+      "stillNeedHelp": "¿Aún necesitas ayuda?",
+      "contactUs": "Contáctanos"
+    },
+    "categories": {
+      "pengiriman": "Envíos",
+      "pengembalian": "Devoluciones",
+      "pembayaran": "Pagos",
+      "produk": "Productos",
+      "akun": "Cuenta"
+    },
+    "items": {
+      "pengiriman": {
+        "0": {
+          "question": "¿Cuánto tiempo tarda el envío?",
+          "answer": "El envío estándar tarda de 3 a 5 días hábiles, mientras que el envío exprés tarda de 1 a 2 días hábiles. El tiempo de envío se calcula desde que el pedido sale de nuestro almacén."
+        },
+        "1": {
+          "question": "¿Cómo puedo rastrear mi pedido?",
+          "answer": "Una vez enviado tu pedido, recibirás un correo con el número de guía y un enlace para rastrear el envío. También puedes consultar el estado en la página \"Mis Pedidos\" de tu cuenta."
+        },
+        "2": {
+          "question": "¿Puedo cambiar la dirección de envío después de finalizar la compra?",
+          "answer": "Los cambios de dirección solo pueden realizarse antes de que se procese el pedido. Contacta a nuestro servicio al cliente lo antes posible por WhatsApp o correo electrónico."
+        },
+        "3": {
+          "question": "¿Qué transportistas están disponibles?",
+          "answer": "Trabajamos con JNE, J&T Express, SiCepat, ID Express, AnterAja, POS Indonesia y Tiki. La disponibilidad puede variar según la ubicación."
+        }
+      },
+      "pengembalian": {
+        "0": {
+          "question": "¿Cómo devuelvo un producto?",
+          "answer": "Contacta a nuestro servicio al cliente dentro de los 7 días posteriores a la recepción de tu pedido. Incluye fotos del producto y el motivo de la devolución. Si se aprueba, recibirás instrucciones para devolver el artículo."
+        },
+        "1": {
+          "question": "¿Hay algún costo por devolución?",
+          "answer": "El costo de envío de la devolución corre a cargo del comprador, salvo que el producto esté defectuoso o no coincida con el pedido. Nosotros cubrimos el costo de reenvío en los cambios."
+        },
+        "2": {
+          "question": "¿Cuánto tarda el proceso de reembolso?",
+          "answer": "Los reembolsos se procesan de 3 a 5 días hábiles después de recibir e inspeccionar el producto. El tiempo para que llegue a tu cuenta depende del método de pago y tu banco."
+        },
+        "3": {
+          "question": "¿Qué productos no se pueden devolver?",
+          "answer": "Los productos usados, los productos personalizados/de color especial y los productos con el sello roto no se pueden devolver. Las máscaras tampoco se pueden devolver por motivos de higiene."
+        }
+      },
+      "pembayaran": {
+        "0": {
+          "question": "¿Qué métodos de pago están disponibles?",
+          "answer": "Aceptamos transferencia bancaria (BCA, Mandiri, BNI, BRI), tarjetas de crédito/débito (Visa, Mastercard), billeteras electrónicas (GoPay, OVO, Dana) y QRIS."
+        },
+        "1": {
+          "question": "¿Es seguro mi pago?",
+          "answer": "Sí, todas las transacciones están encriptadas con protocolos SSL/TLS. No almacenamos los datos de tu tarjeta de crédito. El procesamiento de pagos lo realiza una pasarela de pago confiable."
+        },
+        "2": {
+          "question": "¿Qué pasa si mi pago falla?",
+          "answer": "Revisa el saldo o el límite de tu tarjeta. Si el problema persiste, intenta otro método de pago o contacta a tu banco. Tu carrito se guarda durante 24 horas."
+        },
+        "3": {
+          "question": "¿Puedo pagar en cuotas?",
+          "answer": "Sí, ofrecemos cuotas sin tarjeta de crédito a través de nuestro socio. La opción de cuotas aparece en el checkout para compras de al menos Rp 500.000."
+        }
+      },
+      "produk": {
+        "0": {
+          "question": "¿Cómo elijo la talla correcta?",
+          "answer": "Cada producto incluye una guía de tallas. También puedes contactar al servicio al cliente para recomendaciones según tu altura y peso."
+        },
+        "1": {
+          "question": "¿Los productos son 100% originales?",
+          "answer": "Sí, todos los productos que vendemos son 100% originales de distribuidores autorizados. Garantizamos la autenticidad de cada producto."
+        },
+        "2": {
+          "question": "¿Cómo cuido el equipo de buceo?",
+          "answer": "Enjuaga con agua dulce después de usarlo, sécalo a la sombra (evita la luz solar directa) y guárdalo en un lugar seco. Los detalles de cuidado varían según el producto; revisa la etiqueta o la guía del producto."
+        },
+        "3": {
+          "question": "¿Hay garantía?",
+          "answer": "La garantía sigue la política de cada marca, generalmente de 6 a 12 meses por defectos de fábrica. Guarda tu factura como comprobante de compra."
+        }
+      },
+      "akun": {
+        "0": {
+          "question": "¿Cómo cambio mi perfil?",
+          "answer": "Inicia sesión en tu cuenta y ve a la página \"Perfil\" o \"Configuración\". Puedes cambiar tu nombre, correo, número de teléfono y dirección."
+        },
+        "1": {
+          "question": "Olvidé mi contraseña, ¿cómo la restablezco?",
+          "answer": "Haz clic en \"Olvidé mi contraseña\" en la página de inicio de sesión. Ingresa tu correo registrado y recibirás un enlace para restablecer tu contraseña."
+        },
+        "2": {
+          "question": "¿Necesito crear una cuenta para comprar?",
+          "answer": "Sí, se necesita una cuenta para rastrear pedidos, guardar direcciones y obtener puntos de recompensa. El registro es rápido y gratuito."
+        },
+        "3": {
+          "question": "¿Cómo elimino mi cuenta?",
+          "answer": "Contacta a nuestro servicio al cliente por correo o WhatsApp con tu solicitud de eliminación de cuenta. Tus datos se eliminarán dentro de 30 días hábiles conforme a nuestra política de privacidad."
+        }
+      }
+    }
+  },
+  "kontak": {
+    "meta": {
+      "title": "Contacto | Arnesh Dive",
+      "description": "Contacta al equipo de atención al cliente de Arnesh Dive para preguntas sobre pedidos, productos o nuestros servicios."
+    },
+    "header": {
+      "title": "Contáctanos",
+      "description": "¿Tienes alguna pregunta sobre un pedido o producto? Nuestro equipo está listo para ayudarte."
+    },
+    "form": {
+      "heading": "Enviar un Mensaje",
+      "subjectOptions": {
+        "order": "Pedido",
+        "shipping": "Envío",
+        "return": "Devoluciones y Cambios",
+        "product": "Producto",
+        "other": "Otro"
+      },
+      "successTitle": "¡Mensaje Enviado!",
+      "successDescription": "Gracias por contactarnos. Nuestro equipo responderá dentro de 1 a 2 días hábiles.",
+      "sendAnother": "Enviar Otro Mensaje",
+      "nameLabel": "Nombre Completo",
+      "emailLabel": "Correo Electrónico",
+      "subjectLabel": "Asunto",
+      "subjectPlaceholder": "Elige un asunto...",
+      "messageLabel": "Mensaje",
+      "sending": "Enviando...",
+      "submit": "Enviar Mensaje"
+    },
+    "info": {
+      "heading": "Información de Contacto",
+      "whatsappLabel": "WhatsApp",
+      "whatsappNote": "Respuesta rápida en horario laboral",
+      "emailLabel": "Correo Electrónico",
+      "emailNote": "Respuesta en 1 a 2 días hábiles",
+      "hoursLabel": "Horario de Atención",
+      "instagramLabel": "Instagram",
+      "quickHelp": "¿Necesitas ayuda rápida?",
+      "chatWhatsapp": "Chatear por WhatsApp",
+      "viewFaq": "Ver Preguntas Frecuentes"
+    }
+  },
+  "privasi": {
+    "meta": {
+      "title": "Política de Privacidad | Arnesh Dive",
+      "description": "Política de privacidad de Arnesh Dive - cómo recopilamos, usamos y protegemos tus datos."
+    },
+    "header": {
+      "title": "Política de Privacidad",
+      "lastUpdated": "Última actualización: julio de 2026"
+    },
+    "sections": {
+      "intro": {
+        "heading": "1. Introducción",
+        "body": "Arnesh Dive (\"nosotros\") se compromete a proteger tu privacidad. Esta política de privacidad explica cómo recopilamos, usamos, divulgamos y protegemos tu información personal cuando visitas nuestro sitio web o realizas una compra."
+      },
+      "dataCollected": {
+        "heading": "2. Información que Recopilamos",
+        "intro": "Recopilamos la siguiente información:",
+        "items": {
+          "personal": {
+            "label": "Información Personal:",
+            "text": "Nombre completo, dirección de correo electrónico, número de teléfono, dirección de envío"
+          },
+          "payment": {
+            "label": "Información de Pago:",
+            "text": "Los datos de pago se procesan de forma segura a través de nuestra pasarela de pago"
+          },
+          "device": {
+            "label": "Información del Dispositivo:",
+            "text": "Dirección IP, tipo de navegador, sistema operativo, preferencias de idioma"
+          },
+          "navigation": {
+            "label": "Información de Navegación:",
+            "text": "Páginas visitadas, horarios de visita, fuentes de referencia"
+          }
+        }
+      },
+      "usage": {
+        "heading": "3. Uso de la Información",
+        "intro": "La información que recopilamos se utiliza para:",
+        "items": {
+          "0": "Procesar y enviar tus pedidos",
+          "1": "Comunicarnos sobre el estado del pedido y el servicio al cliente",
+          "2": "Enviar boletines y promociones (con tu consentimiento)",
+          "3": "Mejorar la experiencia de usuario en nuestro sitio web",
+          "4": "Prevenir el fraude y actividades ilegales"
+        }
+      },
+      "security": {
+        "heading": "4. Seguridad de los Datos",
+        "body": "Aplicamos las medidas de seguridad técnicas y organizativas adecuadas para proteger tu información personal contra el acceso no autorizado, alteración, divulgación o destrucción. Los datos de pago se cifran mediante protocolos SSL/TLS."
+      },
+      "cookies": {
+        "heading": "5. Cookies",
+        "body": "Utilizamos cookies para mejorar tu experiencia de navegación, recordar tus preferencias y analizar el tráfico del sitio web. Puedes configurar tu navegador para rechazar cookies, aunque esto puede afectar la funcionalidad del sitio."
+      },
+      "sharing": {
+        "heading": "6. Compartir Información",
+        "intro": "No vendemos tu información personal a terceros. Solo compartimos la información necesaria para:",
+        "items": {
+          "0": "Servicios de envío (nombre, dirección, teléfono)",
+          "1": "Procesamiento de pagos (detalles de la transacción)",
+          "2": "Cumplimiento legal cuando lo exija la ley"
+        }
+      },
+      "rights": {
+        "heading": "7. Tus Derechos",
+        "intro": "Tienes derecho a:",
+        "items": {
+          "0": "Acceder a la información personal que tenemos sobre ti",
+          "1": "Solicitar la corrección de datos inexactos",
+          "2": "Solicitar la eliminación de tus datos",
+          "3": "Cancelar la suscripción al boletín en cualquier momento"
+        }
+      },
+      "contact": {
+        "heading": "8. Contáctanos",
+        "intro": "Si tienes preguntas sobre esta política de privacidad, contáctanos a través de:"
+      }
+    }
+  },
+  "syarat": {
+    "meta": {
+      "title": "Términos y Condiciones | Arnesh Dive",
+      "description": "Términos y condiciones de uso de los servicios de Arnesh Dive - compras, envíos y política de devoluciones."
+    },
+    "header": {
+      "title": "Términos y Condiciones",
+      "lastUpdated": "Última actualización: julio de 2026"
+    },
+    "sections": {
+      "general": {
+        "heading": "1. Términos Generales",
+        "body": "Al acceder y usar el sitio web de Arnesh Dive, aceptas quedar sujeto a estos términos y condiciones. Si no estás de acuerdo con estos términos, por favor no utilices nuestros servicios."
+      },
+      "account": {
+        "heading": "2. Cuenta de Usuario",
+        "intro": "Para realizar una compra, debes crear una cuenta. Eres responsable de:",
+        "items": {
+          "0": "Mantener la confidencialidad de la información de tu cuenta",
+          "1": "Proporcionar información precisa y completa",
+          "2": "Notificarnos de inmediato ante cualquier uso no autorizado"
+        }
+      },
+      "purchase": {
+        "heading": "3. Compras",
+        "intro": "Al realizar una compra, confirmas que:",
+        "items": {
+          "0": "Tienes al menos 18 años o cuentas con el consentimiento de tus padres o tutores",
+          "1": "La información proporcionada es verdadera y precisa",
+          "2": "El pago realizado es legítimo y no infringe ninguna ley"
+        },
+        "priceNote": "Los precios se muestran en rupias indonesias (IDR). Nos reservamos el derecho de modificar los precios en cualquier momento sin previo aviso."
+      },
+      "payment": {
+        "heading": "4. Pago",
+        "body": "Aceptamos pagos mediante transferencia bancaria, tarjeta de crédito/débito y billetera electrónica (GoPay, OVO, Dana, QRIS). El pago debe realizarse antes de que se procese el pedido."
+      },
+      "shipping": {
+        "heading": "5. Envío",
+        "intro": "Realizamos envíos a toda Indonesia a través de nuestros transportistas asociados. Tiempos de envío estimados:",
+        "standardLabel": "Estándar:",
+        "standardValue": "3-5 días hábiles",
+        "expressLabel": "Exprés:",
+        "expressValue": "1-2 días hábiles",
+        "note": "Los costos de envío se calculan según el peso y la ubicación. No somos responsables de retrasos causados por el transportista o por fuerza mayor."
+      },
+      "returns": {
+        "heading": "6. Política de Devoluciones y Cambios",
+        "intro": "Aceptamos devoluciones y cambios bajo las siguientes condiciones:",
+        "items": {
+          "0": "El producto está nuevo y sin usar",
+          "1": "El empaque y las etiquetas siguen completos",
+          "2": "Se solicita dentro de los 7 días posteriores a la recepción",
+          "3": "Se adjunta comprobante de compra (factura)"
+        },
+        "exclusionsLabel": "Productos que no se pueden devolver:",
+        "exclusionsText": "productos ya usados, productos personalizados/de color especial y productos con el sello roto."
+      },
+      "warranty": {
+        "heading": "7. Garantía",
+        "body": "La garantía del producto sigue la política de cada marca. Para hacer un reclamo de garantía, contacta a nuestro servicio al cliente con el comprobante de compra y fotos del daño."
+      },
+      "ip": {
+        "heading": "8. Propiedad Intelectual",
+        "body": "Todo el contenido de este sitio web, incluidos logotipos, imágenes, textos y diseños, es propiedad de Arnesh Dive y está protegido por la ley de derechos de autor. Está prohibido copiar o usar el contenido sin permiso por escrito."
+      },
+      "liability": {
+        "heading": "9. Limitación de Responsabilidad",
+        "body": "No somos responsables de pérdidas indirectas, incidentales o consecuentes derivadas del uso de nuestros productos o servicios."
+      },
+      "changes": {
+        "heading": "10. Cambios en esta Política",
+        "body": "Nos reservamos el derecho de modificar estos términos y condiciones en cualquier momento. Los cambios entran en vigor inmediatamente tras su publicación en el sitio web. El uso continuado después de los cambios se considera una aceptación de estos."
+      }
+    }
+  },
+  "blog": {
+    "meta": {
+      "title": "Dive Journal — Guías de Freediving y Buceo",
+      "description": "Notas de campo, guías de equipo y conocimientos de seguridad en freediving y buceo que puedes aplicar en tu próxima sesión.",
+      "ogTitle": "Dive Journal — Arnesh Dive",
+      "ogDescription": "Guías de equipo y notas de campo para buceadores indonesios, escritas sin jerga innecesaria."
+    },
+    "title": "Dive Journal",
+    "list": {
+      "description": "Guías enfocadas en el contexto de aguas tropicales y las necesidades de los buceadores indonesios."
+    },
+    "featuredLabel": "Artículo Destacado",
+    "readNow": "Leer Ahora",
+    "moreArticles": "Más Artículos",
+    "emptyState": "Los artículos están en preparación. Vuelve pronto.",
+    "exploreEyebrow": "De la Teoría al Agua",
+    "exploreHeading": "¿Ya sabes lo que necesitas? Encuentra el equipo adecuado, no solo el más caro.",
+    "exploreCatalogCta": "Explorar Catálogo",
+    "readTime": "{minutes} min de lectura",
+    "comingSoon": "Próximamente",
+    "notFound": "Artículo No Encontrado",
+    "breadcrumb": {
+      "home": "Inicio",
+      "journal": "Journal"
+    },
+    "sourcesHeading": "Fuentes y Lecturas Adicionales",
+    "sourcesDisclaimer": "Estos enlaces se usan como referencias generales y se abren en el sitio del editor. Este artículo no sustituye la capacitación, las indicaciones de tu compañero de buceo, los manuales del fabricante ni la revisión de un técnico adecuado.",
+    "continueFromHere": "Continúa Desde Aquí",
+    "ctaStaticText": "Encuentra el equipo según tus necesidades, no solo según la etiqueta del producto.",
+    "continueReading": "Sigue Leyendo",
+    "relatedArticles": "Artículos Relacionados",
+    "allArticles": "Todos los Artículos",
+    "inThisArticle": "En Este Artículo",
+    "readArticle": "Leer Artículo"
+  }
+}

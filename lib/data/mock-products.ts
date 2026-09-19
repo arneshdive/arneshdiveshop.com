@@ -22,8 +22,12 @@ export interface MockProduct {
   stockStatus?: 'in_stock' | 'out_of_stock';
 }
 
+// Icon + stable translation key. The actual title/desc copy lives in
+// messages/*.json under `common.valueProps.<key>` — this file no longer
+// hardcodes the Indonesian prose, since it can't call useTranslations()
+// itself (plain data, not a component).
 export const valueProps = [
-  { icon: 'solar:verified-check-linear', title: 'Produk Original', desc: '100% kualitas terjamin' },
-  { icon: 'solar:shield-check-linear', title: 'Pembayaran Aman', desc: 'Transaksi terlindungi' },
-  { icon: 'solar:map-linear', title: 'Kirim Seluruh Indonesia', desc: 'Jangkauan luas' },
-];
+  { icon: 'solar:verified-check-linear', key: 'originalProduct' },
+  { icon: 'solar:shield-check-linear', key: 'securePayment' },
+  { icon: 'solar:map-linear', key: 'nationwideShipping' },
+] as const;

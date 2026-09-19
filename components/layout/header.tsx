@@ -1,30 +1,32 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { SearchModal } from '@/components/search/search-modal';
 import { Logo } from '@/components/layout/logo';
+import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
 import { useCartStore, useCartSync } from '@/lib/store/cart';
 import { useHydrated } from '@/lib/hooks/use-hydrated';
 
-// Fixed navigation menu items
-const NAV_ITEMS = [
-  { name: 'Semua Katalog', href: '/produk' },
-  { name: 'New Arrivals', href: '/produk?newArrival=true' },
-  { name: 'Dive Journal', href: '/blog' },
-  { name: 'Sale', href: '/produk?onSale=true', className: 'text-red-600 hover:text-red-700' },
-];
-
 export function Header() {
+  const t = useTranslations('nav');
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mounted = useHydrated();
   const pathname = usePathname();
   const isHomepage = pathname === '/';
+
+  // Fixed navigation menu items
+  const NAV_ITEMS = [
+    { name: t('catalog'), href: '/produk' },
+    { name: t('newArrivals'), href: '/produk?newArrival=true' },
+    { name: t('diveJournal'), href: '/blog' },
+    { name: t('sale'), href: '/produk?onSale=true', className: 'text-red-600 hover:text-red-700' },
+  ];
   
   // Sync cart on mount
   useCartSync();
@@ -123,14 +125,14 @@ export function Header() {
             <button
               onClick={() => setSearchOpen(true)}
               className={`p-2 rounded-full transition-all ${iconColor}`}
-              aria-label="Cari"
+              aria-label={t('search')}
             >
               <Icon icon="solar:magnifer-linear" className="w-6 h-6" />
             </button>
             <Link
               href="/cart"
               className={`p-2 rounded-full transition-all relative ${iconColor}`}
-              aria-label="Keranjang"
+              aria-label={t('cart')}
             >
               <Icon icon="solar:bag-3-linear" className="w-6 h-6" />
               {/* Cart count badge */}
@@ -143,16 +145,17 @@ export function Header() {
             <Link
               href="/account"
               className={`p-2 rounded-full transition-all hidden sm:block ${iconColor}`}
-              aria-label="Akun"
+              aria-label={t('account')}
             >
               <Icon icon="solar:user-linear" className="w-6 h-6" />
             </Link>
+            <LanguageSwitcher className={iconColor} />
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
               className={`lg:hidden p-2 rounded-full transition-all ${iconColor}`}
               type="button"
-              aria-label="Menu"
+              aria-label={t('menu')}
             >
               <Icon icon="solar:hamburger-menu-linear" className="w-6 h-6" />
             </button>
@@ -171,11 +174,11 @@ export function Header() {
           {/* Drawer */}
           <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-xl">
             <div className="flex items-center justify-between p-6 border-b border-neutral-200">
-              <span className="text-lg font-semibold">Menu</span>
+              <span className="text-lg font-semibold">{t('menu')}</span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-2 -mr-2 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-full transition-colors"
-                aria-label="Tutup menu"
+                aria-label={t('closeMenu')}
               >
                 <Icon icon="solar:close-circle-linear" className="w-6 h-6" />
               </button>
@@ -198,8 +201,11 @@ export function Header() {
                     className="flex items-center gap-3 text-lg font-medium py-2 text-neutral-700 hover:text-neutral-900"
                   >
                     <Icon icon="solar:user-linear" className="w-5 h-5" />
-                    <AnimatedUnderline>Akun Saya</AnimatedUnderline>
+                    <AnimatedUnderline>{t('myAccount')}</AnimatedUnderline>
                   </Link>
+                </li>
+                <li className="pt-4 border-t border-neutral-200">
+                  <LanguageSwitcher variant="inline" />
                 </li>
               </ul>
             </nav>

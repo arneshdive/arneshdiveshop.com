@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Minus, Plus, X } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import { CartItem as CartItemType, useCartStore } from '@/lib/store/cart';
@@ -15,6 +16,7 @@ interface CartItemProps {
 }
 
 export function CartItem({ item }: CartItemProps) {
+  const t = useTranslations('cart');
   const { updateQuantity, removeItem, isLoading } = useCartStore();
   const [imageError, setImageError] = useState(false);
 
@@ -81,7 +83,7 @@ export function CartItem({ item }: CartItemProps) {
               }}
               disabled={isLoading}
               className="w-8 h-8 lg:w-9 lg:h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Kurangi jumlah"
+              aria-label={t('item.decreaseAria')}
             >
               <Minus className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </button>
@@ -95,7 +97,7 @@ export function CartItem({ item }: CartItemProps) {
               }}
               disabled={isLoading}
               className="w-8 h-8 lg:w-9 lg:h-9 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Tambah jumlah"
+              aria-label={t('item.increaseAria')}
             >
               <Plus className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </button>
@@ -129,7 +131,7 @@ export function CartItem({ item }: CartItemProps) {
         }}
         disabled={isLoading}
         className="self-start text-black hover:text-red-500 transition-colors p-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Hapus item"
+        aria-label={t('item.removeAria')}
       >
         <X className="w-4 h-4 lg:w-5 lg:h-5" />
       </button>

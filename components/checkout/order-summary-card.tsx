@@ -9,7 +9,21 @@ import { useCheckoutStore } from '@/lib/store/checkout';
 import { formatRupiah } from '@/lib/utils/format';
 import { productImageUrl } from '@/lib/utils/product-image';
 
-export function OrderSummaryCard() {
+type PaymentProvider = 'midtrans' | 'paypal';
+
+interface OrderSummaryCardProps {
+  selectedProvider?: PaymentProvider;
+  onSelectProvider?: (provider: PaymentProvider) => void;
+  canPayWithMidtrans?: boolean;
+  canPayWithPaypal?: boolean;
+}
+
+export function OrderSummaryCard({
+  selectedProvider,
+  onSelectProvider,
+  canPayWithMidtrans = true,
+  canPayWithPaypal = true,
+}: OrderSummaryCardProps = {}) {
   // Ensure cart is synced
   useCartSync();
 
@@ -18,9 +32,15 @@ export function OrderSummaryCard() {
   const { data: checkoutData } = useCheckoutStore();
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  const subtotalCents = getSubtotalCents();
+  const currency = checkoutData.countryCode === 'ID' ? 'IDR' : 'USD';
+  const hasUsdPrices = items.every((item) => (item.variant?.priceCentsUsd ?? item.product.priceCentsUsd) != null);
+  const subtotalCents = currency === 'USD'
+    ? (hasUsdPrices ? items.reduce((sum, item) => sum + (item.variant?.priceCentsUsd ?? item.product.priceCentsUsd ?? 0) * item.quantity, 0) : null)
+    : getSubtotalCents();
+  // The payment endpoint currently applies no promotions to PayPal orders.
+  const discountCents = currency === 'USD' ? 0 : promoDiscountCents;
   const shippingCostCents = checkoutData.shippingCostCents;
-  const totalCents = subtotalCents - promoDiscountCents + (shippingCostCents ?? 0);
+  const totalCents = subtotalCents === null ? null : subtotalCents - discountCents + (shippingCostCents ?? 0);
 
   const handleImageError = (imageUrl: string) => {
     setFailedImages(prev => new Set([...prev, imageUrl]));
@@ -37,9 +57,11 @@ export function OrderSummaryCard() {
           const thumbnail = image && !failedImages.has(image)
             ? productImageUrl(image, 'thumb')
             : undefined;
-          const priceCents = item.variant?.priceCents ?? item.product.priceCents;
+          const priceCents = currency === 'USD'
+            ? (item.variant?.priceCentsUsd ?? item.product.priceCentsUsd)
+            : (item.variant?.priceCents ?? item.product.priceCents);
           const compareAtPriceCents = item.variant ? null : item.product.compareAtPriceCents;
-          const hasDiscount = compareAtPriceCents !== null && compareAtPriceCents > item.product.priceCents;
+          const hasDiscount = currency === 'IDR' && compareAtPriceCents !== null && compareAtPriceCents > item.product.priceCents;
 
           return (
             <div key={item.id} className="flex gap-4 items-center">
@@ -67,10 +89,10 @@ export function OrderSummaryCard() {
                 <p className="text-xs text-neutral-400">{t('summary.qty', { quantity: item.quantity })}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-medium">{formatRupiah(priceCents * item.quantity)}</p>
+                <p className="text-sm font-medium">{priceCents == null ? '—' : formatRupiah(priceCents * item.quantity, currency)}</p>
                 {hasDiscount && (
                   <p className="text-xs text-neutral-400 line-through">
-                    {formatRupiah(compareAtPriceCents! * item.quantity)}
+                    {formatRupiah(compareAtPriceCents! * item.quantity, currency)}
                   </p>
                 )}
               </div>
@@ -83,27 +105,86 @@ export function OrderSummaryCard() {
       <div className="border-t border-neutral-100 pt-6 space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">{t('summary.subtotal')}</span>
-          <span>{formatRupiah(subtotalCents)}</span>
+          <span>{subtotalCents === null ? '—' : formatRupiah(subtotalCents, currency)}</span>
         </div>
-        {promoDiscountCents > 0 && (
+        {discountCents > 0 && (
           <div className="flex justify-between text-sm text-green-600">
             <span>{t('summary.discount')}</span>
-            <span>-{formatRupiah(promoDiscountCents)}</span>
+            <span>-{formatRupiah(discountCents, currency)}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span className="text-neutral-500">{t('summary.shipping')}</span>
           {shippingCostCents !== null ? (
-            <span>{formatRupiah(shippingCostCents)}</span>
+            <span>{formatRupiah(shippingCostCents, currency)}</span>
           ) : (
             <span className="text-neutral-400">{t('summary.shippingPendingCourier')}</span>
           )}
         </div>
         <div className="flex justify-between text-xl font-semibold tracking-tight pt-3 border-t border-neutral-100">
           <span>{t('summary.total')}</span>
-          <span>{formatRupiah(totalCents)}</span>
+          <span>{totalCents === null ? '—' : formatRupiah(totalCents, currency)}</span>
         </div>
       </div>
+
+      {/* Payment method toggle */}
+      {selectedProvider && onSelectProvider && (
+        <div className="mt-6">
+          <h3 className="text-sm font-medium text-neutral-500 mb-3">{t('paymentMethodTitle')}</h3>
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => canPayWithMidtrans && onSelectProvider('midtrans')}
+              disabled={!canPayWithMidtrans}
+              aria-label={t('payLocal')}
+              className={`w-full flex items-center gap-3 rounded-xl border-2 px-4 py-3 transition-colors ${
+                !canPayWithMidtrans
+                  ? 'border-neutral-200 opacity-40 cursor-not-allowed'
+                  : selectedProvider === 'midtrans'
+                    ? 'border-neutral-900 bg-white'
+                    : 'border-neutral-200 hover:bg-white/60'
+              }`}
+            >
+              <div className="relative w-20 h-5 flex-shrink-0">
+                <Image src="/midtrans-logo.svg" alt={t('payLocal')} fill className="object-contain object-left" />
+              </div>
+              <span className="text-[11px] text-neutral-500 leading-tight text-left flex-1">{t('payLocalHint')}</span>
+              {selectedProvider === 'midtrans' && (
+                <Icon icon="solar:check-circle-bold" className="w-4 h-4 text-neutral-900 flex-shrink-0" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => canPayWithPaypal && onSelectProvider('paypal')}
+              disabled={!canPayWithPaypal}
+              aria-label={t('payPaypal')}
+              className={`w-full flex items-center gap-3 rounded-xl border-2 px-4 py-3 transition-colors ${
+                !canPayWithPaypal
+                  ? 'border-neutral-200 opacity-40 cursor-not-allowed'
+                  : selectedProvider === 'paypal'
+                    ? 'border-neutral-900 bg-white'
+                    : 'border-neutral-200 hover:bg-white/60'
+              }`}
+            >
+              <div className="relative w-20 h-5 flex-shrink-0">
+                <Image src="/paypal-logo.svg" alt={t('payPaypal')} fill className="object-contain object-left" />
+              </div>
+              <span className="text-[11px] text-neutral-500 leading-tight text-left flex-1">{t('payPaypalHint')}</span>
+              {selectedProvider === 'paypal' && (
+                <Icon icon="solar:check-circle-bold" className="w-4 h-4 text-neutral-900 flex-shrink-0" />
+              )}
+            </button>
+          </div>
+
+          {!canPayWithMidtrans && (
+            <p className="text-xs text-neutral-500 mt-3">{t('midtransUnavailable')}</p>
+          )}
+          {!canPayWithPaypal && (
+            <p className="text-xs text-neutral-500 mt-3">{t('paypalUnavailable')}</p>
+          )}
+        </div>
+      )}
 
       {/* Trust */}
       <div className="flex items-center justify-center gap-2 mt-6 text-xs text-neutral-400">

@@ -110,12 +110,16 @@ export default function NewProductPage() {
     const compareAtPriceCents = formData.compareAtPrice
       ? Math.round(parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) * 100)
       : null;
+    const priceCentsUsd = formData.priceUsd
+      ? Math.round(parseFloat(formData.priceUsd.replace(/[^\d.]/g, '')) * 100)
+      : null;
 
     const payload = {
       name: formData.name,
       description: formData.description || undefined,
       sku: formData.sku || undefined,
       priceCents,
+      priceCentsUsd,
       compareAtPriceCents,
       categoryId: formData.category,
       brandId: formData.brand || null,

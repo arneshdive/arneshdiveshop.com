@@ -79,9 +79,17 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
     return result;
   }, [rates]);
 
-  // Fetch shipping rates when destination changes
+  const isDomestic = data.countryCode === 'ID';
+  const currency = isDomestic ? 'IDR' : 'USD';
+  const intlAddress1 = isDomestic ? '' : data.address1;
+  const hasIntlDestination = !isDomestic && !!data.intlCity && !!data.intlPostalCode;
+  const hasDestination = isDomestic ? !!data.rajaongkirCityId : hasIntlDestination;
+
+  // Fetch shipping rates when destination changes - domestic uses RajaOngkir
+  // (/api/shipping/calculate), any other country uses FedEx
+  // (/api/shipping/calculate-intl). Both return the same ShippingRate[] shape.
   useEffect(() => {
-    if (!data.rajaongkirCityId) {
+    if (!hasDestination) {
       // No destination selected yet: clear rates. This is input-driven
       // synchronization, not a render-driven update.
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -97,13 +105,25 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
       setError(null);
 
       try {
-        const response = await fetch('/api/shipping/calculate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            cityId: data.rajaongkirCityId,
-          }),
-        });
+        const response = isDomestic
+          ? await fetch('/api/shipping/calculate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                cityId: data.rajaongkirCityId,
+              }),
+            })
+          : await fetch('/api/shipping/calculate-intl', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                address1: intlAddress1,
+                city: data.intlCity,
+                state: data.intlState || undefined,
+                postalCode: data.intlPostalCode,
+                countryCode: data.countryCode,
+              }),
+            });
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -111,7 +131,8 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
         }
 
         const result = await response.json();
-        
+        if (result.error) throw new Error(result.error);
+
         if (!isCancelled) {
           const fetchedRates: ShippingRate[] = result.rates || [];
           setRates(fetchedRates);
@@ -126,7 +147,7 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
           } else if (fetchedRates.length > 0) {
             // Set first rate as default if none selected (or previous selection is no longer available)
             const firstRate = fetchedRates[0]!;
-            setField('shippingMethod', `${firstRate.courier}-${firstRate.service}`.toLowerCase() as typeof data.shippingMethod);
+            setField('shippingMethod', `${firstRate.courier}-${firstRate.service}`.toLowerCase());
             setField('shippingCostCents', firstRate.costCents);
           } else {
             setField('shippingCostCents', null);
@@ -149,14 +170,17 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
     return () => {
       isCancelled = true;
     };
-  }, [data.rajaongkirCityId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDomestic, data.rajaongkirCityId, data.intlCity, data.intlState, data.intlPostalCode, data.countryCode, intlAddress1]);
 
   // Expand courier that has selected rate
   useEffect(() => {
     if (data.shippingMethod) {
       const [courier] = data.shippingMethod.split('-');
-      if (courier && !expandedCouriers.has(courier)) {
-        setExpandedCouriers(new Set([courier]));
+      if (courier) {
+        // Synchronize the accordion with an externally selected shipping method.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setExpandedCouriers((previous) => previous.has(courier) ? previous : new Set([courier]));
       }
     }
   }, [data.shippingMethod]);
@@ -206,14 +230,14 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
       )}
 
       {/* No destination selected */}
-      {!data.rajaongkirCityId && !isLoading && (
+      {!hasDestination && !isLoading && (
         <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-600 text-sm">
           {t('shippingMethod.selectDestinationHint')}
         </div>
       )}
 
       {/* No rates found */}
-      {data.rajaongkirCityId && !isLoading && !error && rates.length === 0 && (
+      {hasDestination && !isLoading && !error && rates.length === 0 && (
         <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-neutral-600 text-sm">
           {t('shippingMethod.noRatesFound')}
         </div>
@@ -253,7 +277,7 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
                         {COURIER_NAMES[courier] || courier.toUpperCase()}
                       </div>
                       <div className="text-xs text-neutral-500">
-                        {t('shippingMethod.serviceCountAndPrice', { count: courierRates.length, price: formatCurrency(cheapest.costCents) })}
+                        {t('shippingMethod.serviceCountAndPrice', { count: courierRates.length, price: formatCurrency(cheapest.costCents, currency) })}
                       </div>
                     </div>
                   </div>
@@ -316,7 +340,7 @@ export function ShippingMethodSelector({ checkoutSessionId: _checkoutSessionId }
                             </div>
                           </div>
                           <div className="text-sm font-semibold">
-                            {formatCurrency(rate.costCents)}
+                            {formatCurrency(rate.costCents, currency)}
                           </div>
                         </label>
                       );

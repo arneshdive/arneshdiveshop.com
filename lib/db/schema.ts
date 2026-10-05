@@ -164,6 +164,7 @@ export const products = pgTable('products', {
   sku: text('sku'),
   description: text('description'),
   priceCents: integer('price_cents').notNull(), // All prices stored as cents (integer)
+  priceCentsUsd: integer('price_cents_usd'), // Manual USD price for PayPal/international checkout; null = not sellable internationally
   compareAtPriceCents: integer('compare_at_price_cents'), // Original price for sales
   costPriceCents: integer('cost_price_cents'), // For margin calculations
   categoryId: text('category_id')
@@ -196,6 +197,7 @@ export const productVariants = pgTable('product_variants', {
   name: text('name').notNull(), // e.g., "Red / Large"
   options: jsonb('options').$type<Record<string, string>>().notNull(), // e.g., { color: 'red', size: 'L' }
   priceCents: integer('price_cents'), // Null means use product base price
+  priceCentsUsd: integer('price_cents_usd'), // Null means use product base priceCentsUsd
   isActive: boolean('is_active').default(true).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -327,19 +329,22 @@ export const checkoutSessions = pgTable('checkout_sessions', {
   address1: text('address1').notNull(),
   address2: text('address2'),
   notes: text('notes'),
-  // RajaOngkir destination (subdistrict level for pricing)
-  rajaongkirCityId: text('rajaongkir_city_id').notNull(),
+  // RajaOngkir destination (subdistrict level for pricing) - only set for
+  // domestic (countryCode='ID') sessions
+  rajaongkirCityId: text('rajaongkir_city_id'),
   rajaongkirCityName: text('rajaongkir_city_name'),
   rajaongkirProvince: text('rajaongkir_province'),
   rajaongkirCity: text('rajaongkir_city'),
   rajaongkirDistrict: text('rajaongkir_district'),
   rajaongkirSubdistrict: text('rajaongkir_subdistrict'),
   rajaongkirPostalCode: text('rajaongkir_postal_code'),
-  // Backward compatibility fields
+  // Generic destination fields - used for the international address (city/
+  // province/postalCode double as intlCity/intlState/intlPostalCode there)
   city: text('city'),
   province: text('province'),
   postalCode: text('postal_code'),
   country: text('country').notNull().default('Indonesia'),
+  countryCode: text('country_code').notNull().default('ID'),
   shippingMethod: text('shipping_method'),
   subtotalCents: integer('subtotal_cents'),
   shippingCents: integer('shipping_cents'),
@@ -361,6 +366,7 @@ export const orders = pgTable('orders', {
     .references(() => customers.id, { onDelete: 'cascade' })
     .notNull(),
   status: orderStatusEnum('status').default('pending_payment').notNull(),
+  currency: text('currency').default('IDR').notNull(), // 'IDR' (Midtrans) or 'USD' (PayPal)
   subtotalCents: integer('subtotal_cents').notNull(),
   shippingCents: integer('shipping_cents').default(0).notNull(),
   taxCents: integer('tax_cents').default(0).notNull(),
@@ -377,6 +383,7 @@ export const orders = pgTable('orders', {
   shippingState: text('shipping_state'),
   shippingPostalCode: text('shipping_postal_code').notNull(),
   shippingCountry: text('shipping_country').notNull(),
+  shippingCountryCode: text('shipping_country_code'), // ISO-3166-1 alpha-2, e.g. 'ID', 'SG'
   notes: text('notes'), // Customer notes
   // Shipping tracking
   trackingNumber: text('tracking_number'), // Nomor resi
@@ -422,8 +429,9 @@ export const payments = pgTable('payments', {
     .references(() => orders.id, { onDelete: 'cascade' })
     .notNull(),
   status: paymentStatusEnum('status').default('pending').notNull(),
+  currency: text('currency').default('IDR').notNull(), // 'IDR' (Midtrans) or 'USD' (PayPal)
   amountCents: integer('amount_cents').notNull(),
-  provider: text('provider').notNull(), // 'midtrans'
+  provider: text('provider').notNull(), // 'midtrans' | 'paypal'
   providerTransactionId: text('provider_transaction_id'),
   paymentMethod: text('payment_method'), // 'gopay', 'bank_transfer', etc.
   paidAt: timestamp('paid_at'),
@@ -499,6 +507,10 @@ export const shopSettings = pgTable('shop_settings', {
   // Shipping origin
   rajaongkirCityId: text('rajaongkir_city_id'),
   rajaongkirCityName: text('rajaongkir_city_name'), // Human readable: "Kota Denpasar, Bali"
+  // International shipping origin (FedEx rate quotes only need postal code +
+  // country code, not a street address)
+  originPostalCode: text('origin_postal_code'),
+  originCountryCode: text('origin_country_code').notNull().default('ID'),
   // Active couriers for shipping
   activeCouriers: text('active_couriers').default('jne,jnt,sicepat'),
   // Social media

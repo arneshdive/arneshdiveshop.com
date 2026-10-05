@@ -4,6 +4,7 @@
  */
 
 import { Resend } from 'resend';
+import { formatCurrency } from '@/lib/utils/format';
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev';
 
@@ -209,15 +210,16 @@ interface OrderEmailData {
   subtotalCents: number;
   shippingCents: number;
   totalCents: number;
+  currency?: 'IDR' | 'USD';
   paymentUrl?: string;
   status: 'pending_payment' | 'processing' | 'paid';
 }
 
 /**
- * Format cents to Rupiah
+ * Format cents for the order's currency (defaults to IDR for existing local orders)
  */
-function formatRupiahEmail(cents: number): string {
-  return `Rp ${(cents / 100).toLocaleString('id-ID')}`;
+function formatRupiahEmail(cents: number, currency: 'IDR' | 'USD' = 'IDR'): string {
+  return formatCurrency(cents, currency);
 }
 
 /**
@@ -226,9 +228,10 @@ function formatRupiahEmail(cents: number): string {
 export function generateOrderEmail(data: OrderEmailData): { html: string; text: string } {
   const isPendingPayment = data.status === 'pending_payment';
   const title = isPendingPayment ? 'Menyelesaikan Pembayaran' : 'Konfirmasi Pesanan';
-  
+  const currency = data.currency ?? 'IDR';
+
   const itemsList = data.items
-    .map(item => `- ${item.name} x${item.quantity}: ${formatRupiahEmail(item.priceCents * item.quantity)}`)
+    .map(item => `- ${item.name} x${item.quantity}: ${formatRupiahEmail(item.priceCents * item.quantity, currency)}`)
     .join('\n');
 
   const text = `
@@ -245,9 +248,9 @@ Nomor Pesanan: ${data.orderNumber}
 Detail Pesanan:
 ${itemsList}
 
-Subtotal: ${formatRupiahEmail(data.subtotalCents)}
-Ongkos Kirim: ${formatRupiahEmail(data.shippingCents)}
-Total: ${formatRupiahEmail(data.totalCents)}
+Subtotal: ${formatRupiahEmail(data.subtotalCents, currency)}
+Ongkos Kirim: ${formatRupiahEmail(data.shippingCents, currency)}
+Total: ${formatRupiahEmail(data.totalCents, currency)}
 
 ${isPendingPayment && data.paymentUrl ? `Klik link berikut untuk membayar: ${data.paymentUrl}` : ''}
 
@@ -301,7 +304,7 @@ Jika ada pertanyaan, hubungi kami di support@arneshdive.com.
             <tr style="border-bottom: 1px solid #f3f4f6;">
               <td style="padding: 12px 0; color: #1f2937; font-size: 14px;">${item.name}</td>
               <td style="padding: 12px 0; color: #6b7280; font-size: 14px; text-align: center;">${item.quantity}</td>
-              <td style="padding: 12px 0; color: #1f2937; font-size: 14px; text-align: right;">${formatRupiahEmail(item.priceCents * item.quantity)}</td>
+              <td style="padding: 12px 0; color: #1f2937; font-size: 14px; text-align: right;">${formatRupiahEmail(item.priceCents * item.quantity, currency)}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -311,15 +314,15 @@ Jika ada pertanyaan, hubungi kami di support@arneshdive.com.
       <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-bottom: 24px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
           <span style="color: #6b7280; font-size: 14px;">Subtotal</span>
-          <span style="color: #1f2937; font-size: 14px;">${formatRupiahEmail(data.subtotalCents)}</span>
+          <span style="color: #1f2937; font-size: 14px;">${formatRupiahEmail(data.subtotalCents, currency)}</span>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
           <span style="color: #6b7280; font-size: 14px;">Ongkos Kirim</span>
-          <span style="color: #1f2937; font-size: 14px;">${formatRupiahEmail(data.shippingCents)}</span>
+          <span style="color: #1f2937; font-size: 14px;">${formatRupiahEmail(data.shippingCents, currency)}</span>
         </div>
         <div style="display: flex; justify-content: space-between; border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 12px;">
           <span style="color: #1f2937; font-size: 16px; font-weight: 600;">Total</span>
-          <span style="color: #1f2937; font-size: 16px; font-weight: 600;">${formatRupiahEmail(data.totalCents)}</span>
+          <span style="color: #1f2937; font-size: 16px; font-weight: 600;">${formatRupiahEmail(data.totalCents, currency)}</span>
         </div>
       </div>
       

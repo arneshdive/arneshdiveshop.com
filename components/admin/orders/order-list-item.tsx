@@ -9,6 +9,7 @@ interface ApiOrder {
   orderNumber: string;
   status: OrderStatus;
   totalCents: number;
+  currency: string;
   createdAt: string;
   customer: {
     id: string;
@@ -50,7 +51,7 @@ export function OrderListItem({
         </span>
       </div>
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium tracking-tight text-neutral-700">{formatRupiah(order.totalCents)}</span>
+        <span className="font-medium tracking-tight text-neutral-700">{formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD')}</span>
         <span className="text-xs text-neutral-500">
           {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true, locale: id })}
         </span>

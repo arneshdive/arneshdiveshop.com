@@ -29,6 +29,32 @@ export default function CheckoutPage() {
   const { data, setField } = useCheckoutStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [paymentProvider, setPaymentProvider] = useState<'midtrans' | 'paypal'>('midtrans');
+
+  // Shipping destination determines payment currency, same as established
+  // commerce platforms tie market/currency to the shipping country - Indonesia
+  // pays via Midtrans (IDR), any other country pays via PayPal (USD). This is
+  // not a free, independent choice: exactly one is ever selectable.
+  const isDomesticShipping = data.countryCode === 'ID';
+  const canPayWithMidtrans = isDomesticShipping;
+  const canPayWithPaypal = !isDomesticShipping && items.length > 0 && items.every(
+    (item) => (item.variant?.priceCentsUsd ?? item.product.priceCentsUsd) != null
+  );
+
+  // Keep the selected payment provider in sync with whichever one the
+  // destination country actually allows, rather than leaving an unpayable
+  // option selected. Only switches TO a provider that is actually payable -
+  // if neither is (e.g. international address selected but the cart has no
+  // USD-priced items yet), leave the state as-is instead of oscillating
+  // between the two on every render.
+  useEffect(() => {
+    if (paymentProvider === 'midtrans' && !canPayWithMidtrans && canPayWithPaypal) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPaymentProvider('paypal');
+    } else if (paymentProvider === 'paypal' && !canPayWithPaypal && canPayWithMidtrans) {
+      setPaymentProvider('midtrans');
+    }
+  }, [canPayWithMidtrans, canPayWithPaypal, paymentProvider]);
 
   type CheckoutViewer = 'loading' | 'guest' | 'logged-in';
   const [viewer, setViewer] = useState<CheckoutViewer>('loading');
@@ -72,8 +98,11 @@ export default function CheckoutPage() {
     const fieldLabels: Record<string, string> = {
       email: t('validation.fieldEmail'),
       phone: t('validation.fieldPhone'),
-      fullName: t('validation.fieldFullName'),
+      firstName: t('validation.fieldFirstName'),
+      lastName: t('validation.fieldLastName'),
       rajaongkirCityId: t('validation.fieldDestination'),
+      intlCity: t('validation.fieldIntlCity'),
+      intlPostalCode: t('validation.fieldIntlPostalCode'),
       address1: t('validation.fieldAddress'),
     };
     const missingFields = [
@@ -100,12 +129,13 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           email: data.email,
           phone: data.phone,
-          fullName: data.fullName,
+          fullName: `${data.firstName} ${data.lastName}`.trim(),
           // Street address
           address1: data.address1,
           address2: data.address2,
           notes: data.notes,
-          // RajaOngkir destination
+          countryCode: data.countryCode,
+          // RajaOngkir destination (domestic)
           rajaongkirCityId: data.rajaongkirCityId,
           rajaongkirCityName: data.rajaongkirCityName,
           rajaongkirProvince: data.rajaongkirProvince,
@@ -113,10 +143,11 @@ export default function CheckoutPage() {
           rajaongkirDistrict: data.rajaongkirDistrict,
           rajaongkirSubdistrict: data.rajaongkirSubdistrict,
           rajaongkirPostalCode: data.rajaongkirPostalCode,
-          // City/province for backward compatibility
-          city: data.rajaongkirCity || data.rajaongkirDistrict,
-          province: data.rajaongkirProvince,
-          postalCode: data.rajaongkirPostalCode,
+          // Generic city/province/postalCode - domestic mirrors RajaOngkir,
+          // international uses the plain city/state/postal code fields
+          city: data.countryCode === 'ID' ? (data.rajaongkirCity || data.rajaongkirDistrict) : data.intlCity,
+          province: data.countryCode === 'ID' ? data.rajaongkirProvince : data.intlState,
+          postalCode: data.countryCode === 'ID' ? data.rajaongkirPostalCode : data.intlPostalCode,
           shippingMethod: data.shippingMethod,
         }),
       });
@@ -181,7 +212,7 @@ export default function CheckoutPage() {
     }
   }, [data.shippingMethod, data.checkoutSessionId, prevShippingMethod, updateShippingMethod]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (provider: 'midtrans' | 'paypal') => {
     const { isValid, missingFields } = validateForm();
     if (!isValid) {
       toast.error(t('validation.incompleteTitle'), {
@@ -210,10 +241,11 @@ export default function CheckoutPage() {
           body: JSON.stringify({
             email: data.email,
             phone: data.phone,
-            fullName: data.fullName,
+            fullName: `${data.firstName} ${data.lastName}`.trim(),
             address1: data.address1,
             address2: data.address2,
             notes: data.notes,
+            countryCode: data.countryCode,
             rajaongkirCityId: data.rajaongkirCityId,
             rajaongkirCityName: data.rajaongkirCityName,
             rajaongkirProvince: data.rajaongkirProvince,
@@ -221,9 +253,9 @@ export default function CheckoutPage() {
             rajaongkirDistrict: data.rajaongkirDistrict,
             rajaongkirSubdistrict: data.rajaongkirSubdistrict,
             rajaongkirPostalCode: data.rajaongkirPostalCode,
-            city: data.rajaongkirCity || data.rajaongkirDistrict,
-            province: data.rajaongkirProvince,
-            postalCode: data.rajaongkirPostalCode,
+            city: data.countryCode === 'ID' ? (data.rajaongkirCity || data.rajaongkirDistrict) : data.intlCity,
+            province: data.countryCode === 'ID' ? data.rajaongkirProvince : data.intlState,
+            postalCode: data.countryCode === 'ID' ? data.rajaongkirPostalCode : data.intlPostalCode,
             shippingMethod: data.shippingMethod,
           }),
         });
@@ -256,7 +288,7 @@ export default function CheckoutPage() {
       const paymentResponse = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ checkoutSessionId: sessionId }),
+        body: JSON.stringify({ checkoutSessionId: sessionId, provider }),
       });
 
       if (!paymentResponse.ok) {
@@ -347,7 +379,7 @@ export default function CheckoutPage() {
 
               <div className="mt-8">
                 <AnimatedButton
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit(paymentProvider)}
                   disabled={isSubmitting || isCreatingSession}
                   className="w-full py-4 text-base"
                 >
@@ -355,7 +387,7 @@ export default function CheckoutPage() {
                     ? t('preparingSession')
                     : isSubmitting
                       ? t('processingPayment')
-                      : t('continueToPayment')} <Icon icon="solar:arrow-right-linear" className="w-5 h-5" />
+                      : paymentProvider === 'paypal' ? t('payPaypal') : t('payLocal')} <Icon icon="solar:arrow-right-linear" className="w-5 h-5" />
                 </AnimatedButton>
               </div>
 
@@ -369,7 +401,12 @@ export default function CheckoutPage() {
             </div>
 
             <div className="lg:w-[480px]">
-              <OrderSummaryCard />
+              <OrderSummaryCard
+                selectedProvider={paymentProvider}
+                onSelectProvider={setPaymentProvider}
+                canPayWithMidtrans={canPayWithMidtrans}
+                canPayWithPaypal={canPayWithPaypal}
+              />
             </div>
           </div>
         </div>

@@ -131,6 +131,7 @@ export async function POST(request: NextRequest) {
             subtotalCents: order.subtotalCents,
             shippingCents: order.shippingCents,
             totalCents: order.totalCents,
+            currency: order.currency as 'IDR' | 'USD',
             status: 'processing',
           });
         }

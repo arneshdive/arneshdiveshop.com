@@ -1,6 +1,7 @@
 import { db, shopSettings } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { unstable_cache } from 'next/cache';
+import { siteConfig } from '@/config/site';
 
 // ============================================================================
 // Courier Settings
@@ -89,17 +90,24 @@ export const getShopSettings = unstable_cache(
       .limit(1);
 
     if (result.length === 0) {
-      // Return defaults matching schema defaults
+      // Keep verified public contact details; do not guess a location or schedule.
       return {
         storeName: "Arnesh Dive",
         email: 'support@arneshdive.com',
-        phone: '+62 812-3456-7890',
-        whatsapp: '6281234567890',
-        businessHours: 'Senin – Jumat: 09:00 – 17:00 WIB',
+        phone: '0817-4722-020',
+        whatsapp: '628174722020',
+        businessHours: '',
         about: null,
         addressFormatted: null,
         addressLat: null,
         addressLng: null,
+        addressCity: null,
+        addressProvince: null,
+        rajaongkirCityId: null,
+        rajaongkirCityName: null,
+        originPostalCode: null,
+        originCountryCode: 'ID',
+        activeCouriers: 'jne,jnt,sicepat',
         instagram: null,
         tiktok: null,
       };
@@ -111,10 +119,17 @@ export const getShopSettings = unstable_cache(
   { tags: [SHOP_SETTINGS_CACHE_TAG] }
 );
 
-/**
- * Get shop settings for public display (footer, contact, etc.)
- * Only returns fields needed for public display
- */
+// Public storefront location must never inherit shipping-origin/admin coordinates.
+const publicAddressFields = {
+  addressFormatted: siteConfig.publicStoreAddress.formatted,
+  addressStreet: siteConfig.publicStoreAddress.streetAddress,
+  addressCity: siteConfig.publicStoreAddress.addressLocality,
+  addressProvince: siteConfig.publicStoreAddress.addressRegion,
+  addressPostalCode: siteConfig.publicStoreAddress.postalCode,
+  addressCountry: siteConfig.publicStoreAddress.addressCountry,
+};
+
+/** Get public contact details and the owner-confirmed physical storefront. */
 export async function getPublicShopSettings() {
   const settings = await getShopSettings();
   
@@ -122,9 +137,10 @@ export async function getPublicShopSettings() {
     return {
       storeName: "Arnesh Dive",
       email: 'support@arneshdive.com',
-      phone: '+62 812-3456-7890',
-      whatsapp: '6281234567890',
-      businessHours: 'Senin – Jumat: 09:00 – 17:00 WIB',
+      phone: '0817-4722-020',
+      whatsapp: '628174722020',
+      businessHours: '',
+      ...publicAddressFields,
       instagram: null,
       tiktok: null,
     };
@@ -136,6 +152,7 @@ export async function getPublicShopSettings() {
     phone: settings.phone,
     whatsapp: settings.whatsapp,
     businessHours: settings.businessHours,
+    ...publicAddressFields,
     instagram: settings.instagram,
     tiktok: settings.tiktok,
   };

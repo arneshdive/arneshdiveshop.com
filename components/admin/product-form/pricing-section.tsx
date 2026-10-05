@@ -37,12 +37,29 @@ export function PricingSection({ formData, setFormData, isOnSale }: PricingSecti
         )}
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Input
+          label="Harga USD (untuk PayPal)"
+          type="text"
+          inputMode="decimal"
+          value={formData.priceUsd}
+          onChange={(e) => {
+            const sanitized = e.target.value.replace(/[^\d.]/g, '');
+            setFormData({ ...formData, priceUsd: sanitized });
+          }}
+          placeholder="12.50"
+        />
+      </div>
+
       <p className="text-xs text-neutral-500">SKU wajib diisi untuk produk tanpa varian</p>
       {isOnSale && (
         <p className="text-xs text-neutral-500">
           &quot;Harga coret&quot; adalah harga asli sebelum diskon — akan ditampilkan tercoret di samping Harga. Harus lebih besar dari Harga.
         </p>
       )}
+      <p className="text-xs text-neutral-500">
+        Harga USD opsional — kosongkan jika produk ini belum tersedia untuk pembayaran internasional (PayPal). Diisi manual, tidak otomatis dikonversi dari Harga.
+      </p>
     </div>
   );
 }

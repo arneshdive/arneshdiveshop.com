@@ -39,6 +39,7 @@ interface Order {
   subtotalCents: number;
   shippingCents: number;
   totalCents: number;
+  currency: string;
   createdAt: string;
   items: OrderItem[];
   payments: {
@@ -272,7 +273,7 @@ function OrderCard({ order }: OrderCardProps) {
               <p className="text-sm text-neutral-400">
                 {item.variant?.name && `${item.variant.name} • `}{t('orders.qtyLabel', { count: item.quantity })}
               </p>
-              <p className="text-base font-semibold tracking-tight mt-1">{formatRupiah(item.priceCents)}</p>
+              <p className="text-base font-semibold tracking-tight mt-1">{formatRupiah(item.priceCents, order.currency as 'IDR' | 'USD')}</p>
             </div>
           </div>
         ))}
@@ -286,7 +287,7 @@ function OrderCard({ order }: OrderCardProps) {
       {/* Footer */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
         <p className="text-sm">
-          {t('orders.total')}: <strong className="text-lg font-semibold tracking-tight">{formatRupiah(order.totalCents)}</strong>
+          {t('orders.total')}: <strong className="text-lg font-semibold tracking-tight">{formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD')}</strong>
         </p>
         <div className="flex gap-2">
           {isPendingPayment && (

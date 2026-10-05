@@ -38,6 +38,7 @@ interface ApiOrder {
   taxCents: number;
   discountCents: number;
   totalCents: number;
+  currency: string;
   createdAt: string;
   updatedAt: string;
   shippingFirstName: string;

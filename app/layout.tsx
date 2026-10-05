@@ -5,6 +5,8 @@ import Script from 'next/script';
 import './globals.css';
 import { siteConfig } from '@/config/site';
 import { JsonLd } from '@/components/seo/json-ld';
+import { getPublicShopSettings } from '@/lib/queries/settings';
+import { getBusinessJsonLd } from '@/lib/seo/business';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -51,26 +53,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const settings = await getPublicShopSettings();
 
   return (
     <html lang={locale} className={`${inter.variable} h-full antialiased scroll-smooth`}>
       <body className="min-h-full flex flex-col">
-        <JsonLd
-          data={{
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: siteConfig.name,
-            url: siteConfig.url,
-            logo: `${siteConfig.url}/icon.png`,
-            sameAs: [siteConfig.links.instagram],
-          }}
-        />
+        <JsonLd data={getBusinessJsonLd(settings)} />
         <JsonLd
           data={{
             '@context': 'https://schema.org',
             '@type': 'WebSite',
             name: siteConfig.name,
             url: siteConfig.url,
+            publisher: { '@id': `${siteConfig.url}/#store` },
             potentialAction: {
               '@type': 'SearchAction',
               target: `${siteConfig.url}/produk?q={search_term_string}`,

@@ -10,7 +10,7 @@ export interface MockProduct {
   badges?: string[];
   image?: string;
   secondaryImage?: string;
-  category?: 'masker' | 'fin' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
+  category?: 'masker' | 'fins' | 'wetsuit' | 'sabuk-pemberat' | 'aksesoris';
   diveType?: 'freediving' | 'scuba' | 'both';
   // First active variant's id, when the product has variants.
   variantId?: string;

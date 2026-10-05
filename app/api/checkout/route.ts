@@ -12,28 +12,55 @@ import {
   CheckoutSessionWithCart,
 } from '@/lib/queries/checkout';
 import { getCartByUserId, getCartByGuestId } from '@/lib/queries/cart';
+import { getCountryName } from '@/lib/shipping/countries';
+import { isValidCheckoutPhone, normalizeCheckoutPhone } from '@/lib/utils/validators';
 import { z } from 'zod';
 
 const GUEST_COOKIE_NAME = 'guest_id';
 
 // Validation schema for checkout session
-const checkoutSessionSchema = z.object({
-  email: z.string().email('Email tidak valid'),
-  phone: z.string().min(10, 'Nomor telepon tidak valid'),
-  fullName: z.string().min(2, 'Nama minimal 2 karakter'),
-  address1: z.string().min(5, 'Alamat minimal 5 karakter'),
-  address2: z.string().optional(),
-  notes: z.string().max(500).optional(),
-  // RajaOngkir destination
-  rajaongkirCityId: z.string().min(1, 'Pilih kelurahan/kecamatan'),
-  rajaongkirCityName: z.string().nullish(),
-  rajaongkirProvince: z.string().nullish(),
-  rajaongkirCity: z.string().nullish(),
-  rajaongkirDistrict: z.string().nullish(),
-  rajaongkirSubdistrict: z.string().nullish(),
-  rajaongkirPostalCode: z.string().nullish(),
-  shippingMethod: z.string().optional(),
-});
+const checkoutSessionSchema = z
+  .object({
+    email: z.string().email('Email tidak valid'),
+    phone: z.string().min(1, 'Nomor telepon tidak valid'),
+    fullName: z.string().min(2, 'Nama minimal 2 karakter'),
+    address1: z.string().min(5, 'Alamat minimal 5 karakter'),
+    address2: z.string().optional(),
+    notes: z.string().max(500).optional(),
+    // Destination country - 'ID' (default) uses the RajaOngkir fields below,
+    // anything else uses the generic city/province/postalCode fields (FedEx)
+    countryCode: z.string().length(2).optional().default('ID'),
+    // RajaOngkir destination (domestic only)
+    rajaongkirCityId: z.string().nullish().transform((value) => value ?? undefined),
+    rajaongkirCityName: z.string().nullish(),
+    rajaongkirProvince: z.string().nullish(),
+    rajaongkirCity: z.string().nullish(),
+    rajaongkirDistrict: z.string().nullish(),
+    rajaongkirSubdistrict: z.string().nullish(),
+    rajaongkirPostalCode: z.string().nullish(),
+    // Generic destination (international only)
+    city: z.string().nullish().transform((value) => value ?? undefined),
+    province: z.string().nullish().transform((value) => value ?? undefined),
+    postalCode: z.string().nullish().transform((value) => value ?? undefined),
+    shippingMethod: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!isValidCheckoutPhone(data.phone, data.countryCode)) {
+      ctx.addIssue({ code: 'custom', path: ['phone'], message: 'Nomor telepon tidak valid' });
+    }
+    if (data.countryCode === 'ID') {
+      if (!data.rajaongkirCityId) {
+        ctx.addIssue({ code: 'custom', path: ['rajaongkirCityId'], message: 'Pilih kelurahan/kecamatan' });
+      }
+    } else {
+      if (!data.city) {
+        ctx.addIssue({ code: 'custom', path: ['city'], message: 'Kota wajib diisi' });
+      }
+      if (!data.postalCode) {
+        ctx.addIssue({ code: 'custom', path: ['postalCode'], message: 'Kode pos wajib diisi' });
+      }
+    }
+  });
 
 async function getCurrentCheckoutSession(): Promise<CheckoutSessionWithCart | null> {
   const session = await getSession();
@@ -65,18 +92,6 @@ function buildResponse(data: object, guestId?: string): NextResponse {
   }
 
   return response;
-}
-
-// Format Indonesian phone number
-function formatIndonesianPhone(phone: string): string {
-  let formatted = phone.replace(/[^0-9]/g, '');
-  if (formatted.startsWith('0')) {
-    formatted = '62' + formatted.substring(1);
-  }
-  if (!formatted.startsWith('62')) {
-    formatted = '62' + formatted;
-  }
-  return formatted;
 }
 
 /**
@@ -152,7 +167,7 @@ export async function POST(request: NextRequest) {
       await deleteCheckoutSession(existingSession.id);
     }
 
-    const formattedPhone = formatIndonesianPhone(data.phone);
+    const formattedPhone = normalizeCheckoutPhone(data.phone, data.countryCode);
 
     // Create checkout session
     const checkoutSession = await createCheckoutSession({
@@ -166,6 +181,8 @@ export async function POST(request: NextRequest) {
       address1: data.address1,
       address2: data.address2,
       notes: data.notes,
+      countryCode: data.countryCode,
+      country: getCountryName(data.countryCode),
       // RajaOngkir destination
       rajaongkirCityId: data.rajaongkirCityId,
       rajaongkirCityName: data.rajaongkirCityName ?? undefined,
@@ -174,6 +191,10 @@ export async function POST(request: NextRequest) {
       rajaongkirDistrict: data.rajaongkirDistrict ?? undefined,
       rajaongkirSubdistrict: data.rajaongkirSubdistrict ?? undefined,
       rajaongkirPostalCode: data.rajaongkirPostalCode ?? undefined,
+      // Generic destination (international)
+      city: data.city || (data.countryCode === 'ID' ? (data.rajaongkirCity || data.rajaongkirDistrict || undefined) : undefined),
+      province: data.province || (data.countryCode === 'ID' ? (data.rajaongkirProvince || undefined) : undefined),
+      postalCode: data.postalCode || (data.countryCode === 'ID' ? (data.rajaongkirPostalCode || undefined) : undefined),
       shippingMethod: data.shippingMethod,
     });
 
@@ -226,6 +247,8 @@ export async function PUT(request: NextRequest) {
     const updateSchema = z.object({
       shippingMethod: z.string().optional(),
       notes: z.string().max(500).optional(),
+      countryCode: z.string().length(2).optional(),
+      country: z.string().optional(),
       // Allow updating destination
       rajaongkirCityId: z.string().optional(),
       rajaongkirCityName: z.string().nullish(),
@@ -234,6 +257,9 @@ export async function PUT(request: NextRequest) {
       rajaongkirDistrict: z.string().nullish(),
       rajaongkirSubdistrict: z.string().nullish(),
       rajaongkirPostalCode: z.string().nullish(),
+      city: z.string().optional(),
+      province: z.string().optional(),
+      postalCode: z.string().optional(),
     });
 
     const result = updateSchema.safeParse(body);
@@ -256,6 +282,8 @@ export async function PUT(request: NextRequest) {
       {
         shippingMethod: data.shippingMethod,
         notes: data.notes,
+        countryCode: data.countryCode,
+        country: data.country,
         rajaongkirCityId: data.rajaongkirCityId,
         rajaongkirCityName: data.rajaongkirCityName ?? undefined,
         rajaongkirProvince: data.rajaongkirProvince ?? undefined,
@@ -263,6 +291,9 @@ export async function PUT(request: NextRequest) {
         rajaongkirDistrict: data.rajaongkirDistrict ?? undefined,
         rajaongkirSubdistrict: data.rajaongkirSubdistrict ?? undefined,
         rajaongkirPostalCode: data.rajaongkirPostalCode ?? undefined,
+        city: data.city,
+        province: data.province,
+        postalCode: data.postalCode,
       }
     );
 

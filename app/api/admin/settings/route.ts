@@ -74,6 +74,8 @@ export async function PUT(request: Request) {
       businessHours: body.businessHours,
       rajaongkirCityId: body.rajaongkirCityId || null,
       rajaongkirCityName: body.rajaongkirCityName || null,
+      originPostalCode: body.originPostalCode || null,
+      originCountryCode: body.originCountryCode || undefined,
       activeCouriers: body.activeCouriers
         ? body.activeCouriers.join(',')
         : undefined,

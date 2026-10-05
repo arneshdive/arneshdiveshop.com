@@ -17,6 +17,7 @@ interface PrintOrder {
   taxCents: number;
   discountCents: number;
   totalCents: number;
+  currency: string;
   createdAt: string;
   shippingFirstName: string;
   shippingLastName: string;
@@ -163,9 +164,9 @@ export default function OrderPrintPage({ params }: { params: Promise<{ id: strin
                   )}
                 </td>
                 <td className="py-1.5 px-2 text-center text-neutral-700 whitespace-nowrap">{item.quantity}</td>
-                <td className="py-1.5 px-2 text-right text-neutral-700 whitespace-nowrap">{formatRupiah(item.priceCents)}</td>
+                <td className="py-1.5 px-2 text-right text-neutral-700 whitespace-nowrap">{formatRupiah(item.priceCents, order.currency as 'IDR' | 'USD')}</td>
                 <td className="py-1.5 pl-2 text-right font-medium text-neutral-900 whitespace-nowrap">
-                  {formatRupiah(item.priceCents * item.quantity)}
+                  {formatRupiah(item.priceCents * item.quantity, order.currency as 'IDR' | 'USD')}
                 </td>
               </tr>
             ))}
@@ -177,27 +178,27 @@ export default function OrderPrintPage({ params }: { params: Promise<{ id: strin
           <div className="w-48 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-neutral-500">Subtotal</span>
-              <span className="text-neutral-700">{formatRupiah(order.subtotalCents)}</span>
+              <span className="text-neutral-700">{formatRupiah(order.subtotalCents, order.currency as 'IDR' | 'USD')}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-neutral-500">Ongkos Kirim</span>
-              <span className="text-neutral-700">{order.shippingCents === 0 ? 'Gratis' : formatRupiah(order.shippingCents)}</span>
+              <span className="text-neutral-700">{order.shippingCents === 0 ? 'Gratis' : formatRupiah(order.shippingCents, order.currency as 'IDR' | 'USD')}</span>
             </div>
             {order.taxCents > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-neutral-500">Pajak</span>
-                <span className="text-neutral-700">{formatRupiah(order.taxCents)}</span>
+                <span className="text-neutral-700">{formatRupiah(order.taxCents, order.currency as 'IDR' | 'USD')}</span>
               </div>
             )}
             {order.discountCents > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-neutral-500">Diskon</span>
-                <span className="text-green-600">-{formatRupiah(order.discountCents)}</span>
+                <span className="text-green-600">-{formatRupiah(order.discountCents, order.currency as 'IDR' | 'USD')}</span>
               </div>
             )}
             <div className="pt-1.5 border-t border-neutral-300 flex items-center justify-between">
               <span className="font-semibold text-neutral-900">Total</span>
-              <span className="font-semibold text-neutral-900">{formatRupiah(order.totalCents)}</span>
+              <span className="font-semibold text-neutral-900">{formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD')}</span>
             </div>
           </div>
         </div>

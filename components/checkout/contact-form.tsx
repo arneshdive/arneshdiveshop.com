@@ -28,6 +28,8 @@ export function ContactForm() {
   const validation = checkoutFormSchema.safeParse(data);
   const emailErrorKey = getFieldI18nKey(validation, 'email');
   const phoneErrorKey = getFieldI18nKey(validation, 'phone');
+  const firstNameErrorKey = getFieldI18nKey(validation, 'firstName');
+  const lastNameErrorKey = getFieldI18nKey(validation, 'lastName');
   const showEmailError = (touched.email && !!emailErrorKey) || emailErrorKey === 'contact.emailInvalid';
   const showPhoneError = (touched.phone && !!phoneErrorKey) || phoneErrorKey === 'contact.phoneInvalid';
 
@@ -36,6 +38,40 @@ export function ContactForm() {
       <h2 className="text-lg font-semibold tracking-tight mb-6">
         {t('contact.title')}
       </h2>
+      <div className="grid sm:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            {t('contact.firstNameLabel')} <span className="text-red-500">*</span>
+          </label>
+          <Input
+            type="text"
+            value={data.firstName}
+            onChange={(e) => setField('firstName', e.target.value)}
+            onBlur={() => setTouched('firstName')}
+            placeholder={t('contact.firstNamePlaceholder')}
+            className={`py-3 rounded-xl ${
+              touched.firstName && firstNameErrorKey ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''
+            }`}
+          />
+          {touched.firstName && firstNameErrorKey && <FieldError message={t(firstNameErrorKey)} />}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 mb-2">
+            {t('contact.lastNameLabel')} <span className="text-red-500">*</span>
+          </label>
+          <Input
+            type="text"
+            value={data.lastName}
+            onChange={(e) => setField('lastName', e.target.value)}
+            onBlur={() => setTouched('lastName')}
+            placeholder={t('contact.lastNamePlaceholder')}
+            className={`py-3 rounded-xl ${
+              touched.lastName && lastNameErrorKey ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''
+            }`}
+          />
+          {touched.lastName && lastNameErrorKey && <FieldError message={t(lastNameErrorKey)} />}
+        </div>
+      </div>
       <div className="grid sm:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-neutral-700 mb-2">
@@ -61,7 +97,9 @@ export function ContactForm() {
             type="tel"
             value={data.phone}
             onChange={(e) => {
-              const formatted = formatPhoneInput(e.target.value);
+              const formatted = data.countryCode === 'ID'
+                ? formatPhoneInput(e.target.value)
+                : e.target.value;
               setField('phone', formatted);
             }}
             onBlur={() => setTouched('phone')}

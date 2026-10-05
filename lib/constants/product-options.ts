@@ -1,6 +1,6 @@
 export const categories = [
   { id: 'masker', name: 'Masker' },
-  { id: 'fin', name: 'Fin' },
+  { id: 'fins', name: 'Fins' },
   { id: 'wetsuit', name: 'Wetsuit' },
   { id: 'sabuk-pemberat', name: 'Sabuk Pemberat' },
   { id: 'aksesoris', name: 'Aksesoris' },

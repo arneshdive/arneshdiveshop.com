@@ -21,21 +21,24 @@ function localizedAlternates(href: string | { pathname: string; query?: Record<s
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic import so the DB module is only loaded at runtime
   const { getProducts } = await import('@/lib/queries/products');
-  let products: Array<{ slug: string; updatedAt?: string | Date | null }> = [];
+  let products: Array<{
+    slug: string;
+    updatedAt?: string | Date | null;
+    category?: { slug: string } | null;
+  }> = [];
   try {
     products = await getProducts({ isActive: true });
   } catch {
     // DB not available — skip dynamic product routes
   }
 
-  let categories: Array<{ slug: string }> = [];
-  try {
-    const { db } = await import('@/lib/db');
-    const { categories: categoriesTable } = await import('@/lib/db/schema');
-    categories = await db.select({ slug: categoriesTable.slug }).from(categoriesTable);
-  } catch {
-    // DB not available — skip category filter routes
-  }
+  // getProducts excludes soft-deleted products; isActive above also excludes
+  // inactive ones. Only advertise categories represented in that visible set.
+  const categories = [...new Map(
+    products.flatMap((product) => product.category
+      ? [[product.category.slug, product.category] as const]
+      : [])
+  ).values()];
 
   let posts: Array<{
     slug: string;
@@ -67,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteConfig.url}/blog`, changeFrequency: 'weekly', priority: 0.6, alternates: { languages: localizedAlternates('/blog') } },
     { url: `${siteConfig.url}/faq`, changeFrequency: 'monthly', priority: 0.3, alternates: { languages: localizedAlternates('/faq') } },
     { url: `${siteConfig.url}/kontak`, changeFrequency: 'monthly', priority: 0.3, alternates: { languages: localizedAlternates('/kontak') } },
+    { url: `${siteConfig.url}/tentang-kami`, changeFrequency: 'monthly', priority: 0.4, alternates: { languages: localizedAlternates('/tentang-kami') } },
     { url: `${siteConfig.url}/privasi`, changeFrequency: 'yearly', priority: 0.1, alternates: { languages: localizedAlternates('/privasi') } },
     { url: `${siteConfig.url}/syarat`, changeFrequency: 'yearly', priority: 0.1, alternates: { languages: localizedAlternates('/syarat') } },
   ];

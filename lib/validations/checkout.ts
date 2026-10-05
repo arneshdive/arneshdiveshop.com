@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
+import { isValidEmail, isValidCheckoutPhone } from '@/lib/utils/validators';
 
 // Every rule is a `.refine()` (not `.min()`/`.email()`) so each failure
 // carries a stable `params.i18nKey` — the schema only decides *which* rule
@@ -8,26 +8,69 @@ import { isValidEmail, isValidPhone } from '@/lib/utils/validators';
 // with `getFieldI18nKey` below. Parsed against the full CheckoutData object
 // from lib/store/checkout.ts; unlisted fields (address2, notes,
 // shippingMethod, ...) are ignored by z.object()'s default parsing.
-export const checkoutFormSchema = z.object({
-  email: z
-    .string()
-    .refine((v) => v.trim().length > 0, { params: { i18nKey: 'contact.emailRequired' } })
-    .refine((v) => isValidEmail(v), { params: { i18nKey: 'contact.emailInvalid' } }),
-  phone: z
-    .string()
-    .refine((v) => v.trim().length > 0, { params: { i18nKey: 'contact.phoneRequired' } })
-    .refine((v) => isValidPhone(v), { params: { i18nKey: 'contact.phoneInvalid' } }),
-  fullName: z
-    .string()
-    .refine((v) => v.trim().length > 0, { params: { i18nKey: 'shipping.fullNameRequired' } }),
-  rajaongkirCityId: z
-    .string()
-    .nullable()
-    .refine((v) => !!v, { params: { i18nKey: 'shipping.destinationRequired' } }),
-  address1: z
-    .string()
-    .refine((v) => v.trim().length > 0, { params: { i18nKey: 'shipping.address1Required' } }),
-});
+// `rajaongkirCityId`/`intlCity`/`intlPostalCode` are validated conditionally in
+// `.superRefine()` below (depending on `countryCode`) rather than via a plain
+// `.refine()`, since which one is required depends on sibling data.
+export const checkoutFormSchema = z
+  .object({
+    email: z
+      .string()
+      .refine((v) => v.trim().length > 0, { params: { i18nKey: 'contact.emailRequired' } })
+      .refine((v) => isValidEmail(v), { params: { i18nKey: 'contact.emailInvalid' } }),
+    phone: z
+      .string()
+      .refine((v) => v.trim().length > 0, { params: { i18nKey: 'contact.phoneRequired' } }),
+    firstName: z
+      .string()
+      .refine((v) => v.trim().length > 0, { params: { i18nKey: 'contact.firstNameRequired' } }),
+    lastName: z
+      .string()
+      .refine((v) => v.trim().length > 0, { params: { i18nKey: 'contact.lastNameRequired' } }),
+    countryCode: z.string(),
+    rajaongkirCityId: z.string().nullable(),
+    intlCity: z.string(),
+    intlPostalCode: z.string(),
+    address1: z
+      .string()
+      .refine((v) => v.trim().length > 0, { params: { i18nKey: 'shipping.address1Required' } }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.phone.trim() && !isValidCheckoutPhone(data.phone, data.countryCode)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['phone'],
+        message: 'Invalid phone',
+        params: { i18nKey: 'contact.phoneInvalid' },
+      });
+    }
+    if (data.countryCode === 'ID') {
+      if (!data.rajaongkirCityId) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['rajaongkirCityId'],
+          message: 'Required',
+          params: { i18nKey: 'shipping.destinationRequired' },
+        });
+      }
+    } else {
+      if (!data.intlCity.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['intlCity'],
+          message: 'Required',
+          params: { i18nKey: 'shipping.intlCityRequired' },
+        });
+      }
+      if (!data.intlPostalCode.trim()) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['intlPostalCode'],
+          message: 'Required',
+          params: { i18nKey: 'shipping.intlPostalCodeRequired' },
+        });
+      }
+    }
+  });
 
 export type CheckoutFormInput = z.input<typeof checkoutFormSchema>;
 type CheckoutFormResult = ReturnType<typeof checkoutFormSchema.safeParse>;

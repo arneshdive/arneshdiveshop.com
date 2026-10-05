@@ -7,6 +7,7 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 import { Input, Textarea } from '@/components/admin/input';
 import { formatPhoneInput } from '@/lib/utils/format';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { COUNTRIES } from '@/lib/shipping/countries';
 
 interface RajaongkirCity {
   id: string;
@@ -26,6 +27,8 @@ interface ShopSettingsData {
   businessHours: string;
   rajaongkirCityId: string | null;
   rajaongkirCityName: string | null;
+  originPostalCode: string | null;
+  originCountryCode: string;
   instagram: string | null;
   tiktok: string | null;
   activeCouriers: string[];
@@ -40,6 +43,8 @@ export default function SettingsPage() {
     businessHours: '',
     rajaongkirCityId: null,
     rajaongkirCityName: null,
+    originPostalCode: null,
+    originCountryCode: 'ID',
     instagram: null,
     tiktok: null,
     activeCouriers: ['jne', 'jnt', 'sicepat'],
@@ -98,6 +103,8 @@ export default function SettingsPage() {
             businessHours: data.businessHours || '',
             rajaongkirCityId: data.rajaongkirCityId || null,
             rajaongkirCityName: data.rajaongkirCityName || null,
+            originPostalCode: data.originPostalCode || null,
+            originCountryCode: data.originCountryCode || 'ID',
             instagram: data.instagram || '',
             tiktok: data.tiktok || '',
             activeCouriers: data.activeCouriers || ['jne', 'jnt', 'sicepat'],
@@ -336,6 +343,35 @@ export default function SettingsPage() {
                 )}
               </div>
             )}
+          </div>
+        </div>
+
+        {/* International Shipping Origin (FedEx) */}
+        <div className="bg-white rounded-xl p-6 space-y-4">
+          <h2 className="text-base font-medium tracking-tight text-neutral-900">Asal Pengiriman Internasional</h2>
+          <p className="text-sm text-neutral-500">
+            Dipakai untuk menghitung ongkos kirim internasional (FedEx). Kosongkan jika belum melayani pengiriman ke luar negeri.
+          </p>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Input
+              label="Kode Pos"
+              value={settings.originPostalCode ?? ''}
+              onChange={(e) => setSettings({ ...settings, originPostalCode: e.target.value })}
+              placeholder="80227"
+            />
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">Negara Asal</label>
+              <select
+                value={settings.originCountryCode}
+                onChange={(e) => setSettings({ ...settings, originCountryCode: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-900"
+              >
+                {COUNTRIES.map((country) => (
+                  <option key={country.code} value={country.code}>{country.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 

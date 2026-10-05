@@ -52,6 +52,7 @@ interface Order {
   taxCents: number;
   discountCents: number;
   totalCents: number;
+  currency: string;
   shippingFirstName: string;
   shippingLastName: string;
   shippingPhone: string | null;
@@ -321,7 +322,7 @@ export function CheckoutSuccessContent() {
                         {item.variant?.name && `${item.variant.name} • `}{t('success.qtyLabel', { quantity: item.quantity })}
                       </p>
                     </div>
-                    <p className="font-medium">{formatRupiah(item.priceCents)}</p>
+                    <p className="font-medium">{formatRupiah(item.priceCents, order.currency as 'IDR' | 'USD')}</p>
                   </div>
                 ))}
               </div>
@@ -329,21 +330,21 @@ export function CheckoutSuccessContent() {
               <div className="mt-6 pt-6 border-t border-neutral-100 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">{t('success.subtotal')}</span>
-                  <span>{formatRupiah(order.subtotalCents)}</span>
+                  <span>{formatRupiah(order.subtotalCents, order.currency as 'IDR' | 'USD')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-neutral-500">{t('success.shippingCost')}</span>
-                  <span>{order.shippingCents > 0 ? formatRupiah(order.shippingCents) : t('success.free')}</span>
+                  <span>{order.shippingCents > 0 ? formatRupiah(order.shippingCents, order.currency as 'IDR' | 'USD') : t('success.free')}</span>
                 </div>
                 {order.discountCents > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>{t('success.discount')}</span>
-                    <span>-{formatRupiah(order.discountCents)}</span>
+                    <span>-{formatRupiah(order.discountCents, order.currency as 'IDR' | 'USD')}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-lg font-semibold pt-3 border-t border-neutral-100">
                   <span>{t('success.total')}</span>
-                  <span>{formatRupiah(order.totalCents)}</span>
+                  <span>{formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD')}</span>
                 </div>
               </div>
             </div>

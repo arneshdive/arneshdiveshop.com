@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
         province: d.province,
         city: d.city || '',
         district: d.district || '',
+        postalCode: d.postalCode || '',
         fullName: d.name, // Full label
       })),
     });

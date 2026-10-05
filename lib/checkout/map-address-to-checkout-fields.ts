@@ -14,7 +14,8 @@ export interface AddressForMapping {
 }
 
 export interface CheckoutFieldsFromAddress {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   address1: string;
   address2: string;
@@ -36,7 +37,8 @@ export interface CheckoutFieldsFromAddress {
  */
 export function mapAddressToCheckoutFields(address: AddressForMapping): CheckoutFieldsFromAddress {
   return {
-    fullName: `${address.firstName} ${address.lastName}`.trim(),
+    firstName: address.firstName,
+    lastName: address.lastName,
     phone: address.phone ?? '',
     address1: address.address1,
     address2: address.address2 ?? '',

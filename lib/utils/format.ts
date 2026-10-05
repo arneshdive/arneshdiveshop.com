@@ -1,14 +1,21 @@
 /**
- * Format cents to Rupiah currency string.
- * 
- * CONVENTION: All prices in the database are stored as cents (1 Rupiah = 100 cents).
- * - Rp 850.000 is stored as 85000000 in the database
- * - This function divides by 100 to convert cents to Rupiah for display
- * 
- * @param cents - Amount in cents (e.g., 85000000 for Rp 850.000)
- * @returns Formatted currency string (e.g., "Rp850.000")
+ * Format cents to a currency string.
+ *
+ * CONVENTION: All prices in the database are stored as cents.
+ * - IDR: Rp 850.000 is stored as 85000000 (1 Rupiah = 100 cents, no decimals shown)
+ * - USD: $12.50 is stored as 1250 (1 dollar = 100 cents, PayPal/international orders)
+ *
+ * @param cents - Amount in cents
+ * @param currency - 'IDR' (default, local/Midtrans orders) or 'USD' (international/PayPal orders)
+ * @returns Formatted currency string (e.g., "Rp850.000" or "$12.50")
  */
-export function formatRupiah(cents: number): string {
+export function formatCurrency(cents: number, currency: 'IDR' | 'USD' = 'IDR'): string {
+  if (currency === 'USD') {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(cents / 100);
+  }
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
@@ -17,7 +24,7 @@ export function formatRupiah(cents: number): string {
 }
 
 // Alias for clarity in some contexts
-export const formatCurrency = formatRupiah;
+export const formatRupiah = formatCurrency;
 
 // Formats a raw numeric input value with thousands separators as the user types
 // (e.g. admin form fields for price). Distinct from formatRupiah/formatCurrency,

@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { db, products, productVariants, categories, brands } from '@/lib/db';
 import { eq, isNull, desc, ilike, and, SQL, sql, or, gte, lte, between } from 'drizzle-orm';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
+import { canonicalCategorySlug } from '@/lib/constants/category-aliases';
 
 export interface ProductFilters {
   category?: string;        // Category ID or slug
@@ -32,7 +33,7 @@ async function resolveCategoryId(categoryFilter: string): Promise<string | null>
   
   // Otherwise, look up by slug
   const category = await db.query.categories.findFirst({
-    where: eq(categories.slug, categoryFilter),
+    where: eq(categories.slug, canonicalCategorySlug(categoryFilter)),
   });
   
   return category?.id || null;
@@ -96,9 +97,9 @@ async function buildProductConditions(
   // Category filter (supports both ID and slug)
   if (filters?.category) {
     const categoryId = await resolveCategoryId(filters.category);
-    if (categoryId) {
-      conditions.push(eq(products.categoryId, categoryId));
-    }
+    // A missing category must not silently turn a filtered link into the
+    // entire catalog. Legacy slugs resolve to their surviving category above.
+    conditions.push(categoryId ? eq(products.categoryId, categoryId) : sql`false`);
   }
 
   // Brand filter (supports both ID and slug)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { listOrders, type OrderWithItems } from '@/lib/queries/orders';
+import { formatCurrency } from '@/lib/utils/format';
 import * as XLSX from 'xlsx';
 
 // ============================================================================
@@ -63,7 +64,7 @@ export async function GET(request: NextRequest) {
       'Customer Name': `${order.customer.firstName} ${order.customer.lastName}`.trim(),
       'Customer Email': order.customer.email,
       'Status': formatStatus(order.status),
-      'Total': formatCurrency(order.totalCents),
+      'Total': formatCurrency(order.totalCents, order.currency as 'IDR' | 'USD'),
       'Items Count': order.items.reduce((sum, item) => sum + item.quantity, 0),
       'Payment Method': getPaymentMethod(order),
       'Shipping Address': formatShippingAddress(order),
@@ -124,16 +125,6 @@ function formatStatus(status: string): string {
     'refunded': 'Dikembalikan',
   };
   return statusMap[status] || status;
-}
-
-function formatCurrency(cents: number): string {
-  const rupiah = cents / 100;
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(rupiah);
 }
 
 function getPaymentMethod(order: OrderWithItems): string {

@@ -6,20 +6,40 @@ import {
   markCheckoutSessionPaymentPending,
   type CheckoutSessionWithCart,
 } from '@/lib/queries/checkout';
-import { getMidtransProvider } from '@/lib/payment/midtrans';
+import { getPaymentProvider, type PaymentProviderName } from '@/lib/payment';
 import { db, orders, payments, orderItems } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { createAccountFromCheckout } from '@/lib/auth/seamless-signup';
 import { calculateShippingRates } from '@/lib/shipping/calculator';
+import { calculateInternationalShippingRates } from '@/lib/shipping/fedex';
 import { sendOrderEmail } from '@/lib/email';
 import { saveAddressFromOrder } from '@/lib/queries/addresses';
 
 const createPaymentSchema = z.object({
   checkoutSessionId: z.string().min(1, 'Checkout session ID is required'),
+  provider: z.enum(['midtrans', 'paypal']).default('midtrans'),
 });
 
 // Indonesian Rupiah doesn't have decimal places, so 1 IDR = 100 cents throughout the app
 // But Midtrans expects the full amount (not cents)
+
+// International shipping cost calculation is deferred to a future phase (2026-09-19 decision) -
+// PayPal orders are charged for cart items only, with $0 shipping for now.
+function getCurrencyForProvider(provider: PaymentProviderName): 'IDR' | 'USD' {
+  return provider === 'paypal' ? 'USD' : 'IDR';
+}
+
+/** Resolve a cart item's price in the given provider's currency. Returns null if unavailable
+ * (e.g. a product has no priceCentsUsd set yet, so it can't be sold via PayPal). */
+function resolveItemPriceCents(
+  item: { product: { priceCents: number; priceCentsUsd: number | null }; variant?: { priceCents: number | null; priceCentsUsd: number | null } | null },
+  provider: PaymentProviderName
+): number | null {
+  if (provider === 'paypal') {
+    return item.variant?.priceCentsUsd ?? item.product.priceCentsUsd ?? null;
+  }
+  return item.variant?.priceCents ?? item.product.priceCents;
+}
 
 /**
  * POST /api/payments/create
@@ -49,7 +69,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { checkoutSessionId } = result.data;
+    const { checkoutSessionId, provider } = result.data;
+    const currency = getCurrencyForProvider(provider);
 
     // Get checkout session
     const session = await getCheckoutSessionById(checkoutSessionId);
@@ -81,6 +102,35 @@ export async function POST(request: NextRequest) {
         { error: 'Cart is empty' },
         { status: 400 }
       );
+    }
+
+    // Shipping destination determines payment currency (same coupling the
+    // checkout UI enforces): Indonesia -> Midtrans only, any other country ->
+    // PayPal only. Enforced server-side too, not just as a UI constraint.
+    const isDomesticSession = session.countryCode === 'ID';
+    if (provider === 'midtrans' && !isDomesticSession) {
+      return NextResponse.json(
+        { error: 'Midtrans hanya tersedia untuk pengiriman dalam negeri (Indonesia).' },
+        { status: 400 }
+      );
+    }
+    if (provider === 'paypal' && isDomesticSession) {
+      return NextResponse.json(
+        { error: 'PayPal hanya tersedia untuk pengiriman internasional.' },
+        { status: 400 }
+      );
+    }
+
+    if (provider === 'paypal') {
+      const hasUnpricedItem = session.cart.items.some(
+        (item) => resolveItemPriceCents(item, provider) === null
+      );
+      if (hasUnpricedItem) {
+        return NextResponse.json(
+          { error: 'Beberapa produk di keranjang belum tersedia untuk pembayaran internasional (PayPal).' },
+          { status: 400 }
+        );
+      }
     }
 
     // ============================================================
@@ -116,27 +166,33 @@ export async function POST(request: NextRequest) {
       }
 
       if (existingPayment.status === 'failed' || existingPayment.status === 'expired') {
-        // Previous Snap transaction was denied/expired - open a fresh
-        // transaction against the SAME order (Midtrans allows re-charging
-        // an order_id once its prior transaction reached a final state).
-        const midtrans = getMidtransProvider();
-        const transaction = await midtrans.createTransaction({
+        // Previous transaction was denied/expired - open a fresh transaction
+        // against the SAME order, using the SAME provider/currency it was
+        // originally created with (switching provider mid-order would mean
+        // charging a different currency than the order's recorded totals).
+        const retryProvider = existingPayment.provider as PaymentProviderName;
+        const retryCurrency = existingOrder.currency as 'IDR' | 'USD';
+        const paymentProvider = getPaymentProvider(retryProvider);
+        const transaction = await paymentProvider.createTransaction({
           orderId: existingOrder.id,
           orderNumber: existingOrder.orderNumber,
           amountCents: existingOrder.totalCents,
-          currency: 'IDR',
+          currency: retryCurrency,
           customerEmail: session.email,
           customerPhone: session.phone,
           customerName: session.fullName,
           billingAddress: {
             address1: session.address1,
             address2: session.address2,
-            city: session.rajaongkirCity || session.rajaongkirCityName || '',
-            province: session.rajaongkirProvince || '',
-            postalCode: session.rajaongkirPostalCode || '',
-            country: 'Indonesia',
+            city: session.countryCode === 'ID' ? (session.rajaongkirCity || session.rajaongkirCityName || '') : (session.city || ''),
+            province: session.countryCode === 'ID' ? (session.rajaongkirProvince || '') : (session.province || ''),
+            postalCode: session.countryCode === 'ID' ? (session.rajaongkirPostalCode || '') : (session.postalCode || ''),
+            country: session.country,
           },
-          itemDetails: buildItemDetails(session, existingOrder.shippingCents, session.shippingMethod),
+          itemDetails:
+            retryProvider === 'midtrans'
+              ? buildItemDetails(session, existingOrder.shippingCents, session.shippingMethod)
+              : undefined,
         });
 
         await db
@@ -182,35 +238,96 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate totals. Re-derive the shipping cost from RajaOngkir (the same
-    // source of truth the customer saw in the shipping method selector) rather
-    // than trusting a client-supplied value, so the captured cost always
-    // matches a real, currently-valid courier quote.
-    const subtotalCents = session.cart.subtotalCents;
-    const { rates: currentRates } = await calculateShippingRates(
-      session.rajaongkirCityId,
-      session.cart.items
-    );
-    const selectedRate = currentRates.find(
-      (rate) => `${rate.courier}-${rate.service}`.toLowerCase() === session.shippingMethod
-    );
+    // Calculate totals.
+    let subtotalCents: number;
+    let shippingCents: number;
+    let shippingLabel: string | undefined;
 
-    if (!selectedRate) {
-      return NextResponse.json(
-        { error: 'Metode pengiriman tidak lagi tersedia, silakan pilih ulang metode pengiriman.' },
-        { status: 400 }
+    if (provider === 'paypal') {
+      subtotalCents = session.cart.items.reduce(
+        (sum, item) => sum + (resolveItemPriceCents(item, provider) ?? 0) * item.quantity,
+        0
       );
+
+      // Re-derive the shipping cost from FedEx (the same source of truth
+      // the customer saw in the shipping method selector) rather than trusting
+      // a client-supplied value - mirrors exactly how the domestic branch
+      // re-derives cost from RajaOngkir below.
+      const { rates: currentRates, error: intlShippingError } = await calculateInternationalShippingRates(
+        {
+          address1: session.address1,
+          city: session.city || '',
+          state: session.province || undefined,
+          postalCode: session.postalCode || '',
+          countryCode: session.countryCode,
+        },
+        session.cart.items
+      );
+
+      if (intlShippingError || currentRates.length === 0) {
+        return NextResponse.json(
+          { error: intlShippingError || 'Metode pengiriman tidak lagi tersedia, silakan pilih ulang metode pengiriman.' },
+          { status: 400 }
+        );
+      }
+
+      const selectedIntlRate = currentRates.find(
+        (rate) => `${rate.courier}-${rate.service}`.toLowerCase() === session.shippingMethod
+      );
+
+      if (!selectedIntlRate) {
+        return NextResponse.json(
+          { error: 'Metode pengiriman tidak lagi tersedia, silakan pilih ulang metode pengiriman.' },
+          { status: 400 }
+        );
+      }
+
+      shippingCents = selectedIntlRate.costCents;
+    } else {
+      // Re-derive the shipping cost from RajaOngkir (the same source of truth
+      // the customer saw in the shipping method selector) rather than trusting
+      // a client-supplied value, so the captured cost always matches a real,
+      // currently-valid courier quote.
+      if (!session.rajaongkirCityId) {
+        return NextResponse.json(
+          { error: 'Alamat pengiriman tidak lengkap, silakan pilih ulang tujuan pengiriman.' },
+          { status: 400 }
+        );
+      }
+
+      subtotalCents = session.cart.subtotalCents;
+      const { rates: currentRates } = await calculateShippingRates(
+        session.rajaongkirCityId,
+        session.cart.items
+      );
+      const selectedRate = currentRates.find(
+        (rate) => `${rate.courier}-${rate.service}`.toLowerCase() === session.shippingMethod
+      );
+
+      if (!selectedRate) {
+        return NextResponse.json(
+          { error: 'Metode pengiriman tidak lagi tersedia, silakan pilih ulang metode pengiriman.' },
+          { status: 400 }
+        );
+      }
+
+      shippingCents = selectedRate.costCents;
+      shippingLabel = `${selectedRate.courier.toUpperCase()} ${selectedRate.name}`;
     }
 
-    const shippingCents = selectedRate.costCents;
     const totalCents = subtotalCents + shippingCents;
 
-    // Update checkout session with calculated totals
-    await updateCheckoutSessionTotals(checkoutSessionId, {
-      subtotalCents,
-      shippingCents,
-      totalCents,
-    });
+    // Update checkout session with calculated totals. Skipped for PayPal: the
+    // checkout session's totals are always displayed/re-derived in IDR
+    // elsewhere (cart, order summary), so they must stay IDR-denominated -
+    // the USD amounts computed above are only used for this order/payment.
+    if (provider === 'midtrans') {
+      await updateCheckoutSessionTotals(checkoutSessionId, {
+        subtotalCents,
+        shippingCents,
+        totalCents,
+      });
+    }
 
     // Create account for guest or get existing customer (with auto-login)
     const { customerId } = await createAccountFromCheckout({
@@ -224,25 +341,28 @@ export async function POST(request: NextRequest) {
     // Save this shipping address to the customer's address book (unless it's
     // a duplicate of one they already have) so it's available to pick on
     // their next checkout instead of retyping it. Best-effort: a failure here
-    // must never block the actual purchase.
-    try {
-      await saveAddressFromOrder(customerId, {
-        name: 'Alamat Utama',
-        firstName: session.fullName.split(' ')[0] || session.fullName,
-        lastName: session.fullName.split(' ').slice(1).join(' ') || '',
-        phone: session.phone,
-        address1: session.address1,
-        address2: session.address2 || undefined,
-        rajaongkirCityId: session.rajaongkirCityId,
-        rajaongkirCityName: session.rajaongkirCityName || '',
-        rajaongkirProvince: session.rajaongkirProvince || undefined,
-        rajaongkirCity: session.rajaongkirCity || undefined,
-        rajaongkirDistrict: session.rajaongkirDistrict || undefined,
-        rajaongkirSubdistrict: session.rajaongkirSubdistrict || undefined,
-        rajaongkirPostalCode: session.rajaongkirPostalCode || undefined,
-      });
-    } catch (err) {
-      console.error('Failed to save address to address book:', err);
+    // must never block the actual purchase. Domestic (RajaOngkir) addresses
+    // only - the address book doesn't support international addresses yet.
+    if (session.countryCode === 'ID' && session.rajaongkirCityId) {
+      try {
+        await saveAddressFromOrder(customerId, {
+          name: 'Alamat Utama',
+          firstName: session.fullName.split(' ')[0] || session.fullName,
+          lastName: session.fullName.split(' ').slice(1).join(' ') || '',
+          phone: session.phone,
+          address1: session.address1,
+          address2: session.address2 || undefined,
+          rajaongkirCityId: session.rajaongkirCityId,
+          rajaongkirCityName: session.rajaongkirCityName || '',
+          rajaongkirProvince: session.rajaongkirProvince || undefined,
+          rajaongkirCity: session.rajaongkirCity || undefined,
+          rajaongkirDistrict: session.rajaongkirDistrict || undefined,
+          rajaongkirSubdistrict: session.rajaongkirSubdistrict || undefined,
+          rajaongkirPostalCode: session.rajaongkirPostalCode || undefined,
+        });
+      } catch (err) {
+        console.error('Failed to save address to address book:', err);
+      }
     }
 
     // Generate order number: ARD-YYYY-NNNN
@@ -251,26 +371,26 @@ export async function POST(request: NextRequest) {
     // Create order ID (will be used as Midtrans order_id)
     const orderId = crypto.randomUUID();
 
-    // Create Snap transaction with Midtrans
-    const midtrans = getMidtransProvider();
+    // Create transaction with the chosen provider (Midtrans for local, PayPal for international)
+    const paymentProvider = getPaymentProvider(provider);
 
-    const transaction = await midtrans.createTransaction({
+    const transaction = await paymentProvider.createTransaction({
       orderId,
       orderNumber,
       amountCents: totalCents,
-      currency: 'IDR',
+      currency,
       customerEmail: session.email,
       customerPhone: session.phone,
       customerName: session.fullName,
       billingAddress: {
         address1: session.address1,
         address2: session.address2,
-        city: session.rajaongkirCity || session.rajaongkirCityName || '',
-        province: session.rajaongkirProvince || '',
-        postalCode: session.rajaongkirPostalCode || '',
-        country: 'Indonesia',
+        city: session.countryCode === 'ID' ? (session.rajaongkirCity || session.rajaongkirCityName || '') : (session.city || ''),
+        province: session.countryCode === 'ID' ? (session.rajaongkirProvince || '') : (session.province || ''),
+        postalCode: session.countryCode === 'ID' ? (session.rajaongkirPostalCode || '') : (session.postalCode || ''),
+        country: session.country,
       },
-      itemDetails: buildItemDetails(session, shippingCents, `${selectedRate.courier.toUpperCase()} ${selectedRate.name}`),
+      itemDetails: provider === 'midtrans' ? buildItemDetails(session, shippingCents, shippingLabel) : undefined,
     });
 
     // Create order record (pending_payment status) WITH idempotency key
@@ -279,6 +399,7 @@ export async function POST(request: NextRequest) {
       orderNumber,
       customerId: customerId,
       status: 'pending_payment',
+      currency,
       subtotalCents,
       shippingCents,
       taxCents: 0,
@@ -290,16 +411,17 @@ export async function POST(request: NextRequest) {
       shippingPhone: session.phone,
       shippingAddress1: session.address1,
       shippingAddress2: session.address2,
-      shippingCity: session.rajaongkirCity || session.rajaongkirCityName || '',
-      shippingState: session.rajaongkirProvince,
-      shippingPostalCode: session.rajaongkirPostalCode || '',
-      shippingCountry: 'Indonesia',
+      shippingCity: session.countryCode === 'ID' ? (session.rajaongkirCity || session.rajaongkirCityName || '') : (session.city || ''),
+      shippingState: session.countryCode === 'ID' ? session.rajaongkirProvince : session.province,
+      shippingPostalCode: session.countryCode === 'ID' ? (session.rajaongkirPostalCode || '') : (session.postalCode || ''),
+      shippingCountry: session.country,
+      shippingCountryCode: session.countryCode,
       notes: session.notes,
     });
 
     // Create order items
     for (const item of session.cart.items) {
-      const priceCents = item.variant?.priceCents ?? item.product.priceCents;
+      const priceCents = resolveItemPriceCents(item, provider) ?? 0;
       await db.insert(orderItems).values({
         orderId,
         productId: item.productId,
@@ -317,8 +439,9 @@ export async function POST(request: NextRequest) {
     await db.insert(payments).values({
       orderId,
       status: 'pending',
+      currency,
       amountCents: totalCents,
-      provider: 'midtrans',
+      provider,
       providerTransactionId: transaction.providerTransactionId,
       idempotencyKey: idempotencyKeyPayment,
       metadata: {
@@ -341,11 +464,12 @@ export async function POST(request: NextRequest) {
           ? `${item.product.name} - ${item.variant.name}`
           : item.product.name,
         quantity: item.quantity,
-        priceCents: item.variant?.priceCents ?? item.product.priceCents,
+        priceCents: resolveItemPriceCents(item, provider) ?? 0,
       })),
       subtotalCents,
       shippingCents,
       totalCents,
+      currency,
       paymentUrl: transaction.redirectUrl,
       status: 'pending_payment',
     });

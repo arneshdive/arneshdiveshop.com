@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { mapAddressToCheckoutFields } from './map-address-to-checkout-fields';
 
 describe('mapAddressToCheckoutFields', () => {
-  it('combines first and last name into fullName and passes through address/destination fields', () => {
+  it('passes through first/last name and address/destination fields', () => {
     const result = mapAddressToCheckoutFields({
       firstName: 'Budi',
       lastName: 'Santoso',
@@ -19,7 +19,8 @@ describe('mapAddressToCheckoutFields', () => {
     });
 
     expect(result).toEqual({
-      fullName: 'Budi Santoso',
+      firstName: 'Budi',
+      lastName: 'Santoso',
       phone: '081234567890',
       address1: 'Jl. Merdeka No. 1',
       address2: 'Dekat masjid',
@@ -33,7 +34,7 @@ describe('mapAddressToCheckoutFields', () => {
     });
   });
 
-  it('falls back to empty strings for null phone and address2, and trims a missing last name', () => {
+  it('falls back to empty strings for null phone and address2, and keeps an empty last name as-is', () => {
     const result = mapAddressToCheckoutFields({
       firstName: 'Ani',
       lastName: '',
@@ -49,7 +50,8 @@ describe('mapAddressToCheckoutFields', () => {
       rajaongkirPostalCode: null,
     });
 
-    expect(result.fullName).toBe('Ani');
+    expect(result.firstName).toBe('Ani');
+    expect(result.lastName).toBe('');
     expect(result.phone).toBe('');
     expect(result.address2).toBe('');
   });

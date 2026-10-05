@@ -11,6 +11,9 @@ import { getProducts } from '@/lib/queries/products';
 import type { MockProduct } from '@/lib/data/mock-products';
 import type { Banner } from '@/lib/db/schema';
 import { computeProductPriceDisplay } from '@/lib/utils/product-pricing';
+import { getPathname } from '@/i18n/navigation';
+import { routing } from '@/i18n/routing';
+import { siteConfig } from '@/config/site';
 
 export const revalidate = 3600;
 
@@ -18,20 +21,35 @@ interface HomePageProps {
   params: Promise<{ locale: string }>;
 }
 
-// Mirrors the DivingTypeGrid section below (components/store/diving-type-grid.tsx),
-// which is the actual list of activities the catalog is organized around —
-// not just the two the hero banner happens to lead with.
+// Localized store metadata stays independent of live product availability.
 export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'home' });
+  const title = t('meta.title');
+  const description = t('meta.description');
+  const canonical = `${siteConfig.url}${getPathname({ href: '/', locale })}`;
+  const languages: Record<string, string> = {};
+  for (const loc of routing.locales) {
+    languages[loc] = `${siteConfig.url}${getPathname({ href: '/', locale: loc })}`;
+  }
+  languages['x-default'] = `${siteConfig.url}${getPathname({ href: '/', locale: routing.defaultLocale })}`;
+
   return {
-    title: t('meta.title'),
-    description: t('meta.description'),
+    title,
+    description,
+    alternates: { canonical, languages },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: siteConfig.name,
+      type: 'website',
+    },
   };
 }
 
 // Convert DB product to MockProduct format for ProductSection
-function toMockProduct(product: any): MockProduct {
+function toMockProduct(product: Awaited<ReturnType<typeof getProducts>>[number]): MockProduct {
   const badges: string[] = [];
   if (product.isNewArrival) badges.push('Baru');
   if (product.isOnSale) badges.push('Sale');
@@ -39,7 +57,7 @@ function toMockProduct(product: any): MockProduct {
   const priceInfo = computeProductPriceDisplay({
     priceCents: product.priceCents,
     compareAtPriceCents: product.compareAtPriceCents ?? null,
-    variants: (product.variants || []).map((v: any) => ({
+    variants: (product.variants || []).map((v) => ({
       isActive: v.isActive,
       priceCents: v.priceCents,
     })),
@@ -57,7 +75,7 @@ function toMockProduct(product: any): MockProduct {
     badges,
     image: product.images?.[0] || undefined,
     secondaryImage: product.images?.[1] || undefined,
-    variantId: (product.variants || []).find((v: any) => v.isActive)?.id,
+    variantId: (product.variants || []).find((v) => v.isActive)?.id,
   };
 }
 
@@ -152,7 +170,7 @@ export default async function HomePage() {
               <p className="text-lg tracking-tight mb-8">{t('community.description2')}</p>
               <AnimatedButton asChild variant="outline" size="sm">
                 <a
-                  href="https://www.instagram.com/arnesh.official"
+                  href={siteConfig.links.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -162,7 +180,7 @@ export default async function HomePage() {
               </AnimatedButton>
             </div>
             <a
-              href="https://www.instagram.com/arnesh.official"
+              href={siteConfig.links.instagram}
               target="_blank"
               rel="noopener noreferrer"
               className="text-neutral-400 text-sm hover:text-neutral-600 transition-colors hidden sm:flex items-center gap-1"

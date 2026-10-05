@@ -6,6 +6,7 @@ import { WaveDivider } from '@/components/layout/wave-divider';
 import { NewsletterForm } from '@/components/layout/newsletter-form';
 import { AnimatedUnderline } from '@/components/ui/animated-underline';
 import { AdminFooterLink } from '@/components/layout/admin-footer-link';
+import { siteConfig } from '@/config/site';
 
 const paymentBadges = [
   { label: 'Visa', icon: 'logos:visa' },
@@ -25,26 +26,90 @@ export async function Footer() {
         <div className="absolute inset-0 bg-neutral-900 rounded-b-[2.5rem] -z-10" style={{ bottom: '20px' }} />
         
         <div className="relative max-w-[1440px] mx-auto px-6 lg:px-12 pb-12 lg:pb-16">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-8">
-            {/* Contact */}
-            <div className="flex flex-col justify-end gap-2">
-              <a
-                href={`https://wa.me/${settings.whatsapp}`}
-                className="text-lg lg:text-xl font-medium text-neutral-200 underline underline-offset-4 hover:text-white transition-colors"
-              >
-                {settings.phone}
-              </a>
-              <a
-                href={`mailto:${settings.email}`}
-                className="text-lg lg:text-xl font-medium text-neutral-200 underline underline-offset-4 hover:text-white transition-colors"
-              >
-                {settings.email}
-              </a>
-              <span className="text-sm text-neutral-500 mt-2 whitespace-pre-line">{settings.businessHours}</span>
+          <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-12">
+            {/* Store identity */}
+            <div className="min-w-0">
+              <h2 className="text-[28px] lg:text-[32px] leading-tight font-semibold tracking-tight text-white [overflow-wrap:anywhere]">
+                {settings.storeName}
+              </h2>
+              <p className="mt-3 max-w-md text-sm leading-relaxed">
+                {t.rich('storeDescription', {
+                  masks: (chunks) => (
+                    <Link href="/produk?category=masker" className="text-neutral-300 underline underline-offset-4 hover:text-white transition-colors">{chunks}</Link>
+                  ),
+                  fins: (chunks) => (
+                    <Link href="/produk?category=fins" className="text-neutral-300 underline underline-offset-4 hover:text-white transition-colors">{chunks}</Link>
+                  ),
+                  wetsuits: (chunks) => (
+                    <Link href="/produk?category=wetsuit" className="text-neutral-300 underline underline-offset-4 hover:text-white transition-colors">{chunks}</Link>
+                  ),
+                  snorkels: (chunks) => (
+                    <Link href="/produk?category=snorkel" className="text-neutral-300 underline underline-offset-4 hover:text-white transition-colors">{chunks}</Link>
+                  ),
+                })}
+              </p>
             </div>
 
             {/* Newsletter */}
-            <NewsletterForm />
+            <div className="min-w-0 border-t border-neutral-800 pt-6 lg:self-stretch lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+              <NewsletterForm />
+            </div>
+          </div>
+
+          {/* Full-width store information */}
+          <div className="mt-8 grid gap-8 border-t border-neutral-800 pt-8 sm:grid-cols-2 lg:mt-10 lg:grid-cols-12 lg:gap-12">
+            <div className="min-w-0 lg:col-span-5">
+              <h3 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-300">{t('visit')}</h3>
+              {settings.addressFormatted && (
+                <address className="mt-3 max-w-md text-sm leading-relaxed not-italic whitespace-pre-line [overflow-wrap:anywhere]">
+                  {settings.addressFormatted}
+                </address>
+              )}
+            </div>
+            <div className="min-w-0 lg:col-span-4">
+              <h3 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-300">{t('contact')}</h3>
+              <div className="mt-3 flex flex-col items-start gap-2">
+                <a
+                  href={`https://wa.me/${settings.whatsapp}`}
+                  className="max-w-full text-base font-medium leading-relaxed text-neutral-200 [overflow-wrap:anywhere] hover:text-white hover:underline underline-offset-4 transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-4 focus-visible:ring-offset-neutral-900"
+                >
+                  {settings.phone}
+                </a>
+                <a
+                  href={`mailto:${settings.email}`}
+                  className="max-w-full text-base font-medium leading-relaxed text-neutral-200 [overflow-wrap:anywhere] hover:text-white hover:underline underline-offset-4 transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-4 focus-visible:ring-offset-neutral-900"
+                >
+                  {settings.email}
+                </a>
+              </div>
+              <div className="mt-4">
+                <p className="text-xs text-neutral-400">Instagram</p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                  {[
+                    { href: siteConfig.links.instagram, label: 'Arnesh Dive' },
+                    { href: siteConfig.links.haesteInstagram, label: 'Haeste Diveshop' },
+                  ].map((social) => (
+                    <a
+                      key={social.href}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Instagram · ${social.label}`}
+                      className="inline-flex min-w-0 items-center gap-1.5 text-neutral-300 hover:text-white transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-4 focus-visible:ring-offset-neutral-900"
+                    >
+                      <span>{social.label}</span>
+                      <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" className="size-3.5 shrink-0">
+                        <path d="M4 12 12 4M4 4h8v8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="min-w-0 lg:col-span-3">
+              <h3 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-300">{t('hours')}</h3>
+              <p className="mt-3 text-sm leading-relaxed whitespace-pre-line">{settings.businessHours}</p>
+            </div>
           </div>
         </div>
 
@@ -62,6 +127,7 @@ export async function Footer() {
               <Link href="/syarat" className="hover:text-white transition-colors"><AnimatedUnderline>{t('termsAndConditions')}</AnimatedUnderline></Link>
               <Link href="/faq" className="hover:text-white transition-colors"><AnimatedUnderline>{t('help')}</AnimatedUnderline></Link>
               <Link href="/kontak" className="hover:text-white transition-colors"><AnimatedUnderline>{t('contact')}</AnimatedUnderline></Link>
+              <Link href="/tentang-kami" className="hover:text-white transition-colors"><AnimatedUnderline>{t('about')}</AnimatedUnderline></Link>
               <AdminFooterLink />
             </div>
           </div>

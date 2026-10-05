@@ -14,6 +14,7 @@ export interface ServerCartItem {
     name: string;
     slug: string;
     priceCents: number;
+    priceCentsUsd: number | null;
     compareAtPriceCents: number | null;
     images: string[] | null;
     isActive: boolean;
@@ -22,6 +23,7 @@ export interface ServerCartItem {
     id: string;
     name: string;
     priceCents: number | null;
+    priceCentsUsd: number | null;
     isActive: boolean;
   } | null;
 }
@@ -47,6 +49,7 @@ export interface CartItem {
     name: string;
     slug: string;
     priceCents: number;
+    priceCentsUsd: number | null;
     compareAtPriceCents: number | null;
     images: string[] | null;
   };
@@ -54,6 +57,7 @@ export interface CartItem {
     id: string;
     name: string;
     priceCents: number | null;
+    priceCentsUsd: number | null;
   } | null;
 }
 
@@ -120,6 +124,7 @@ function normalizeCartItem(serverItem: ServerCartItem): CartItem {
       name: serverItem.product.name,
       slug: serverItem.product.slug,
       priceCents: serverItem.product.priceCents,
+      priceCentsUsd: serverItem.product.priceCentsUsd,
       compareAtPriceCents: serverItem.product.compareAtPriceCents,
       images: serverItem.product.images,
     },

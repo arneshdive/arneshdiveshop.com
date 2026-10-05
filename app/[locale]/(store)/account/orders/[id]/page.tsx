@@ -54,6 +54,7 @@ interface Order {
   taxCents: number;
   discountCents: number;
   totalCents: number;
+  currency: string;
   notes: string | null;
   createdAt: string;
   shippingFirstName: string;
@@ -291,7 +292,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               ))}
               <p className="text-sm text-amber-700">
-                {t('orders.detail.paymentBanner.transferExact', { amount: formatRupiah(order.totalCents) })}
+                {t('orders.detail.paymentBanner.transferExact', { amount: formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD') })}
               </p>
             </div>
           )}
@@ -323,7 +324,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
               <p className="text-sm text-amber-700">
-                {t('orders.detail.paymentBanner.payExact', { amount: formatRupiah(order.totalCents) })}
+                {t('orders.detail.paymentBanner.payExact', { amount: formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD') })}
               </p>
             </div>
           )}
@@ -383,9 +384,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 <p className="text-sm text-neutral-400">{t('orders.qtyLabel', { count: item.quantity })}</p>
               </div>
               <div className="text-right flex flex-col justify-center">
-                <p className="font-semibold tracking-tight">{formatRupiah(item.priceCents)}</p>
+                <p className="font-semibold tracking-tight">{formatRupiah(item.priceCents, order.currency as 'IDR' | 'USD')}</p>
                 {item.quantity > 1 && (
-                  <p className="text-sm text-neutral-400">{formatRupiah(item.priceCents * item.quantity)}</p>
+                  <p className="text-sm text-neutral-400">{formatRupiah(item.priceCents * item.quantity, order.currency as 'IDR' | 'USD')}</p>
                 )}
               </div>
             </div>
@@ -398,21 +399,21 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-neutral-500">{t('orders.detail.summary.subtotal')}</span>
-            <span className="font-medium">{formatRupiah(order.subtotalCents)}</span>
+            <span className="font-medium">{formatRupiah(order.subtotalCents, order.currency as 'IDR' | 'USD')}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-neutral-500">{t('orders.detail.summary.shipping')}</span>
-            <span className="font-medium">{order.shippingCents > 0 ? formatRupiah(order.shippingCents) : t('orders.detail.summary.free')}</span>
+            <span className="font-medium">{order.shippingCents > 0 ? formatRupiah(order.shippingCents, order.currency as 'IDR' | 'USD') : t('orders.detail.summary.free')}</span>
           </div>
           {order.discountCents > 0 && (
             <div className="flex justify-between text-sm text-green-600">
               <span>{t('orders.detail.summary.discount')}</span>
-              <span className="font-medium">-{formatRupiah(order.discountCents)}</span>
+              <span className="font-medium">-{formatRupiah(order.discountCents, order.currency as 'IDR' | 'USD')}</span>
             </div>
           )}
           <div className="flex justify-between text-lg font-semibold pt-3 border-t border-neutral-200">
             <span>{t('orders.total')}</span>
-            <span>{formatRupiah(order.totalCents)}</span>
+            <span>{formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD')}</span>
           </div>
         </div>
       </div>

@@ -16,14 +16,21 @@ export interface CheckoutSessionWithCart {
   address1: string;
   address2: string | null;
   notes: string | null;
-  // RajaOngkir destination
-  rajaongkirCityId: string;
+  // Destination country - 'ID' uses the RajaOngkir fields, else the generic ones
+  countryCode: string;
+  country: string;
+  // RajaOngkir destination (domestic only)
+  rajaongkirCityId: string | null;
   rajaongkirCityName: string | null;
   rajaongkirProvince: string | null;
   rajaongkirCity: string | null;
   rajaongkirDistrict: string | null;
   rajaongkirSubdistrict: string | null;
   rajaongkirPostalCode: string | null;
+  // Generic destination (international only)
+  city: string | null;
+  province: string | null;
+  postalCode: string | null;
   // Totals
   shippingMethod: string | null;
   subtotalCents: number | null;
@@ -46,19 +53,8 @@ export interface CreateCheckoutSessionInput {
   address1: string;
   address2?: string;
   notes?: string;
-  rajaongkirCityId: string;
-  rajaongkirCityName?: string;
-  rajaongkirProvince?: string;
-  rajaongkirCity?: string;
-  rajaongkirDistrict?: string;
-  rajaongkirSubdistrict?: string;
-  rajaongkirPostalCode?: string;
-  shippingMethod?: string;
-}
-
-export interface UpdateCheckoutSessionInput {
-  shippingMethod?: string;
-  notes?: string;
+  countryCode?: string;
+  country?: string;
   rajaongkirCityId?: string;
   rajaongkirCityName?: string;
   rajaongkirProvince?: string;
@@ -66,6 +62,27 @@ export interface UpdateCheckoutSessionInput {
   rajaongkirDistrict?: string;
   rajaongkirSubdistrict?: string;
   rajaongkirPostalCode?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  shippingMethod?: string;
+}
+
+export interface UpdateCheckoutSessionInput {
+  shippingMethod?: string;
+  notes?: string;
+  countryCode?: string;
+  country?: string;
+  rajaongkirCityId?: string;
+  rajaongkirCityName?: string;
+  rajaongkirProvince?: string;
+  rajaongkirCity?: string;
+  rajaongkirDistrict?: string;
+  rajaongkirSubdistrict?: string;
+  rajaongkirPostalCode?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
 }
 
 /**
@@ -89,13 +106,18 @@ export async function createCheckoutSession(
       address1: data.address1,
       address2: data.address2 || null,
       notes: data.notes || null,
-      rajaongkirCityId: data.rajaongkirCityId,
+      countryCode: data.countryCode || undefined,
+      country: data.country || undefined,
+      rajaongkirCityId: data.rajaongkirCityId || null,
       rajaongkirCityName: data.rajaongkirCityName || null,
       rajaongkirProvince: data.rajaongkirProvince || null,
       rajaongkirCity: data.rajaongkirCity || null,
       rajaongkirDistrict: data.rajaongkirDistrict || null,
       rajaongkirSubdistrict: data.rajaongkirSubdistrict || null,
       rajaongkirPostalCode: data.rajaongkirPostalCode || null,
+      city: data.city || null,
+      province: data.province || null,
+      postalCode: data.postalCode || null,
       shippingMethod: data.shippingMethod || null,
       expiresAt,
     })

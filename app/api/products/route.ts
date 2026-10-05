@@ -21,6 +21,7 @@ const createProductSchema = z.object({
   sku: z.string().max(100).optional(),
   description: z.string().max(5000).optional(),
   priceCents: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional(),
+  priceCentsUsd: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional().nullable(),
   compareAtPriceCents: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional().nullable(),
   costPriceCents: z.number().int().min(0).max(2147483647, 'Harga terlalu besar').optional().nullable(),
   categoryId: z.string().min(1, 'Kategori wajib dipilih'),

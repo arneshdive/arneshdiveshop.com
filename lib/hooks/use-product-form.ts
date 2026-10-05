@@ -40,6 +40,7 @@ export interface ProductFormData {
   category: string;
   brand: string;
   price: string;
+  priceUsd: string;
   compareAtPrice: string;
   sku: string;
   weightGrams: string;
@@ -66,6 +67,7 @@ export function useProductForm() {
     category: '',
     brand: '',
     price: '',
+    priceUsd: '',
     compareAtPrice: '',
     sku: '',
     weightGrams: '500',
@@ -270,6 +272,7 @@ export function useProductForm() {
     setFormData(prev => ({
       ...prev,
       price: '',
+      priceUsd: '',
       compareAtPrice: '',
       sku: '',
     }));

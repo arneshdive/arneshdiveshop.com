@@ -21,6 +21,7 @@ type Product = {
   sku: string | null;
   description: string | null;
   priceCents: number;
+  priceCentsUsd: number | null;
   compareAtPriceCents: number | null;
   weightGrams: number | null;
   categoryId: string;
@@ -129,6 +130,7 @@ export default function EditProductPage() {
         category: product.categoryId,
         brand: product.brandId || '',
         price: (product.priceCents / 100).toString(),
+        priceUsd: product.priceCentsUsd ? (product.priceCentsUsd / 100).toString() : '',
         compareAtPrice: product.compareAtPriceCents ? (product.compareAtPriceCents / 100).toString() : '',
         sku: product.sku || '',
         weightGrams: product.weightGrams?.toString() || '500',
@@ -184,12 +186,16 @@ export default function EditProductPage() {
     const compareAtPriceCents = formData.compareAtPrice
       ? Math.round(parseFloat(formData.compareAtPrice.replace(/[^\d.]/g, '')) * 100)
       : null;
+    const priceCentsUsd = formData.priceUsd
+      ? Math.round(parseFloat(formData.priceUsd.replace(/[^\d.]/g, '')) * 100)
+      : null;
 
     const payload = {
       name: formData.name,
       description: formData.description || undefined,
       sku: formData.sku || undefined,
       priceCents,
+      priceCentsUsd,
       compareAtPriceCents,
       categoryId: formData.category,
       brandId: formData.brand || null,

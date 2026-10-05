@@ -2,6 +2,7 @@ import createIntlMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySession, type SessionPayload } from '@/lib/auth/session';
 import { routing } from '@/i18n/routing';
+import { canonicalCategorySlug } from '@/lib/constants/category-aliases';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -32,6 +33,7 @@ const LOCALIZED_ROOT_PATHS = [
   '/blog',
   '/faq',
   '/kontak',
+  '/tentang-kami',
   '/privasi',
   '/syarat',
   '/cart',
@@ -71,6 +73,17 @@ function isLocalizedRoute(pathname: string) {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Redirect before locale negotiation so legacy filters always get a
+  // permanent redirect, retaining the requested locale and other parameters.
+  if (stripLocalePrefix(pathname) === '/produk') {
+    const category = request.nextUrl.searchParams.get('category');
+    if (category && canonicalCategorySlug(category) !== category) {
+      const destination = request.nextUrl.clone();
+      destination.searchParams.set('category', canonicalCategorySlug(category));
+      return NextResponse.redirect(destination, 308);
+    }
+  }
 
   // Markdown for Agents: agents that send Accept: text/markdown get a
   // markdown rendering of the homepage instead of HTML. Rewritten (not

@@ -13,13 +13,20 @@
     "language": "Langue"
   },
   "footer": {
+    "visit": "Rendez-nous visite",
+    "hours": "Horaires d’ouverture",
+    "storeDescription": "Votre magasin de plongée à Mataram, Lombok, livre dans toute l’Indonésie. Découvrez nos <masks>masques de plongée</masks>, <fins>palmes</fins>, <wetsuits>combinaisons</wetsuits> et <snorkels>tubas</snorkels> pour l’apnée, la plongée et le snorkeling.",
     "copyright": "{year} Arnesh Dive. Tous droits réservés.",
     "privacyPolicy": "Politique de Confidentialité",
     "termsAndConditions": "Conditions Générales",
     "help": "Aide",
-    "contact": "Contact"
+    "contact": "Contact",
+    "about": "À Propos"
   },
   "newsletter": {
+    "description": "Découvrez nos dernières offres et notre matériel de plongée.",
+    "emailLabel": "Adresse e-mail",
+    "subscribing": "Inscription en cours…",
     "heading": "Recevez les dernières promotions",
     "emailPlaceholder": "Votre e-mail",
     "subscribeAria": "S'abonner",
@@ -491,7 +498,13 @@
     "subtitle": "Complétez vos informations pour continuer",
     "preparingSession": "Préparation de la commande...",
     "processingPayment": "Traitement du paiement...",
-    "continueToPayment": "Continuer vers le Paiement",
+    "paymentMethodTitle": "Mode de Paiement",
+    "payLocal": "Payer avec Midtrans",
+    "payLocalHint": "Carte, virement, e-wallet, QRIS",
+    "payPaypal": "Payer avec PayPal",
+    "payPaypalHint": "Pour le paiement international",
+    "paypalUnavailable": "Certains articles du panier ne sont pas encore disponibles pour le paiement international (PayPal).",
+    "midtransUnavailable": "Midtrans n'est disponible que pour les livraisons nationales (Indonésie).",
     "backToCart": "Retour au Panier",
     "paymentTab": {
       "title": "Traitement...",
@@ -502,7 +515,10 @@
       "incompleteDescription": "Les champs suivants sont obligatoires : {fields}",
       "fieldEmail": "E-mail",
       "fieldPhone": "Numéro de Téléphone",
-      "fieldFullName": "Nom Complet",
+      "fieldFirstName": "Prénom",
+      "fieldLastName": "Nom de Famille",
+      "fieldIntlCity": "Ville",
+      "fieldIntlPostalCode": "Code Postal",
       "fieldDestination": "Quartier/District",
       "fieldAddress": "Adresse Complète"
     },
@@ -520,6 +536,12 @@
     },
     "contact": {
       "title": "Informations de Contact",
+      "firstNameLabel": "Prénom",
+      "firstNamePlaceholder": "Votre prénom",
+      "firstNameRequired": "Le prénom est requis",
+      "lastNameLabel": "Nom de Famille",
+      "lastNamePlaceholder": "Votre nom de famille",
+      "lastNameRequired": "Le nom de famille est requis",
       "emailLabel": "E-mail",
       "emailPlaceholder": "email@exemple.com",
       "emailRequired": "L'e-mail est requis",
@@ -531,9 +553,15 @@
     },
     "shipping": {
       "title": "Adresse de Livraison",
-      "fullNameLabel": "Nom Complet",
-      "fullNamePlaceholder": "Nom du destinataire",
-      "fullNameRequired": "Le nom complet est requis",
+      "countryLabel": "Pays de Destination",
+      "intlCityLabel": "Ville",
+      "intlCityPlaceholder": "Nom de la ville",
+      "intlCityRequired": "La ville est requise",
+      "intlStateLabel": "État/Province",
+      "intlStatePlaceholder": "Nom de l'état ou de la province",
+      "intlPostalCodeLabel": "Code Postal",
+      "intlPostalCodePlaceholder": "Code postal",
+      "intlPostalCodeRequired": "Le code postal est requis",
       "destinationLabel": "Quartier/District",
       "destinationPlaceholder": "Rechercher un quartier ou un district...",
       "destinationRequired": "Le quartier/district est requis",
@@ -646,15 +674,15 @@
   },
   "home": {
     "meta": {
-      "title": "Freediving, Plongée, Chasse sous-marine, Surf & Natation",
-      "description": "Équipement de freediving, plongée, chasse sous-marine, surf et natation, authentique chez Arnesh Dive. Qualité garantie, livraison partout en Indonésie."
+      "title": "Magasin de plongée à Lombok — Livraison en Indonésie",
+      "description": "Achetez du matériel original d’apnée, de plongée et de snorkeling chez Arnesh Dive à Mataram, Lombok. Livraison dans toute l’Indonésie."
     },
     "hero": {
-      "eyebrow": "PLONGÉE · FREEDIVING · CHASSE SOUS-MARINE",
+      "eyebrow": "ARNESH DIVE · MATARAM, LOMBOK",
       "title": "Explorez les profondeurs.\nPlongez en toute confiance.",
-      "subtitle": "Équipement de freediving et de plongée de marques fiables, pour tous les niveaux de plongeurs.",
+      "subtitle": "Du matériel d’apnée et de plongée de marques de confiance. Depuis Lombok, pour vos aventures sous-marines à travers l’Indonésie.",
       "ctaText": "Tout le Catalogue",
-      "fallbackTitle": "Explorez les profondeurs",
+      "fallbackTitle": "Explorez les profondeurs.\nPlongez en toute confiance.",
       "imageAltFallback": "Image principale",
       "ctaFallback": "Voir la Collection",
       "goToSlide": "Aller à la diapositive {number}"
@@ -848,6 +876,8 @@
       "emailLabel": "E-mail",
       "emailNote": "Réponse dans un délai de 1 à 2 jours ouvrables",
       "hoursLabel": "Heures d'Ouverture",
+      "addressLabel": "Adresse de la Boutique",
+      "storeRelationship": "Arnesh Dive et la boutique Haeste Diveshop appartiennent aux mêmes propriétaires.",
       "instagramLabel": "Instagram",
       "quickHelp": "Besoin d'aide rapidement ?",
       "chatWhatsapp": "Discuter sur WhatsApp",
@@ -1007,6 +1037,33 @@
       "changes": {
         "heading": "10. Modifications de cette Politique",
         "body": "Nous nous réservons le droit de modifier ces conditions générales à tout moment. Les modifications prennent effet immédiatement après leur publication sur le site web. La poursuite de l'utilisation après les modifications est considérée comme une acceptation."
+      }
+    }
+  },
+  "tentangKami": {
+    "meta": {
+      "title": "À Propos | Arnesh Dive",
+      "description": "Découvrez Arnesh Dive, boutique et marque de matériel de plongée à Mataram, Lombok, et Haeste Diveshop, notre boutique officielle aux mêmes propriétaires."
+    },
+    "header": {
+      "title": "À Propos",
+      "description": "Arnesh Dive est une boutique et une marque de matériel d'apnée et de plongée sous-marine à Mataram, sur l'île de Lombok, en Indonésie. Haeste Diveshop est notre boutique officielle et appartient aux mêmes propriétaires."
+    },
+    "sections": {
+      "brand": {
+        "heading": "Arnesh Dive",
+        "body": "Arnesh Dive propose du matériel premium de plongée libre et de plongée sous-marine pour tous les niveaux, du débutant au professionnel. Ce site est notre canal officiel pour le catalogue de produits, les commandes et les dernières actualités."
+      },
+      "seller": {
+        "heading": "Arnesh Dive et Haeste Diveshop",
+        "body": "Arnesh Dive est vendu via Haeste Diveshop sur les marketplaces — une boutique officielle appartenant aux mêmes propriétaires que ce site. Si vous trouvez des produits Arnesh sur Shopee ou Tokopedia sous le nom de boutique « Haeste Diveshop », il s'agit de notre canal officiel, et non d'un revendeur tiers."
+      },
+      "channels": {
+        "heading": "Nos Canaux Officiels",
+        "website": "Site Web",
+        "shopee": "Shopee",
+        "tokopedia": "Tokopedia",
+        "instagram": "Instagram"
       }
     }
   },

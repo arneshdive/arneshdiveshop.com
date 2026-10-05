@@ -13,13 +13,20 @@
     "language": "Bahasa"
   },
   "footer": {
+    "visit": "Kunjungi kami",
+    "hours": "Jam operasional",
+    "storeDescription": "Toko alat diving di Mataram, Lombok, dengan pengiriman ke seluruh Indonesia. Temukan <masks>masker selam</masks>, <fins>fins</fins>, <wetsuits>wetsuit</wetsuits>, dan <snorkels>snorkel</snorkels> untuk freediving, scuba diving, dan snorkeling.",
     "copyright": "{year} Arnesh Dive. Seluruh hak cipta dilindungi.",
     "privacyPolicy": "Kebijakan Privasi",
     "termsAndConditions": "Syarat & Ketentuan",
     "help": "Bantuan",
-    "contact": "Kontak"
+    "contact": "Kontak",
+    "about": "Tentang Kami"
   },
   "newsletter": {
+    "description": "Ikuti kabar terbaru tentang promo dan perlengkapan diving kami.",
+    "emailLabel": "Alamat email",
+    "subscribing": "Mendaftarkan email…",
     "heading": "Dapatkan info promo terbaru",
     "emailPlaceholder": "Email Anda",
     "subscribeAria": "Langganan",
@@ -491,7 +498,13 @@
     "subtitle": "Lengkapi informasi untuk melanjutkan",
     "preparingSession": "Menyiapkan checkout...",
     "processingPayment": "Memproses pembayaran...",
-    "continueToPayment": "Lanjut ke Pembayaran",
+    "paymentMethodTitle": "Metode Pembayaran",
+    "payLocal": "Bayar dengan Midtrans",
+    "payLocalHint": "Kartu, transfer bank, e-wallet, QRIS",
+    "payPaypal": "Bayar dengan PayPal",
+    "payPaypalHint": "Untuk pembayaran internasional",
+    "paypalUnavailable": "Sebagian produk di keranjang belum tersedia untuk pembayaran internasional (PayPal).",
+    "midtransUnavailable": "Midtrans hanya tersedia untuk pengiriman dalam negeri (Indonesia).",
     "backToCart": "Kembali ke Keranjang",
     "paymentTab": {
       "title": "Memproses...",
@@ -502,7 +515,10 @@
       "incompleteDescription": "Field berikut harus diisi: {fields}",
       "fieldEmail": "Email",
       "fieldPhone": "No. Telepon",
-      "fieldFullName": "Nama Lengkap",
+      "fieldFirstName": "Nama Depan",
+      "fieldLastName": "Nama Belakang",
+      "fieldIntlCity": "Kota",
+      "fieldIntlPostalCode": "Kode Pos",
       "fieldDestination": "Kelurahan/Kecamatan",
       "fieldAddress": "Alamat Lengkap"
     },
@@ -520,6 +536,12 @@
     },
     "contact": {
       "title": "Informasi Kontak",
+      "firstNameLabel": "Nama Depan",
+      "firstNamePlaceholder": "Nama depan Anda",
+      "firstNameRequired": "Nama depan wajib diisi",
+      "lastNameLabel": "Nama Belakang",
+      "lastNamePlaceholder": "Nama belakang Anda",
+      "lastNameRequired": "Nama belakang wajib diisi",
       "emailLabel": "Email",
       "emailPlaceholder": "email@contoh.com",
       "emailRequired": "Email wajib diisi",
@@ -531,9 +553,15 @@
     },
     "shipping": {
       "title": "Alamat Pengiriman",
-      "fullNameLabel": "Nama Lengkap",
-      "fullNamePlaceholder": "Nama penerima paket",
-      "fullNameRequired": "Nama lengkap wajib diisi",
+      "countryLabel": "Negara Tujuan",
+      "intlCityLabel": "Kota",
+      "intlCityPlaceholder": "Nama kota",
+      "intlCityRequired": "Kota wajib diisi",
+      "intlStateLabel": "Provinsi/State",
+      "intlStatePlaceholder": "Nama provinsi/state",
+      "intlPostalCodeLabel": "Kode Pos",
+      "intlPostalCodePlaceholder": "Kode pos",
+      "intlPostalCodeRequired": "Kode pos wajib diisi",
       "destinationLabel": "Kelurahan/Kecamatan",
       "destinationPlaceholder": "Cari kelurahan atau kecamatan...",
       "destinationRequired": "Kelurahan/Kecamatan wajib dipilih",
@@ -646,15 +674,15 @@
   },
   "home": {
     "meta": {
-      "title": "Freediving, Scuba, Spearfishing, Surfing & Swimming",
-      "description": "Perlengkapan freediving, scuba, spearfishing, surfing & swimming original dari Arnesh Dive. Kualitas terjamin, kirim seluruh Indonesia."
+      "title": "Toko Alat Diving Lombok — Kirim Seluruh Indonesia",
+      "description": "Belanja alat diving original di Arnesh Dive, Mataram, Lombok. Temukan perlengkapan freediving, scuba diving, dan snorkeling, kirim ke seluruh Indonesia."
     },
     "hero": {
-      "eyebrow": "SCUBA · FREEDIVING · SPEARFISHING",
+      "eyebrow": "ARNESH DIVE · MATARAM, LOMBOK",
       "title": "Explore the Deep.\nDive with Confidence.",
-      "subtitle": "Perlengkapan freediving & scuba dari merek tepercaya, untuk setiap level penyelam.",
+      "subtitle": "Perlengkapan freediving & scuba dari merek tepercaya. Dari Lombok, siap menemani petualangan Anda di seluruh Indonesia.",
       "ctaText": "Semua Katalog",
-      "fallbackTitle": "Berjelajah di kedalaman",
+      "fallbackTitle": "Explore the Deep.\nDive with Confidence.",
       "imageAltFallback": "Hero",
       "ctaFallback": "Lihat Koleksi",
       "goToSlide": "Go to slide {number}"
@@ -848,6 +876,8 @@
       "emailLabel": "Email",
       "emailNote": "Respon dalam 1-2 hari kerja",
       "hoursLabel": "Jam Operasional",
+      "addressLabel": "Alamat Toko",
+      "storeRelationship": "Arnesh Dive dan storefront Haeste Diveshop memiliki pemilik yang sama.",
       "instagramLabel": "Instagram",
       "quickHelp": "Butuh bantuan cepat?",
       "chatWhatsapp": "Chat WhatsApp",
@@ -1007,6 +1037,33 @@
       "changes": {
         "heading": "10. Perubahan Kebijakan",
         "body": "Kami berhak mengubah syarat dan ketentuan ini sewaktu-waktu. Perubahan akan efektif segera setelah dipublikasikan di website. Penggunaan berkelanjutan setelah perubahan dianggap sebagai persetujuan."
+      }
+    }
+  },
+  "tentangKami": {
+    "meta": {
+      "title": "Tentang Kami | Arnesh Dive",
+      "description": "Kenali Arnesh Dive, toko dan brand perlengkapan diving di Mataram, Lombok, serta Haeste Diveshop, nama toko resmi kami dengan pemilik yang sama."
+    },
+    "header": {
+      "title": "Tentang Kami",
+      "description": "Arnesh Dive adalah toko dan brand perlengkapan freediving dan scuba diving di Mataram, Lombok, Indonesia. Haeste Diveshop adalah nama toko resmi kami dengan pemilik yang sama."
+    },
+    "sections": {
+      "brand": {
+        "heading": "Arnesh Dive",
+        "body": "Arnesh Dive menghadirkan perlengkapan freediving dan scuba diving premium untuk setiap level penyelam, dari pemula hingga profesional. Website ini adalah channel resmi kami untuk katalog produk, pemesanan, dan informasi terbaru."
+      },
+      "seller": {
+        "heading": "Arnesh Dive & Haeste Diveshop",
+        "body": "Arnesh Dive dijual melalui Haeste Diveshop di marketplace — toko resmi dengan pemilik yang sama dengan website ini. Jika Anda menemukan produk Arnesh di Shopee atau Tokopedia dengan nama toko \"Haeste Diveshop\", itu adalah channel resmi kami, bukan reseller pihak ketiga."
+      },
+      "channels": {
+        "heading": "Channel Resmi Kami",
+        "website": "Website",
+        "shopee": "Shopee",
+        "tokopedia": "Tokopedia",
+        "instagram": "Instagram"
       }
     }
   },

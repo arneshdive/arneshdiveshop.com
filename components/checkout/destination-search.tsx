@@ -10,6 +10,7 @@ interface Destination {
   province: string;
   city?: string;
   district?: string;
+  postalCode?: string;
   fullName: string;
 }
 

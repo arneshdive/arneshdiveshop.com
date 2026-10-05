@@ -13,13 +13,20 @@
     "language": "言語"
   },
   "footer": {
+    "visit": "店舗所在地",
+    "hours": "営業時間",
+    "storeDescription": "ロンボク島マタラムのダイビング用品店。インドネシア全土へ配送しています。フリーダイビング、スキューバダイビング、シュノーケリング用の<masks>ダイビングマスク</masks>、<fins>フィン</fins>、<wetsuits>ウェットスーツ</wetsuits>、<snorkels>シュノーケル</snorkels>をご覧ください。",
     "copyright": "{year} Arnesh Dive. All rights reserved.",
     "privacyPolicy": "プライバシーポリシー",
     "termsAndConditions": "利用規約",
     "help": "ヘルプ",
-    "contact": "お問い合わせ"
+    "contact": "お問い合わせ",
+    "about": "私たちについて"
   },
   "newsletter": {
+    "description": "最新のキャンペーンやダイビング用品の情報をお届けします。",
+    "emailLabel": "メールアドレス",
+    "subscribing": "登録中…",
     "heading": "最新のお得な情報をお届けします",
     "emailPlaceholder": "メールアドレス",
     "subscribeAria": "登録",
@@ -491,7 +498,13 @@
     "subtitle": "情報を入力して続行してください",
     "preparingSession": "チェックアウトを準備中...",
     "processingPayment": "支払いを処理中...",
-    "continueToPayment": "お支払いに進む",
+    "paymentMethodTitle": "支払い方法",
+    "payLocal": "Midtransで支払う",
+    "payLocalHint": "カード・銀行振込・電子ウォレット・QRIS",
+    "payPaypal": "PayPalで支払う",
+    "payPaypalHint": "国際決済用",
+    "paypalUnavailable": "カート内の一部の商品は国際決済(PayPal)にまだ対応していません。",
+    "midtransUnavailable": "Midtransは国内配送(インドネシア)のみご利用いただけます。",
     "backToCart": "カートに戻る",
     "paymentTab": {
       "title": "処理中...",
@@ -502,7 +515,10 @@
       "incompleteDescription": "以下の項目を入力してください: {fields}",
       "fieldEmail": "メールアドレス",
       "fieldPhone": "電話番号",
-      "fieldFullName": "氏名",
+      "fieldFirstName": "名",
+      "fieldLastName": "姓",
+      "fieldIntlCity": "市区町村",
+      "fieldIntlPostalCode": "郵便番号",
       "fieldDestination": "地区/郡",
       "fieldAddress": "住所"
     },
@@ -520,6 +536,12 @@
     },
     "contact": {
       "title": "連絡先情報",
+      "firstNameLabel": "名",
+      "firstNamePlaceholder": "名を入力",
+      "firstNameRequired": "名は必須です",
+      "lastNameLabel": "姓",
+      "lastNamePlaceholder": "姓を入力",
+      "lastNameRequired": "姓は必須です",
       "emailLabel": "メールアドレス",
       "emailPlaceholder": "email@example.com",
       "emailRequired": "メールアドレスは必須です",
@@ -531,9 +553,15 @@
     },
     "shipping": {
       "title": "配送先住所",
-      "fullNameLabel": "氏名",
-      "fullNamePlaceholder": "受取人の氏名",
-      "fullNameRequired": "氏名は必須です",
+      "countryLabel": "配送先の国",
+      "intlCityLabel": "市区町村",
+      "intlCityPlaceholder": "市区町村名",
+      "intlCityRequired": "市区町村は必須です",
+      "intlStateLabel": "州/県",
+      "intlStatePlaceholder": "州または県名",
+      "intlPostalCodeLabel": "郵便番号",
+      "intlPostalCodePlaceholder": "郵便番号",
+      "intlPostalCodeRequired": "郵便番号は必須です",
       "destinationLabel": "地区/郡",
       "destinationPlaceholder": "地区または郡を検索...",
       "destinationRequired": "地区/郡を選択してください",
@@ -646,15 +674,15 @@
   },
   "home": {
     "meta": {
-      "title": "フリーダイビング、スキューバ、スピアフィッシング、サーフィン&スイミング",
-      "description": "Arnesh Diveのフリーダイビング、スキューバ、スピアフィッシング、サーフィン、スイミング用品。品質保証、インドネシア全土に配送。"
+      "title": "ロンボク島のダイビング用品店 — インドネシア全土へ配送",
+      "description": "ロンボク島マタラムのArnesh Diveで正規品のダイビング用品を。フリーダイビング、スキューバダイビング、シュノーケリング用品をインドネシア全土へお届けします。"
     },
     "hero": {
-      "eyebrow": "スキューバ・フリーダイビング・スピアフィッシング",
+      "eyebrow": "ARNESH DIVE · ロンボク島マタラム",
       "title": "深海を探検しよう。\n自信を持って潜ろう。",
-      "subtitle": "信頼できるブランドのフリーダイビング&スキューバ用品を、すべてのレベルのダイバーへ。",
+      "subtitle": "信頼できるブランドのフリーダイビング＆スキューバ用品。ロンボク島から、インドネシア全土の水中の冒険へ。",
       "ctaText": "すべてのカタログ",
-      "fallbackTitle": "深海を探検する",
+      "fallbackTitle": "深海を探検しよう。\n自信を持って潜ろう。",
       "imageAltFallback": "ヒーロー画像",
       "ctaFallback": "コレクションを見る",
       "goToSlide": "スライド{number}へ移動"
@@ -848,6 +876,8 @@
       "emailLabel": "メールアドレス",
       "emailNote": "1〜2営業日以内に返信します",
       "hoursLabel": "営業時間",
+      "addressLabel": "店舗所在地",
+      "storeRelationship": "Arnesh DiveとHaeste Diveshopは同じ運営者による店舗です。",
       "instagramLabel": "Instagram",
       "quickHelp": "すぐにサポートが必要ですか?",
       "chatWhatsapp": "WhatsAppでチャット",
@@ -1007,6 +1037,33 @@
       "changes": {
         "heading": "10. 本規約の変更",
         "body": "当社は、いつでも本利用規約を変更する権利を有します。変更はウェブサイトに公開された時点で直ちに効力を生じます。変更後も継続してご利用いただく場合、変更に同意したものとみなされます。"
+      }
+    }
+  },
+  "tentangKami": {
+    "meta": {
+      "title": "私たちについて | Arnesh Dive",
+      "description": "ロンボク島マタラムのダイビング用品店・ブランドArnesh Diveと、同じ運営者による公式店舗Haeste Diveshopをご紹介します。"
+    },
+    "header": {
+      "title": "私たちについて",
+      "description": "Arnesh Diveはインドネシアのロンボク島マタラムにあるフリーダイビング・スキューバダイビング用品の店舗・ブランドです。Haeste Diveshopは同じ運営者による公式店舗です。"
+    },
+    "sections": {
+      "brand": {
+        "heading": "Arnesh Dive",
+        "body": "Arnesh Diveは初心者からプロまで、あらゆるレベルのダイバーに向けた高品質なフリーダイビング・スキューバダイビング用品を提供しています。このウェブサイトは商品カタログ、ご注文、最新情報のための公式チャンネルです。"
+      },
+      "seller": {
+        "heading": "Arnesh DiveとHaeste Diveshop",
+        "body": "Arnesh DiveはマーケットプレイスではHaeste Diveshopとして販売されています。これは本ウェブサイトと同じ運営者による公式店舗です。ShopeeやTokopediaで「Haeste Diveshop」という店舗名のArnesh製品を見かけた場合、それは第三者の転売業者ではなく、私たちの公式チャンネルです。"
+      },
+      "channels": {
+        "heading": "公式チャンネル",
+        "website": "ウェブサイト",
+        "shopee": "Shopee",
+        "tokopedia": "Tokopedia",
+        "instagram": "Instagram"
       }
     }
   },

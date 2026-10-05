@@ -46,6 +46,7 @@ interface ApiOrder {
   taxCents: number;
   discountCents: number;
   totalCents: number;
+  currency: string;
   createdAt: string;
   updatedAt: string;
   shippingFirstName: string;
@@ -511,7 +512,7 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
                   {item.variant?.name && <>{item.variant.name} · </>}Qty: {item.quantity}
                 </p>
               </div>
-              <p className="text-sm font-medium text-neutral-700">{formatRupiah(item.priceCents * item.quantity)}</p>
+              <p className="text-sm font-medium text-neutral-700">{formatRupiah(item.priceCents * item.quantity, order.currency as 'IDR' | 'USD')}</p>
             </div>
             );
           })}
@@ -523,21 +524,21 @@ export function OrderDetail({ order, onStatusUpdate }: OrderDetailProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-neutral-500">Subtotal</span>
-            <span className="text-neutral-700">{formatRupiah(order.subtotalCents)}</span>
+            <span className="text-neutral-700">{formatRupiah(order.subtotalCents, order.currency as 'IDR' | 'USD')}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-neutral-500">Ongkos Kirim</span>
-            <span className="text-neutral-700">{order.shippingCents === 0 ? 'Gratis' : formatRupiah(order.shippingCents)}</span>
+            <span className="text-neutral-700">{order.shippingCents === 0 ? 'Gratis' : formatRupiah(order.shippingCents, order.currency as 'IDR' | 'USD')}</span>
           </div>
           {order.discountCents > 0 && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-neutral-500">Diskon</span>
-              <span className="text-green-600">-{formatRupiah(order.discountCents)}</span>
+              <span className="text-green-600">-{formatRupiah(order.discountCents, order.currency as 'IDR' | 'USD')}</span>
             </div>
           )}
           <div className="pt-3 flex items-center justify-between">
             <span className="font-medium tracking-tight text-neutral-900">Total</span>
-            <span className="text-lg font-semibold text-neutral-900">{formatRupiah(order.totalCents)}</span>
+            <span className="text-lg font-semibold text-neutral-900">{formatRupiah(order.totalCents, order.currency as 'IDR' | 'USD')}</span>
           </div>
         </div>
       </div>

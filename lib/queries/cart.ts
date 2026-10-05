@@ -14,6 +14,7 @@ export interface CartItemWithProduct {
     name: string;
     slug: string;
     priceCents: number;
+    priceCentsUsd: number | null;
     compareAtPriceCents: number | null;
     images: string[] | null;
     isActive: boolean;
@@ -23,6 +24,7 @@ export interface CartItemWithProduct {
     id: string;
     name: string;
     priceCents: number | null;
+    priceCentsUsd: number | null;
     isActive: boolean;
   } | null;
 }
@@ -85,6 +87,7 @@ export async function getCartWithItems(cartId: string): Promise<CartWithItems | 
               name: true,
               slug: true,
               priceCents: true,
+              priceCentsUsd: true,
               compareAtPriceCents: true,
               images: true,
               isActive: true,
@@ -96,6 +99,7 @@ export async function getCartWithItems(cartId: string): Promise<CartWithItems | 
               id: true,
               name: true,
               priceCents: true,
+              priceCentsUsd: true,
               isActive: true,
             },
           },

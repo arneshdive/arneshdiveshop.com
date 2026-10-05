@@ -99,9 +99,9 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
       </div>
 
       {/* Content */}
-      <div className="absolute inset-0 z-10 flex items-center justify-start">
+      <div className="relative z-10 flex items-center justify-start">
         <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12">
-          <div className="flex flex-col items-start justify-center text-left min-h-[650px] lg:min-h-[740px]">
+          <div className="flex flex-col items-start justify-center text-left min-h-[650px] lg:min-h-[740px] py-24 lg:py-28">
             <div className={`w-full lg:max-w-[54%] transition-all duration-300 ${
               isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
             }`}>
@@ -110,7 +110,7 @@ export function HeroBannerCarousel({ banners }: HeroBannerCarouselProps) {
                   {currentBanner.eyebrow}
                 </span>
               )}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tighter whitespace-pre">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tighter whitespace-pre-line">
                 {currentBanner.title || t('hero.fallbackTitle')}
               </h1>
               {currentBanner.subtitle && (

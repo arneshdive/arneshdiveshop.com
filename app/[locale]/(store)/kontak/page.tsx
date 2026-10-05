@@ -73,6 +73,19 @@ export default async function KontakPage() {
             <h2 className="text-lg font-semibold mb-6">{t('info.heading')}</h2>
             
             <div className="space-y-6">
+              {settings.addressFormatted && (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                    <Icon icon="solar:map-point-linear" className="w-5 h-5 text-neutral-700" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-500 mb-1">{t('info.addressLabel')}</p>
+                    <p className="text-base font-medium text-neutral-900">{settings.storeName}</p>
+                    <address className="text-base text-neutral-700 not-italic whitespace-pre-line">{settings.addressFormatted}</address>
+                    <p className="text-sm text-neutral-500 mt-1">{t('info.storeRelationship')}</p>
+                  </div>
+                </div>
+              )}
               {/* WhatsApp */}
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
@@ -121,24 +134,30 @@ export default async function KontakPage() {
               </div>
 
               {/* Instagram */}
-              {settings.instagram && (
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                    <Icon icon="mdi:instagram" className="w-5 h-5 text-neutral-700" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-neutral-500 mb-1">{t('info.instagramLabel')}</p>
-                    <a
-                      href={`https://instagram.com/${settings.instagram.replace('@', '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-base font-medium text-neutral-900 hover:underline"
-                    >
-                      {settings.instagram}
-                    </a>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <Icon icon="mdi:instagram" className="w-5 h-5 text-neutral-700" />
                 </div>
-              )}
+                <div>
+                  <p className="text-sm text-neutral-500 mb-1">{t('info.instagramLabel')}</p>
+                  <a
+                    href={siteConfig.links.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base font-medium text-neutral-900 hover:underline"
+                  >
+                    Arnesh Dive · @arnesh.official
+                  </a>
+                  <a
+                    href={siteConfig.links.haesteInstagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-base font-medium text-neutral-900 hover:underline mt-2"
+                  >
+                    Haeste Diveshop · @haeste_diveshop
+                  </a>
+                </div>
+              </div>
             </div>
 
             {/* Quick Actions */}
